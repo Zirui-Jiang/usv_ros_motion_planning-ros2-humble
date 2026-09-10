@@ -1,0 +1,46 @@
+# Configuration for robot odometry EKF (ROS 2 robot_localization)
+/**:
+  ros__parameters:
+    sensor_timeout: 0.2
+    frequency: 60.0
+    two_d_mode: false
+    publish_tf: true
+    publish_acceleration: false
+    transform_time_offset: 0.0
+    transform_timeout: 0.0
+    print_diagnostics: true
+    debug: false
+
+    map_frame: otter/map
+    odom_frame: otter/odom
+    base_link_frame: otter/base_link
+    world_frame: otter/odom
+
+    # GPS only reliably measures absolute position
+    # NOTE: relative to the node's namespace (/otter), so this resolves to
+    # /otter/odometry/gps (published by navsat_transform_node).
+    odom0: odometry/gps
+    odom0_config: [true,  true,  true,
+                   false, false, false,
+                   false, false, false,
+                   false, false, false,
+                   false, false, false]
+    odom0_differential: false
+    odom0_relative: false
+    odom0_queue_size: 10
+    odom0_rejection_threshold: 5.0
+
+    # IMU measures orientation, angular velocity, and linear acceleration
+    # NOTE: relative to the node's namespace (/otter), so this resolves to
+    # /otter/sensors/imu/imu/data.
+    imu0: sensors/imu/imu/data
+    imu0_config: [false, false, false,
+                  true,  true,  true,
+                  false, false, false,
+                  true,  true,  true,
+                  true,  true,  true]
+    imu0_differential: false
+    imu0_relative: false
+    imu0_queue_size: 10
+    imu0_remove_gravitational_acceleration: true
+    imu0_rejection_threshold: 5.0

@@ -1,0 +1,78 @@
+# Global costmap parameters for the otter USV (ROS 2 / nav2_costmap_2d).
+# NOTE: the node loads these parameters directly on the `usv_simulation` node,
+# so they are prefixed with `costmap.` (the Costmap2DROS name).
+costmap:
+  global_frame: otter/map
+  robot_base_frame: otter/base_link
+  use_sim_time: true
+
+  update_frequency: 2.0
+  publish_frequency: 2.0
+  transform_tolerance: 0.5
+  resolution: 0.5
+  width: 400
+  height: 400
+  origin_z: 0.0
+  z_resolution: 1
+  z_voxels: 2
+  publish_voxel_map: false
+  # The costmap is fed only by the live lidar (obstacle_layer, no static map)
+  # with a short obstacle_range, so it acts as a robot-centered perception map.
+  # A rolling window keeps the robot at the centre and avoids "out of bounds"
+  # regardless of where it spawns or navigates.
+  rolling_window: true
+  track_unknown_space: false
+
+  # robot base -- realistic otter USV footprint (~2.2 m x 1.2 m). The previous
+  # 8 x 4.8 m footprint / robot_radius 7.0 were ~10x too large for a 2 m boat,
+  # which produced a huge inflated region that made it impossible to plan a
+  # path near any obstacle.
+  footprint: "[[-1.1, -0.6], [1.1, -0.6], [1.1, 0.6], [-1.1, 0.6]]"
+  footprint_padding: 0.3
+  robot_radius: 1.3
+
+  # layer plugins to load (nav2_costmap_2d).
+  # static_layer feeds the persistent, accumulated occupancy map from the
+  # mapping node (/otter/map). Unlike the memoryless obstacle_layer (which only
+  # marks currently-visible lidar surfaces and lets the planner cut through the
+  # unseen "shadow" behind a large solid obstacle), the static layer remembers
+  # everything the robot has already seen, so the planner can route around the
+  # full extent of an obstacle.
+  plugins: ["obstacle_layer", "inflation_layer"]
+
+  static_layer:
+    plugin: "nav2_costmap_2d::StaticLayer"
+    enabled: true
+    map_topic: /otter/map
+    # The mapping node publishes /otter/map with default (volatile) QoS, not a
+    # latched map_server, so do NOT subscribe transient-local (QoS mismatch
+    # would silently deliver nothing).
+    map_subscribe_transient_local: false
+    subscribe_to_updates: false
+
+  # sensor management parameters
+  obstacle_layer:
+    plugin: "nav2_costmap_2d::ObstacleLayer"
+    enabled: true
+    observation_sources: scan
+    scan:
+      topic: /otter/sensors/lidars/lidar/scan
+      sensor_frame: otter/lidar_link
+      observation_persistence: 0.0
+      expected_update_rate: 0.8
+      data_type: LaserScan
+      clearing: true
+      marking: true
+      max_obstacle_height: 5.0
+      min_obstacle_height: -5.0
+      inf_is_valid: true
+      obstacle_max_range: 20.0
+      raytrace_max_range: 22.0
+
+  inflation_layer:
+    plugin: "nav2_costmap_2d::InflationLayer"
+    enabled: true
+    cost_scaling_factor: 2.0   # exponential drop-off rate of obstacle cost
+    inflation_radius: 3.0       # ~3 m safety margin around obstacles (was 6.0)
+
+  always_send_full_costmap: true

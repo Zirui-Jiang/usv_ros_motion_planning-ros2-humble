@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:macro name="usv_wind_gazebo" params="name">
+    <!--Gazebo Plugin for simulating Otter dynamics-->
+    <gazebo>
+      <plugin name="usv_wind_${name}" filename="libusv_gazebo_wind_plugin.so">
+        <wind_obj>
+          <name>otter</name>
+          <link_name>otter/base_link</link_name>
+          <coeff_vector>.5 .5 .33</coeff_vector>
+        </wind_obj>
+        <wind_direction>270</wind_direction>
+        <wind_mean_velocity>0</wind_mean_velocity>
+        <var_wind_gain_constants>0</var_wind_gain_constants>
+        <var_wind_time_constants>2</var_wind_time_constants>
+        <random_seed />
+        <update_rate>10</update_rate>
+        <topic_wind_speed>/vrx/debug/wind/speed</topic_wind_speed>
+        <topic_wind_direction>/vrx/debug/wind/direction</topic_wind_direction>
+      </plugin>
+    </gazebo>
+  </xacro:macro>
+</robot>

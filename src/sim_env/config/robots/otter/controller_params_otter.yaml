@@ -1,0 +1,22 @@
+controller:
+  control_frequncy: 10.0
+
+  pid_controller:
+    goal_distance_tolerance: 1.5
+    lookahead_time: 3.0
+    k_p_speed: 2.0
+    k_i_speed: 0.5
+    k_d_speed: 0.0
+    k_p_course: 2.0
+    k_i_course: 0.0
+    k_d_course: 0.0
+  
+  lqr_controller:
+    goal_distance_tolerance: 1.0
+    lookahead_time: 2.0
+    discrete_dt: 0.1
+    solve_eps: 0.1
+    max_iterations: 1000
+    Q_matrix_diag: [100, 100, 100, 10, 10, 0]
+    R_matrix_diag: [1, 1]
+
