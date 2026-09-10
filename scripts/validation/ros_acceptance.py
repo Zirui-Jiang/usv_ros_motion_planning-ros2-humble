@@ -109,6 +109,13 @@ def stamp_seconds(stamp):
     return stamp.sec + stamp.nanosec * 1e-9
 
 
+def parameter_value(value):
+    fields = {1: "bool_value", 2: "integer_value", 3: "double_value", 4: "string_value",
+              5: "byte_array_value", 6: "bool_array_value", 7: "integer_array_value", 8: "double_array_value", 9: "string_array_value"}
+    item = getattr(value, fields[value.type]) if value.type in fields else None
+    return list(item) if value.type >= 5 else item
+
+
 def make_probe(namespace, log, use_sim_time=True):
     import rclpy
     from rclpy.node import Node
@@ -122,6 +129,7 @@ def make_probe(namespace, log, use_sim_time=True):
     from std_srvs.srv import Trigger, Empty
     from gazebo_msgs.srv import SetEntityState, SpawnEntity
     from rcl_interfaces.srv import GetParameters, ListParameters
+    from rcl_interfaces.msg import ParameterEvent
 
     class Probe(Node):
         def __init__(self):
@@ -138,6 +146,8 @@ def make_probe(namespace, log, use_sim_time=True):
             self.scan_wall = None
             self.costmap = None
             self.costmap_wall = None
+            self.costmap_stamp = None
+            self.costmap_frame = None
             self.costmap_topic = None
             self.path = []
             self.initial_path = []
@@ -164,6 +174,7 @@ def make_probe(namespace, log, use_sim_time=True):
             self.create_subscription(RosPath, self.namespace + "/local_trajectory", self.on_trajectory, 10)
             self.create_subscription(String, self.namespace + "/navigation_status", self.on_status, 10)
             self.create_subscription(String, self.namespace + "/mapping_status", self.on_mapping_status, 10)
+            self.create_subscription(ParameterEvent, "/parameter_events", self.on_parameter_event, 100)
             self.create_subscription(PoseStamped, self.namespace + "/goal", self.on_goal, 10)
             for axis in ("left", "right", "lateral"):
                 self.create_subscription(Float32, self.namespace + f"/thrusters/{axis}_thrust_cmd",
@@ -224,6 +235,14 @@ def make_probe(namespace, log, use_sim_time=True):
                 self.mapping_status = {"unparsed_status": msg.data}
             self.log.write("mapping_status", payload=self.mapping_status)
 
+        def on_parameter_event(self, msg):
+            if msg.node != self.namespace + "/usv_simulation":
+                return
+            self.log.write("navigation_parameter_event", node=msg.node, sim_time_s=stamp_seconds(msg.stamp),
+                           new=[{"name": item.name, "value": parameter_value(item.value)} for item in msg.new_parameters],
+                           changed=[{"name": item.name, "value": parameter_value(item.value)} for item in msg.changed_parameters],
+                           deleted=[item.name for item in msg.deleted_parameters])
+
         def on_goal(self, msg):
             self.log.write("goal_observed", x=msg.pose.position.x, y=msg.pose.position.y,
                            sim_time_s=stamp_seconds(msg.header.stamp))
@@ -270,6 +289,8 @@ def make_probe(namespace, log, use_sim_time=True):
                 origin = meta.origin.position
                 self.costmap = (int(meta.width), int(meta.height), float(meta.resolution), origin.x, origin.y, list(msg.data), "occupancy")
             self.costmap_wall = time.monotonic()
+            self.costmap_stamp = stamp_seconds(msg.header.stamp)
+            self.costmap_frame = msg.header.frame_id
 
         def publish_goal(self, goal):
             self.goal_wall = time.monotonic()
@@ -278,11 +299,26 @@ def make_probe(namespace, log, use_sim_time=True):
             self.first_path_latency = None
             self.first_command_latency = None
             self.received_nonempty_trajectory = False
+            if self.costmap is not None:
+                import numpy as np
+                width, height, resolution, ox, oy, data, kind = self.costmap
+                input_id = uuid.uuid4().hex[:8]
+                directory = Path(self.log.file.name).parent
+                snapshot_path = directory / ("costmap_input_" + input_id + ".npz")
+                state_path = directory / ("state_input_" + input_id + ".json")
+                np.savez_compressed(snapshot_path, data=np.asarray(data, dtype=np.uint8 if kind == "raw" else np.int16).reshape(height, width),
+                                    resolution=resolution, origin_x=ox, origin_y=oy, frame_id=self.costmap_frame,
+                                    stamp=self.costmap_stamp, cost_kind=kind)
+                state_path.write_text(json.dumps({"goal": goal, "pose": self.pose, "body_velocity": self.velocity,
+                                                 "stamp": self.odom_stamp, "frame_id": self.costmap_frame,
+                                                 "costmap_file": snapshot_path.name}, indent=2), encoding="utf-8")
+                self.log.write("goal_input_snapshot", costmap_path=snapshot_path.name, state_path=state_path.name)
             msg = PoseStamped()
             msg.header.frame_id = self.namespace.strip("/") + "/map"
             msg.header.stamp = self.get_clock().now().to_msg()
             msg.pose.position.x, msg.pose.position.y = float(goal[0]), float(goal[1])
             msg.pose.orientation.z, msg.pose.orientation.w = math.sin(goal[2] / 2), math.cos(goal[2] / 2)
+            self.goal_wall = time.monotonic()
             self.goal_pub.publish(msg)
             self.log.write("goal_published", goal=goal, sim_time_s=self.sim_time())
 
@@ -338,6 +374,8 @@ def verify_controller(probe, requested):
                      prefix + "pid_controller." + "goal_distance_tolerance", prefix + "pid_controller.lookahead_time",
                      *[prefix + "pid_controller." + gain for gain in ("k_p_speed", "k_i_speed", "k_d_speed", "k_p_course", "k_i_course", "k_d_course")],
                      *[prefix + "lqr_controller." + field for field in ("goal_distance_tolerance", "lookahead_time", "discrete_dt", "solve_eps", "max_iterations", "Q_matrix_diag", "R_matrix_diag")],
+                     *["usv_simulation.trajectory_planner.los." + field for field in ("lookahead_distance", "switch_dist", "kp_yaw", "yaw_rate_max", "trajectory_time", "trajectory_time_interval")],
+                     "obstacle_factor", "path_planner.obstacle_factor",
                      "navigation.state_timeout", "navigation.trajectory_timeout", "dynamics.mass", "dynamics.max_force", "dynamics.D"]
     list_kind = probe.types["ListParameters"]
     listed = call_service(probe, list_kind, [probe.namespace + "/usv_simulation/list_parameters"], list_kind.Request())
@@ -347,12 +385,7 @@ def verify_controller(probe, requested):
         raise TrialBlocked("running node does not expose its actual controller_name parameter")
     response = call_service(probe, kind, [probe.namespace + "/usv_simulation/get_parameters"], request)
     actual = response.values[0].string_value if response.values else ""
-    fields = {1: "bool_value", 2: "integer_value", 3: "double_value", 4: "string_value",
-              5: "byte_array_value", 6: "bool_array_value", 7: "integer_array_value", 8: "double_array_value", 9: "string_array_value"}
-    parameters = {}
-    for name, value in zip(request.names, response.values):
-        item = getattr(value, fields[value.type]) if value.type in fields else None
-        parameters[name] = list(item) if value.type >= 5 else item
+    parameters = {name: parameter_value(value) for name, value in zip(request.names, response.values)}
     probe.log.write("controller_verified", requested=requested, actual=actual, parameters=parameters)
     if actual != requested:
         raise TrialBlocked(f"requested controller {requested!r} but running node reports {actual!r}; the launch selector is not effective")
@@ -743,7 +776,10 @@ def main(argv=None):
     os.environ["ROS_DOMAIN_ID"] = str(args.domain_id)
     os.environ["ROS_LOCALHOST_ONLY"] = "1"
     import rclpy
-    rclpy.init()
+    # Python owns SIGINT so a manual pause reaches our finally blocks before
+    # ROS destroys the context; default rclpy handlers can shut it down first.
+    from rclpy.signals import SignalHandlerOptions
+    rclpy.init(signal_handler_options=SignalHandlerOptions.NO)
     results = []
     run_finished = False
     interrupted = False
@@ -766,7 +802,8 @@ def main(argv=None):
     except KeyboardInterrupt:
         interrupted = True
     finally:
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
         summary = {"results": results, "completed": sum(r["result"] == "completed" for r in results),
                    "passed": sum(r["passed"] for r in results), "run_finished": run_finished,
                    "interrupted": interrupted, "all_passed": run_finished and bool(results) and all(r["passed"] for r in results)}

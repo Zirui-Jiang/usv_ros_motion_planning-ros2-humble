@@ -87,6 +87,7 @@ def _launch_setup(context):
     spawn = Node(
         package="gazebo_ros", executable="spawn_entity.py",
         arguments=["-entity", namespace, "-topic", "robot_description",
+                   "-timeout", "120.0",
                    "-x", str(pose["x"]), "-y", str(pose["y"]),
                    "-z", str(pose["z"]), "-Y", str(pose["yaw"])],
         output="screen")

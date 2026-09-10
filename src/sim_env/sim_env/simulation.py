@@ -5,6 +5,7 @@ import math
 import time
 import os
 import resource
+import signal
 
 import numpy as np
 import rclpy
@@ -12,6 +13,7 @@ from rclpy.node import Node
 from rclpy.clock import Clock, ClockType
 from rclpy.time import Time
 from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
+from rclpy.signals import SignalHandlerOptions
 from rcl_interfaces.msg import ParameterDescriptor, SetParametersResult
 from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Odometry, Path
@@ -242,6 +244,8 @@ class Simulator(Node):
         self.counters['global_searches'] += int(result.searched)
         self.route = result.route
         self.reason = result.message
+        stamp = self.get_clock().now().to_msg()
+        self.path_pub.publish(make_path(self.route, self.frame, stamp))
         if result.status not in (AlgorithmStatus.SUCCESS, AlgorithmStatus.GOAL_REACHED):
             self.mode = result.status.value.upper()
             self.trajectory = None
@@ -253,8 +257,6 @@ class Simulator(Node):
             self.counters['unsafe_results'] += 1
             return
         self.trajectory = result.trajectory
-        stamp = self.get_clock().now().to_msg()
-        self.path_pub.publish(make_path(self.route, self.frame, stamp))
         self.trajectory_pub.publish(make_path(self.trajectory.points[:, [2, 3, 4]], self.frame, stamp))
 
     def _publish_command(self, command):
@@ -323,7 +325,12 @@ class Simulator(Node):
 
 
 def main(args=None):
-    rclpy.init(args=args)
+    # Keep the context alive until the last zero command has been published.
+    # rclpy's asynchronous default signal shutdown races that final publish.
+    rclpy.init(args=args, signal_handler_options=SignalHandlerOptions.NO)
+    def terminate(signum, frame):
+        raise KeyboardInterrupt
+    old_term = signal.signal(signal.SIGTERM, terminate)
     node = None
     try:
         node = Simulator()
@@ -335,6 +342,7 @@ def main(args=None):
             node.destroy_node()
         if rclpy.ok():
             rclpy.shutdown()
+        signal.signal(signal.SIGTERM, old_term)
 
 
 if __name__ == '__main__':
