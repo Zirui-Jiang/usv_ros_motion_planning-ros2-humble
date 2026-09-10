@@ -2,7 +2,7 @@ from concurrent.futures import Future
 import numpy as np
 import pytest
 from common.models import AlgorithmStatus, GridSnapshot, VesselState
-from sim_env.configuration import resolve_parameters
+from sim_env.configuration import C, resolve_parameters
 from sim_env.runtime import LatestPlanWorker, PlanningRequest, fresh, plan_navigation, readiness
 
 
@@ -33,6 +33,17 @@ def test_failure_is_explicit_and_has_no_reference():
                               GridSnapshot(grid, 1., stamp=10.), job.route, job.parameters))
     assert response.status == AlgorithmStatus.NO_PATH
     assert response.trajectory.empty()
+
+
+def test_los_reaches_requested_goal_instead_of_nearby_cell_centre():
+    cfg = resolve_parameters({C+'controller_name': 'lqr'})
+    job = PlanningRequest(1, (10.49, 10.49, 0.), VesselState(9.3, 10.25, 0., stamp=10.),
+                          GridSnapshot(np.zeros((40, 40), np.uint8), .5, stamp=10.),
+                          np.empty((0, 3)), cfg)
+    response = plan_navigation(job)
+    assert response.status == AlgorithmStatus.SUCCESS
+    assert np.any(response.trajectory.points[:, 6] > 0.)
+    np.testing.assert_array_equal(response.route[-1], job.goal)
 
 
 @pytest.mark.parametrize('stamp,now,timeout,expected', [(10.,10.4,.5,True), (10.,10.6,.5,False), (11.,10.,.5,False), (float('nan'),10.,1.,False)])

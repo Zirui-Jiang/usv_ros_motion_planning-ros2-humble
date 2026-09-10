@@ -118,7 +118,6 @@ def _launch_setup(context):
     costmap_params["global_frame"] = namespace + "/map"
     costmap_params["robot_base_frame"] = namespace + "/base_link"
     costmap_params["use_sim_time"] = use_sim_time
-    costmap_params["static_layer"]["map_topic"] = prefix + "/map"
     scan = costmap_params["obstacle_layer"]["scan"]
     scan["topic"] = prefix + "/sensors/lidars/lidar/scan"
     scan["sensor_frame"] = namespace + "/lidar_link"
@@ -127,8 +126,7 @@ def _launch_setup(context):
         namespace=namespace, output="screen", parameters=[costmap_params],
         remappings=[("costmap_raw", prefix + "/costmap_raw"),
                     ("costmap", prefix + "/costmap"),
-                    ("costmap_updates", prefix + "/costmap_updates"),
-                    ("costmap_raw_updates", prefix + "/costmap_raw_updates")])
+                    ("costmap_updates", prefix + "/costmap_updates")])
 
     navigation = Node(
         package="sim_env", executable="sim_env_node", name="usv_simulation",

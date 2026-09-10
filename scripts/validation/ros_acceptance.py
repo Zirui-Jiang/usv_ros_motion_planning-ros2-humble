@@ -112,7 +112,7 @@ def make_probe(namespace, log, use_sim_time=True):
     from std_msgs.msg import Float32, String
     from std_srvs.srv import Trigger, Empty
     from gazebo_msgs.srv import SetEntityState, SpawnEntity
-    from rcl_interfaces.srv import GetParameters
+    from rcl_interfaces.srv import GetParameters, ListParameters
 
     class Probe(Node):
         def __init__(self):
@@ -269,7 +269,7 @@ def make_probe(namespace, log, use_sim_time=True):
                        abs(self.commands.get(axis, math.inf)) <= epsilon for axis in ("left", "right", "lateral"))
 
     locals_types = {"rclpy": rclpy, "Trigger": Trigger, "Empty": Empty, "SetEntityState": SetEntityState,
-                   "SpawnEntity": SpawnEntity, "GetParameters": GetParameters,
+                   "SpawnEntity": SpawnEntity, "GetParameters": GetParameters, "ListParameters": ListParameters,
                    "Odometry": Odometry, "Costmap": Costmap, "QoSProfile": QoSProfile,
                    "DurabilityPolicy": DurabilityPolicy, "ReliabilityPolicy": ReliabilityPolicy}
     return Probe()
@@ -311,10 +311,27 @@ def call_service(probe, kind, names, request, timeout=10.0, optional=False):
 def verify_controller(probe, requested):
     kind = probe.types["GetParameters"]
     request = kind.Request()
-    request.names = ["usv_simulation.controller.controller_name"]
+    prefix = "usv_simulation.controller."
+    request.names = [prefix + "controller_name", prefix + "control_frequency", prefix + "controller_frequncy",
+                     prefix + "pid_controller." + "goal_distance_tolerance", prefix + "pid_controller.lookahead_time",
+                     *[prefix + "pid_controller." + gain for gain in ("k_p_speed", "k_i_speed", "k_d_speed", "k_p_course", "k_i_course", "k_d_course")],
+                     *[prefix + "lqr_controller." + field for field in ("goal_distance_tolerance", "lookahead_time", "discrete_dt", "solve_eps", "max_iterations", "Q_matrix_diag", "R_matrix_diag")],
+                     "navigation.state_timeout", "navigation.trajectory_timeout", "dynamics.mass", "dynamics.max_force", "dynamics.D"]
+    list_kind = probe.types["ListParameters"]
+    listed = call_service(probe, list_kind, [probe.namespace + "/usv_simulation/list_parameters"], list_kind.Request())
+    available = set(listed.result.names)
+    request.names = [name for name in request.names if name in available]
+    if prefix + "controller_name" not in request.names:
+        raise TrialBlocked("running node does not expose its actual controller_name parameter")
     response = call_service(probe, kind, [probe.namespace + "/usv_simulation/get_parameters"], request)
     actual = response.values[0].string_value if response.values else ""
-    probe.log.write("controller_verified", requested=requested, actual=actual)
+    fields = {1: "bool_value", 2: "integer_value", 3: "double_value", 4: "string_value",
+              5: "byte_array_value", 6: "bool_array_value", 7: "integer_array_value", 8: "double_array_value", 9: "string_array_value"}
+    parameters = {}
+    for name, value in zip(request.names, response.values):
+        item = getattr(value, fields[value.type]) if value.type in fields else None
+        parameters[name] = list(item) if value.type >= 5 else item
+    probe.log.write("controller_verified", requested=requested, actual=actual, parameters=parameters)
     if actual != requested:
         raise TrialBlocked(f"requested controller {requested!r} but running node reports {actual!r}; the launch selector is not effective")
 
@@ -526,6 +543,9 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
                        command_receipt_gap_ms=distribution(probe.command_gaps),
                        observed_odom_receipt_to_command_receipt_ms=distribution(probe.command_state_age),
                        path_header_age_sim_ms=distribution(probe.path_latency), status=probe.status)
+    except KeyboardInterrupt:
+        outcome.update(result="interrupted", reason="user interrupted this live trial")
+        raise
     except (TrialBlocked, RuntimeError, OSError) as error:
         outcome.update(result="blocked", reason=str(error))
     finally:
@@ -616,6 +636,9 @@ def odom_dropout_trial(args, config):
         outcome.update(result="completed", passed=latency is not None and latency <= deadline and not nonzero_after_deadline,
                        zero_command_latency_wall_s=latency, nonzero_after_deadline=nonzero_after_deadline,
                        tested_state_timeout_s=threshold["odom_timeout_s"], deadline_wall_s=deadline, status=probe.status)
+    except KeyboardInterrupt:
+        outcome.update(result="interrupted", reason="user interrupted this smoke trial")
+        raise
     except (TrialBlocked, RuntimeError, OSError) as error:
         outcome.update(result="blocked", reason=str(error))
     finally:
@@ -650,6 +673,8 @@ def arguments(argv=None):
     args = parser.parse_args(argv)
     if args.repeats <= 0:
         parser.error("--repeats must be positive")
+    if not 0 <= args.domain_id <= 232:
+        parser.error("--domain-id must be in [0, 232]")
     if args.mode in ("cpp", "both") and args.baseline_workspace is None:
         parser.error("C++ mode requires --baseline-workspace")
     return args
@@ -672,6 +697,13 @@ def main(argv=None):
                 "faults_requested": args.faults or args.only_faults, "mode": "dry_run" if args.dry_run else "live",
                 "created_unix_s": time.time(), "domain_id": args.domain_id,
                 "latency_definition": "Receive gaps and observed callback age are wall-clock diagnostics, not measured algorithm WCET or end-to-end source latency. Header ages use ROS simulation time."}
+    for label, workspace in [("python", args.workspace), ("cpp", args.baseline_workspace)]:
+        if workspace is not None:
+            try:
+                revision = subprocess.run(["git", "rev-parse", "HEAD"], cwd=workspace, capture_output=True, text=True, timeout=5)
+                manifest[label + "_git_commit"] = revision.stdout.strip() if revision.returncode == 0 else None
+            except (OSError, subprocess.TimeoutExpired):
+                manifest[label + "_git_commit"] = None
     (args.output / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     if args.dry_run:
         print(json.dumps({"result": "not_run", "planned_navigation_trials": len(matrix), "manifest": str(args.output / "manifest.json")}, ensure_ascii=False))
@@ -683,6 +715,8 @@ def main(argv=None):
     import rclpy
     rclpy.init()
     results = []
+    run_finished = False
+    interrupted = False
     try:
         for item in matrix:
             workspace = args.workspace if item["mode"] == "python" else args.baseline_workspace
@@ -698,12 +732,16 @@ def main(argv=None):
                     results.append(navigation_trial(args, config, workspace, mode, "pid", scene, 1, fault=fault))
             if "python" in modes:
                 results.append(odom_dropout_trial(args, config))
+        run_finished = True
+    except KeyboardInterrupt:
+        interrupted = True
     finally:
         rclpy.shutdown()
         summary = {"results": results, "completed": sum(r["result"] == "completed" for r in results),
-                   "passed": sum(r["passed"] for r in results), "all_passed": bool(results) and all(r["passed"] for r in results)}
+                   "passed": sum(r["passed"] for r in results), "run_finished": run_finished,
+                   "interrupted": interrupted, "all_passed": run_finished and bool(results) and all(r["passed"] for r in results)}
         (args.output / "summary.json").write_text(json.dumps(sanitized(summary), ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
-    return 0 if results and all(r["passed"] for r in results) else 1
+    return 130 if interrupted else 0 if run_finished and results and all(r["passed"] for r in results) else 1
 
 
 if __name__ == "__main__":

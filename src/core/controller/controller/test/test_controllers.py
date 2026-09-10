@@ -5,7 +5,7 @@ import pytest
 
 from common.models import AlgorithmStatus, USVModel, VesselState
 from controller import PIDController, LQRController, create_controller
-from trajectory_planner import Trajectory, TrajectoryCell
+from trajectory_planner import Trajectory, TrajectoryCell, LosTrajectoryPlanner
 
 
 def constant_reference(speed=0.8, yaw=0.1, goal=None, stamp=0.0):
@@ -140,3 +140,30 @@ def test_factories_reject_unsupported_algorithms_and_models():
         create_controller("mpc", USVModel())
     with pytest.raises(ValueError):
         create_controller("pid", USVModel(name="other"))
+
+
+@pytest.mark.parametrize("kind", [PIDController, LQRController])
+@pytest.mark.parametrize("age", [0.0, 1.0])
+def test_preview_of_predicted_arrival_does_not_stop_before_actual_goal(kind, age):
+    model = USVModel()
+    initial = VesselState(x=9.3, y=10.25, stamp=10.0)
+    plan = LosTrajectoryPlanner(model, {"goal_tolerance": 1.0}).plan(
+        [[9.3, 10.25, 0], [10.49, 10.49, 0]], initial).trajectory
+    controller = kind(model, {"goal_distance_tolerance": 1.0, "lookahead_time": 3.0,
+                              "k_p_speed": 2.0, "k_p_course": 2.0})
+    state = VesselState(x=initial.x, y=initial.y, stamp=10.0 + age)
+    command = controller.compute(state, plan, 0.1)
+    assert command.status == AlgorithmStatus.SUCCESS
+    assert max(abs(command.left), abs(command.right)) > 0
+    arrived = controller.compute(VesselState(x=10.49, y=10.49, stamp=10.0 + age), plan, 0.1)
+    assert arrived.status == AlgorithmStatus.GOAL_REACHED
+    assert arrived.left == arrived.right == 0
+
+
+def test_preview_stop_away_from_goal_is_not_overridden():
+    controller = PIDController(USVModel(), {"k_p_speed": 2, "lookahead_time": 3})
+    intermediate_stop = Trajectory([[0, 0, 0, 0, 0, 0, 1, 0],
+                                    [0.5, 0.5, 0.5, 0, 0, 0, 0, 0]], goal=(10, 0))
+    command = controller.compute(VesselState(), intermediate_stop, 0.1)
+    assert command.status == AlgorithmStatus.SUCCESS
+    assert command.left == command.right == 0

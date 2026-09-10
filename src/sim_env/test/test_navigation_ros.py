@@ -36,6 +36,7 @@ def test_process_planning_parameters_stale_inputs_cancel_and_clock_reset():
         subscriptions = [driver.create_subscription(Float32, 'thrusters/left_thrust_cmd', left.append, 10),
                          driver.create_subscription(String, 'navigation_status', lambda m: statuses.append(json.loads(m.data)), 10)]
         simulated_time = 10.0
+        block_grid = False
 
         def spin(duration=.04):
             deadline = time.monotonic() + duration
@@ -59,12 +60,17 @@ def test_process_planning_parameters_stale_inputs_cancel_and_clock_reset():
                 odom_pub.publish(message)
             if grid:
                 message = Costmap()
-                message.header.stamp = message.metadata.update_time = clock.clock
+                # Humble's topic publisher leaves metadata.update_time zero;
+                # only the GetCostmap service fills it. Freshness uses header.
+                message.header.stamp = clock.clock
                 message.header.frame_id = 'navigation_smoke/map'
                 message.metadata.size_x = message.metadata.size_y = 30
                 message.metadata.resolution = 1.
                 message.metadata.origin.orientation.w = 1.
                 message.data = [0] * 900
+                if block_grid:
+                    for row in range(30):
+                        message.data[row * 30 + 10] = 254
                 map_pub.publish(message)
             spin()
 
@@ -94,6 +100,15 @@ def test_process_planning_parameters_stale_inputs_cancel_and_clock_reset():
         assert simulator.counters['parameter_updates'] == 1
         assert not simulator.set_parameters_atomically([Parameter(T+'los.lookahead_distance', value=-1.)]).successful
         assert not simulator.set_parameters_atomically([Parameter(C+'control_frequency', value=20.)]).successful
+
+        block_grid = True
+        until(lambda: simulator.counters['map_invalidations'] >= 1)
+        left.clear()
+        for _ in range(10):
+            inputs()
+        assert simulator.trajectory is None and left and all(m.data == 0. for m in left)
+        block_grid = False
+        until(lambda: simulator.mode == 'NAVIGATING')
 
         until(lambda: simulator.mode == 'WAITING_STATE', odom=False)
         left.clear()

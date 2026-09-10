@@ -76,7 +76,11 @@ class LosTrajectoryPlanner:
         index = 0
         travelled = 0.0
         elapsed = 0.0
-        speed = min(math.hypot(state.u, state.v), self.model.cruising_speed)
+        # This is a reference trajectory, so its first speed must follow the
+        # reference profile, not inherit the measured (possibly zero) speed.
+        # A stationary vessel near its goal otherwise receives an all-zero
+        # trajectory when the first rollout sample enters the goal tolerance.
+        speed = self.model.cruising_speed
         rows = [[0.0, 0.0, *xy, yaw, 0.0, speed, 0.0]]
         if len(waypoints) == 1:
             initial_distance = np.linalg.norm(waypoints[0, :2] - xy)

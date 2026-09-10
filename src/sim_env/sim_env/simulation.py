@@ -20,7 +20,7 @@ from tf2_ros import Buffer, TransformListener, TransformException
 import yaml
 
 from common.models import AlgorithmStatus, ControlCommand, GridSnapshot, USVModel, VesselState
-from common.math_helper import quaternion_yaw, wrap_angle
+from common.math_helper import quaternion_yaw, wrap_angle, path_is_clear
 from common.visualizer import make_path
 from controller.controller_factory import create_controller
 from .configuration import DEFAULTS, HOT_PARAMETERS, C, T, resolve_parameters, section, validate_update
@@ -156,11 +156,21 @@ class Simulator(Node):
                 raise ValueError('rotated costmap origins are unsupported')
             data = np.asarray(message.data, dtype=np.uint8).reshape(meta.size_y, meta.size_x)
             self.grid = GridSnapshot(data, meta.resolution, meta.origin.position.x,
-                                     meta.origin.position.y, seconds(meta.update_time), message.header.frame_id)
+                                     meta.origin.position.y, seconds(message.header.stamp), message.header.frame_id)
+            if self.trajectory is not None and not self._trajectory_clear(self.trajectory):
+                self.trajectory = None
+                self.route = np.empty((0, 3))
+                self.mode, self.reason = 'WAITING_REFERENCE', 'Latest map invalidated reference'
+                self.counters['map_invalidations'] += 1
+                self._publish_command(ControlCommand())
         except (ValueError, TypeError) as error:
             self.counters['invalid_costmap'] += 1
             self.reason = str(error)
         self.timings['costmap_conversion_ms'].append((time.perf_counter() - begun) * 1000)
+
+    def _trajectory_clear(self, trajectory):
+        return self.grid is not None and path_is_clear(
+            self.grid, trajectory.points[:, [2, 3, 4]], 254.0 * self.config['obstacle_factor'])
 
     def _reset_task(self, mode, reason='', clear_inputs=False):
         self.version += 1
@@ -171,6 +181,7 @@ class Simulator(Node):
         self.mode, self.reason = mode, reason
         if clear_inputs:
             self.state = self.grid = self.pending_odom = None
+            self.tf.clear()
         self._publish_command(ControlCommand())
         stamp = self.get_clock().now().to_msg()
         self.path_pub.publish(make_path(self.route, self.frame, stamp))
@@ -203,8 +214,14 @@ class Simulator(Node):
         if not fresh(self.state.stamp, now, self.config['navigation.state_timeout']) or not fresh(
                 self.grid.stamp, now, self.config['navigation.map_timeout']):
             return
-        self.worker.offer(PlanningRequest(self.version, self.goal, self.state, self.grid,
-                                           self.route.copy(), dict(self.config)))
+        try:
+            self.worker.offer(PlanningRequest(self.version, self.goal, self.state, self.grid,
+                                               self.route.copy(), dict(self.config)))
+        except Exception as error:
+            self.trajectory = None
+            self.mode, self.reason = 'PLANNING_ERROR', str(error)
+            self.counters['worker_errors'] += 1
+            self._publish_command(ControlCommand())
 
     def _consume_plan(self):
         try:
@@ -226,6 +243,12 @@ class Simulator(Node):
         if result.status not in (AlgorithmStatus.SUCCESS, AlgorithmStatus.GOAL_REACHED):
             self.mode = result.status.value.upper()
             self.trajectory = None
+            return
+        if not self._trajectory_clear(result.trajectory):
+            self.trajectory = None
+            self.route = np.empty((0, 3))
+            self.mode, self.reason = 'WAITING_REFERENCE', 'Worker reference conflicts with latest map'
+            self.counters['unsafe_results'] += 1
             return
         self.trajectory = result.trajectory
         stamp = self.get_clock().now().to_msg()
@@ -288,7 +311,8 @@ class Simulator(Node):
             controller=self.controller_name, goal=self.goal, metrics=metrics, counters=dict(self.counters)))))
 
     def destroy_node(self):
-        self._publish_command(ControlCommand())
+        if self.context.ok():
+            self._publish_command(ControlCommand())
         self.worker.close()
         return super().destroy_node()
 

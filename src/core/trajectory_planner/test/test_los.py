@@ -54,3 +54,13 @@ def test_bad_algorithm_and_configuration_fail_early():
         create_trajectory_planner("nonexistent", USVModel())
     with pytest.raises(ValueError):
         LosTrajectoryPlanner(USVModel(), {"trajectory_time_interval": 0})
+
+
+def test_stationary_near_goal_still_has_positive_initial_reference_speed():
+    state = VesselState(x=9.3, y=10.25)
+    result = LosTrajectoryPlanner(USVModel(), {"goal_tolerance": 1.0}).plan(
+        [[9.3, 10.25, 0], [10.49, 10.49, 0]], state)
+    assert result.status == AlgorithmStatus.SUCCESS
+    assert len(result.trajectory) == 2
+    assert result.trajectory[0].velocity == pytest.approx(1.0)
+    assert result.trajectory[-1].velocity == 0

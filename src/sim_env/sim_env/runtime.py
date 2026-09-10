@@ -9,7 +9,7 @@ from common.math_helper import path_is_clear
 from path_planner.path_planner_core import PathPlannerCore
 from trajectory_planner.trajectory import Trajectory
 from trajectory_planner.trajectory_planner_factory import create_trajectory_planner
-from .configuration import T, section
+from .configuration import C, T, section
 
 
 def fresh(stamp, now, timeout):
@@ -85,8 +85,15 @@ def plan_navigation(request):
             route = found.path
             if not found.success:
                 return result(found.status, message=found.message)
+        # Grid search returns cell centres. LOS must converge to the requested
+        # position rather than stop in a neighbouring part of the goal cell.
+        route = route.copy()
+        route[-1] = request.goal
         model = USVModel.from_mapping(section(cfg, 'dynamics.'))
-        guidance = create_trajectory_planner(cfg[T + 'planner_name'], model, section(cfg, T + 'los.'))
+        los_config = section(cfg, T + 'los.')
+        controller_tolerance = cfg[C + cfg[C + 'controller_name'] + '_controller.goal_distance_tolerance']
+        los_config['goal_tolerance'] = min(los_config['goal_tolerance'], controller_tolerance)
+        guidance = create_trajectory_planner(cfg[T + 'planner_name'], model, los_config)
         generated = guidance.plan(route, request.state)
         if generated.status not in (AlgorithmStatus.SUCCESS, AlgorithmStatus.GOAL_REACHED):
             return result(generated.status, message=generated.message)

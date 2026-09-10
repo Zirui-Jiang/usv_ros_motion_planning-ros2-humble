@@ -42,6 +42,22 @@ class Controller:
             reference = trajectory.reference_at_time(age + self.config["lookahead_time"])
             if reference.velocity < 0:
                 return None, stop(AlgorithmStatus.INVALID_INPUT, "reverse reference velocity is unsupported")
+            # Looking ahead to a predicted arrival must not stop the actual
+            # vessel before it enters the goal tolerance. Keep preview pose/
+            # heading, but use an available positive approach speed until the
+            # actual goal check above succeeds. Do not override a commanded
+            # intermediate stop away from the navigation goal.
+            terminal = trajectory[-1]
+            if (trajectory.goal is not None and reference.velocity <= 1e-9
+                    and terminal.velocity <= 1e-9
+                    and math.hypot(terminal.x - trajectory.goal[0], terminal.y - trajectory.goal[1])
+                    <= self.config["goal_distance_tolerance"]):
+                current_speed = trajectory.reference_at_time(age).velocity
+                if current_speed <= 1e-9:
+                    positive = np.flatnonzero(trajectory.points[:, 6] > 1e-9)
+                    current_speed = float(trajectory.points[positive[-1], 6]) if positive.size else 0.0
+                if current_speed > 1e-9:
+                    reference = reference._replace(velocity=current_speed)
             return reference, None
         except (AttributeError, TypeError, ValueError, OverflowError) as error:
             return None, stop(AlgorithmStatus.INVALID_INPUT, str(error))
