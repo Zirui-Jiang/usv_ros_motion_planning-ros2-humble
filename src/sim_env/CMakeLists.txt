@@ -88,6 +88,14 @@ ament_target_dependencies(fake_localization_node
   tf2_geometry_msgs
 )
 
+# Baseline validation: install the shared library required by sim_env_node.
+install(TARGETS ${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+ament_export_libraries(${PROJECT_NAME})
+
 install(TARGETS ${PROJECT_NAME}_node fake_localization_node
   DESTINATION lib/${PROJECT_NAME}
 )
