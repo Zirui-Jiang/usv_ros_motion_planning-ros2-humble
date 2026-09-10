@@ -84,6 +84,8 @@ python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
 
 每例输出 `launch.log`、`events.jsonl`、`summary.json`，总目录另有 `manifest.json` 与总 `summary.json`。JSONL 保存 odom 时间戳/坐标系/位姿/体轴速度、全局参考路径、局部轨迹、每条推力、目标、navigation_status 与 mapping_status 原始 JSON、到达状态、固定参考与实时参考横向误差，以及 footprint 最小间隙。目标替换后以抵达新目标附近的第一条路径作为新的固定参考，避免把旧路径当作新目标参考。
 
+每次发布目标前还保存真实 costmap NPZ（数据、分辨率、origin、frame、stamp、raw/occupancy 类型）与同名标识的自船状态 JSON，供失败例离线重放；它们由 `goal_input_snapshot` 事件索引。`navigation_parameter_event` 记录节点参数事件，特别是诊断过程中实际发生的在线参数修改。正式对比应使用从启动即固定的配置；中途改变参数的 run 应单列为诊断。
+
 延迟记录包括目标发布至首条有效路径/首条非零推力的 wall time、推力接收间隔，以及 ROS 仿真时间下消息 header age。`observed_odom_receipt_to_command_receipt_ms` 只是两个回调的接收时间差，不能当作算法运行耗时或源端到执行器端的端到端延迟。节点自行发布的实际计算 metrics 原样保存在 `navigation_status` 中。
 
 ## 本地检查

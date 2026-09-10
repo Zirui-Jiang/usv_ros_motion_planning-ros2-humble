@@ -36,7 +36,7 @@ DEFAULTS = {
     T + "planner_name": "los",
     T + "los.trajectory_time_interval": 0.5, T + "los.trajectory_time": 20.0,
     T + "los.switch_dist": 5.0, T + "los.goal_tolerance": 1.0,
-    T + "los.lookahead_distance": 5.0, T + "los.yaw_rate_max": 0.3,
+    T + "los.lookahead_distance": 1.0, T + "los.yaw_rate_max": 0.3,
     T + "los.kp_yaw": 1.0,
 }
 DEFAULTS.update({"dynamics." + k: v for k, v in asdict(USVModel()).items()})

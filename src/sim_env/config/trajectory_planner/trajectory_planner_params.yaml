@@ -5,6 +5,8 @@ trajectory_planner:
     trajectory_time: 20.0
     switch_dist: 5.0
     goal_tolerance: 1.0
-    lookahead_distance: 5.0
+    # Calibrated with the existing Otter/LOS model: 5 m cut through the
+    # 12 m cylinder scenario; 1 m passed the full-footprint clearance check.
+    lookahead_distance: 1.0
     yaw_rate_max: 0.3
     kp_yaw: 1.0

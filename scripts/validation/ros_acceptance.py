@@ -25,6 +25,10 @@ class TrialBlocked(RuntimeError):
     pass
 
 
+class EmptyParameterResponse(TrialBlocked):
+    pass
+
+
 def sanitized(value):
     if isinstance(value, float) and not math.isfinite(value):
         return None
@@ -149,6 +153,7 @@ def make_probe(namespace, log, use_sim_time=True):
             self.costmap_stamp = None
             self.costmap_frame = None
             self.costmap_topic = None
+            self.costmap_discovery_started = time.monotonic()
             self.path = []
             self.initial_path = []
             self.trajectory = []
@@ -269,12 +274,17 @@ def make_probe(namespace, log, use_sim_time=True):
                     continue
                 if not explicit and not topic.startswith(self.namespace + "/"):
                     continue
-                if "nav2_msgs/msg/Costmap" in types and topic.endswith("costmap_raw"):
+                if "nav2_msgs/msg/Costmap" in types and (explicit or topic.endswith("costmap_raw")):
                     candidates.append((0, topic, Costmap))
-                elif "nav_msgs/msg/OccupancyGrid" in types and "costmap" in topic:
+                elif "nav_msgs/msg/OccupancyGrid" in types and (explicit or "costmap" in topic):
                     candidates.append((1, topic, OccupancyGrid))
             if candidates:
-                _, topic, kind = sorted(candidates, key=lambda item: (item[0], item[1]))[0]
+                priority, topic, kind = sorted(candidates, key=lambda item: (item[0], item[1]))[0]
+                # Topic discovery is asynchronous: OccupancyGrid can appear a
+                # fraction earlier than the raw topic. Do not lock onto lossy
+                # display costs just because it was the first graph event.
+                if priority > 0 and not explicit and time.monotonic() - self.costmap_discovery_started < 5.0:
+                    return
                 self.create_subscription(kind, topic, self.on_costmap, QoSProfile(depth=1))
                 self.costmap_topic = topic
                 self.log.write("costmap_discovered", topic=topic, type=kind.__name__)
@@ -367,6 +377,21 @@ def call_service(probe, kind, names, request, timeout=10.0, optional=False):
 
 
 def verify_controller(probe, requested):
+    """Retry empty replies from legacy duplicate node-name parameter services.
+
+    An explicit, different controller is never accepted or retried away.
+    """
+    deadline = time.monotonic() + 5.0
+    while True:
+        try:
+            return _verify_controller_once(probe, requested)
+        except EmptyParameterResponse as error:
+            if time.monotonic() >= deadline:
+                raise TrialBlocked(f"controller parameter remained unavailable after 5 s: {error}") from error
+            wait_until(probe, lambda: False, 0.2)
+
+
+def _verify_controller_once(probe, requested):
     kind = probe.types["GetParameters"]
     request = kind.Request()
     prefix = "usv_simulation.controller."
@@ -382,9 +407,11 @@ def verify_controller(probe, requested):
     available = set(listed.result.names)
     request.names = [name for name in request.names if name in available]
     if prefix + "controller_name" not in request.names:
-        raise TrialBlocked("running node does not expose its actual controller_name parameter")
+        raise EmptyParameterResponse("parameter service reply omitted controller_name")
     response = call_service(probe, kind, [probe.namespace + "/usv_simulation/get_parameters"], request)
     actual = response.values[0].string_value if response.values else ""
+    if not actual:
+        raise EmptyParameterResponse("parameter service returned an empty controller_name")
     parameters = {name: parameter_value(value) for name, value in zip(request.names, response.values)}
     probe.log.write("controller_verified", requested=requested, actual=actual, parameters=parameters)
     if actual != requested:
