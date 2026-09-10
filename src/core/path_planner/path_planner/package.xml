@@ -2,25 +2,19 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>path_planner</name>
-  <version>0.0.0</version>
-  <description>The path_planner package</description>
+  <version>0.1.0</version>
+  <description>ROS-independent Python grid path planning algorithms</description>
 
   <maintainer email="913982779@qq.com">winter</maintainer>
 
   <license>GPL3</license>
 
-  <buildtool_depend>ament_cmake</buildtool_depend>
-
-  <depend>rclcpp</depend>
-  <depend>nav2_costmap_2d</depend>
-  <depend>geometry_msgs</depend>
-  <depend>nav_msgs</depend>
-  <depend>tf2</depend>
-  <depend>tf2_ros</depend>
-  <depend>visualization_msgs</depend>
-  <depend>common</depend>
+  <buildtool_depend>ament_python</buildtool_depend>
+  <exec_depend>common</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <test_depend>python3-pytest</test_depend>
 
   <export>
-    <build_type>ament_cmake</build_type>
+    <build_type>ament_python</build_type>
   </export>
 </package>

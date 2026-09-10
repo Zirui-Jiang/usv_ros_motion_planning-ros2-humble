@@ -31,4 +31,4 @@ if [ -f "src/user_config/user_config.yaml" ]; then
 fi
 
 # Launch the simulation.
-ros2 launch sim_env main.launch.py
+exec ros2 launch sim_env main.launch.py "$@"

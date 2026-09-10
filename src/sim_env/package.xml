@@ -11,6 +11,7 @@
   <license>BSD</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
 
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
@@ -20,18 +21,27 @@
   <depend>visualization_msgs</depend>
   <depend>nav2_costmap_2d</depend>
   <depend>nav2_util</depend>
-  <depend>gazebo_ros</depend>
-  <depend>gazebo_dev</depend>
+  <depend>lifecycle_msgs</depend>
   <depend>gazebo_msgs</depend>
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
   <depend>tf2_geometry_msgs</depend>
-  <depend>robot_state_publisher</depend>
-  <depend>joint_state_publisher</depend>
-  <depend>xacro</depend>
-  <depend>path_planner</depend>
-  <depend>trajectory_planner</depend>
-  <depend>controller</depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>rcl_interfaces</exec_depend>
+  <exec_depend>nav2_msgs</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>common</exec_depend>
+  <exec_depend>path_planner</exec_depend>
+  <exec_depend>trajectory_planner</exec_depend>
+  <exec_depend>controller</exec_depend>
 
   <exec_depend>robot_localization</exec_depend>
   <exec_depend>pointcloud_to_laserscan</exec_depend>
@@ -39,6 +49,8 @@
   <exec_depend>rviz2</exec_depend>
   <exec_depend>perception</exec_depend>
   <exec_depend>usv_gazebo_plugins</exec_depend>
+
+  <test_depend>python3-pytest</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

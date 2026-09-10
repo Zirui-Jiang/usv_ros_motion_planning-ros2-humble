@@ -78,7 +78,9 @@ private:
       const rclcpp::Time stamp = now();
       // Skip stale/duplicate stamps: keeps the TF stream strictly monotonic
       // even if the sim clock stalls between messages.
-      if (have_last_ && stamp <= last_stamp_)
+      // A world reset starts a new timestamp epoch; do not suppress all new
+      // localization until the previous simulation time has been reached.
+      if (have_last_ && stamp == last_stamp_)
       {
         return;
       }
