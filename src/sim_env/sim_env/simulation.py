@@ -3,6 +3,8 @@ from collections import defaultdict, deque
 import json
 import math
 import time
+import os
+import resource
 
 import numpy as np
 import rclpy
@@ -306,9 +308,12 @@ class Simulator(Node):
                           'p95': float(np.percentile(samples, 95)), 'p99': float(np.percentile(samples, 99)),
                           'max': max(samples)} for name, samples in self.timings.items() if samples}
         self.counters['pending_replacements'] = self.worker.replaced
+        usage = resource.getrusage(resource.RUSAGE_SELF)
         self.status_pub.publish(String(data=json.dumps(dict(
             state=self.mode, reason=self.reason, version=self.version, stamp=self.now_seconds(),
-            controller=self.controller_name, goal=self.goal, metrics=metrics, counters=dict(self.counters)))))
+            controller=self.controller_name, goal=self.goal, metrics=metrics, counters=dict(self.counters),
+            process={'pid': os.getpid(), 'cpu_seconds': usage.ru_utime + usage.ru_stime,
+                     'peak_rss_kib': usage.ru_maxrss, 'monotonic': time.monotonic()}))))
 
     def destroy_node(self):
         if self.context.ok():

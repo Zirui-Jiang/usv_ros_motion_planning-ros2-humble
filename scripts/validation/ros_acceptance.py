@@ -65,9 +65,18 @@ class OwnedProcess:
             raise TrialBlocked(f"owned ROS process exited with code {self.process.returncode}; inspect launch.log")
 
     def close(self):
+        # Let ros2 launch forward the first SIGINT itself. Signalling the whole
+        # group here as well would deliver SIGINT twice to child nodes while
+        # they are destructing ROS entities.
+        if self.process.poll() is None:
+            self.process.send_signal(signal.SIGINT)
+            try:
+                self.process.wait(timeout=20)
+            except subprocess.TimeoutExpired:
+                pass
         # The launch parent may have exited while its children still run.
         # The session/group id is owned by us even in that failure case.
-        for sig, timeout in [(signal.SIGINT, 12), (signal.SIGTERM, 4), (signal.SIGKILL, 3)]:
+        for sig, timeout in [(signal.SIGTERM, 4), (signal.SIGKILL, 3)]:
             try:
                 os.killpg(self.process.pid, sig)
             except ProcessLookupError:
@@ -133,10 +142,13 @@ def make_probe(namespace, log, use_sim_time=True):
             self.path = []
             self.initial_path = []
             self.trajectory = []
+            self.received_nonempty_trajectory = False
             self.commands = {}
             self.command_wall = {}
             self.command_gaps = []
             self.status = None
+            self.mapping_status = None
+            self.actual_goal_tolerance = None
             self.goal_wall = None
             self.active_goal = None
             self.first_path_latency = None
@@ -151,6 +163,7 @@ def make_probe(namespace, log, use_sim_time=True):
             self.create_subscription(RosPath, self.namespace + "/global_path", self.on_path, 10)
             self.create_subscription(RosPath, self.namespace + "/local_trajectory", self.on_trajectory, 10)
             self.create_subscription(String, self.namespace + "/navigation_status", self.on_status, 10)
+            self.create_subscription(String, self.namespace + "/mapping_status", self.on_mapping_status, 10)
             self.create_subscription(PoseStamped, self.namespace + "/goal", self.on_goal, 10)
             for axis in ("left", "right", "lateral"):
                 self.create_subscription(Float32, self.namespace + f"/thrusters/{axis}_thrust_cmd",
@@ -194,6 +207,7 @@ def make_probe(namespace, log, use_sim_time=True):
 
         def on_trajectory(self, msg):
             self.trajectory = [(p.pose.position.x, p.pose.position.y) for p in msg.poses]
+            self.received_nonempty_trajectory |= bool(self.trajectory)
             self.log.write("local_trajectory", sim_time_s=stamp_seconds(msg.header.stamp), points=self.trajectory)
 
         def on_status(self, msg):
@@ -202,6 +216,13 @@ def make_probe(namespace, log, use_sim_time=True):
             except json.JSONDecodeError:
                 self.status = {"unparsed_status": msg.data}
             self.log.write("navigation_status", payload=self.status)
+
+        def on_mapping_status(self, msg):
+            try:
+                self.mapping_status = json.loads(msg.data)
+            except json.JSONDecodeError:
+                self.mapping_status = {"unparsed_status": msg.data}
+            self.log.write("mapping_status", payload=self.mapping_status)
 
         def on_goal(self, msg):
             self.log.write("goal_observed", x=msg.pose.position.x, y=msg.pose.position.y,
@@ -256,6 +277,7 @@ def make_probe(namespace, log, use_sim_time=True):
             self.initial_path = []
             self.first_path_latency = None
             self.first_command_latency = None
+            self.received_nonempty_trajectory = False
             msg = PoseStamped()
             msg.header.frame_id = self.namespace.strip("/") + "/map"
             msg.header.stamp = self.get_clock().now().to_msg()
@@ -334,6 +356,12 @@ def verify_controller(probe, requested):
     probe.log.write("controller_verified", requested=requested, actual=actual, parameters=parameters)
     if actual != requested:
         raise TrialBlocked(f"requested controller {requested!r} but running node reports {actual!r}; the launch selector is not effective")
+    tolerance = parameters.get(prefix + requested + "_controller.goal_distance_tolerance")
+    if not isinstance(tolerance, (int, float)) or not math.isfinite(tolerance) or tolerance <= 0:
+        raise TrialBlocked("running controller has no valid positive goal_distance_tolerance")
+    probe.actual_goal_tolerance = float(tolerance)
+    probe.log.write("effective_arrival_threshold", distance_m=probe.actual_goal_tolerance,
+                    source="running controller goal_distance_tolerance")
 
 
 def preflight_corridor(probe, start, goal, half_width):
@@ -452,7 +480,7 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
         probe.publish_goal(scenario["goal"])
         goal = scenario["goal"]
         started, sim_started = time.monotonic(), probe.sim_time()
-        threshold = config["thresholds"]
+        threshold = {**config["thresholds"], "arrival_distance_m": probe.actual_goal_tolerance}
         cross_track, live_cross_track = [], []
         min_clearance = None
         valid_commands = True
@@ -525,7 +553,7 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
                 break
         if outcome["result"] == "not_run":
             verdict = trial_verdict(arrived, cross_track, min_clearance, valid_commands, threshold, bool(scenario["obstacles"]))
-            if not all(axis in probe.commands for axis in ("left", "right", "lateral")) or not probe.trajectory:
+            if not all(axis in probe.commands for axis in ("left", "right", "lateral")) or not probe.received_nonempty_trajectory:
                 verdict["passed"] = False
                 verdict["reasons"].append("missing_trajectory_or_thruster_topics")
             if fault == "goal_change" and not changed:
@@ -536,13 +564,15 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
                 verdict["reasons"].append("cancel_was_not_exercised")
             outcome.update(result="completed", **verdict)
         outcome.update(arrived=arrived, duration_wall_s=time.monotonic() - started,
+                       effective_arrival_distance_m=probe.actual_goal_tolerance,
                        duration_sim_s=probe.sim_time() - sim_started, costmap_topic=probe.costmap_topic,
                        cross_track_initial_m=distribution(cross_track), cross_track_live_m=distribution(live_cross_track),
                        minimum_footprint_clearance_m=min_clearance,
                        goal_to_first_path_wall_s=probe.first_path_latency, goal_to_first_nonzero_command_wall_s=probe.first_command_latency,
                        command_receipt_gap_ms=distribution(probe.command_gaps),
                        observed_odom_receipt_to_command_receipt_ms=distribution(probe.command_state_age),
-                       path_header_age_sim_ms=distribution(probe.path_latency), status=probe.status)
+                       path_header_age_sim_ms=distribution(probe.path_latency), status=probe.status,
+                       mapping_status=probe.mapping_status)
     except KeyboardInterrupt:
         outcome.update(result="interrupted", reason="user interrupted this live trial")
         raise

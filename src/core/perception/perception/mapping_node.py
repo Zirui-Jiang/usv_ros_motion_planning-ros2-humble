@@ -4,6 +4,9 @@ from array import array
 from collections import deque
 import math
 import time
+import json
+import os
+import resource
 
 import numpy as np
 import rclpy
@@ -15,6 +18,7 @@ from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, HistoryPolicy, QoSProfile, ReliabilityPolicy
 from rclpy.time import Time
 from sensor_msgs.msg import LaserScan
+from std_msgs.msg import String
 from tf2_ros import Buffer, TransformException, TransformListener
 
 from .mapping import GridConfig, GridMapper
@@ -45,6 +49,7 @@ class MappingNode(Node):
         self.tf_buffer = Buffer(node=self)
         self.tf_listener = TransformListener(self.tf_buffer, self, spin_thread=False)
         self.map_pub = self.create_publisher(OccupancyGrid, "map", 10)
+        self.status_pub = self.create_publisher(String, "mapping_status", 10)
         # A best-effort subscription accepts both best-effort and reliable
         # publishers, while preserving the original depth and volatile map QoS.
         scan_qos = QoSProfile(history=HistoryPolicy.KEEP_LAST, depth=10,
@@ -61,6 +66,10 @@ class MappingNode(Node):
         self.message.info.map_load_time = self.get_clock().now().to_msg()
         self.processing_ms = deque(maxlen=256)
         self.waiting_ms = deque(maxlen=256)
+        self.serialization_ms = deque(maxlen=256)
+        self.scan_period_ms = deque(maxlen=256)
+        self.last_scan_stamp = None
+        self.scan_overruns = 0
         self.integrated_scans = 0
         self.invalid_scans = 0
         self.invalid_beams = 0
@@ -85,6 +94,9 @@ class MappingNode(Node):
             self.tf_buffer.clear()
             self.processing_ms.clear()
             self.waiting_ms.clear()
+            self.serialization_ms.clear()
+            self.scan_period_ms.clear()
+            self.last_scan_stamp = None
             self.message.info.map_load_time = now.to_msg()
             self.get_logger().warning("ROS clock moved backwards; map, scan queue and TF history reset")
         return now
@@ -92,8 +104,11 @@ class MappingNode(Node):
     def _on_scan(self, message):
         self._observe_clock()
         stamp_ns = message.header.stamp.sec * 1_000_000_000 + message.header.stamp.nanosec
-        self.pending.enqueue(message, frame_id=message.header.frame_id.lstrip("/"),
-                             stamp_ns=stamp_ns, received_at=time.monotonic())
+        if self.pending.enqueue(message, frame_id=message.header.frame_id.lstrip("/"),
+                                stamp_ns=stamp_ns, received_at=time.monotonic()):
+            if self.last_scan_stamp is not None and stamp_ns > self.last_scan_stamp:
+                self.scan_period_ms.append((stamp_ns - self.last_scan_stamp) * 1e-6)
+            self.last_scan_stamp = stamp_ns
 
     def _drain(self):
         self._observe_clock()
@@ -124,16 +139,22 @@ class MappingNode(Node):
             self.invalid_scans += 1
             return True  # Consume malformed input once; never retry its map update.
         self.processing_ms.append((time.monotonic() - start) * 1000.0)
+        budget_ms = float(scan.scan_time) * 1000 if scan.scan_time > 0 else (
+            float(np.median(self.scan_period_ms)) if self.scan_period_ms else None)
+        if budget_ms is not None and self.processing_ms[-1] > budget_ms:
+            self.scan_overruns += 1
         self.waiting_ms.append((start - pending.received_at) * 1000.0)
         self.integrated_scans += 1
         self.invalid_beams += stats.invalid_beams
         return True
 
     def _publish_map(self):
+        start = time.monotonic()
         self.message.header.stamp = self._observe_clock().to_msg()
         # Signed-byte serialization avoids allocating a million Python ints.
         self.message.data = array("b", self.mapper.data.tobytes(order="C"))
         self.map_pub.publish(self.message)
+        self.serialization_ms.append((time.monotonic() - start) * 1000)
 
     def _log_metrics(self):
         counts = self.pending.counters
@@ -146,6 +167,21 @@ class MappingNode(Node):
             f"duplicate_or_old={counts.duplicate}, invalid={counts.invalid + self.invalid_scans}) "
             f"invalid_beams={self.invalid_beams} resets={counts.resets} "
             f"processing_ms(p50={p50:.2f}, p95={p95:.2f}) queue_ms_p95={waiting:.2f}")
+        def summary(samples):
+            return {'count': len(samples), **({
+                'p50': float(np.percentile(samples, 50)), 'p95': float(np.percentile(samples, 95)),
+                'p99': float(np.percentile(samples, 99)), 'max': max(samples)} if samples else {})}
+        usage = resource.getrusage(resource.RUSAGE_SELF)
+        self.status_pub.publish(String(data=json.dumps({
+            'stamp': self.get_clock().now().nanoseconds * 1e-9, 'queue_size': len(self.pending),
+            'integrated_scans': self.integrated_scans, 'scan_overruns': self.scan_overruns,
+            'queue_counters': vars(counts), 'invalid_scans': self.invalid_scans,
+            'invalid_beams': self.invalid_beams,
+            'processing_ms': summary(self.processing_ms), 'queue_ms': summary(self.waiting_ms),
+            'serialization_and_publish_ms': summary(self.serialization_ms),
+            'observed_scan_period_ms': summary(self.scan_period_ms),
+            'process': {'pid': os.getpid(), 'cpu_seconds': usage.ru_utime + usage.ru_stime,
+                        'peak_rss_kib': usage.ru_maxrss, 'monotonic': time.monotonic()}})))
 
 
 def main(args=None):

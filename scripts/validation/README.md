@@ -70,7 +70,7 @@ python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
 
 | 指标 | 默认判据 |
 |---|---|
-| 到达 | 距离目标 ≤ 1.75 m，平面速度 ≤ 0.25 m/s，持续 1 s wall time |
+| 到达 | 距离目标 ≤ **运行中控制器的 `goal_distance_tolerance`**（默认 PID 1.5 m / LQR 1.0 m），平面速度 ≤ 0.25 m/s，持续 1 s wall time |
 | 超时 | 180 s simulation time 或 300 s wall time |
 | 最大横向误差 | 相对该目标第一次有效全局路径 ≤ 4 m |
 | 单障碍最小间隙 | 艇完整 2.2 × 1.2 m 矩形 footprint 与圆柱间 ≥ 0.2 m |
@@ -80,7 +80,9 @@ python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
 
 几何检测将圆柱中心变换到艇体坐标系，计算圆与有向矩形的有符号间隙，覆盖艇首、艇尾与四角。还对相邻 odom 的位置和最短 yaw 插值，样本间距不超过 `0.05 m / 2°`，并减去半个采样区间的平移加船角旋转上界，得到对该插值轨迹保守的间隙。它不重建两次观测之间未知的真实动力学，也不替代物理接触传感器。
 
-每例输出 `launch.log`、`events.jsonl`、`summary.json`，总目录另有 `manifest.json` 与总 `summary.json`。JSONL 保存 odom 时间戳/坐标系/位姿/体轴速度、全局参考路径、局部轨迹、每条推力、目标、navigation_status 原始 JSON、到达状态、固定参考与实时参考横向误差，以及 footprint 最小间隙。目标替换后以抵达新目标附近的第一条路径作为新的固定参考，避免把旧路径当作新目标参考。
+配置中的 `arrival_distance_m=1.75` 仅作预备记录；live 判定必定由节点实际参数覆盖，并单独记录 `effective_arrival_threshold`。读取不到实际容差时中止，不能以 1.75 m 放宽通过条件。
+
+每例输出 `launch.log`、`events.jsonl`、`summary.json`，总目录另有 `manifest.json` 与总 `summary.json`。JSONL 保存 odom 时间戳/坐标系/位姿/体轴速度、全局参考路径、局部轨迹、每条推力、目标、navigation_status 与 mapping_status 原始 JSON、到达状态、固定参考与实时参考横向误差，以及 footprint 最小间隙。目标替换后以抵达新目标附近的第一条路径作为新的固定参考，避免把旧路径当作新目标参考。
 
 延迟记录包括目标发布至首条有效路径/首条非零推力的 wall time、推力接收间隔，以及 ROS 仿真时间下消息 header age。`observed_odom_receipt_to_command_receipt_ms` 只是两个回调的接收时间差，不能当作算法运行耗时或源端到执行器端的端到端延迟。节点自行发布的实际计算 metrics 原样保存在 `navigation_status` 中。
 
