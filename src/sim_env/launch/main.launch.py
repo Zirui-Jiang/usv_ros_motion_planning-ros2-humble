@@ -122,6 +122,7 @@ def generate_launch_description():
         arguments=[
             '-entity', robot_namespace,
             '-topic', 'robot_description',
+            '-timeout', '120',
             '-x', LaunchConfiguration('robot_x'),
             '-y', LaunchConfiguration('robot_y'),
             '-z', LaunchConfiguration('robot_z'),
