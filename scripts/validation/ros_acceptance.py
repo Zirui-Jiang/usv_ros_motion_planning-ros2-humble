@@ -399,9 +399,9 @@ def _verify_controller_once(probe, requested):
                      prefix + "pid_controller." + "goal_distance_tolerance", prefix + "pid_controller.lookahead_time",
                      *[prefix + "pid_controller." + gain for gain in ("k_p_speed", "k_i_speed", "k_d_speed", "k_p_course", "k_i_course", "k_d_course")],
                      *[prefix + "lqr_controller." + field for field in ("goal_distance_tolerance", "lookahead_time", "discrete_dt", "solve_eps", "max_iterations", "Q_matrix_diag", "R_matrix_diag")],
-                     *["usv_simulation.trajectory_planner.los." + field for field in ("lookahead_distance", "switch_dist", "kp_yaw", "yaw_rate_max", "trajectory_time", "trajectory_time_interval")],
+                     *["usv_simulation.trajectory_planner.los." + field for field in ("lookahead_distance", "switch_dist", "kp_yaw", "yaw_rate_max", "trajectory_time", "trajectory_time_interval", "goal_tolerance")],
                      "obstacle_factor", "path_planner.obstacle_factor",
-                     "navigation.state_timeout", "navigation.trajectory_timeout", "dynamics.mass", "dynamics.max_force", "dynamics.D"]
+                     "navigation.state_timeout", "navigation.trajectory_timeout", "dynamics.mass", "dynamics.max_force", "dynamics.D", "dynamics.cruising_speed"]
     list_kind = probe.types["ListParameters"]
     listed = call_service(probe, list_kind, [probe.namespace + "/usv_simulation/list_parameters"], list_kind.Request())
     available = set(listed.result.names)
