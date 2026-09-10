@@ -11,7 +11,8 @@ Latest uses manifest.created_unix_s, falling back explicitly to summary mtime;
 provided-list selects the last directory in the recorded source order.
 --extra consumes fault cases only. Report output must be new and outside raw
 run directories. Exit 0 means all requested observed/planned navigation pairs
-passed, sources are finished, and extra fault cases passed; 1 means otherwise.
+passed, Python navigation performance has sufficient passing evidence, sources
+are finished, and extra fault cases passed; 1 means otherwise.
 Exit 2 denotes invalid inputs. No ROS or NumPy dependency is needed.
 """
 
@@ -28,6 +29,159 @@ import sys
 
 AXES = ("left", "right", "lateral")
 MAPPING_METRICS = ("processing_ms", "queue_ms", "serialization_and_publish_ms", "observed_scan_period_ms")
+MAPPING_REPORT_PERIOD_S = 5.0
+
+
+def verdict(status, reason, **evidence):
+    return {"status": status, "passed": True if status == "pass" else False if status == "fail" else None,
+            "reason": reason, **evidence}
+
+
+def combined_status(items):
+    states = [item["status"] for item in items]
+    return "fail" if "fail" in states else "pass" if states and all(s == "pass" for s in states) else "unknown"
+
+
+def backlog_performance(records, window):
+    """Finite observation-window evidence, never infer continuous fullness from two gauges."""
+    samples, missing, seen = [], 0, set()
+    required = ("accepted", "processed", "overflow", "expired", "invalid", "resets")
+    for record in records:
+        payload, stamp = record["payload"], record["wall_monotonic_s"]
+        pid = nested(payload, "process", "pid")
+        identity = (pid, nested(payload, "process", "monotonic"))
+        if number(identity[1]) and identity in seen:
+            continue
+        if number(identity[1]):
+            seen.add(identity)
+        counts = payload.get("queue_counters")
+        queue, integrated = payload.get("queue_size"), payload.get("integrated_scans")
+        if (type(pid) is not int or not number(stamp) or type(queue) is not int or queue < 0
+                or type(integrated) is not int or integrated < 0 or not isinstance(counts, dict)
+                or any(type(counts.get(k)) is not int or counts[k] < 0 for k in required)):
+            missing += 1
+            continue
+        samples.append({"wall_monotonic_s": stamp, "pid": pid, "queue_size": queue,
+                        "integrated_scans": integrated, "queue_counters": counts,
+                        "source": record["source"]})
+    intervals, gaps, invalid = [], 0, 0
+    overflow_run = 0
+    sustained_overflow = False
+    for previous, current in zip(samples[:-1], samples[1:]):
+        duration = current["wall_monotonic_s"] - previous["wall_monotonic_s"]
+        a, b = previous["queue_counters"], current["queue_counters"]
+        same_epoch = previous["pid"] == current["pid"] and a["resets"] == b["resets"]
+        # The producer publishes every 5s. Short final-summary intervals are
+        # retained as partial evidence; missing scheduled snapshots break runs.
+        continuous = same_epoch and 0 < duration <= 1.5 * MAPPING_REPORT_PERIOD_S
+        full_interval = continuous and duration >= 0.8 * MAPPING_REPORT_PERIOD_S
+        delta = {k: b[k] - a[k] for k in required}
+        integrated_delta = current["integrated_scans"] - previous["integrated_scans"]
+        valid = continuous and all(v >= 0 for v in delta.values()) and integrated_delta >= 0
+        queue_delta = current["queue_size"] - previous["queue_size"]
+        balanced = (valid and delta["accepted"] - delta["processed"] - delta["overflow"]
+                    - delta["expired"] == queue_delta)
+        if not continuous:
+            gaps += 1
+        if not valid or not balanced:
+            invalid += 1
+        if full_interval and valid and delta["overflow"] > 0:
+            overflow_run += 1
+        else:
+            overflow_run = 0
+        sustained_overflow |= overflow_run >= 2
+        intervals.append({"start": previous["wall_monotonic_s"], "end": current["wall_monotonic_s"],
+                          "duration_s": duration, "full_metrics_interval": full_interval,
+                          "same_epoch": same_epoch, "valid": valid, "accounting_balanced": balanced,
+                          "counter_deltas": delta, "integrated_delta": integrated_delta,
+                          "queue_delta": queue_delta})
+    full = [v for v in intervals if v["full_metrics_interval"] and v["valid"] and v["accounting_balanced"]]
+    observed_start = samples[0]["wall_monotonic_s"] if samples else None
+    observed_end = samples[-1]["wall_monotonic_s"] if samples else None
+    boundary_covered = (window["complete"] and samples
+                        and observed_start - window["start"] <= 1.5 * MAPPING_REPORT_PERIOD_S
+                        and window["end"] - observed_end <= 1.5 * MAPPING_REPORT_PERIOD_S)
+    evidence = dict(status_samples=len(samples), missing_samples=missing, full_intervals=len(full),
+                    observation_start=observed_start, observation_end=observed_end,
+                    observation_span_s=observed_end-observed_start if samples else None,
+                    expected_metrics_period_s=MAPPING_REPORT_PERIOD_S,
+                    boundary_covered=bool(boundary_covered), intervals=intervals,
+                    expired_delta_observed=sum(i["counter_deltas"]["expired"] for i in intervals if i["valid"]))
+    if sustained_overflow:
+        return verdict("fail", "overflow_increased_in_at_least_two_consecutive_metrics_intervals", **evidence)
+    if (not boundary_covered or missing or invalid or gaps or len(full) < 2):
+        return verdict("unknown", "insufficient_contiguous_queue_counter_evidence", **evidence)
+    # Positive processing in each interval, balanced counters, no overflow,
+    # and no net queue growth support stability over this observed window.
+    # Occasional TF expiry is recorded independently and is not a failure.
+    if (any(i["counter_deltas"]["overflow"] for i in intervals)
+            or any(i["integrated_delta"] <= 0 for i in full)
+            or samples[-1]["queue_size"] > samples[0]["queue_size"]):
+        return verdict("unknown", "observed_window_does_not_establish_stable_throughput", **evidence)
+    return verdict("pass", "processing_progress_balanced_counters_no_overflow_or_net_queue_growth_in_observed_window", **evidence)
+
+
+def performance_verdict(observed):
+    """Separate real computation percentiles from throughput evidence."""
+    evidence = observed["performance_observations"]
+    start, end = evidence["goal_wall"], evidence["finished_wall"]
+    window = {"start": start, "end": end,
+              "complete": number(start) and number(end) and end >= start,
+              "definition": "first goal_published through trial_finished; reported rolling timing windows can include earlier samples"}
+
+    def active(name):
+        rows = evidence[name]
+        if not window["complete"]:
+            return rows  # Known violations remain visible; passing needs a window.
+        return [r for r in rows if not number(r["wall_monotonic_s"])
+                or start <= r["wall_monotonic_s"] <= end]
+
+    def timing(name):
+        rows = active("navigation_status" if name == "control" else "mapping_status")
+        measurements, malformed = [], 0
+        for row in rows:
+            payload = row["payload"]
+            metric = nested(payload, "metrics", "control_ms") if name == "control" else payload.get("processing_ms")
+            count = nested(metric, "count")
+            if count == 0:
+                continue  # Startup snapshots before any computation are not samples.
+            value = nested(metric, "p99" if name == "control" else "p95")
+            period = 100.0 if name == "control" else nested(payload, "observed_scan_period_ms", "p50")
+            period_count = None if name == "control" else nested(payload, "observed_scan_period_ms", "count")
+            integrated = None if name == "control" else payload.get("integrated_scans")
+            valid = type(count) is int and count > 0 and number(value) and value >= 0
+            valid = valid and (not window["complete"] or number(row["wall_monotonic_s"]))
+            if name != "control":
+                valid = (valid and type(integrated) is int and integrated > 0
+                         and type(period_count) is int and period_count > 0 and number(period) and period > 0)
+            if not valid:
+                malformed += 1
+                continue
+            measurements.append({"source": row["source"], "wall_monotonic_s": row["wall_monotonic_s"],
+                                 "reported_sample_count": count, "value_ms": value,
+                                 "limit_ms": period, "scan_period_samples": period_count,
+                                 "integrated_scans": integrated,
+                                 "passed": value < period if name == "control" else value <= period})
+        last_observed = max((m["wall_monotonic_s"] for m in measurements if number(m["wall_monotonic_s"])), default=None)
+        maximum_tail_gap = 1.5 if name == "control" else 1.5 * MAPPING_REPORT_PERIOD_S
+        tail_covered = (window["complete"] and last_observed is not None
+                        and end - last_observed <= maximum_tail_gap)
+        details = dict(reported_windows=len(measurements), malformed_windows=malformed, measurements=measurements,
+                       last_observed=last_observed, tail_covered=tail_covered,
+                       maximum_tail_gap_s=maximum_tail_gap,
+                       sample_count_scope="per reported rolling window; overlapping counts are never summed",
+                       comparison="P99 < 100ms" if name == "control" else "processing P95 <= same snapshot observed scan-period P50; only integrated scans")
+        if any(not m["passed"] for m in measurements):
+            return verdict("fail", "reported_computation_percentile_exceeds_limit", **details)
+        if not window["complete"] or not measurements or malformed or not tail_covered:
+            return verdict("unknown", "missing_active_window_or_computation_percentile_evidence", **details)
+        return verdict("pass", "all_observed_computation_windows_meet_limit", **details)
+
+    control, mapping = timing("control"), timing("mapping")
+    backlog = backlog_performance(active("mapping_status"), window)
+    status = combined_status([control, mapping, backlog])
+    return verdict(status, "Python normal navigation performance; C++ telemetry is not required",
+                   window=window, control_timing=control, mapping_timing=mapping, backlog=backlog)
 
 
 def number(value):
@@ -145,6 +299,7 @@ def event_metrics(path, summary):
     process_samples = {key: [] for key in statuses}
     event_count = 0
     issues = []
+    performance = {"navigation_status": [], "mapping_status": [], "goal_wall": None, "finished_wall": None}
     if path.is_file():
         with path.open(encoding="utf-8-sig") as stream:
             for line_number, line in enumerate(stream, 1):
@@ -158,6 +313,10 @@ def event_metrics(path, summary):
                     raise ValueError(f"event must be an object: {path}:{line_number}")
                 event_count += 1
                 kind = event.get("event")
+                if kind == "goal_published" and performance["goal_wall"] is None:
+                    performance["goal_wall"] = event.get("wall_monotonic_s")
+                elif kind == "trial_finished":
+                    performance["finished_wall"] = event.get("wall_monotonic_s")
                 if kind == "thruster_command" and event.get("axis") in AXES:
                     axis, value = event["axis"], event.get("normalized_command")
                     if number(value):
@@ -167,6 +326,8 @@ def event_metrics(path, summary):
                 elif kind in statuses and isinstance(event.get("payload"), dict):
                     payload = event["payload"]
                     statuses[kind].append(payload)
+                    performance[kind].append({"payload": payload, "wall_monotonic_s": event.get("wall_monotonic_s"),
+                                              "source": f"events.jsonl:{line_number}"})
                     if isinstance(payload.get("process"), dict):
                         process_samples[kind].append(payload["process"])
     else:
@@ -177,6 +338,10 @@ def event_metrics(path, summary):
         payload = summary.get(summary_name)
         if isinstance(payload, dict):
             final_status[event_name], final_sources[event_name] = payload, "summary." + summary_name
+            if not any(row["payload"] == payload for row in performance[event_name]):
+                performance[event_name].append({"payload": payload,
+                    "wall_monotonic_s": nested(payload, "process", "monotonic"),
+                    "source": "summary." + summary_name})
             if isinstance(payload.get("process"), dict):
                 process_samples[event_name].append(payload["process"])
         else:
@@ -206,7 +371,8 @@ def event_metrics(path, summary):
     return {"events_path": str(path.resolve()), "events_present": path.is_file(), "event_count": event_count,
             "issues": issues, "thrusters": {"axes": variation, "total_variation": total},
             "processes": cpu, "status": nav, "mapping_status": mapping,
-            "status_sources": final_sources, "metrics": flat}
+            "status_sources": final_sources, "metrics": flat,
+            "performance_observations": performance}
 
 
 def load_run(directory, role, order):
@@ -398,24 +564,41 @@ def build_report(sources, duplicate_policy="error", limit=1.10, atol=1e-6):
     comparisons = [compare_pair(key, modes.get("python"), modes.get("cpp"), limit, atol)
                    for key, modes in sorted(by_pair.items(), key=lambda x: str(x[0]))]
     faults = [r for r in records if r["result"].get("fault")]
+    performance = []
+    for record in navigation:
+        if record["result"]["mode"] != "python":
+            continue
+        measured = performance_verdict(record["observations"])
+        if record["result"].get("result") != "completed" or record["source"].get("manifest_mode") == "dry_run":
+            measured = verdict("unknown", "navigation_trial_not_actually_completed", observed_performance=measured)
+        performance.append({"trial": record["result"]["trial"], "source": record["source"], **measured})
     sources_finished = all(m["run_finished"] is True and m["manifest_mode"] != "dry_run" for m in metadata)
-    all_passed = bool(comparisons) and all(p["passed"] is True for p in comparisons) and all(completed_pass(f) for f in faults) and sources_finished
-    return {"schema_version": 1, "generated_utc": datetime.now(timezone.utc).isoformat(),
+    performance_passed = bool(performance) and all(p["status"] == "pass" for p in performance)
+    all_passed = bool(comparisons) and all(p["passed"] is True for p in comparisons) and all(completed_pass(f) for f in faults) and sources_finished and performance_passed
+    return {"schema_version": 2, "generated_utc": datetime.now(timezone.utc).isoformat(),
             "selection": {"duplicate_policy": duplicate_policy, "source_order": "Python directories, baseline directories, extra directories; later source wins provided-list/timestamp ties", "decisions": decisions},
             "method": {"rmse_field": "cross_track_initial_m.rms", "duration_field": "duration_sim_s",
                        "ratio_limit": limit, "zero_baseline_atol": atol,
                        "zero_baseline_rule": "exactly zero cpp: ratio=null; pass iff abs(python)<=atol",
                        "p99_aggregation": "mean/max of reported per-trial P99, not a pooled sample percentile",
+                       "performance_scope": "Python non-fault navigation trials only; control P99<100ms, mapping P95<=observed scan-period P50, independently evidenced stable backlog; unknown is not passed",
+                       "backlog_rule": "at least 3 same-epoch snapshots and 2 consecutive approximately-5s intervals, boundary coverage, balanced accepted/processed/expired/overflow/queue counters and integration progress; sustained overflow growth fails; isolated TF expiry only recorded",
                        "cpu": "100*sum(nonnegative same-PID cpu_seconds deltas)/sum(positive same-PID process.monotonic deltas); not machine CPU and excludes planner child/Gazebo",
                        "thruster_variation": "sum(abs(command[i]-command[i-1])) per axis in full recorded JSONL order; no initial/final zero appended; total requires all axes and >=2 valid samples each",
                        "counter_scope": "final reported cumulative counters per completed trial, not sums of status event counters"},
             "sources": metadata, "trials": records, "groups": group_results(records, planned),
             "comparisons": comparisons, "fault_trials": [f["result"]["trial"] for f in faults],
+            "performance": performance,
             "summary": {"pairs": len(comparisons), "comparable_pairs": sum(p["comparable"] for p in comparisons),
                         "passed_pairs": sum(p["passed"] is True for p in comparisons),
                         "failed_pairs": sum(p["passed"] is False for p in comparisons),
                         "not_comparable_pairs": sum(not p["comparable"] for p in comparisons),
                         "fault_trials": len(faults), "fault_passed": sum(completed_pass(f) for f in faults),
+                        "performance_trials": len(performance),
+                        "performance_passed": sum(p["status"] == "pass" for p in performance),
+                        "performance_failed": sum(p["status"] == "fail" for p in performance),
+                        "performance_unknown": sum(p["status"] == "unknown" for p in performance),
+                        "all_performance_passed": performance_passed,
                         "all_sources_finished": sources_finished, "all_passed": all_passed}}
 
 
@@ -427,6 +610,7 @@ def markdown(report):
     summary = report["summary"]
     lines = ["# Python/C++ 导航结果对照", "",
              f"总体判定：{'通过' if summary['all_passed'] else '未通过或证据不完整'}。可比 {summary['comparable_pairs']}/{summary['pairs']} 对，通过 {summary['passed_pairs']} 对，失败 {summary['failed_pairs']} 对，不可比 {summary['not_comparable_pairs']} 对；故障用例通过 {summary['fault_passed']}/{summary['fault_trials']}。",
+             "", f"Python 正常导航性能：通过 {summary['performance_passed']}、失败 {summary['performance_failed']}、证据不足 {summary['performance_unknown']}；性能证据不足也不能总体通过。",
              "", f"仅双方 result=completed 且 passed=true 才计算比例。阈值 Python/C++ ≤ {report['method']['ratio_limit']:.2f}；零基线比例不定义，按绝对容差 {report['method']['zero_baseline_atol']:g} 判断。",
              "", "## 每次配对", "", "| 控制器 | 场景 | 重复 | RMSE 比例 | 时间比例 | 判定/原因 |", "| --- | --- | --- | --- | --- | --- |"]
     for pair in report["comparisons"]:
@@ -436,6 +620,16 @@ def markdown(report):
             values.append("零基线绝对容差：" + ("通过" if metric.get('passed') else "失败") if metric.get("method") == "zero_baseline_absolute_tolerance" else fmt(metric.get("ratio")))
         verdict = "通过" if pair["passed"] is True else "失败" if pair["passed"] is False else "不可比：" + "; ".join(pair["reasons"])
         lines.append(f"| {safe(pair['controller'])} | {safe(pair['scenario'])} | {pair['repeat']} | {values[0]} | {values[1]} | {safe(verdict)} |")
+    labels = {"pass": "通过", "fail": "失败", "unknown": "待审/证据不足"}
+    lines += ["", "## Python 正常导航性能验收", "",
+              "窗口为第一次 goal_published 至 trial_finished；状态中的耗时分位数来自节点计算历史，可能含启动样本，各窗口样本数不相加。控制 P99 必须小于100ms；有实际积分扫描的建图处理 P95 不得超过同一状态中扫描时间戳间隔的 P50。扫描周期仅作为预算，不充当算法耗时。C++ 无对应遥测不要求性能对等。", "",
+              "积压至少需要3次同一进程/时钟周期的有效快照、2个连续约5s间隔，并覆盖试验窗口首尾。连续两个间隔 overflow 增长判失败；单次溢出、采样缺口、停滞或计数不自洽标待审。处理持续进展、队列计数平衡、无溢出增长且窗口首尾无净积压增长才支持该观测窗口内通过。两次 queue>0 不能证明持续积压，偶发 TF 过期单列记录。", "",
+              "| Python试验 | 总状态 | 控制耗时 | 建图耗时 | 积压 | 状态样本/完整间隔/跨度s |", "| --- | --- | --- | --- | --- | --- |"]
+    for trial in report["performance"]:
+        observed = trial.get("observed_performance", trial)
+        control, mapping, backlog = (observed[key] for key in ("control_timing", "mapping_timing", "backlog"))
+        lines.append(f"| {safe(trial['trial'])} | {labels[trial['status']]} | {labels[control['status']]} | {labels[mapping['status']]} | {labels[backlog['status']]} | {backlog['status_samples']}/{backlog['full_intervals']}/{fmt(backlog['observation_span_s'])} |")
+    lines += ["", "各子项的原因、每个窗口分位值/预算/样本数、逐间隔计数差及 TF 过期数保存在 report.json 的 performance 中。"]
     lines += ["", "## 重复试验汇总", "", "统计使用所有实际 completed 的试验，包括验收失败试验；passed 数量单列。均值/最大由有值记录计算，不用零补缺失。", "",
               "| 模式/控制器/场景 | 观测/完成/通过 | RMSE 均值/最大 m | 时间均值/最大 s | 最小间隙 m | 控制、规划P99均值/最大 ms | 推力总变差均值 |",
               "| --- | --- | --- | --- | --- | --- | --- |"]

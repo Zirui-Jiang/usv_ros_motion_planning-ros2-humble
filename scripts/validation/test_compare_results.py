@@ -34,8 +34,36 @@ def write_run(path, rows, *, timestamp=1.0, events=None, finished=True, planned=
     return path
 
 
+def performance_events(*, control=3.0, processing=20.0, period=100.0,
+                       times=(100.0, 105.0, 110.0), queues=(0, 0, 0),
+                       overflow=(0, 0, 0), expired=(0, 0, 0), progress=(10, 60, 110)):
+    """Synthetic actual-schema telemetry; counters follow queue conservation."""
+    events = [{"event": "goal_published", "wall_monotonic_s": times[0]}]
+    for index, stamp in enumerate(times):
+        count = progress[index]
+        nav = {"metrics": {"control_ms": {"count": count, "p99": control}},
+               "process": {"pid": 11, "monotonic": stamp}}
+        mapping = {"integrated_scans": count, "queue_size": queues[index],
+                   "processing_ms": {"count": count, "p95": processing, "p99": processing},
+                   "observed_scan_period_ms": {"count": count, "p50": period, "p95": period},
+                   "queue_counters": {"accepted": count + overflow[index] + expired[index] + queues[index],
+                       "processed": count, "overflow": overflow[index], "expired": expired[index],
+                       "invalid": 0, "duplicate": 0, "resets": 0},
+                   "process": {"pid": 12, "monotonic": stamp}}
+        events.extend([{"event": "navigation_status", "wall_monotonic_s": stamp, "payload": nav},
+                       {"event": "mapping_status", "wall_monotonic_s": stamp, "payload": mapping}])
+    events.append({"event": "trial_finished", "wall_monotonic_s": times[-1]})
+    return events
+
+
+def paired_report(tmp_path, events):
+    py = write_run(tmp_path / "py", [result()], events=events)
+    cpp = write_run(tmp_path / "cpp", [result("cpp")])
+    return compare.build_report([("python", py), ("cpp", cpp)])
+
+
 def test_completed_pairs_at_ten_percent_limit_and_group_counts(tmp_path):
-    py = write_run(tmp_path / "py", [result(rmse=0.22, duration=11), result(repeat=2, rmse=0.1, duration=9)])
+    py = write_run(tmp_path / "py", [result(rmse=0.22, duration=11), result(repeat=2, rmse=0.1, duration=9)], events=performance_events())
     cpp = write_run(tmp_path / "cpp", [result("cpp"), result("cpp", repeat=2)])
     report = compare.build_report([("python", py), ("cpp", cpp)])
     assert report["summary"]["all_passed"]
@@ -164,7 +192,7 @@ def test_planned_but_missing_trial_and_faults_are_not_counted_as_comparable(tmp_
 
 
 def test_cli_writes_new_reports_and_never_overwrites_raw_or_previous_report(tmp_path):
-    py = write_run(tmp_path / "py", [result()])
+    py = write_run(tmp_path / "py", [result()], events=performance_events())
     cpp = write_run(tmp_path / "cpp", [result("cpp")])
     original = (py / "summary.json").read_bytes()
     out = tmp_path / "report"
@@ -179,3 +207,109 @@ def test_cli_writes_new_reports_and_never_overwrites_raw_or_previous_report(tmp_
     with pytest.raises(SystemExit):
         compare.main(["--python", str(py), "--output", str(py / "report")])
     assert (py / "summary.json").read_bytes() == original
+
+
+def test_missing_performance_cannot_report_all_passed(tmp_path):
+    report = paired_report(tmp_path, [])
+    assert report["summary"]["passed_pairs"] == 1
+    assert not report["summary"]["all_passed"]
+    assert report["summary"]["performance_unknown"] == 1
+    assert report["performance"][0]["control_timing"]["status"] == "unknown"
+
+
+@pytest.mark.parametrize("p99,status", [(99.999, "pass"), (100.0, "fail"), (250.0, "fail")])
+def test_control_p99_strict_limit_and_cpp_without_telemetry(tmp_path, p99, status):
+    report = paired_report(tmp_path, performance_events(control=p99))
+    assert report["performance"][0]["control_timing"]["status"] == status
+    assert report["summary"]["all_passed"] == (status == "pass")
+    assert report["summary"]["performance_trials"] == 1  # No C++ telemetry gate.
+
+
+def test_slow_control_and_mapping_fail_despite_passing_navigation_ratios(tmp_path):
+    report = paired_report(tmp_path, performance_events(control=250, processing=500, period=40,
+                                                       overflow=(0, 50, 100)))
+    performance = report["performance"][0]
+    assert report["comparisons"][0]["passed"]
+    assert performance["status"] == "fail"
+    assert all(performance[k]["status"] == "fail" for k in ("control_timing", "mapping_timing", "backlog"))
+    assert not report["summary"]["all_passed"]
+
+
+@pytest.mark.parametrize("missing", ["processing_ms", "observed_scan_period_ms", "integrated_scans"])
+def test_mapping_requires_integrated_computation_and_observed_period(tmp_path, missing):
+    events = performance_events()
+    for event in events:
+        if event["event"] == "mapping_status":
+            event["payload"].pop(missing)
+    performance = paired_report(tmp_path, events)["performance"][0]
+    assert performance["mapping_timing"]["status"] == "unknown"
+    assert performance["status"] == "unknown"
+
+
+def test_mapping_budget_uses_median_scan_period_not_long_gap_p95(tmp_path):
+    events = performance_events(processing=50, period=40)
+    for event in events:
+        if event["event"] == "mapping_status":
+            event["payload"]["observed_scan_period_ms"]["p95"] = 2000
+    performance = paired_report(tmp_path, events)["performance"][0]
+    assert performance["mapping_timing"]["status"] == "fail"
+
+
+def test_two_nonempty_gauges_do_not_prove_sustained_backlog(tmp_path):
+    performance = paired_report(tmp_path, performance_events(times=(100, 105), queues=(1, 1)))["performance"][0]
+    assert performance["backlog"]["status"] == "unknown"
+    assert performance["backlog"]["full_intervals"] == 1
+
+
+def test_balanced_progress_with_nonempty_queue_does_not_mean_backlog_failure(tmp_path):
+    report = paired_report(tmp_path, performance_events(queues=(1, 2, 1)))
+    assert report["performance"][0]["backlog"]["status"] == "pass"
+    assert report["summary"]["all_passed"]
+
+
+@pytest.mark.parametrize("overflow,status", [((0, 1, 2), "fail"), ((0, 1, 1), "unknown")])
+def test_backlog_needs_two_consecutive_growth_intervals_to_fail(tmp_path, overflow, status):
+    performance = paired_report(tmp_path, performance_events(overflow=overflow))["performance"][0]
+    assert performance["backlog"]["status"] == status
+    assert not performance["passed"]
+
+
+def test_occasional_tf_expiry_is_recorded_without_automatic_failure(tmp_path):
+    performance = paired_report(tmp_path, performance_events(expired=(0, 1, 1)))["performance"][0]
+    assert performance["backlog"]["status"] == "pass"
+    assert performance["backlog"]["expired_delta_observed"] == 1
+
+
+@pytest.mark.parametrize("change", ["gap", "stalled", "bad_accounting", "epoch_reset", "missing_tail"])
+def test_incomplete_throughput_evidence_stays_unknown(tmp_path, change):
+    events = performance_events(times=(100, 105, 115)) if change == "gap" else performance_events()
+    mappings = [event for event in events if event["event"] == "mapping_status"]
+    if change == "stalled":
+        events = performance_events(progress=(10, 10, 10))
+    elif change == "bad_accounting":
+        mappings[-1]["payload"]["queue_counters"]["accepted"] += 1
+    elif change == "epoch_reset":
+        mappings[-1]["payload"]["queue_counters"]["resets"] = 1
+    elif change == "missing_tail":
+        events[-1]["wall_monotonic_s"] = 130
+    performance = paired_report(tmp_path, events)["performance"][0]
+    assert performance["backlog"]["status"] == "unknown"
+    assert not performance["passed"]
+
+
+def test_control_telemetry_must_cover_end_of_trial(tmp_path):
+    events = performance_events()
+    events = [e for e in events if e["event"] != "navigation_status" or e["wall_monotonic_s"] == 100]
+    performance = paired_report(tmp_path, events)["performance"][0]
+    assert performance["control_timing"]["status"] == "unknown"
+    assert performance["backlog"]["status"] == "pass"
+
+
+def test_missing_status_timestamp_is_not_silently_discarded(tmp_path):
+    events = performance_events()
+    for event in events:
+        if event["event"] == "mapping_status" and event["wall_monotonic_s"] == 105:
+            event.pop("wall_monotonic_s")
+    performance = paired_report(tmp_path, events)["performance"][0]
+    assert performance["mapping_timing"]["status"] == "unknown"
+    assert performance["backlog"]["status"] == "unknown"

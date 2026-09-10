@@ -2,6 +2,11 @@
 
 Completed on 2026-09-11 (Asia/Shanghai), in WSL distro Ubuntu-22.04.
 
+All relative backup and log paths below are rooted at
+`/home/usv/usv_migration/environment/` in that WSL distribution.
+The version inventory and removed-package list are also copied into this
+repository alongside this document.
+
 The pre-existing apt-get update (PID 57038, parent script 56956) had stalled
 for over 14 minutes. Only this task's two processes were terminated. The WSL
 environment and apt configuration pointed at unavailable 127.0.0.1:10808.

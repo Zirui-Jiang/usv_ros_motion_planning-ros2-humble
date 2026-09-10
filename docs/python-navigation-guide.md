@@ -71,6 +71,27 @@ python3 -c "import common, path_planner, trajectory_planner, controller, percept
 
 源码测试入口为 `bash scripts/validation/run_source_tests.bash`。该入口显式设置源码 `PYTHONPATH`，用于源码/ROS 测试，不代替上面的安装路径和可执行入口检查。非 ROS 环境中的跳过用例不计为 ROS 集成通过。
 
+验收使用新的普通安装区（不加 `--symlink-install`，不使用 `--merge-install`），并在只加载
+该安装区的新终端执行下列检查。审计会核对 13 个原包的位置、Python 模块真实文件路径、
+节点可执行入口以及 C++ 支撑节点的动态链接；从源码路径意外导入会判为失败。
+
+```bash
+python3 scripts/validation/verify_install.py \
+  --source "$PY_WS" --install "$PY_WS/install" \
+  --output "$PY_WS/install-audit.json"
+```
+
+每次正式矩阵开始和结束时，使用 `capture_provenance.py` 分别生成 `--phase before` 与
+`--phase after` 记录。它保存 Git 提交与未提交差异、实际安装文件 SHA256 和采集时刻。
+两次记录应与原始试验一起保存；运行后补采的文件不能替代运行前证据。
+
+```bash
+python3 scripts/validation/capture_provenance.py \
+  --workspace "python=$PY_WS" --phase before \
+  --run-directory "$PY_WS/results/fixed-matrix" \
+  --output "$PY_WS/results/fixed-matrix-before.json"
+```
+
 ## 3. 启动与选择配置
 
 默认节点名为 `/otter/usv_simulation`，算法为 A* / LOS / PID：

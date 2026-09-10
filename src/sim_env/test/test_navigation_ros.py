@@ -103,6 +103,7 @@ def test_process_planning_parameters_stale_inputs_cancel_and_clock_reset():
 
         block_grid = True
         until(lambda: simulator.counters['map_invalidations'] >= 1)
+        until(lambda: simulator.mode == 'NO_PATH')
         left.clear()
         for _ in range(10):
             inputs()
@@ -115,6 +116,38 @@ def test_process_planning_parameters_stale_inputs_cancel_and_clock_reset():
         for _ in range(8):
             inputs(odom=False)
         assert left and all(m.data == 0. for m in left)
+        until(lambda: simulator.mode == 'NAVIGATING')
+
+        # With fresh odometry but a missing map stream, navigation must stop
+        # independently of the state timeout and resume on a new map.
+        until(lambda: simulator.mode == 'WAITING_MAP', grid=False)
+        left.clear()
+        for _ in range(8):
+            inputs(grid=False)
+        assert left and all(m.data == 0. for m in left)
+        until(lambda: simulator.mode == 'NAVIGATING')
+
+        # The steady control timer still runs when /clock stops. Let the
+        # transition command drain before checking sustained zero output.
+        spin(.35)
+        left.clear()
+        spin(.35)
+        assert simulator.mode == 'SIMULATION_PAUSED'
+        assert left and all(m.data == 0. for m in left)
+        until(lambda: simulator.mode == 'NAVIGATING')
+
+        # An invalid replacement goal must cancel the previous moving task.
+        invalid_goal = PoseStamped()
+        invalid_goal.pose.orientation.w = 1.
+        old_version = simulator.version
+        goal_pub.publish(invalid_goal)
+        until(lambda: simulator.mode == 'INVALID_GOAL')
+        assert simulator.version > old_version and simulator.goal is None
+        left.clear()
+        for _ in range(8):
+            inputs()
+        assert left and all(m.data == 0. for m in left)
+        goal_pub.publish(goal)
         until(lambda: simulator.mode == 'NAVIGATING')
 
         client = driver.create_client(Trigger, 'cancel_navigation')

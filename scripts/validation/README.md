@@ -13,13 +13,26 @@ source "$PY_WS/install/setup.bash"
 
 # PID / LQR × 直线 / 转弯 / 单圆柱绕行 × 各 3 次，共 18 个独立 launch。
 python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
-  --workspace "$PY_WS" --mode python \
+  --workspace "$PY_WS" --mode python --costmap-topic /otter/costmap_raw \
   --output /tmp/usv_acceptance_python_001
 
 # 先用 1 次直线检查环境与接口。
 python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
   --workspace "$PY_WS" --controllers pid --scenario straight --repeats 1 \
   --output /tmp/usv_acceptance_smoke_001
+
+# 候选参数校准：每次首个goal前原子设置并读回；整次导航期间保持固定。
+python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
+  --workspace "$PY_WS" --controllers pid --scenario single_obstacle --repeats 3 \
+  --costmap-topic /otter/costmap_raw \
+  --parameter usv_simulation.trajectory_planner.los.switch_dist=1.0 \
+  --output /tmp/usv_acceptance_switch1_candidate_001
+
+# 诊断模式：首次NO_PATH/map-invalid即保存当前输入并结束该例，不计通过。
+python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
+  --workspace "$PY_WS" --controllers pid --scenario single_obstacle --repeats 1 \
+  --costmap-topic /otter/costmap_raw --stop-on-reference-failure \
+  --output /tmp/usv_acceptance_first_failure_001
 
 # 两个工作区的同场景比较，共 36 个导航试验，再加故障用例。
 export CPP_WS=/absolute/path/to/cpp_baseline_workspace
@@ -85,6 +98,19 @@ python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
 每例输出 `launch.log`、`events.jsonl`、`summary.json`，总目录另有 `manifest.json` 与总 `summary.json`。JSONL 保存 odom 时间戳/坐标系/位姿/体轴速度、全局参考路径、局部轨迹、每条推力、目标、navigation_status 与 mapping_status 原始 JSON、到达状态、固定参考与实时参考横向误差，以及 footprint 最小间隙。目标替换后以抵达新目标附近的第一条路径作为新的固定参考，避免把旧路径当作新目标参考。
 
 每次发布目标前还保存真实 costmap NPZ（数据、分辨率、origin、frame、stamp、raw/occupancy 类型）与同名标识的自船状态 JSON，供失败例离线重放；它们由 `goal_input_snapshot` 事件索引。`navigation_parameter_event` 记录节点参数事件，特别是诊断过程中实际发生的在线参数修改。正式对比应使用从启动即固定的配置；中途改变参数的 run 应单列为诊断。
+
+每次进入 `NO_PATH`、`WAITING_REFERENCE` 或地图失效状态时，还会以 `navigation_failure_snapshot` 索引即时保存最新 raw/occupancy 地图、状态、路径及最后非空轨迹；恢复 `NAVIGATING` 后再次失败会生成新快照。各订阅的源时间戳单独保留，不能将异步回调快照当成规划线程内部原子输入。`--stop-on-reference-failure` 会将该例标为 `diagnostic_stopped`、`passed=false`，适合捕获后立即开展离线诊断。
+
+`--parameter NAME=JSON` 可重复给出。值会在每次导航试验的任何目标发布前通过 ROS 原子参数服务设置并读回核对，分别记录 `pre_goal_parameter_configuration`、`pre_goal_parameter_readback` 和 manifest；任一拒绝或读回不一致均中止该例。应使用与节点声明匹配的 JSON 类型（例如 `1.0` 是浮点数）。这只支持节点本身允许在线设置的参数，不替代 `controller_name` 的 launch 选择。
+
+加载 Python 工作区后，可用以下命令对真实 raw 快照比较不同 LOS 前视距离。脚本拒绝把 OccupancyGrid 当成无损 raw 数据，保留地图、自船状态和首条路径各自时刻，并记录完整八字段预测轨迹。预发布快照与规划线程稍后的私有输入时刻可能不同，因此输出属于捕获输入重放；输出中的几何间隙是预测轨迹指标，闭环实际间隙仍以原验收日志为准。
+
+```bash
+python3 "$PY_WS/scripts/validation/replay_los_snapshot.py" \
+  /absolute/path/to/python_pid_single_obstacle_01 \
+  --lookaheads 5 1 --cylinder 29 -10 1 \
+  --output /absolute/path/to/new_los_replay.json
+```
 
 延迟记录包括目标发布至首条有效路径/首条非零推力的 wall time、推力接收间隔，以及 ROS 仿真时间下消息 header age。`observed_odom_receipt_to_command_receipt_ms` 只是两个回调的接收时间差，不能当作算法运行耗时或源端到执行器端的端到端延迟。节点自行发布的实际计算 metrics 原样保存在 `navigation_status` 中。
 

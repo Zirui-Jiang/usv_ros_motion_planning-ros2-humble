@@ -132,7 +132,7 @@ def make_probe(namespace, log, use_sim_time=True):
     from std_msgs.msg import Float32, String
     from std_srvs.srv import Trigger, Empty
     from gazebo_msgs.srv import SetEntityState, SpawnEntity
-    from rcl_interfaces.srv import GetParameters, ListParameters
+    from rcl_interfaces.srv import GetParameters, ListParameters, SetParametersAtomically
     from rcl_interfaces.msg import ParameterEvent
 
     class Probe(Node):
@@ -158,6 +158,10 @@ def make_probe(namespace, log, use_sim_time=True):
             self.initial_path = []
             self.trajectory = []
             self.received_nonempty_trajectory = False
+            self.last_nonempty_trajectory = None
+            self.path_stamp = None
+            self.path_frame = None
+            self.failure_snapshot_active = False
             self.commands = {}
             self.command_wall = {}
             self.command_gaps = []
@@ -210,6 +214,8 @@ def make_probe(namespace, log, use_sim_time=True):
             self.scan_latency.append(self.message_age(msg.header))
 
         def on_path(self, msg):
+            self.path_stamp = stamp_seconds(msg.header.stamp)
+            self.path_frame = msg.header.frame_id
             self.path = [(p.pose.position.x, p.pose.position.y) for p in msg.poses]
             for_active_goal = bool(self.path) and self.active_goal is not None and math.hypot(
                 self.path[-1][0] - self.active_goal[0], self.path[-1][1] - self.active_goal[1]) <= 1.0
@@ -224,7 +230,16 @@ def make_probe(namespace, log, use_sim_time=True):
         def on_trajectory(self, msg):
             self.trajectory = [(p.pose.position.x, p.pose.position.y) for p in msg.poses]
             self.received_nonempty_trajectory |= bool(self.trajectory)
-            self.log.write("local_trajectory", sim_time_s=stamp_seconds(msg.header.stamp), points=self.trajectory)
+            poses = []
+            for p in msg.poses:
+                q = p.pose.orientation
+                poses.append([p.pose.position.x, p.pose.position.y,
+                              math.atan2(2 * (q.w * q.z + q.x * q.y), 1 - 2 * (q.y * q.y + q.z * q.z))])
+            payload = {"sim_time_s": stamp_seconds(msg.header.stamp), "frame_id": msg.header.frame_id,
+                       "points": self.trajectory, "poses": poses}
+            if self.trajectory:
+                self.last_nonempty_trajectory = payload
+            self.log.write("local_trajectory", **payload)
 
         def on_status(self, msg):
             try:
@@ -232,6 +247,15 @@ def make_probe(namespace, log, use_sim_time=True):
             except json.JSONDecodeError:
                 self.status = {"unparsed_status": msg.data}
             self.log.write("navigation_status", payload=self.status)
+            state = self.status.get("state", "")
+            reason = self.status.get("reason", "")
+            if state == "NAVIGATING":
+                self.failure_snapshot_active = False
+            failed_reference = state in ("NO_PATH", "WAITING_REFERENCE", "MAP_INVALID") or (
+                "map" in reason.lower() and "invalid" in reason.lower())
+            if self.active_goal is not None and failed_reference and not self.failure_snapshot_active:
+                if self.capture_inputs("navigation_failure_snapshot"):
+                    self.failure_snapshot_active = True
 
         def on_mapping_status(self, msg):
             try:
@@ -302,13 +326,12 @@ def make_probe(namespace, log, use_sim_time=True):
             self.costmap_stamp = stamp_seconds(msg.header.stamp)
             self.costmap_frame = msg.header.frame_id
 
-        def publish_goal(self, goal):
-            self.goal_wall = time.monotonic()
-            self.active_goal = goal
-            self.initial_path = []
-            self.first_path_latency = None
-            self.first_command_latency = None
-            self.received_nonempty_trajectory = False
+        def capture_inputs(self, event):
+            """Capture the latest callback data at each failed-reference episode.
+
+            Source stamps are explicit because separate ROS subscriptions are
+            not an atomic private planning-worker snapshot.
+            """
             if self.costmap is not None:
                 import numpy as np
                 width, height, resolution, ox, oy, data, kind = self.costmap
@@ -319,10 +342,35 @@ def make_probe(namespace, log, use_sim_time=True):
                 np.savez_compressed(snapshot_path, data=np.asarray(data, dtype=np.uint8 if kind == "raw" else np.int16).reshape(height, width),
                                     resolution=resolution, origin_x=ox, origin_y=oy, frame_id=self.costmap_frame,
                                     stamp=self.costmap_stamp, cost_kind=kind)
-                state_path.write_text(json.dumps({"goal": goal, "pose": self.pose, "body_velocity": self.velocity,
+                state_path.write_text(json.dumps({"goal": self.active_goal, "pose": self.pose, "body_velocity": self.velocity,
                                                  "stamp": self.odom_stamp, "frame_id": self.costmap_frame,
                                                  "costmap_file": snapshot_path.name}, indent=2), encoding="utf-8")
-                self.log.write("goal_input_snapshot", costmap_path=snapshot_path.name, state_path=state_path.name)
+                payload = {"costmap_path": snapshot_path.name, "state_path": state_path.name}
+                if event != "goal_input_snapshot":
+                    context_path = directory / ("navigation_context_" + input_id + ".json")
+                    context = {"status": self.status, "goal": self.active_goal,
+                               "path": {"points": self.path, "stamp": self.path_stamp, "frame_id": self.path_frame},
+                               "last_nonempty_trajectory": self.last_nonempty_trajectory,
+                               "capture_wall_monotonic_s": time.monotonic(),
+                               "source_age_wall_s": {"map": time.monotonic() - self.costmap_wall,
+                                                     "odom": None if self.odom_wall is None else time.monotonic() - self.odom_wall},
+                               "limitation": "Latest subscription callback data; separate map/state/path stamps retained; not an atomic worker snapshot"}
+                    context_path.write_text(json.dumps(sanitized(context), indent=2, allow_nan=False), encoding="utf-8")
+                    payload["context_path"] = context_path.name
+                self.log.write(event, **payload)
+                return True
+            return False
+
+        def publish_goal(self, goal):
+            self.goal_wall = time.monotonic()
+            self.active_goal = goal
+            self.initial_path = []
+            self.first_path_latency = None
+            self.first_command_latency = None
+            self.received_nonempty_trajectory = False
+            self.last_nonempty_trajectory = None
+            self.failure_snapshot_active = False
+            self.capture_inputs("goal_input_snapshot")
             msg = PoseStamped()
             msg.header.frame_id = self.namespace.strip("/") + "/map"
             msg.header.stamp = self.get_clock().now().to_msg()
@@ -338,6 +386,7 @@ def make_probe(namespace, log, use_sim_time=True):
 
     locals_types = {"rclpy": rclpy, "Trigger": Trigger, "Empty": Empty, "SetEntityState": SetEntityState,
                    "SpawnEntity": SpawnEntity, "GetParameters": GetParameters, "ListParameters": ListParameters,
+                   "SetParametersAtomically": SetParametersAtomically, "Parameter": Parameter,
                    "Odometry": Odometry, "Costmap": Costmap, "QoSProfile": QoSProfile,
                    "DurabilityPolicy": DurabilityPolicy, "ReliabilityPolicy": ReliabilityPolicy}
     return Probe()
@@ -389,6 +438,29 @@ def verify_controller(probe, requested):
             if time.monotonic() >= deadline:
                 raise TrialBlocked(f"controller parameter remained unavailable after 5 s: {error}") from error
             wait_until(probe, lambda: False, 0.2)
+
+
+def apply_start_parameters(probe, overrides):
+    """Apply an explicitly logged fixed test configuration before any goal."""
+    if not overrides:
+        return
+    kind = probe.types["SetParametersAtomically"]
+    request = kind.Request()
+    request.parameters = [probe.types["Parameter"](name, value=value).to_parameter_msg()
+                          for name, value in overrides.items()]
+    response = call_service(probe, kind, [probe.namespace + "/usv_simulation/set_parameters_atomically"], request)
+    probe.log.write("pre_goal_parameter_configuration", requested=overrides,
+                    successful=response.result.successful, reason=response.result.reason)
+    if not response.result.successful:
+        raise TrialBlocked("pre-goal parameter configuration rejected: " + response.result.reason)
+    get_kind = probe.types["GetParameters"]
+    verify = get_kind.Request()
+    verify.names = list(overrides)
+    actual = call_service(probe, get_kind, [probe.namespace + "/usv_simulation/get_parameters"], verify)
+    values = {name: parameter_value(value) for name, value in zip(verify.names, actual.values)}
+    probe.log.write("pre_goal_parameter_readback", values=values)
+    if values != overrides:
+        raise TrialBlocked(f"pre-goal parameter readback differs: {values!r}")
 
 
 def _verify_controller_once(probe, requested):
@@ -530,6 +602,7 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
                           and probe.goal_pub.get_subscription_count() >= 2, args.startup_timeout, process,
                           lambda: probe.discover_costmap(args.costmap_topic)):
             raise TrialBlocked("odom, scan, discovered costmap, or navigation goal subscriber did not become ready")
+        apply_start_parameters(probe, args.parameter_overrides)
         verify_controller(probe, controller)
         setup_world(probe, config, scenario, trial_id, process)
         probe.odom_history.clear()
@@ -555,6 +628,14 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
             process.check()
             probe.types["rclpy"].spin_once(probe, timeout_sec=0.02)
             now = time.monotonic()
+            if args.stop_on_reference_failure and probe.status and (
+                probe.status.get("state") == "NO_PATH" or
+                ("map" in probe.status.get("reason", "").lower() and "invalid" in probe.status.get("reason", "").lower())
+            ):
+                if not probe.failure_snapshot_active:
+                    probe.capture_inputs("navigation_failure_snapshot")
+                outcome.update(result="diagnostic_stopped", reason=probe.status.get("reason", "reference failed"))
+                break
             if fault == "goal_change" and not changed and now - started >= 4 and probe.first_command_latency is not None:
                 goal = [23.0, -22.0, -math.pi / 2]
                 probe.publish_goal(goal)
@@ -754,6 +835,10 @@ def arguments(argv=None):
     parser.add_argument("--launch-file", default="main.launch.py")
     parser.add_argument("--baseline-launch-file", default="main.launch.py")
     parser.add_argument("--costmap-topic", help="optional absolute override; otherwise discover message type and topic")
+    parser.add_argument("--parameter", action="append", default=[], metavar="NAME=JSON",
+                        help="set and verify a parameter before each trial goal; repeat for multiple values")
+    parser.add_argument("--stop-on-reference-failure", action="store_true",
+                        help="diagnostic only: capture and stop on first NO_PATH/map-invalid status")
     parser.add_argument("--output", type=Path, required=True, help="new output directory, never an existing result directory")
     parser.add_argument("--startup-timeout", type=float, default=90.0)
     parser.add_argument("--domain-id", type=int, default=182)
@@ -761,6 +846,15 @@ def arguments(argv=None):
     parser.add_argument("--only-faults", action="store_true")
     parser.add_argument("--dry-run", action="store_true", help="write planned matrix only; does not import ROS or start Gazebo")
     args = parser.parse_args(argv)
+    args.parameter_overrides = {}
+    for assignment in args.parameter:
+        try:
+            name, value = assignment.split("=", 1)
+            if not name or name in args.parameter_overrides:
+                raise ValueError("empty or duplicate parameter name")
+            args.parameter_overrides[name] = json.loads(value)
+        except (ValueError, json.JSONDecodeError) as error:
+            parser.error(f"invalid --parameter {assignment!r}: {error}")
     if args.repeats <= 0:
         parser.error("--repeats must be positive")
     if not 0 <= args.domain_id <= 232:
@@ -786,6 +880,8 @@ def main(argv=None):
                 "workspace": str(args.workspace), "baseline_workspace": str(args.baseline_workspace) if args.baseline_workspace else None,
                 "faults_requested": args.faults or args.only_faults, "mode": "dry_run" if args.dry_run else "live",
                 "created_unix_s": time.time(), "domain_id": args.domain_id,
+                "pre_goal_parameter_overrides": args.parameter_overrides,
+                "diagnostic_stop_on_reference_failure": args.stop_on_reference_failure,
                 "latency_definition": "Receive gaps and observed callback age are wall-clock diagnostics, not measured algorithm WCET or end-to-end source latency. Header ages use ROS simulation time."}
     for label, workspace in [("python", args.workspace), ("cpp", args.baseline_workspace)]:
         if workspace is not None:
