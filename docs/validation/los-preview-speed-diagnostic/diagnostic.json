@@ -1,0 +1,5939 @@
+{
+  "scope": "Actual kd0 vs kd010 completed turn traces; current Python LOS executed at only four reconstructed cold planning inputs. No Gazebo, no modified parameters or acceptance score.",
+  "segment_definition": "All source-time e-squared trapezoids, midpoint progress -y-10.125m: <3,3..9,>=9. r RMS uses the same interval-duration weights.",
+  "planning_input_limit": "First received global path pruned afresh at selected recorded odom; map->odom identity is the explicitly verified otter_fake_localization contract. Actual worker route/state/reference and timing were asynchronous and are not reconstructed atomically. No map/collision checks or future physical-state rollout here.",
+  "cpp_limit": "C++ formula is checked from preserved source only. Analytic straight-line values below are not C++ executable outputs or recorded reference velocities.",
+  "source_files": {
+    "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/docs/validation/los-preview-speed-diagnostic/reproduce.py": "c97bf2372a78748a42bfc3bfa14332c84834ad2a7c02f3c5a549f9c8bf630368",
+    "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/docs/validation/source-time-candidate-diagnostics/reproduce.py": "e84949e30c1d09f7edc3b2803cd3eb706553c60f6bca66209d83e88107a751ea",
+    "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/scripts/validation/metrics.py": "8667fd76511f750e023451bf5ff5c7e51b844448531b9aa38c0d74637ebc74d7",
+    "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/src/core/trajectory_planner/src/los_trajectory_planner.cpp": "7c3ba3f4eba9e7816d96992366fee52e3addbcf386718ff86e6b9383b4c6792c",
+    "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/src/core/trajectory_planner/src/trajectory.cpp": "fdd4c5f7708730b2959170b9a6051a699ae932d45d15c95cbea5ef6147bc7d98",
+    "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/src/core/trajectory_planner/trajectory_planner/los_trajectory_planner.py": "cc309fc7eae86d458d846974d3719ee78790ae4a5222cd96c96dfc8619db3f58",
+    "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/src/core/trajectory_planner/trajectory_planner/trajectory.py": "cc5b2f0e3ba35397f6a37572c3f96c235a79f60a34b02f6ac5b29dc1ff8a86f7",
+    "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/src/core/path_planner/path_planner/path_planner/path_planner.py": "62f70edb52a2a8fa687dbe054a2df1acf4102aa4debdf2ad1ea2d89090b4a2c3"
+  },
+  "paired_turns": [
+    {
+      "kd0": {
+        "directory": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_turn_01",
+        "events_sha256": "eb2b97bfa8355c8b95e104733b413e98000e018300216bc84c8268e82fbacbde",
+        "summary_sha256": "bca62ce1b62734e9ff93f123a9c493c9ad26ab5a03deb89050cb4d544c29c019",
+        "source_rmse_m": 0.10450016082482648,
+        "source_span_s": 20.4,
+        "error_bins": [
+          {
+            "along_route_interval_m": [
+              null,
+              3.0
+            ],
+            "source_duration_s": 5.500000000000001,
+            "error_energy_m2_s": 0.10916285179636358,
+            "source_intervals": 55,
+            "local_rmse_m": 0.14088218920680665,
+            "contribution_to_full_mse_m2": 0.005351120186096254,
+            "mean_speed": 0.5610868985056284,
+            "mean_heading": -1.2448751677204373,
+            "mean_lateral": 23.305612119581188
+          },
+          {
+            "along_route_interval_m": [
+              3.0,
+              9.0
+            ],
+            "source_duration_s": 8.7,
+            "error_energy_m2_s": 0.10931603340314144,
+            "source_intervals": 87,
+            "local_rmse_m": 0.1120939842752764,
+            "contribution_to_full_mse_m2": 0.0053586290883892865,
+            "mean_speed": 0.6880651273267644,
+            "mean_heading": -1.585827241251036,
+            "mean_lateral": 23.35544174436795
+          },
+          {
+            "along_route_interval_m": [
+              9.0,
+              null
+            ],
+            "source_duration_s": 6.199999999999999,
+            "error_energy_m2_s": 0.004294900493752639,
+            "source_intervals": 62,
+            "local_rmse_m": 0.026319686284018196,
+            "contribution_to_full_mse_m2": 0.00021053433792905097,
+            "mean_speed": 0.37495437367987156,
+            "mean_heading": -1.5577231760374153,
+            "mean_lateral": 23.26073432417454
+          }
+        ],
+        "yaw_bins": [
+          {
+            "r2_integral": 3.7939348585704904,
+            "r_max_abs": 1.5001225931693973,
+            "heading_min": -2.0251905355122526,
+            "heading_max": -3.917512210705441e-05,
+            "r_rms_radps": 0.8305458072387744
+          },
+          {
+            "r2_integral": 0.8757681238745451,
+            "r_max_abs": 0.6607057758305022,
+            "heading_min": -1.7884007847459231,
+            "heading_max": -1.3657115658981143,
+            "r_rms_radps": 0.31727433357301466
+          },
+          {
+            "r2_integral": 0.08823462975366755,
+            "r_max_abs": 0.24509970143458615,
+            "heading_min": -1.6633709922627435,
+            "heading_max": -1.5003664406750803,
+            "r_rms_radps": 0.11929539763022223
+          }
+        ],
+        "early_thrust": {
+          "interpretation": "Received commands paired with preceding odom receipt, not atomic control input. Sum >.1/.3 are diagnostic markers, not acceptance thresholds.",
+          "first_nonzero": {
+            "command_lines": [
+              199,
+              200,
+              201
+            ],
+            "wall_s": 79585.376109894,
+            "source_state_time_s": 3.2,
+            "state_receipt_age_s": 0.08316081699740607,
+            "pose": [
+              23.125067288539313,
+              -10.125771384406738,
+              -3.917512210705441e-05
+            ],
+            "body_velocity": [
+              0.0068888021671771335,
+              0.0015050871548530722,
+              0.00020416161945198438
+            ],
+            "left": 1.0,
+            "right": -1.0,
+            "sum": 0.0,
+            "right_minus_left": -2.0
+          },
+          "first_sum_above_010": {
+            "command_lines": [
+              219,
+              221,
+              222
+            ],
+            "wall_s": 79585.686761538,
+            "source_state_time_s": 3.5,
+            "state_receipt_age_s": 0.08836328500183299,
+            "pose": [
+              23.1269940610782,
+              -10.127230555062248,
+              -0.07026441788675879
+            ],
+            "body_velocity": [
+              0.007183635747665801,
+              -0.013136636599112465,
+              -0.6034617696541899
+            ],
+            "left": 1.0,
+            "right": -0.8818939924240112,
+            "sum": 0.11810600757598877,
+            "right_minus_left": -1.8818939924240112
+          },
+          "first_sum_above_030": {
+            "command_lines": [
+              232,
+              234,
+              235
+            ],
+            "wall_s": 79585.899420786,
+            "source_state_time_s": 3.7,
+            "state_receipt_age_s": 0.0999527859967202,
+            "pose": [
+              23.13036528671817,
+              -10.131005219541093,
+              -0.2302213884804506
+            ],
+            "body_velocity": [
+              0.03298141362386603,
+              -0.018596721611273306,
+              -0.9679995118343349
+            ],
+            "left": 1.0,
+            "right": -0.6434503793716431,
+            "sum": 0.35654962062835693,
+            "right_minus_left": -1.643450379371643
+          },
+          "first_heading_below_minus_pi_over_2": {
+            "event": "odom",
+            "wall_monotonic_s": 79586.905791814,
+            "sim_time_s": 4.8,
+            "pose": [
+              23.298534270768904,
+              -10.327288220570617,
+              -1.677610850058752
+            ],
+            "body_velocity": [
+              0.5138500099277445,
+              0.20301532568688216,
+              -1.3511404832369174
+            ],
+            "frame_id": "otter/odom",
+            "child_frame_id": "otter/base_link",
+            "event_line": 293
+          },
+          "initial_command_sequence": [
+            {
+              "command_lines": [
+                199,
+                200,
+                201
+              ],
+              "wall_s": 79585.376109894,
+              "source_state_time_s": 3.2,
+              "state_receipt_age_s": 0.08316081699740607,
+              "pose": [
+                23.125067288539313,
+                -10.125771384406738,
+                -3.917512210705441e-05
+              ],
+              "body_velocity": [
+                0.0068888021671771335,
+                0.0015050871548530722,
+                0.00020416161945198438
+              ],
+              "left": 1.0,
+              "right": -1.0,
+              "sum": 0.0,
+              "right_minus_left": -2.0
+            },
+            {
+              "command_lines": [
+                206,
+                207,
+                208
+              ],
+              "wall_s": 79585.479563699,
+              "source_state_time_s": 3.3,
+              "state_receipt_age_s": 0.08571953800856136,
+              "pose": [
+                23.125857823454403,
+                -10.12561792134151,
+                -0.0005861271913414314
+              ],
+              "body_velocity": [
+                0.007700130041935814,
+                -0.00011476422929501521,
+                -0.05878643274852218
+              ],
+              "left": 1.0,
+              "right": -1.0,
+              "sum": 0.0,
+              "right_minus_left": -2.0
+            },
+            {
+              "command_lines": [
+                214,
+                215,
+                216
+              ],
+              "wall_s": 79585.586939106,
+              "source_state_time_s": 3.4,
+              "state_receipt_age_s": 0.09176873200340196,
+              "pose": [
+                23.126496962171483,
+                -10.126092935089495,
+                -0.021824995662914844
+              ],
+              "body_velocity": [
+                0.00538794646418306,
+                -0.00855801358818432,
+                -0.35482852071258286
+              ],
+              "left": 1.0,
+              "right": -0.9453113675117493,
+              "sum": 0.05468863248825073,
+              "right_minus_left": -1.9453113675117493
+            },
+            {
+              "command_lines": [
+                219,
+                221,
+                222
+              ],
+              "wall_s": 79585.686761538,
+              "source_state_time_s": 3.5,
+              "state_receipt_age_s": 0.08836328500183299,
+              "pose": [
+                23.1269940610782,
+                -10.127230555062248,
+                -0.07026441788675879
+              ],
+              "body_velocity": [
+                0.007183635747665801,
+                -0.013136636599112465,
+                -0.6034617696541899
+              ],
+              "left": 1.0,
+              "right": -0.8818939924240112,
+              "sum": 0.11810600757598877,
+              "right_minus_left": -1.8818939924240112
+            },
+            {
+              "command_lines": [
+                227,
+                228,
+                229
+              ],
+              "wall_s": 79585.798092152,
+              "source_state_time_s": 3.6,
+              "state_receipt_age_s": 0.09890515200095251,
+              "pose": [
+                23.128101157670063,
+                -10.128814797496853,
+                -0.1411828205015452
+              ],
+              "body_velocity": [
+                0.018465808290282763,
+                -0.015878292124325684,
+                -0.805348738098537
+              ],
+              "left": 1.0,
+              "right": -0.7995510697364807,
+              "sum": 0.2004489302635193,
+              "right_minus_left": -1.7995510697364807
+            },
+            {
+              "command_lines": [
+                232,
+                234,
+                235
+              ],
+              "wall_s": 79585.899420786,
+              "source_state_time_s": 3.7,
+              "state_receipt_age_s": 0.0999527859967202,
+              "pose": [
+                23.13036528671817,
+                -10.131005219541093,
+                -0.2302213884804506
+              ],
+              "body_velocity": [
+                0.03298141362386603,
+                -0.018596721611273306,
+                -0.9679995118343349
+              ],
+              "left": 1.0,
+              "right": -0.6434503793716431,
+              "sum": 0.35654962062835693,
+              "right_minus_left": -1.643450379371643
+            },
+            {
+              "command_lines": [
+                241,
+                242,
+                243
+              ],
+              "wall_s": 79586.010095046,
+              "source_state_time_s": 3.9,
+              "state_receipt_age_s": 0.007684024996706285,
+              "pose": [
+                23.140972101643094,
+                -10.138939346364099,
+                -0.4472027096837079
+              ],
+              "body_velocity": [
+                0.10340435920548441,
+                -0.015594367911241629,
+                -1.17536029850215
+              ],
+              "left": 1.0,
+              "right": -0.5572472214698792,
+              "sum": 0.44275277853012085,
+              "right_minus_left": -1.5572472214698792
+            },
+            {
+              "command_lines": [
+                246,
+                247,
+                248
+              ],
+              "wall_s": 79586.112024959,
+              "source_state_time_s": 4.0,
+              "state_receipt_age_s": 0.009128819001489319,
+              "pose": [
+                23.151750028122734,
+                -10.146246808422454,
+                -0.5678446296801832
+              ],
+              "body_velocity": [
+                0.1544208231375372,
+                -0.005430870682063743,
+                -1.2326342948966897
+              ],
+              "left": 1.0,
+              "right": -0.362583726644516,
+              "sum": 0.637416273355484,
+              "right_minus_left": -1.362583726644516
+            },
+            {
+              "command_lines": [
+                253,
+                254,
+                255
+              ],
+              "wall_s": 79586.224256224,
+              "source_state_time_s": 4.1,
+              "state_receipt_age_s": 0.021570112992776558,
+              "pose": [
+                23.167192053788646,
+                -10.157347723343095,
+                -0.6924729694411822
+              ],
+              "body_velocity": [
+                0.22611583080325548,
+                0.010731224427762712,
+                -1.2544158408788888
+              ],
+              "left": 1.0,
+              "right": -0.614996612071991,
+              "sum": 0.38500338792800903,
+              "right_minus_left": -1.614996612071991
+            },
+            {
+              "command_lines": [
+                260,
+                261,
+                262
+              ],
+              "wall_s": 79586.329546259,
+              "source_state_time_s": 4.2,
+              "state_receipt_age_s": 0.026479314008611254,
+              "pose": [
+                23.1864353570942,
+                -10.172635811490567,
+                -0.8200247656561426
+              ],
+              "body_velocity": [
+                0.25514255729026064,
+                0.03178196860066666,
+                -1.3012810430697994
+              ],
+              "left": 1.0,
+              "right": -0.8905450701713562,
+              "sum": 0.1094549298286438,
+              "right_minus_left": -1.8905450701713562
+            },
+            {
+              "command_lines": [
+                265,
+                266,
+                267
+              ],
+              "wall_s": 79586.430811376,
+              "source_state_time_s": 4.3,
+              "state_receipt_age_s": 0.027310657998896204,
+              "pose": [
+                23.205698722413658,
+                -10.189379223095344,
+                -0.9537180269794233
+              ],
+              "body_velocity": [
+                0.23979503589914636,
+                0.054796449243168,
+                -1.378815170839351
+              ],
+              "left": 1.0,
+              "right": -0.6088182330131531,
+              "sum": 0.3911817669868469,
+              "right_minus_left": -1.608818233013153
+            },
+            {
+              "command_lines": [
+                272,
+                273,
+                274
+              ],
+              "wall_s": 79586.542389656,
+              "source_state_time_s": 4.4,
+              "state_receipt_age_s": 0.038473909997264855,
+              "pose": [
+                23.224148034008238,
+                -10.20676860389568,
+                -1.0943141982682922
+              ],
+              "body_velocity": [
+                0.26020114972313213,
+                0.08148395858825601,
+                -1.4227053462894657
+              ],
+              "left": 1.0,
+              "right": -0.8476243615150452,
+              "sum": 0.15237563848495483,
+              "right_minus_left": -1.8476243615150452
+            },
+            {
+              "command_lines": [
+                277,
+                278,
+                279
+              ],
+              "wall_s": 79586.643290761,
+              "source_state_time_s": 4.5,
+              "state_receipt_age_s": 0.03819700700114481,
+              "pose": [
+                23.24375228437334,
+                -10.22785194592556,
+                -1.2386980807033696
+              ],
+              "body_velocity": [
+                0.27087844758142243,
+                0.11339474431065487,
+                -1.47192805662209
+              ],
+              "left": 1.0,
+              "right": -0.5572850704193115,
+              "sum": 0.4427149295806885,
+              "right_minus_left": -1.5572850704193115
+            },
+            {
+              "command_lines": [
+                285,
+                286,
+                287
+              ],
+              "wall_s": 79586.753975513,
+              "source_state_time_s": 4.6,
+              "state_receipt_age_s": 0.048318733999622054,
+              "pose": [
+                23.26313329770731,
+                -10.251373338340157,
+                -1.3879131161064044
+              ],
+              "body_velocity": [
+                0.2936048210130672,
+                0.14184904333316617,
+                -1.5001225931693973
+              ],
+              "left": 1.0,
+              "right": 0.07981294393539429,
+              "sum": 1.0798129439353943,
+              "right_minus_left": -0.9201870560646057
+            },
+            {
+              "command_lines": [
+                290,
+                291,
+                292
+              ],
+              "wall_s": 79586.85618673,
+              "source_state_time_s": 4.7,
+              "state_receipt_age_s": 0.05058982700575143,
+              "pose": [
+                23.281904892076618,
+                -10.28208670607565,
+                -1.5368885194386388
+              ],
+              "body_velocity": [
+                0.38115827828382653,
+                0.16847902176870305,
+                -1.4563903365518875
+              ],
+              "left": 0.9951678514480591,
+              "right": 0.3729516863822937,
+              "sum": 1.3681195378303528,
+              "right_minus_left": -0.6222161650657654
+            },
+            {
+              "command_lines": [
+                297,
+                298,
+                299
+              ],
+              "wall_s": 79586.967611642,
+              "source_state_time_s": 4.8,
+              "state_receipt_age_s": 0.06181982799898833,
+              "pose": [
+                23.298534270768904,
+                -10.327288220570617,
+                -1.677610850058752
+              ],
+              "body_velocity": [
+                0.5138500099277445,
+                0.20301532568688216,
+                -1.3511404832369174
+              ],
+              "left": 0.3318387567996979,
+              "right": 0.7858707904815674,
+              "sum": 1.1177095472812653,
+              "right_minus_left": 0.4540320336818695
+            },
+            {
+              "command_lines": [
+                302,
+                303,
+                304
+              ],
+              "wall_s": 79587.068726316,
+              "source_state_time_s": 4.9,
+              "state_receipt_age_s": 0.0624565690086456,
+              "pose": [
+                23.310787872466925,
+                -10.387611529603834,
+                -1.8055249080949167
+              ],
+              "body_velocity": [
+                0.615118601590443,
+                0.25041417977866,
+                -1.172598003583856
+              ],
+              "left": -0.109560526907444,
+              "right": 0.9972256422042847,
+              "sum": 0.8876651152968407,
+              "right_minus_left": 1.1067861691117287
+            },
+            {
+              "command_lines": [
+                309,
+                310,
+                311
+              ],
+              "wall_s": 79587.18065805,
+              "source_state_time_s": 5.0,
+              "state_receipt_age_s": 0.07272041699616238,
+              "pose": [
+                23.31884864735232,
+                -10.456990631806788,
+                -1.9090122331965569
+              ],
+              "body_velocity": [
+                0.6584313867026099,
+                0.3000064038544707,
+                -0.8833326806416387
+              ],
+              "left": -0.5853679776191711,
+              "right": 1.0,
+              "sum": 0.41463202238082886,
+              "right_minus_left": 1.5853679776191711
+            },
+            {
+              "command_lines": [
+                314,
+                315,
+                316
+              ],
+              "wall_s": 79587.281089466,
+              "source_state_time_s": 5.1,
+              "state_receipt_age_s": 0.0717786720051663,
+              "pose": [
+                23.323963466946434,
+                -10.531176227132482,
+                -1.981064174149953
+              ],
+              "body_velocity": [
+                0.6709697131567315,
+                0.33998192388906273,
+                -0.555556172146303
+              ],
+              "left": -0.8030264377593994,
+              "right": 1.0,
+              "sum": 0.19697356224060059,
+              "right_minus_left": 1.8030264377593994
+            },
+            {
+              "command_lines": [
+                321,
+                322,
+                323
+              ],
+              "wall_s": 79587.391422085,
+              "source_state_time_s": 5.2,
+              "state_receipt_age_s": 0.08117563399719074,
+              "pose": [
+                23.328179475421397,
+                -10.606290597392146,
+                -2.019442313112983
+              ],
+              "body_velocity": [
+                0.6589514956975975,
+                0.36213900680904193,
+                -0.21770915375122538
+              ],
+              "left": -1.0,
+              "right": 1.0,
+              "sum": 0.0,
+              "right_minus_left": 2.0
+            }
+          ]
+        }
+      },
+      "kd010": {
+        "directory": "/home/usv/usv_migration/results/python-pid-course-d010-turn-candidate-001/python_pid_turn_01",
+        "events_sha256": "3a6a1e3a81cb8b6a9ea5ab04cc433f625257f18df4e2f69dd2c3d3e58db5e431",
+        "summary_sha256": "b51e3a816264ee1da815ea2c088fe03e8bf613ea1b5046cb2418446b27960e0f",
+        "source_rmse_m": 0.11795092901605957,
+        "source_span_s": 20.6,
+        "error_bins": [
+          {
+            "along_route_interval_m": [
+              null,
+              3.0
+            ],
+            "source_duration_s": 5.300000000000001,
+            "error_energy_m2_s": 0.13325160635564337,
+            "source_intervals": 53,
+            "local_rmse_m": 0.15856169941045886,
+            "contribution_to_full_mse_m2": 0.006468524580371037,
+            "mean_speed": 0.585422216049014,
+            "mean_heading": -1.2388622158420117,
+            "mean_lateral": 23.325222427991655
+          },
+          {
+            "along_route_interval_m": [
+              3.0,
+              9.0
+            ],
+            "source_duration_s": 9.0,
+            "error_energy_m2_s": 0.14743235423534543,
+            "source_intervals": 90,
+            "local_rmse_m": 0.12798973666984456,
+            "contribution_to_full_mse_m2": 0.00715691039977405,
+            "mean_speed": 0.6670629538930288,
+            "mean_heading": -1.5962334856234504,
+            "mean_lateral": 23.368592130804398
+          },
+          {
+            "along_route_interval_m": [
+              9.0,
+              null
+            ],
+            "source_duration_s": 6.300000000000001,
+            "error_energy_m2_s": 0.005911925517492569,
+            "source_intervals": 63,
+            "local_rmse_m": 0.030633329492441255,
+            "contribution_to_full_mse_m2": 0.00028698667560643536,
+            "mean_speed": 0.36506228718916334,
+            "mean_heading": -1.5873481963026455,
+            "mean_lateral": 23.27855568820808
+          }
+        ],
+        "yaw_bins": [
+          {
+            "r2_integral": 2.8335228072242087,
+            "r_max_abs": 1.4338238347874737,
+            "heading_min": -1.913720987565075,
+            "heading_max": -1.820131604340706e-05,
+            "r_rms_radps": 0.7311818821328142
+          },
+          {
+            "r2_integral": 0.08934602502166956,
+            "r_max_abs": 0.3058569097804061,
+            "heading_min": -1.6893719881508658,
+            "heading_max": -1.493516092907845,
+            "r_rms_radps": 0.09963601815367192
+          },
+          {
+            "r2_integral": 0.0006741555597297847,
+            "r_max_abs": 0.02099935642273005,
+            "heading_min": -1.5947159999876501,
+            "heading_max": -1.5776725992666147,
+            "r_rms_radps": 0.01034450670668871
+          }
+        ],
+        "early_thrust": {
+          "interpretation": "Received commands paired with preceding odom receipt, not atomic control input. Sum >.1/.3 are diagnostic markers, not acceptance thresholds.",
+          "first_nonzero": {
+            "command_lines": [
+              313,
+              314,
+              315
+            ],
+            "wall_s": 81944.513180999,
+            "source_state_time_s": 3.4,
+            "state_receipt_age_s": 0.025855290004983544,
+            "pose": [
+              23.126127821255082,
+              -10.12545436163521,
+              -1.820131604340706e-05
+            ],
+            "body_velocity": [
+              0.00927753962844156,
+              0.0027009165404612563,
+              0.0002689983752053808
+            ],
+            "left": 1.0,
+            "right": -1.0,
+            "sum": 0.0,
+            "right_minus_left": -2.0
+          },
+          "first_sum_above_010": {
+            "command_lines": [
+              327,
+              328,
+              329
+            ],
+            "wall_s": 81944.726697503,
+            "source_state_time_s": 3.6,
+            "state_receipt_age_s": 0.03896347200497985,
+            "pose": [
+              23.12778856324828,
+              -10.126339126869736,
+              -0.04589894175531994
+            ],
+            "body_velocity": [
+              0.0055495120029223615,
+              -0.01169113495382252,
+              -0.49983367917105376
+            ],
+            "left": 1.0,
+            "right": -0.836125373840332,
+            "sum": 0.16387462615966797,
+            "right_minus_left": -1.836125373840332
+          },
+          "first_sum_above_030": {
+            "command_lines": [
+              345,
+              346,
+              347
+            ],
+            "wall_s": 81945.048526335,
+            "source_state_time_s": 3.9,
+            "state_receipt_age_s": 0.06010315800085664,
+            "pose": [
+              23.13776078500055,
+              -10.133056068224498,
+              -0.28207394891149495
+            ],
+            "body_velocity": [
+              0.07211534431598757,
+              -0.017155877692241604,
+              -1.015361046803924
+            ],
+            "left": 1.0,
+            "right": -0.5700095295906067,
+            "sum": 0.4299904704093933,
+            "right_minus_left": -1.5700095295906067
+          },
+          "first_heading_below_minus_pi_over_2": {
+            "event": "odom",
+            "wall_monotonic_s": 81945.991101816,
+            "sim_time_s": 4.9,
+            "pose": [
+              23.298109037882266,
+              -10.318896640524274,
+              -1.595654860759544
+            ],
+            "body_velocity": [
+              0.5030113318067533,
+              0.20204311796531849,
+              -1.2781978741607067
+            ],
+            "frame_id": "otter/odom",
+            "child_frame_id": "otter/base_link",
+            "event_line": 401
+          },
+          "initial_command_sequence": [
+            {
+              "command_lines": [
+                313,
+                314,
+                315
+              ],
+              "wall_s": 81944.513180999,
+              "source_state_time_s": 3.4,
+              "state_receipt_age_s": 0.025855290004983544,
+              "pose": [
+                23.126127821255082,
+                -10.12545436163521,
+                -1.820131604340706e-05
+              ],
+              "body_velocity": [
+                0.00927753962844156,
+                0.0027009165404612563,
+                0.0002689983752053808
+              ],
+              "left": 1.0,
+              "right": -1.0,
+              "sum": 0.0,
+              "right_minus_left": -2.0
+            },
+            {
+              "command_lines": [
+                320,
+                321,
+                322
+              ],
+              "wall_s": 81944.618128919,
+              "source_state_time_s": 3.5,
+              "state_receipt_age_s": 0.030666544000268914,
+              "pose": [
+                23.127096177772124,
+                -10.125470118628293,
+                -0.008841431412530085
+              ],
+              "body_velocity": [
+                0.00894522152497332,
+                -0.00465919501657654,
+                -0.23056032744505217
+              ],
+              "left": 1.0,
+              "right": -1.0,
+              "sum": 0.0,
+              "right_minus_left": -2.0
+            },
+            {
+              "command_lines": [
+                327,
+                328,
+                329
+              ],
+              "wall_s": 81944.726697503,
+              "source_state_time_s": 3.6,
+              "state_receipt_age_s": 0.03896347200497985,
+              "pose": [
+                23.12778856324828,
+                -10.126339126869736,
+                -0.04589894175531994
+              ],
+              "body_velocity": [
+                0.0055495120029223615,
+                -0.01169113495382252,
+                -0.49983367917105376
+              ],
+              "left": 1.0,
+              "right": -0.836125373840332,
+              "sum": 0.16387462615966797,
+              "right_minus_left": -1.836125373840332
+            },
+            {
+              "command_lines": [
+                332,
+                333,
+                334
+              ],
+              "wall_s": 81944.831417443,
+              "source_state_time_s": 3.7,
+              "state_receipt_age_s": 0.043620348995318636,
+              "pose": [
+                23.128713535034773,
+                -10.127799372864729,
+                -0.10723025183292631
+              ],
+              "body_velocity": [
+                0.022085707627049027,
+                -0.015271148381474019,
+                -0.7119171466479343
+              ],
+              "left": 1.0,
+              "right": -0.7835974097251892,
+              "sum": 0.2164025902748108,
+              "right_minus_left": -1.7835974097251892
+            },
+            {
+              "command_lines": [
+                340,
+                341,
+                342
+              ],
+              "wall_s": 81944.944536108,
+              "source_state_time_s": 3.8,
+              "state_receipt_age_s": 0.05637608599499799,
+              "pose": [
+                23.132060173427536,
+                -10.129934180935795,
+                -0.1871491288305088
+              ],
+              "body_velocity": [
+                0.050857102761107276,
+                -0.016662820095237056,
+                -0.8774106873259471
+              ],
+              "left": 1.0,
+              "right": -0.8001298904418945,
+              "sum": 0.19987010955810547,
+              "right_minus_left": -1.8001298904418945
+            },
+            {
+              "command_lines": [
+                345,
+                346,
+                347
+              ],
+              "wall_s": 81945.048526335,
+              "source_state_time_s": 3.9,
+              "state_receipt_age_s": 0.06010315800085664,
+              "pose": [
+                23.13776078500055,
+                -10.133056068224498,
+                -0.28207394891149495
+              ],
+              "body_velocity": [
+                0.07211534431598757,
+                -0.017155877692241604,
+                -1.015361046803924
+              ],
+              "left": 1.0,
+              "right": -0.5700095295906067,
+              "sum": 0.4299904704093933,
+              "right_minus_left": -1.5700095295906067
+            },
+            {
+              "command_lines": [
+                352,
+                353,
+                354
+              ],
+              "wall_s": 81945.161652514,
+              "source_state_time_s": 4.0,
+              "state_receipt_age_s": 0.07281074499769602,
+              "pose": [
+                23.1450220967057,
+                -10.137370553576458,
+                -0.38949701612732485
+              ],
+              "body_velocity": [
+                0.10262265570020863,
+                -0.015296683220217322,
+                -1.1190275413293247
+              ],
+              "left": 1.0,
+              "right": -0.8342625498771667,
+              "sum": 0.16573745012283325,
+              "right_minus_left": -1.8342625498771667
+            },
+            {
+              "command_lines": [
+                357,
+                358,
+                359
+              ],
+              "wall_s": 81945.265810705,
+              "source_state_time_s": 4.1,
+              "state_receipt_age_s": 0.07688673899974674,
+              "pose": [
+                23.1559171431869,
+                -10.143920807351517,
+                -0.5050984053866492
+              ],
+              "body_velocity": [
+                0.1397226270234676,
+                -0.006729783738578243,
+                -1.1986779336883664
+              ],
+              "left": 1.0,
+              "right": -0.4829604923725128,
+              "sum": 0.5170395076274872,
+              "right_minus_left": -1.4829604923725128
+            },
+            {
+              "command_lines": [
+                364,
+                365,
+                366
+              ],
+              "wall_s": 81945.379236897,
+              "source_state_time_s": 4.2,
+              "state_receipt_age_s": 0.09006261199829169,
+              "pose": [
+                23.16788461115036,
+                -10.151607980629002,
+                -0.6297192667458269
+              ],
+              "body_velocity": [
+                0.15589691039558262,
+                0.006287817689277234,
+                -1.2806475573129998
+              ],
+              "left": 1.0,
+              "right": -0.8867238163948059,
+              "sum": 0.11327618360519409,
+              "right_minus_left": -1.886723816394806
+            },
+            {
+              "command_lines": [
+                369,
+                370,
+                371
+              ],
+              "wall_s": 81945.483031704,
+              "source_state_time_s": 4.3,
+              "state_receipt_age_s": 0.09357525799714494,
+              "pose": [
+                23.183200905051507,
+                -10.1625008726395,
+                -0.7593131123857577
+              ],
+              "body_velocity": [
+                0.2101488737949352,
+                0.024548773957361353,
+                -1.3161125045804805
+              ],
+              "left": 1.0,
+              "right": -0.4667952060699463,
+              "sum": 0.5332047939300537,
+              "right_minus_left": -1.4667952060699463
+            },
+            {
+              "command_lines": [
+                378,
+                379,
+                380
+              ],
+              "wall_s": 81945.595360078,
+              "source_state_time_s": 4.5,
+              "state_receipt_age_s": 0.005604272009804845,
+              "pose": [
+                23.217152621927777,
+                -10.191284591768037,
+                -1.0354775385587252
+              ],
+              "body_velocity": [
+                0.2631312085836257,
+                0.06553595318892988,
+                -1.4062465240343456
+              ],
+              "left": 1.0,
+              "right": -0.5992640256881714,
+              "sum": 0.4007359743118286,
+              "right_minus_left": -1.5992640256881714
+            },
+            {
+              "command_lines": [
+                383,
+                384,
+                385
+              ],
+              "wall_s": 81945.700232833,
+              "source_state_time_s": 4.6,
+              "state_receipt_age_s": 0.010363448003772646,
+              "pose": [
+                23.236704082652285,
+                -10.212751398465624,
+                -1.1774002822383032
+              ],
+              "body_velocity": [
+                0.29226007176793845,
+                0.0932202522280373,
+                -1.4338238347874737
+              ],
+              "left": 1.0,
+              "right": -0.21784019470214844,
+              "sum": 0.7821598052978516,
+              "right_minus_left": -1.2178401947021484
+            },
+            {
+              "command_lines": [
+                390,
+                391,
+                392
+              ],
+              "wall_s": 81945.812795457,
+              "source_state_time_s": 4.7,
+              "state_receipt_age_s": 0.022424245995352976,
+              "pose": [
+                23.257323788296038,
+                -10.240487987764281,
+                -1.319496358702449
+              ],
+              "body_velocity": [
+                0.3667300883496624,
+                0.12556633776021586,
+                -1.4049890962895564
+              ],
+              "left": 1.0,
+              "right": -0.4685499668121338,
+              "sum": 0.5314500331878662,
+              "right_minus_left": -1.4685499668121338
+            },
+            {
+              "command_lines": [
+                397,
+                398,
+                399
+              ],
+              "wall_s": 81945.92102831,
+              "source_state_time_s": 4.8,
+              "state_receipt_age_s": 0.030413761996896937,
+              "pose": [
+                23.278369517250656,
+                -10.27600800113948,
+                -1.459620884747737
+              ],
+              "body_velocity": [
+                0.3969983132280471,
+                0.16146356971924108,
+                -1.405044297693879
+              ],
+              "left": 0.7657429575920105,
+              "right": 0.5466897487640381,
+              "sum": 1.3124327063560486,
+              "right_minus_left": -0.2190532088279724
+            },
+            {
+              "command_lines": [
+                402,
+                403,
+                404
+              ],
+              "wall_s": 81946.026283487,
+              "source_state_time_s": 4.9,
+              "state_receipt_age_s": 0.03518167098809499,
+              "pose": [
+                23.298109037882266,
+                -10.318896640524274,
+                -1.595654860759544
+              ],
+              "body_velocity": [
+                0.5030113318067533,
+                0.20204311796531849,
+                -1.2781978741607067
+              ],
+              "left": 0.47771042585372925,
+              "right": 0.607123076915741,
+              "sum": 1.0848335027694702,
+              "right_minus_left": 0.12941265106201172
+            },
+            {
+              "command_lines": [
+                410,
+                411,
+                412
+              ],
+              "wall_s": 81946.138713374,
+              "source_state_time_s": 5.0,
+              "state_receipt_age_s": 0.047909019005601294,
+              "pose": [
+                23.315757565228335,
+                -10.376928947501867,
+                -1.713816133954978
+              ],
+              "body_velocity": [
+                0.6095326295440681,
+                0.2522770092172448,
+                -1.0804456477449056
+              ],
+              "left": -0.14451968669891357,
+              "right": 1.0,
+              "sum": 0.8554803133010864,
+              "right_minus_left": 1.1445196866989136
+            },
+            {
+              "command_lines": [
+                415,
+                416,
+                417
+              ],
+              "wall_s": 81946.243584522,
+              "source_state_time_s": 5.1,
+              "state_receipt_age_s": 0.05270104699593503,
+              "pose": [
+                23.33048678379867,
+                -10.445605342608763,
+                -1.8099712319010306
+              ],
+              "body_velocity": [
+                0.6702231258625366,
+                0.3011831459949806,
+                -0.8109668323795721
+              ],
+              "left": -0.36523428559303284,
+              "right": 1.0,
+              "sum": 0.6347657144069672,
+              "right_minus_left": 1.3652342855930328
+            },
+            {
+              "command_lines": [
+                422,
+                423,
+                424
+              ],
+              "wall_s": 81946.355455001,
+              "source_state_time_s": 5.2,
+              "state_receipt_age_s": 0.06422278600803111,
+              "pose": [
+                23.342484364954718,
+                -10.520627084754922,
+                -1.875160562838223
+              ],
+              "body_velocity": [
+                0.7013461903436262,
+                0.33370601605134304,
+                -0.49535522229569295
+              ],
+              "left": -0.7091652750968933,
+              "right": 1.0,
+              "sum": 0.2908347249031067,
+              "right_minus_left": 1.7091652750968933
+            },
+            {
+              "command_lines": [
+                427,
+                428,
+                429
+              ],
+              "wall_s": 81946.460763517,
+              "source_state_time_s": 5.3,
+              "state_receipt_age_s": 0.06909727198944893,
+              "pose": [
+                23.352185519910293,
+                -10.59895155609047,
+                -1.9096009392480573
+              ],
+              "body_velocity": [
+                0.7119567135281463,
+                0.3465916374911835,
+                -0.19136255081925285
+              ],
+              "left": -0.7213495969772339,
+              "right": 1.0,
+              "sum": 0.2786504030227661,
+              "right_minus_left": 1.7213495969772339
+            },
+            {
+              "command_lines": [
+                434,
+                435,
+                436
+              ],
+              "wall_s": 81946.573157635,
+              "source_state_time_s": 5.4,
+              "state_receipt_age_s": 0.08131327999581117,
+              "pose": [
+                23.360773797044406,
+                -10.677462795506342,
+                -1.913720987565075
+              ],
+              "body_velocity": [
+                0.7133579205386734,
+                0.3403850578457949,
+                0.09866840103532343
+              ],
+              "left": -0.7615792751312256,
+              "right": 1.0,
+              "sum": 0.23842072486877441,
+              "right_minus_left": 1.7615792751312256
+            }
+          ]
+        }
+      },
+      "repeat": 1,
+      "source_rmse_kd010_divided_by_kd0": 1.128715286991573,
+      "mse_contribution_delta_by_bin": [
+        0.0011174043942747828,
+        0.0017982813113847631,
+        7.645233767738439e-05
+      ]
+    },
+    {
+      "kd0": {
+        "directory": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_turn_02",
+        "events_sha256": "d4f888a0fbd0084d86f6101a996539773fed1fad0a009475c8f0772910b862cf",
+        "summary_sha256": "64184bdcd673ef920a54059df507cefe772b603e0be52077d7e7b8c03e32fe71",
+        "source_rmse_m": 0.0828963417166358,
+        "source_span_s": 20.4,
+        "error_bins": [
+          {
+            "along_route_interval_m": [
+              null,
+              3.0
+            ],
+            "source_duration_s": 5.199999999999999,
+            "error_energy_m2_s": 0.07301247706021523,
+            "source_intervals": 52,
+            "local_rmse_m": 0.11849413898213833,
+            "contribution_to_full_mse_m2": 0.0035790429931478055,
+            "mean_speed": 0.5873975055437669,
+            "mean_heading": -1.2949727791565575,
+            "mean_lateral": 23.29149795113347
+          },
+          {
+            "along_route_interval_m": [
+              3.0,
+              9.0
+            ],
+            "source_duration_s": 8.8,
+            "error_energy_m2_s": 0.0642143871558489,
+            "source_intervals": 88,
+            "local_rmse_m": 0.08542300304676888,
+            "contribution_to_full_mse_m2": 0.0031477640762671033,
+            "mean_speed": 0.6845922026759561,
+            "mean_heading": -1.5793882460356978,
+            "mean_lateral": 23.3275757542491
+          },
+          {
+            "along_route_interval_m": [
+              9.0,
+              null
+            ],
+            "source_duration_s": 6.399999999999999,
+            "error_energy_m2_s": 0.0029579265719614925,
+            "source_intervals": 64,
+            "local_rmse_m": 0.02149827962579758,
+            "contribution_to_full_mse_m2": 0.0001449964005863477,
+            "mean_speed": 0.3689964094830892,
+            "mean_heading": -1.5569166222334627,
+            "mean_lateral": 23.25147456479236
+          }
+        ],
+        "yaw_bins": [
+          {
+            "r2_integral": 3.8416919913562895,
+            "r_max_abs": 1.5122008047008515,
+            "heading_min": -2.049084991732708,
+            "heading_max": -3.390988711602872e-05,
+            "r_rms_radps": 0.8595271498996825
+          },
+          {
+            "r2_integral": 0.8625885984072388,
+            "r_max_abs": 0.6816003144985211,
+            "heading_min": -1.7948411884018904,
+            "heading_max": -1.3454612782110609,
+            "r_rms_radps": 0.31308374540558026
+          },
+          {
+            "r2_integral": 0.07019308381532113,
+            "r_max_abs": 0.22722641769796328,
+            "heading_min": -1.6426644454714119,
+            "heading_max": -1.5158246193634297,
+            "r_rms_radps": 0.10472664105252268
+          }
+        ],
+        "early_thrust": {
+          "interpretation": "Received commands paired with preceding odom receipt, not atomic control input. Sum >.1/.3 are diagnostic markers, not acceptance thresholds.",
+          "first_nonzero": {
+            "command_lines": [
+              195,
+              196,
+              197
+            ],
+            "wall_s": 79614.952982451,
+            "source_state_time_s": 3.2,
+            "state_receipt_age_s": 0.08476605599571485,
+            "pose": [
+              23.125302518334284,
+              -10.125417755985778,
+              -3.390988711602872e-05
+            ],
+            "body_velocity": [
+              0.0006591542909859167,
+              0.0009928196598005838,
+              0.00014583155413117963
+            ],
+            "left": 1.0,
+            "right": -1.0,
+            "sum": 0.0,
+            "right_minus_left": -2.0
+          },
+          "first_sum_above_010": {
+            "command_lines": [
+              215,
+              216,
+              217
+            ],
+            "wall_s": 79615.265297134,
+            "source_state_time_s": 3.5,
+            "state_receipt_age_s": 0.09639154099568259,
+            "pose": [
+              23.127353675495353,
+              -10.126741054897135,
+              -0.0684521224329483
+            ],
+            "body_velocity": [
+              0.006307800828039497,
+              -0.013215530922852856,
+              -0.5971276399508041
+            ],
+            "left": 1.0,
+            "right": -0.885522186756134,
+            "sum": 0.11447781324386597,
+            "right_minus_left": -1.885522186756134
+          },
+          "first_sum_above_030": {
+            "command_lines": [
+              224,
+              225,
+              226
+            ],
+            "wall_s": 79615.376630045,
+            "source_state_time_s": 3.7,
+            "state_receipt_age_s": 0.007271705995663069,
+            "pose": [
+              23.130209363799317,
+              -10.130494195048762,
+              -0.22753664062077908
+            ],
+            "body_velocity": [
+              0.0318671315314021,
+              -0.018488827363334095,
+              -0.9653191866506526
+            ],
+            "left": 1.0,
+            "right": -0.6444157958030701,
+            "sum": 0.35558420419692993,
+            "right_minus_left": -1.64441579580307
+          },
+          "first_heading_below_minus_pi_over_2": {
+            "event": "odom",
+            "wall_monotonic_s": 79616.472435776,
+            "sim_time_s": 4.8,
+            "pose": [
+              23.295768096394188,
+              -10.312968673230099,
+              -1.6819018364618281
+            ],
+            "body_velocity": [
+              0.472004032092633,
+              0.19345332839261262,
+              -1.3727439195617586
+            ],
+            "frame_id": "otter/odom",
+            "child_frame_id": "otter/base_link",
+            "event_line": 289
+          },
+          "initial_command_sequence": [
+            {
+              "command_lines": [
+                195,
+                196,
+                197
+              ],
+              "wall_s": 79614.952982451,
+              "source_state_time_s": 3.2,
+              "state_receipt_age_s": 0.08476605599571485,
+              "pose": [
+                23.125302518334284,
+                -10.125417755985778,
+                -3.390988711602872e-05
+              ],
+              "body_velocity": [
+                0.0006591542909859167,
+                0.0009928196598005838,
+                0.00014583155413117963
+              ],
+              "left": 1.0,
+              "right": -1.0,
+              "sum": 0.0,
+              "right_minus_left": -2.0
+            },
+            {
+              "command_lines": [
+                202,
+                203,
+                204
+              ],
+              "wall_s": 79615.056186734,
+              "source_state_time_s": 3.3,
+              "state_receipt_age_s": 0.08777883800212294,
+              "pose": [
+                23.12576182370557,
+                -10.125258682373023,
+                -0.00041351100063797706
+              ],
+              "body_velocity": [
+                0.008054799746023814,
+                0.0006889847643885122,
+                -0.04907936982560889
+              ],
+              "left": 1.0,
+              "right": -1.0,
+              "sum": 0.0,
+              "right_minus_left": -2.0
+            },
+            {
+              "command_lines": [
+                209,
+                210,
+                211
+              ],
+              "wall_s": 79615.162654286,
+              "source_state_time_s": 3.4,
+              "state_receipt_age_s": 0.09403973800363019,
+              "pose": [
+                23.126670729733192,
+                -10.125641477827903,
+                -0.02075766950104674
+              ],
+              "body_velocity": [
+                0.008893658040747985,
+                -0.007683361076415365,
+                -0.34658866025984036
+              ],
+              "left": 1.0,
+              "right": -0.9490323662757874,
+              "sum": 0.050967633724212646,
+              "right_minus_left": -1.9490323662757874
+            },
+            {
+              "command_lines": [
+                215,
+                216,
+                217
+              ],
+              "wall_s": 79615.265297134,
+              "source_state_time_s": 3.5,
+              "state_receipt_age_s": 0.09639154099568259,
+              "pose": [
+                23.127353675495353,
+                -10.126741054897135,
+                -0.0684521224329483
+              ],
+              "body_velocity": [
+                0.006307800828039497,
+                -0.013215530922852856,
+                -0.5971276399508041
+              ],
+              "left": 1.0,
+              "right": -0.885522186756134,
+              "sum": 0.11447781324386597,
+              "right_minus_left": -1.885522186756134
+            },
+            {
+              "command_lines": [
+                224,
+                225,
+                226
+              ],
+              "wall_s": 79615.376630045,
+              "source_state_time_s": 3.7,
+              "state_receipt_age_s": 0.007271705995663069,
+              "pose": [
+                23.130209363799317,
+                -10.130494195048762,
+                -0.22753664062077908
+              ],
+              "body_velocity": [
+                0.0318671315314021,
+                -0.018488827363334095,
+                -0.9653191866506526
+              ],
+              "left": 1.0,
+              "right": -0.6444157958030701,
+              "sum": 0.35558420419692993,
+              "right_minus_left": -1.64441579580307
+            },
+            {
+              "command_lines": [
+                229,
+                230,
+                231
+              ],
+              "wall_s": 79615.479013019,
+              "source_state_time_s": 3.8,
+              "state_receipt_age_s": 0.009209068986820057,
+              "pose": [
+                23.135052554568052,
+                -10.133876392016843,
+                -0.32968867557664644
+              ],
+              "body_velocity": [
+                0.079957099242863,
+                -0.018353680138242717,
+                -1.0700571684430904
+              ],
+              "left": 1.0,
+              "right": -0.4879618287086487,
+              "sum": 0.5120381712913513,
+              "right_minus_left": -1.4879618287086487
+            },
+            {
+              "command_lines": [
+                236,
+                237,
+                238
+              ],
+              "wall_s": 79615.590377733,
+              "source_state_time_s": 3.9,
+              "state_receipt_age_s": 0.020495527001912706,
+              "pose": [
+                23.144796289912122,
+                -10.139605731317403,
+                -0.4402373900818729
+              ],
+              "body_velocity": [
+                0.14321399624989267,
+                -0.012377012424350228,
+                -1.1347869686866148
+              ],
+              "left": 1.0,
+              "right": -0.606535792350769,
+              "sum": 0.39346420764923096,
+              "right_minus_left": -1.606535792350769
+            },
+            {
+              "command_lines": [
+                243,
+                244,
+                245
+              ],
+              "wall_s": 79615.696218187,
+              "source_state_time_s": 4.0,
+              "state_receipt_age_s": 0.025703563005663455,
+              "pose": [
+                23.158893096793484,
+                -10.14809581682648,
+                -0.5571385549601584
+              ],
+              "body_velocity": [
+                0.1803527034389588,
+                -0.0006693447524607904,
+                -1.2019936110247569
+              ],
+              "left": 1.0,
+              "right": -0.8285663723945618,
+              "sum": 0.17143362760543823,
+              "right_minus_left": -1.8285663723945618
+            },
+            {
+              "command_lines": [
+                248,
+                249,
+                250
+              ],
+              "wall_s": 79615.799139231,
+              "source_state_time_s": 4.1,
+              "state_receipt_age_s": 0.02846684100222774,
+              "pose": [
+                23.174253969677622,
+                -10.158218053807367,
+                -0.6814888830095485
+              ],
+              "body_velocity": [
+                0.1802551746401041,
+                0.014199916646829944,
+                -1.2875798447522435
+              ],
+              "left": 1.0,
+              "right": -0.578018069267273,
+              "sum": 0.42198193073272705,
+              "right_minus_left": -1.578018069267273
+            },
+            {
+              "command_lines": [
+                255,
+                256,
+                257
+              ],
+              "wall_s": 79615.909552338,
+              "source_state_time_s": 4.2,
+              "state_receipt_age_s": 0.038377623990527354,
+              "pose": [
+                23.18969270362323,
+                -10.169436443246841,
+                -0.8134094392787824
+              ],
+              "body_velocity": [
+                0.20870594153594935,
+                0.03301623910549194,
+                -1.34084602190382
+              ],
+              "left": 1.0,
+              "right": -0.8302354216575623,
+              "sum": 0.16976457834243774,
+              "right_minus_left": -1.8302354216575623
+            },
+            {
+              "command_lines": [
+                260,
+                261,
+                262
+              ],
+              "wall_s": 79616.012560424,
+              "source_state_time_s": 4.3,
+              "state_receipt_age_s": 0.041064525008550845,
+              "pose": [
+                23.207335154679928,
+                -10.183742723018398,
+                -0.9500133628841241
+              ],
+              "body_velocity": [
+                0.22587814419843158,
+                0.05808379819797671,
+                -1.3995665094949736
+              ],
+              "left": 1.0,
+              "right": -0.5737900137901306,
+              "sum": 0.4262099862098694,
+              "right_minus_left": -1.5737900137901306
+            },
+            {
+              "command_lines": [
+                267,
+                268,
+                269
+              ],
+              "wall_s": 79616.122873638,
+              "source_state_time_s": 4.4,
+              "state_receipt_age_s": 0.05115968099562451,
+              "pose": [
+                23.22563993830187,
+                -10.20016104664218,
+                -1.0925298805906059
+              ],
+              "body_velocity": [
+                0.2555799760302468,
+                0.08337662858456825,
+                -1.4393913193659813
+              ],
+              "left": 1.0,
+              "right": -0.8411209583282471,
+              "sum": 0.15887904167175293,
+              "right_minus_left": -1.841120958328247
+            },
+            {
+              "command_lines": [
+                272,
+                273,
+                274
+              ],
+              "wall_s": 79616.22586988,
+              "source_state_time_s": 4.5,
+              "state_receipt_age_s": 0.05396162500255741,
+              "pose": [
+                23.245113874628732,
+                -10.221333038074064,
+                -1.2380041006992448
+              ],
+              "body_velocity": [
+                0.2722969333945018,
+                0.10745179463993731,
+                -1.4788966184830241
+              ],
+              "left": 1.0,
+              "right": -0.5530309677124023,
+              "sum": 0.44696903228759766,
+              "right_minus_left": -1.5530309677124023
+            },
+            {
+              "command_lines": [
+                279,
+                280,
+                281
+              ],
+              "wall_s": 79616.335927059,
+              "source_state_time_s": 4.6,
+              "state_receipt_age_s": 0.06377482099924237,
+              "pose": [
+                23.2633394725094,
+                -10.244309407248357,
+                -1.3882197428253518
+              ],
+              "body_velocity": [
+                0.2759821040604248,
+                0.1282602790572812,
+                -1.5122008047008515
+              ],
+              "left": 1.0,
+              "right": 0.10248050838708878,
+              "sum": 1.1024805083870888,
+              "right_minus_left": -0.8975194916129112
+            },
+            {
+              "command_lines": [
+                284,
+                285,
+                286
+              ],
+              "wall_s": 79616.439091653,
+              "source_state_time_s": 4.7,
+              "state_receipt_age_s": 0.06692353398830164,
+              "pose": [
+                23.280337226094307,
+                -10.272124530434288,
+                -1.5389603765985471
+              ],
+              "body_velocity": [
+                0.3377866066067416,
+                0.15384144358616658,
+                -1.4803983403119396
+              ],
+              "left": 1.0,
+              "right": 0.42514684796333313,
+              "sum": 1.4251468479633331,
+              "right_minus_left": -0.5748531520366669
+            },
+            {
+              "command_lines": [
+                292,
+                293,
+                294
+              ],
+              "wall_s": 79616.549112497,
+              "source_state_time_s": 4.8,
+              "state_receipt_age_s": 0.07667672100069467,
+              "pose": [
+                23.295768096394188,
+                -10.312968673230099,
+                -1.6819018364618281
+              ],
+              "body_velocity": [
+                0.472004032092633,
+                0.19345332839261262,
+                -1.3727439195617586
+              ],
+              "left": 0.3654950261116028,
+              "right": 0.8460837602615356,
+              "sum": 1.2115787863731384,
+              "right_minus_left": 0.48058873414993286
+            },
+            {
+              "command_lines": [
+                297,
+                298,
+                299
+              ],
+              "wall_s": 79616.652614106,
+              "source_state_time_s": 4.9,
+              "state_receipt_age_s": 0.07995416900666896,
+              "pose": [
+                23.30744789938458,
+                -10.370424967210969,
+                -1.8122632815956736
+              ],
+              "body_velocity": [
+                0.6034104581805237,
+                0.24451813488569793,
+                -1.2088561597107064
+              ],
+              "left": -0.11096015572547913,
+              "right": 1.0,
+              "sum": 0.8890398442745209,
+              "right_minus_left": 1.1109601557254791
+            },
+            {
+              "command_lines": [
+                304,
+                305,
+                306
+              ],
+              "wall_s": 79616.763045376,
+              "source_state_time_s": 5.0,
+              "state_receipt_age_s": 0.09006299900647718,
+              "pose": [
+                23.314257932604647,
+                -10.439998326422227,
+                -1.9195808702361585
+              ],
+              "body_velocity": [
+                0.6754787817759514,
+                0.293796036085456,
+                -0.9306537243413094
+              ],
+              "left": -0.6271333694458008,
+              "right": 1.0,
+              "sum": 0.3728666305541992,
+              "right_minus_left": 1.6271333694458008
+            },
+            {
+              "command_lines": [
+                309,
+                310,
+                311
+              ],
+              "wall_s": 79616.865627378,
+              "source_state_time_s": 5.1,
+              "state_receipt_age_s": 0.0925329640012933,
+              "pose": [
+                23.31696184448364,
+                -10.515857669856496,
+                -1.996339568161878
+              ],
+              "body_velocity": [
+                0.702073768606568,
+                0.3314174824376889,
+                -0.6100045897956912
+              ],
+              "left": -0.8681238293647766,
+              "right": 1.0,
+              "sum": 0.1318761706352234,
+              "right_minus_left": 1.8681238293647766
+            },
+            {
+              "command_lines": [
+                318,
+                319,
+                320
+              ],
+              "wall_s": 79616.977024359,
+              "source_state_time_s": 5.3,
+              "state_receipt_age_s": 0.003023188008228317,
+              "pose": [
+                23.31945506914578,
+                -10.668634861112603,
+                -2.049084991732708
+              ],
+              "body_velocity": [
+                0.6649036567412909,
+                0.3586100439094846,
+                0.06086586749629254
+              ],
+              "left": -1.0,
+              "right": 1.0,
+              "sum": 0.0,
+              "right_minus_left": 2.0
+            }
+          ]
+        }
+      },
+      "kd010": {
+        "directory": "/home/usv/usv_migration/results/python-pid-course-d010-turn-candidate-001/python_pid_turn_02",
+        "events_sha256": "374ea94551c0d9989902edbcf633629e800091eef5cb60faeaf9439a0fbd2ca0",
+        "summary_sha256": "78d2c127d86fcc952435c768f67d00bf5436d08c40b3554ab71be0656e5fc934",
+        "source_rmse_m": 0.10057699436027283,
+        "source_span_s": 20.4,
+        "error_bins": [
+          {
+            "along_route_interval_m": [
+              null,
+              3.0
+            ],
+            "source_duration_s": 5.199999999999999,
+            "error_energy_m2_s": 0.09588313541831976,
+            "source_intervals": 52,
+            "local_rmse_m": 0.13579051698672862,
+            "contribution_to_full_mse_m2": 0.0047001536969764595,
+            "mean_speed": 0.5977151053010809,
+            "mean_heading": -1.2760924221982202,
+            "mean_lateral": 23.311045290832112
+          },
+          {
+            "along_route_interval_m": [
+              3.0,
+              9.0
+            ],
+            "source_duration_s": 8.8,
+            "error_energy_m2_s": 0.1061259603856737,
+            "source_intervals": 88,
+            "local_rmse_m": 0.10981697603578756,
+            "contribution_to_full_mse_m2": 0.005202252960082045,
+            "mean_speed": 0.6784603597766173,
+            "mean_heading": -1.5908749763855763,
+            "mean_lateral": 23.352398428794583
+          },
+          {
+            "along_route_interval_m": [
+              9.0,
+              null
+            ],
+            "source_duration_s": 6.399999999999999,
+            "error_energy_m2_s": 0.00435183280475204,
+            "source_intervals": 64,
+            "local_rmse_m": 0.026076308706228082,
+            "contribution_to_full_mse_m2": 0.0002133251374878451,
+            "mean_speed": 0.3704636841965145,
+            "mean_heading": -1.583216323247942,
+            "mean_lateral": 23.273502062952346
+          }
+        ],
+        "yaw_bins": [
+          {
+            "r2_integral": 3.256305858069982,
+            "r_max_abs": 1.5140222012146083,
+            "heading_min": -2.0010852332923927,
+            "heading_max": -2.908359945012528e-05,
+            "r_rms_radps": 0.7913360000742151
+          },
+          {
+            "r2_integral": 0.11578332110873793,
+            "r_max_abs": 0.3372738588284722,
+            "heading_min": -1.6883808394980082,
+            "heading_max": -1.4729805130672906,
+            "r_rms_radps": 0.11470481934312263
+          },
+          {
+            "r2_integral": 0.0006936648215980214,
+            "r_max_abs": 0.020938568315204638,
+            "heading_min": -1.589604262451235,
+            "heading_max": -1.5764301209896399,
+            "r_rms_radps": 0.010410817853304843
+          }
+        ],
+        "early_thrust": {
+          "interpretation": "Received commands paired with preceding odom receipt, not atomic control input. Sum >.1/.3 are diagnostic markers, not acceptance thresholds.",
+          "first_nonzero": {
+            "command_lines": [
+              282,
+              283,
+              284
+            ],
+            "wall_s": 81974.089731424,
+            "source_state_time_s": 3.3,
+            "state_receipt_age_s": 0.006130690991994925,
+            "pose": [
+              23.12585813424162,
+              -10.125616466536572,
+              -2.908359945012528e-05
+            ],
+            "body_velocity": [
+              0.007844798386173827,
+              0.002201418213679387,
+              0.00024777694876868965
+            ],
+            "left": 1.0,
+            "right": -1.0,
+            "sum": 0.0,
+            "right_minus_left": -2.0
+          },
+          "first_sum_above_010": {
+            "command_lines": [
+              296,
+              297,
+              298
+            ],
+            "wall_s": 81974.299547064,
+            "source_state_time_s": 3.5,
+            "state_receipt_age_s": 0.015546454000286758,
+            "pose": [
+              23.12749343371834,
+              -10.12680491669672,
+              -0.056405367219776126
+            ],
+            "body_velocity": [
+              0.005984036976908863,
+              -0.012413113086664299,
+              -0.548214190988121
+            ],
+            "left": 1.0,
+            "right": -0.822717010974884,
+            "sum": 0.17728298902511597,
+            "right_minus_left": -1.822717010974884
+          },
+          "first_sum_above_030": {
+            "command_lines": [
+              309,
+              310,
+              311
+            ],
+            "wall_s": 81974.507332795,
+            "source_state_time_s": 3.7,
+            "state_receipt_age_s": 0.02305193898791913,
+            "pose": [
+              23.133327720888754,
+              -10.130687333673714,
+              -0.20449004595019624
+            ],
+            "body_velocity": [
+              0.062310536520835076,
+              -0.01570867261045214,
+              -0.9019210009528702
+            ],
+            "left": 1.0,
+            "right": -0.6309654712677002,
+            "sum": 0.3690345287322998,
+            "right_minus_left": -1.6309654712677002
+          },
+          "first_heading_below_minus_pi_over_2": {
+            "event": "odom",
+            "wall_monotonic_s": 81975.586770641,
+            "sim_time_s": 4.8,
+            "pose": [
+              23.304612726292035,
+              -10.304183379453054,
+              -1.6435992220129254
+            ],
+            "body_velocity": [
+              0.4784632294907324,
+              0.19389807791595737,
+              -1.366408631293637
+            ],
+            "frame_id": "otter/odom",
+            "child_frame_id": "otter/base_link",
+            "event_line": 375
+          },
+          "initial_command_sequence": [
+            {
+              "command_lines": [
+                282,
+                283,
+                284
+              ],
+              "wall_s": 81974.089731424,
+              "source_state_time_s": 3.3,
+              "state_receipt_age_s": 0.006130690991994925,
+              "pose": [
+                23.12585813424162,
+                -10.125616466536572,
+                -2.908359945012528e-05
+              ],
+              "body_velocity": [
+                0.007844798386173827,
+                0.002201418213679387,
+                0.00024777694876868965
+              ],
+              "left": 1.0,
+              "right": -1.0,
+              "sum": 0.0,
+              "right_minus_left": -2.0
+            },
+            {
+              "command_lines": [
+                289,
+                290,
+                291
+              ],
+              "wall_s": 81974.195509883,
+              "source_state_time_s": 3.4,
+              "state_receipt_age_s": 0.011688864993629977,
+              "pose": [
+                23.12677220551752,
+                -10.125818249620522,
+                -0.014069744240930318
+              ],
+              "body_velocity": [
+                0.00911514654373155,
+                -0.006262559122835961,
+                -0.2881207685607914
+              ],
+              "left": 1.0,
+              "right": -1.0,
+              "sum": 0.0,
+              "right_minus_left": -2.0
+            },
+            {
+              "command_lines": [
+                296,
+                297,
+                298
+              ],
+              "wall_s": 81974.299547064,
+              "source_state_time_s": 3.5,
+              "state_receipt_age_s": 0.015546454000286758,
+              "pose": [
+                23.12749343371834,
+                -10.12680491669672,
+                -0.056405367219776126
+              ],
+              "body_velocity": [
+                0.005984036976908863,
+                -0.012413113086664299,
+                -0.548214190988121
+              ],
+              "left": 1.0,
+              "right": -0.822717010974884,
+              "sum": 0.17728298902511597,
+              "right_minus_left": -1.822717010974884
+            },
+            {
+              "command_lines": [
+                304,
+                305,
+                306
+              ],
+              "wall_s": 81974.404819943,
+              "source_state_time_s": 3.6,
+              "state_receipt_age_s": 0.020777035999344662,
+              "pose": [
+                23.128988040346858,
+                -10.128372488831124,
+                -0.12169598212850037
+              ],
+              "body_velocity": [
+                0.03049353026909316,
+                -0.015270641261278875,
+                -0.7453154895731633
+              ],
+              "left": 1.0,
+              "right": -0.7716958522796631,
+              "sum": 0.22830414772033691,
+              "right_minus_left": -1.771695852279663
+            },
+            {
+              "command_lines": [
+                309,
+                310,
+                311
+              ],
+              "wall_s": 81974.507332795,
+              "source_state_time_s": 3.7,
+              "state_receipt_age_s": 0.02305193898791913,
+              "pose": [
+                23.133327720888754,
+                -10.130687333673714,
+                -0.20449004595019624
+              ],
+              "body_velocity": [
+                0.062310536520835076,
+                -0.01570867261045214,
+                -0.9019210009528702
+              ],
+              "left": 1.0,
+              "right": -0.6309654712677002,
+              "sum": 0.3690345287322998,
+              "right_minus_left": -1.6309654712677002
+            },
+            {
+              "command_lines": [
+                317,
+                318,
+                319
+              ],
+              "wall_s": 81974.618213498,
+              "source_state_time_s": 3.8,
+              "state_receipt_age_s": 0.03366444401035551,
+              "pose": [
+                23.140860443185638,
+                -10.134241775179737,
+                -0.300934323067778
+              ],
+              "body_velocity": [
+                0.10361527086994461,
+                -0.014311462255246245,
+                -1.016841995860602
+              ],
+              "left": 1.0,
+              "right": -0.8255226612091064,
+              "sum": 0.17447733879089355,
+              "right_minus_left": -1.8255226612091064
+            },
+            {
+              "command_lines": [
+                322,
+                323,
+                324
+              ],
+              "wall_s": 81974.720480232,
+              "source_state_time_s": 3.9,
+              "state_receipt_age_s": 0.035442660009721294,
+              "pose": [
+                23.15122525008698,
+                -10.139366185341398,
+                -0.40819546100380777
+              ],
+              "body_velocity": [
+                0.11804135789167694,
+                -0.009337040931948787,
+                -1.1299188641258944
+              ],
+              "left": 1.0,
+              "right": -0.5020769238471985,
+              "sum": 0.4979230761528015,
+              "right_minus_left": -1.5020769238471985
+            },
+            {
+              "command_lines": [
+                329,
+                330,
+                331
+              ],
+              "wall_s": 81974.830817296,
+              "source_state_time_s": 4.0,
+              "state_receipt_age_s": 0.045908039988717064,
+              "pose": [
+                23.16269899507931,
+                -10.145793051458213,
+                -0.5255549958894241
+              ],
+              "body_velocity": [
+                0.15782374323832987,
+                -0.0001616653925248096,
+                -1.20234947029601
+              ],
+              "left": 1.0,
+              "right": -0.869686484336853,
+              "sum": 0.13031351566314697,
+              "right_minus_left": -1.869686484336853
+            },
+            {
+              "command_lines": [
+                334,
+                335,
+                336
+              ],
+              "wall_s": 81974.933259789,
+              "source_state_time_s": 4.1,
+              "state_receipt_age_s": 0.048011234001023695,
+              "pose": [
+                23.17792840261917,
+                -10.155000326593411,
+                -0.6489291986818333
+              ],
+              "body_velocity": [
+                0.18050622247424533,
+                0.016627274492061042,
+                -1.2772897664462748
+              ],
+              "left": 1.0,
+              "right": -0.4547170400619507,
+              "sum": 0.5452829599380493,
+              "right_minus_left": -1.4547170400619507
+            },
+            {
+              "command_lines": [
+                341,
+                342,
+                343
+              ],
+              "wall_s": 81975.043153316,
+              "source_state_time_s": 4.2,
+              "state_receipt_age_s": 0.05764215199451428,
+              "pose": [
+                23.193744458378383,
+                -10.165353258960806,
+                -0.7803617246451785
+              ],
+              "body_velocity": [
+                0.21206062950627486,
+                0.03536295511035549,
+                -1.331727152458329
+              ],
+              "left": 1.0,
+              "right": -0.9296295046806335,
+              "sum": 0.07037049531936646,
+              "right_minus_left": -1.9296295046806335
+            },
+            {
+              "command_lines": [
+                346,
+                347,
+                348
+              ],
+              "wall_s": 81975.146071135,
+              "source_state_time_s": 4.3,
+              "state_receipt_age_s": 0.06030432999250479,
+              "pose": [
+                23.212835298039455,
+                -10.180044864327527,
+                -0.9152161622581253
+              ],
+              "body_velocity": [
+                0.23839833622517168,
+                0.05727417055603558,
+                -1.381643943213717
+              ],
+              "left": 1.0,
+              "right": -0.45278820395469666,
+              "sum": 0.5472117960453033,
+              "right_minus_left": -1.4527882039546967
+            },
+            {
+              "command_lines": [
+                353,
+                354,
+                355
+              ],
+              "wall_s": 81975.256006682,
+              "source_state_time_s": 4.4,
+              "state_receipt_age_s": 0.07002330900286324,
+              "pose": [
+                23.23131596765066,
+                -10.195780751249831,
+                -1.0570427103238682
+              ],
+              "body_velocity": [
+                0.2485517925932584,
+                0.07749041365156449,
+                -1.4342478468804454
+              ],
+              "left": 1.0,
+              "right": -0.9726396799087524,
+              "sum": 0.02736032009124756,
+              "right_minus_left": -1.9726396799087524
+            },
+            {
+              "command_lines": [
+                358,
+                359,
+                360
+              ],
+              "wall_s": 81975.358886356,
+              "source_state_time_s": 4.5,
+              "state_receipt_age_s": 0.07290437800111249,
+              "pose": [
+                23.251051269057974,
+                -10.216677756769398,
+                -1.2009121828253795
+              ],
+              "body_velocity": [
+                0.2758952293120759,
+                0.10251340728288515,
+                -1.4612263857535694
+              ],
+              "left": 1.0,
+              "right": -0.4481326937675476,
+              "sum": 0.5518673062324524,
+              "right_minus_left": -1.4481326937675476
+            },
+            {
+              "command_lines": [
+                365,
+                366,
+                367
+              ],
+              "wall_s": 81975.469198089,
+              "source_state_time_s": 4.6,
+              "state_receipt_age_s": 0.08303288400929887,
+              "pose": [
+                23.269586029557704,
+                -10.237945695994695,
+                -1.3505731357350295
+              ],
+              "body_velocity": [
+                0.25737347688091994,
+                0.12760412258919346,
+                -1.5140222012146083
+              ],
+              "left": 1.0,
+              "right": 0.2457992285490036,
+              "sum": 1.2457992285490036,
+              "right_minus_left": -0.7542007714509964
+            },
+            {
+              "command_lines": [
+                370,
+                371,
+                372
+              ],
+              "wall_s": 81975.571897094,
+              "source_state_time_s": 4.7,
+              "state_receipt_age_s": 0.08563328700256534,
+              "pose": [
+                23.287540884996137,
+                -10.263919576168375,
+                -1.5011433265735141
+              ],
+              "body_velocity": [
+                0.3236320792287422,
+                0.1555126023846868,
+                -1.4834122805362264
+              ],
+              "left": 1.0,
+              "right": 0.4797353446483612,
+              "sum": 1.4797353446483612,
+              "right_minus_left": -0.5202646553516388
+            },
+            {
+              "command_lines": [
+                378,
+                379,
+                380
+              ],
+              "wall_s": 81975.681509548,
+              "source_state_time_s": 4.8,
+              "state_receipt_age_s": 0.09473890699155163,
+              "pose": [
+                23.304612726292035,
+                -10.304183379453054,
+                -1.6435992220129254
+              ],
+              "body_velocity": [
+                0.4784632294907324,
+                0.19389807791595737,
+                -1.366408631293637
+              ],
+              "left": 0.2013564556837082,
+              "right": 0.9998950958251953,
+              "sum": 1.2012515515089035,
+              "right_minus_left": 0.7985386401414871
+            },
+            {
+              "command_lines": [
+                383,
+                384,
+                385
+              ],
+              "wall_s": 81975.784867613,
+              "source_state_time_s": 4.9,
+              "state_receipt_age_s": 0.09808319598960225,
+              "pose": [
+                23.31818801136615,
+                -10.362532598682051,
+                -1.7734482446840056
+              ],
+              "body_velocity": [
+                0.6283835079809713,
+                0.24155988458277855,
+                -1.2262156642887938
+              ],
+              "left": -0.17099787294864655,
+              "right": 1.0,
+              "sum": 0.8290021270513535,
+              "right_minus_left": 1.1709978729486465
+            },
+            {
+              "command_lines": [
+                392,
+                393,
+                394
+              ],
+              "wall_s": 81975.894261834,
+              "source_state_time_s": 5.1,
+              "state_receipt_age_s": 0.007079831993905827,
+              "pose": [
+                23.33183552216454,
+                -10.5113458651135,
+                -1.955012125151832
+              ],
+              "body_velocity": [
+                0.7206085547071364,
+                0.3297255866578902,
+                -0.5974653546997317
+              ],
+              "left": -0.905604362487793,
+              "right": 1.0,
+              "sum": 0.09439563751220703,
+              "right_minus_left": 1.905604362487793
+            },
+            {
+              "command_lines": [
+                397,
+                398,
+                399
+              ],
+              "wall_s": 81975.997392675,
+              "source_state_time_s": 5.2,
+              "state_receipt_age_s": 0.010286561999237165,
+              "pose": [
+                23.336270188273794,
+                -10.588070252814074,
+                -1.9955409028624405
+              ],
+              "body_velocity": [
+                0.6550366403446111,
+                0.35578452825113566,
+                -0.22123741716045667
+              ],
+              "left": -0.8647521138191223,
+              "right": 1.0,
+              "sum": 0.13524788618087769,
+              "right_minus_left": 1.8647521138191223
+            },
+            {
+              "command_lines": [
+                404,
+                405,
+                406
+              ],
+              "wall_s": 81976.107189283,
+              "source_state_time_s": 5.3,
+              "state_receipt_age_s": 0.020117844993364997,
+              "pose": [
+                23.341844068360025,
+                -10.661770714191976,
+                -2.0010852332923927
+              ],
+              "body_velocity": [
+                0.6482894311715512,
+                0.35562161485913446,
+                0.09766422246322667
+              ],
+              "left": -0.9888262152671814,
+              "right": 1.0,
+              "sum": 0.011173784732818604,
+              "right_minus_left": 1.9888262152671814
+            }
+          ]
+        }
+      },
+      "repeat": 2,
+      "source_rmse_kd010_divided_by_kd0": 1.2132862835379965,
+      "mse_contribution_delta_by_bin": [
+        0.001121110703828654,
+        0.002054488883814942,
+        6.832873690149741e-05
+      ]
+    },
+    {
+      "kd0": {
+        "directory": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_turn_03",
+        "events_sha256": "bfeac8caba03a88e770b286b6c1a7e4b5daf3a10a9110b43303e59b884e62917",
+        "summary_sha256": "1d6fc5cb2df77f6aafffddd441e749ea7ee297f7c4d97add8c1969df75d0f823",
+        "source_rmse_m": 0.08074213343154242,
+        "source_span_s": 20.299999999999997,
+        "error_bins": [
+          {
+            "along_route_interval_m": [
+              null,
+              3.0
+            ],
+            "source_duration_s": 5.3,
+            "error_energy_m2_s": 0.06952766593876542,
+            "source_intervals": 53,
+            "local_rmse_m": 0.114535704195749,
+            "contribution_to_full_mse_m2": 0.00342500817432342,
+            "mean_speed": 0.583084188463164,
+            "mean_heading": -1.292981366615472,
+            "mean_lateral": 23.285574269327075
+          },
+          {
+            "along_route_interval_m": [
+              3.0,
+              9.0
+            ],
+            "source_duration_s": 8.700000000000001,
+            "error_energy_m2_s": 0.05984786460652054,
+            "source_intervals": 87,
+            "local_rmse_m": 0.08294012838970778,
+            "contribution_to_full_mse_m2": 0.002948170670271948,
+            "mean_speed": 0.6882209319149293,
+            "mean_heading": -1.5766910811624348,
+            "mean_lateral": 23.32782726368568
+          },
+          {
+            "along_route_interval_m": [
+              9.0,
+              null
+            ],
+            "source_duration_s": 6.299999999999997,
+            "error_energy_m2_s": 0.0029660993095770092,
+            "source_intervals": 63,
+            "local_rmse_m": 0.021698143105311412,
+            "contribution_to_full_mse_m2": 0.0001461132664816261,
+            "mean_speed": 0.3662411273430361,
+            "mean_heading": -1.5603661863119545,
+            "mean_lateral": 23.258354275830413
+          }
+        ],
+        "yaw_bins": [
+          {
+            "r2_integral": 3.9483924391229768,
+            "r_max_abs": 1.4876362885644883,
+            "heading_min": -2.071510636789599,
+            "heading_max": -1.1716609014347092e-05,
+            "r_rms_radps": 0.8631220687103889
+          },
+          {
+            "r2_integral": 0.606773061105867,
+            "r_max_abs": 0.6229047998078088,
+            "heading_min": -1.7490529233825052,
+            "heading_max": -1.3714869039245818,
+            "r_rms_radps": 0.264090950265564
+          },
+          {
+            "r2_integral": 0.06108152123498267,
+            "r_max_abs": 0.20034534599742365,
+            "heading_min": -1.6458502481187993,
+            "heading_max": -1.5167174186583376,
+            "r_rms_radps": 0.09846562629216535
+          }
+        ],
+        "early_thrust": {
+          "interpretation": "Received commands paired with preceding odom receipt, not atomic control input. Sum >.1/.3 are diagnostic markers, not acceptance thresholds.",
+          "first_nonzero": {
+            "command_lines": [
+              283,
+              284,
+              285
+            ],
+            "wall_s": 79647.317848457,
+            "source_state_time_s": 3.4,
+            "state_receipt_age_s": 0.004782334988703951,
+            "pose": [
+              23.126129194780702,
+              -10.125257768818937,
+              -1.1716609014347092e-05
+            ],
+            "body_velocity": [
+              0.008341787699878875,
+              0.002712643256386979,
+              0.00026627547389698904
+            ],
+            "left": 1.0,
+            "right": -1.0,
+            "sum": 0.0,
+            "right_minus_left": -2.0
+          },
+          "first_sum_above_010": {
+            "command_lines": [
+              306,
+              307,
+              308
+            ],
+            "wall_s": 79647.633048735,
+            "source_state_time_s": 3.7,
+            "state_receipt_age_s": 0.019552348006982356,
+            "pose": [
+              23.12873224211362,
+              -10.127952382070408,
+              -0.12299676362219532
+            ],
+            "body_velocity": [
+              0.016511136402113526,
+              -0.016133633863199454,
+              -0.7592328034485236
+            ],
+            "left": 1.0,
+            "right": -0.7703121900558472,
+            "sum": 0.22968780994415283,
+            "right_minus_left": -1.7703121900558472
+          },
+          "first_sum_above_030": {
+            "command_lines": [
+              318,
+              319,
+              320
+            ],
+            "wall_s": 79647.84097028,
+            "source_state_time_s": 3.9,
+            "state_receipt_age_s": 0.027365296991774812,
+            "pose": [
+              23.13696798643622,
+              -10.133490178659267,
+              -0.30574443801098994
+            ],
+            "body_velocity": [
+              0.07271048116698034,
+              -0.01792453259255498,
+              -1.0460370843604099
+            ],
+            "left": 1.0,
+            "right": -0.6120226383209229,
+            "sum": 0.38797736167907715,
+            "right_minus_left": -1.6120226383209229
+          },
+          "first_heading_below_minus_pi_over_2": {
+            "event": "odom",
+            "wall_monotonic_s": 79648.815555857,
+            "sim_time_s": 4.9,
+            "pose": [
+              23.28498405812454,
+              -10.301587361731743,
+              -1.6574281636194332
+            ],
+            "body_velocity": [
+              0.41254576956630756,
+              0.1847358832684951,
+              -1.4218770757844583
+            ],
+            "frame_id": "otter/odom",
+            "child_frame_id": "otter/base_link",
+            "event_line": 377
+          },
+          "initial_command_sequence": [
+            {
+              "command_lines": [
+                283,
+                284,
+                285
+              ],
+              "wall_s": 79647.317848457,
+              "source_state_time_s": 3.4,
+              "state_receipt_age_s": 0.004782334988703951,
+              "pose": [
+                23.126129194780702,
+                -10.125257768818937,
+                -1.1716609014347092e-05
+              ],
+              "body_velocity": [
+                0.008341787699878875,
+                0.002712643256386979,
+                0.00026627547389698904
+              ],
+              "left": 1.0,
+              "right": -1.0,
+              "sum": 0.0,
+              "right_minus_left": -2.0
+            },
+            {
+              "command_lines": [
+                290,
+                291,
+                292
+              ],
+              "wall_s": 79647.424230778,
+              "source_state_time_s": 3.5,
+              "state_receipt_age_s": 0.01110181499097962,
+              "pose": [
+                23.127094188922147,
+                -10.125427154255103,
+                -0.014347365928871694
+              ],
+              "body_velocity": [
+                0.009638586678277992,
+                -0.006044011393144144,
+                -0.29097036223077777
+              ],
+              "left": 1.0,
+              "right": -1.0,
+              "sum": 0.0,
+              "right_minus_left": -2.0
+            },
+            {
+              "command_lines": [
+                298,
+                299,
+                300
+              ],
+              "wall_s": 79647.529779483,
+              "source_state_time_s": 3.6,
+              "state_receipt_age_s": 0.01624104200163856,
+              "pose": [
+                23.127852606894283,
+                -10.126407550874944,
+                -0.05695126815779892
+              ],
+              "body_velocity": [
+                0.006098092254596602,
+                -0.012491216593846336,
+                -0.5506545444123517
+              ],
+              "left": 1.0,
+              "right": -0.9131739735603333,
+              "sum": 0.08682602643966675,
+              "right_minus_left": -1.9131739735603333
+            },
+            {
+              "command_lines": [
+                306,
+                307,
+                308
+              ],
+              "wall_s": 79647.633048735,
+              "source_state_time_s": 3.7,
+              "state_receipt_age_s": 0.019552348006982356,
+              "pose": [
+                23.12873224211362,
+                -10.127952382070408,
+                -0.12299676362219532
+              ],
+              "body_velocity": [
+                0.016511136402113526,
+                -0.016133633863199454,
+                -0.7592328034485236
+              ],
+              "left": 1.0,
+              "right": -0.7703121900558472,
+              "sum": 0.22968780994415283,
+              "right_minus_left": -1.7703121900558472
+            },
+            {
+              "command_lines": [
+                313,
+                314,
+                315
+              ],
+              "wall_s": 79647.740654521,
+              "source_state_time_s": 3.8,
+              "state_receipt_age_s": 0.02725771500263363,
+              "pose": [
+                23.131494035501348,
+                -10.130173486489024,
+                -0.20731704595735378
+              ],
+              "body_velocity": [
+                0.047837537241620945,
+                -0.01785164224244043,
+                -0.9159966861844882
+              ],
+              "left": 1.0,
+              "right": -0.7799879312515259,
+              "sum": 0.22001206874847412,
+              "right_minus_left": -1.7799879312515259
+            },
+            {
+              "command_lines": [
+                318,
+                319,
+                320
+              ],
+              "wall_s": 79647.84097028,
+              "source_state_time_s": 3.9,
+              "state_receipt_age_s": 0.027365296991774812,
+              "pose": [
+                23.13696798643622,
+                -10.133490178659267,
+                -0.30574443801098994
+              ],
+              "body_velocity": [
+                0.07271048116698034,
+                -0.01792453259255498,
+                -1.0460370843604099
+              ],
+              "left": 1.0,
+              "right": -0.6120226383209229,
+              "sum": 0.38797736167907715,
+              "right_minus_left": -1.6120226383209229
+            },
+            {
+              "command_lines": [
+                325,
+                326,
+                327
+              ],
+              "wall_s": 79647.950764413,
+              "source_state_time_s": 4.0,
+              "state_receipt_age_s": 0.0369964470010018,
+              "pose": [
+                23.144719804316587,
+                -10.138249108440622,
+                -0.41547386556852
+              ],
+              "body_velocity": [
+                0.1107350445808297,
+                -0.014888385995274686,
+                -1.1381472953153418
+              ],
+              "left": 1.0,
+              "right": -0.7699394226074219,
+              "sum": 0.23006057739257812,
+              "right_minus_left": -1.7699394226074219
+            },
+            {
+              "command_lines": [
+                330,
+                331,
+                332
+              ],
+              "wall_s": 79648.05387122,
+              "source_state_time_s": 4.1,
+              "state_receipt_age_s": 0.03985177700815257,
+              "pose": [
+                23.155397578968685,
+                -10.144988345568372,
+                -0.5335080145556098
+              ],
+              "body_velocity": [
+                0.1336902976655051,
+                -0.006414925731629814,
+                -1.2248238977192973
+              ],
+              "left": 1.0,
+              "right": -0.5543215274810791,
+              "sum": 0.4456784725189209,
+              "right_minus_left": -1.554321527481079
+            },
+            {
+              "command_lines": [
+                337,
+                338,
+                339
+              ],
+              "wall_s": 79648.163702559,
+              "source_state_time_s": 4.2,
+              "state_receipt_age_s": 0.04925561499840114,
+              "pose": [
+                23.167524463233995,
+                -10.153304188045949,
+                -0.6595574532880727
+              ],
+              "body_velocity": [
+                0.1691870283792037,
+                0.00679882983214819,
+                -1.285770148728482
+              ],
+              "left": 1.0,
+              "right": -0.7918017506599426,
+              "sum": 0.20819824934005737,
+              "right_minus_left": -1.7918017506599426
+            },
+            {
+              "command_lines": [
+                342,
+                343,
+                344
+              ],
+              "wall_s": 79648.266215625,
+              "source_state_time_s": 4.3,
+              "state_receipt_age_s": 0.051830683994921856,
+              "pose": [
+                23.1826656833383,
+                -10.164615961313004,
+                -0.7906245123506744
+              ],
+              "body_velocity": [
+                0.1957282369348428,
+                0.025702376066607316,
+                -1.3434550235032061
+              ],
+              "left": 1.0,
+              "right": -0.5532721877098083,
+              "sum": 0.44672781229019165,
+              "right_minus_left": -1.5532721877098083
+            },
+            {
+              "command_lines": [
+                349,
+                350,
+                351
+              ],
+              "wall_s": 79648.376460386,
+              "source_state_time_s": 4.4,
+              "state_receipt_age_s": 0.06182298201019876,
+              "pose": [
+                23.19862036452053,
+                -10.177703139934888,
+                -0.9279516595917525
+              ],
+              "body_velocity": [
+                0.22108237822964677,
+                0.04589568565730061,
+                -1.3918210171125067
+              ],
+              "left": 1.0,
+              "right": -0.8303509950637817,
+              "sum": 0.16964900493621826,
+              "right_minus_left": -1.8303509950637817
+            },
+            {
+              "command_lines": [
+                354,
+                355,
+                356
+              ],
+              "wall_s": 79648.478901589,
+              "source_state_time_s": 4.5,
+              "state_receipt_age_s": 0.06398981899837963,
+              "pose": [
+                23.2164171933195,
+                -10.194817515647184,
+                -1.0686655242996075
+              ],
+              "body_velocity": [
+                0.24626967453570958,
+                0.06894413699164031,
+                -1.4322138058910403
+              ],
+              "left": 1.0,
+              "right": -0.5728540420532227,
+              "sum": 0.42714595794677734,
+              "right_minus_left": -1.5728540420532227
+            },
+            {
+              "command_lines": [
+                361,
+                362,
+                363
+              ],
+              "wall_s": 79648.588723975,
+              "source_state_time_s": 4.6,
+              "state_receipt_age_s": 0.07395410000754055,
+              "pose": [
+                23.2339601145108,
+                -10.213775556757636,
+                -1.2146417703422534
+              ],
+              "body_velocity": [
+                0.25415239752930757,
+                0.0927756591082842,
+                -1.4763299995232193
+              ],
+              "left": 1.0,
+              "right": -0.5339199900627136,
+              "sum": 0.4660800099372864,
+              "right_minus_left": -1.5339199900627136
+            },
+            {
+              "command_lines": [
+                366,
+                367,
+                368
+              ],
+              "wall_s": 79648.691343019,
+              "source_state_time_s": 4.7,
+              "state_receipt_age_s": 0.0762445450091036,
+              "pose": [
+                23.251624937494142,
+                -10.236834068921791,
+                -1.362904034376579
+              ],
+              "body_velocity": [
+                0.2860947458115958,
+                0.11989409595025266,
+                -1.4876362885644883
+              ],
+              "left": 1.0,
+              "right": -0.20351049304008484,
+              "sum": 0.7964895069599152,
+              "right_minus_left": -1.2035104930400848
+            },
+            {
+              "command_lines": [
+                374,
+                375,
+                376
+              ],
+              "wall_s": 79648.801214144,
+              "source_state_time_s": 4.8,
+              "state_receipt_age_s": 0.0859443020017352,
+              "pose": [
+                23.268931823366284,
+                -10.264959137601844,
+                -1.5117616934137306
+              ],
+              "body_velocity": [
+                0.32551602635168764,
+                0.14997018233605444,
+                -1.481128914859494
+              ],
+              "left": 1.0,
+              "right": 0.462988942861557,
+              "sum": 1.462988942861557,
+              "right_minus_left": -0.537011057138443
+            },
+            {
+              "command_lines": [
+                379,
+                380,
+                381
+              ],
+              "wall_s": 79648.903944515,
+              "source_state_time_s": 4.9,
+              "state_receipt_age_s": 0.08838865799771156,
+              "pose": [
+                23.28498405812454,
+                -10.301587361731743,
+                -1.6574281636194332
+              ],
+              "body_velocity": [
+                0.41254576956630756,
+                0.1847358832684951,
+                -1.4218770757844583
+              ],
+              "left": 0.5844281315803528,
+              "right": 0.7429176568984985,
+              "sum": 1.3273457884788513,
+              "right_minus_left": 0.15848952531814575
+            },
+            {
+              "command_lines": [
+                386,
+                387,
+                388
+              ],
+              "wall_s": 79649.01380839,
+              "source_state_time_s": 5.0,
+              "state_receipt_age_s": 0.09810090198880062,
+              "pose": [
+                23.297446221587318,
+                -10.353924081373469,
+                -1.79244294390369
+              ],
+              "body_velocity": [
+                0.5726741959641104,
+                0.2297389861526442,
+                -1.2734748202439536
+              ],
+              "left": -0.0896204262971878,
+              "right": 1.0,
+              "sum": 0.9103795737028122,
+              "right_minus_left": 1.0896204262971878
+            },
+            {
+              "command_lines": [
+                392,
+                393,
+                394
+              ],
+              "wall_s": 79649.116919445,
+              "source_state_time_s": 5.2,
+              "state_receipt_age_s": 0.0009786940063349903,
+              "pose": [
+                23.30659099741121,
+                -10.497456352917785,
+                -1.9965554167537587
+              ],
+              "body_velocity": [
+                0.7110351176825657,
+                0.3267436827999584,
+                -0.724146058991145
+              ],
+              "left": -0.5078240036964417,
+              "right": 1.0,
+              "sum": 0.49217599630355835,
+              "right_minus_left": 1.5078240036964417
+            },
+            {
+              "command_lines": [
+                399,
+                400,
+                401
+              ],
+              "wall_s": 79649.225828936,
+              "source_state_time_s": 5.3,
+              "state_receipt_age_s": 0.009690157996374182,
+              "pose": [
+                23.30660777517138,
+                -10.575404474007268,
+                -2.0513338014998252
+              ],
+              "body_velocity": [
+                0.6939339344983328,
+                0.3564231461586891,
+                -0.3835819175843705
+              ],
+              "left": -1.0,
+              "right": 1.0,
+              "sum": 0.0,
+              "right_minus_left": 2.0
+            },
+            {
+              "command_lines": [
+                406,
+                407,
+                408
+              ],
+              "wall_s": 79649.332787549,
+              "source_state_time_s": 5.4,
+              "state_receipt_age_s": 0.01659966401348356,
+              "pose": [
+                23.306908725867196,
+                -10.651527666658422,
+                -2.071510636789599
+              ],
+              "body_velocity": [
+                0.6462073268295337,
+                0.36575550473852864,
+                -0.02630668448867799
+              ],
+              "left": -1.0,
+              "right": 1.0,
+              "sum": 0.0,
+              "right_minus_left": 2.0
+            }
+          ]
+        }
+      },
+      "kd010": {
+        "directory": "/home/usv/usv_migration/results/python-pid-course-d010-turn-candidate-001/python_pid_turn_03",
+        "events_sha256": "21cbef22265c1490b7a9b8c730d106b9a7c4cffcface4e4f2f215d2c1fc32586",
+        "summary_sha256": "4b48cc489212673edde3dc46a44d75ef3c947907dc2495853578598e3e4e503e",
+        "source_rmse_m": 0.10978811089424684,
+        "source_span_s": 20.5,
+        "error_bins": [
+          {
+            "along_route_interval_m": [
+              null,
+              3.0
+            ],
+            "source_duration_s": 5.199999999999999,
+            "error_energy_m2_s": 0.1070723215242929,
+            "source_intervals": 52,
+            "local_rmse_m": 0.14349505588125336,
+            "contribution_to_full_mse_m2": 0.0052230400743557516,
+            "mean_speed": 0.5943708775233878,
+            "mean_heading": -1.2737296426840823,
+            "mean_lateral": 23.317710846236924
+          },
+          {
+            "along_route_interval_m": [
+              3.0,
+              9.0
+            ],
+            "source_duration_s": 8.8,
+            "error_energy_m2_s": 0.13415699401216136,
+            "source_intervals": 88,
+            "local_rmse_m": 0.12347110170370809,
+            "contribution_to_full_mse_m2": 0.006544243610349334,
+            "mean_speed": 0.6804188339818099,
+            "mean_heading": -1.5938082521440513,
+            "mean_lateral": 23.365364190739058
+          },
+          {
+            "along_route_interval_m": [
+              9.0,
+              null
+            ],
+            "source_duration_s": 6.5,
+            "error_energy_m2_s": 0.005865984984958169,
+            "source_intervals": 65,
+            "local_rmse_m": 0.030040959180011262,
+            "contribution_to_full_mse_m2": 0.0002861456090223497,
+            "mean_speed": 0.36409913050916926,
+            "mean_heading": -1.587002959246317,
+            "mean_lateral": 23.277637917312155
+          }
+        ],
+        "yaw_bins": [
+          {
+            "r2_integral": 3.23637000644348,
+            "r_max_abs": 1.5161395363531018,
+            "heading_min": -1.9988856651908782,
+            "heading_max": -3.203811149318424e-05,
+            "r_rms_radps": 0.7889099108218739
+          },
+          {
+            "r2_integral": 0.11829600746388615,
+            "r_max_abs": 0.3364564076791184,
+            "heading_min": -1.692852448248949,
+            "heading_max": -1.4799276746520436,
+            "r_rms_radps": 0.11594277951168909
+          },
+          {
+            "r2_integral": 0.0007595562930225452,
+            "r_max_abs": 0.02044933773234042,
+            "heading_min": -1.5932116392198274,
+            "heading_max": -1.5780160421743725,
+            "r_rms_radps": 0.010809940532267548
+          }
+        ],
+        "early_thrust": {
+          "interpretation": "Received commands paired with preceding odom receipt, not atomic control input. Sum >.1/.3 are diagnostic markers, not acceptance thresholds.",
+          "first_nonzero": {
+            "command_lines": [
+              282,
+              283,
+              284
+            ],
+            "wall_s": 82001.430848954,
+            "source_state_time_s": 3.3,
+            "state_receipt_age_s": 0.008628258990938775,
+            "pose": [
+              23.12577589533496,
+              -10.125653330371163,
+              -3.203811149318424e-05
+            ],
+            "body_velocity": [
+              0.007699063769760411,
+              0.002187078424829092,
+              0.0002474180585465936
+            ],
+            "left": 1.0,
+            "right": -1.0,
+            "sum": 0.0,
+            "right_minus_left": -2.0
+          },
+          "first_sum_above_010": {
+            "command_lines": [
+              296,
+              297,
+              298
+            ],
+            "wall_s": 82001.64059933,
+            "source_state_time_s": 3.5,
+            "state_receipt_age_s": 0.01787547099229414,
+            "pose": [
+              23.1274195291325,
+              -10.126796889887425,
+              -0.054770175912413864
+            ],
+            "body_velocity": [
+              0.00605821058763666,
+              -0.012280302039042615,
+              -0.5410381920534252
+            ],
+            "left": 1.0,
+            "right": -0.8274452686309814,
+            "sum": 0.17255473136901855,
+            "right_minus_left": -1.8274452686309814
+          },
+          "first_sum_above_030": {
+            "command_lines": [
+              309,
+              310,
+              311
+            ],
+            "wall_s": 82001.849841652,
+            "source_state_time_s": 3.7,
+            "state_receipt_age_s": 0.02667368900438305,
+            "pose": [
+              23.133037665209788,
+              -10.130629629149317,
+              -0.2018394111700529
+            ],
+            "body_velocity": [
+              0.061038779170931125,
+              -0.015778513230372535,
+              -0.898024406755742
+            ],
+            "left": 1.0,
+            "right": -0.6321212649345398,
+            "sum": 0.3678787350654602,
+            "right_minus_left": -1.6321212649345398
+          },
+          "first_heading_below_minus_pi_over_2": {
+            "event": "odom",
+            "wall_monotonic_s": 82002.924631768,
+            "sim_time_s": 4.8,
+            "pose": [
+              23.303999607429034,
+              -10.301990720263712,
+              -1.6402434645435278
+            ],
+            "body_velocity": [
+              0.4631051607999905,
+              0.19201968214637558,
+              -1.3799804783126928
+            ],
+            "frame_id": "otter/odom",
+            "child_frame_id": "otter/base_link",
+            "event_line": 374
+          },
+          "initial_command_sequence": [
+            {
+              "command_lines": [
+                282,
+                283,
+                284
+              ],
+              "wall_s": 82001.430848954,
+              "source_state_time_s": 3.3,
+              "state_receipt_age_s": 0.008628258990938775,
+              "pose": [
+                23.12577589533496,
+                -10.125653330371163,
+                -3.203811149318424e-05
+              ],
+              "body_velocity": [
+                0.007699063769760411,
+                0.002187078424829092,
+                0.0002474180585465936
+              ],
+              "left": 1.0,
+              "right": -1.0,
+              "sum": 0.0,
+              "right_minus_left": -2.0
+            },
+            {
+              "command_lines": [
+                289,
+                290,
+                291
+              ],
+              "wall_s": 82001.537333617,
+              "source_state_time_s": 3.4,
+              "state_receipt_age_s": 0.01491126099426765,
+              "pose": [
+                23.126687389047444,
+                -10.125829016489453,
+                -0.01321614396995486
+              ],
+              "body_velocity": [
+                0.009185282262925526,
+                -0.006027086691337674,
+                -0.27959866200809336
+              ],
+              "left": 1.0,
+              "right": -1.0,
+              "sum": 0.0,
+              "right_minus_left": -2.0
+            },
+            {
+              "command_lines": [
+                296,
+                297,
+                298
+              ],
+              "wall_s": 82001.64059933,
+              "source_state_time_s": 3.5,
+              "state_receipt_age_s": 0.01787547099229414,
+              "pose": [
+                23.1274195291325,
+                -10.126796889887425,
+                -0.054770175912413864
+              ],
+              "body_velocity": [
+                0.00605821058763666,
+                -0.012280302039042615,
+                -0.5410381920534252
+              ],
+              "left": 1.0,
+              "right": -0.8274452686309814,
+              "sum": 0.17255473136901855,
+              "right_minus_left": -1.8274452686309814
+            },
+            {
+              "command_lines": [
+                304,
+                305,
+                306
+              ],
+              "wall_s": 82001.74767989,
+              "source_state_time_s": 3.6,
+              "state_receipt_age_s": 0.024954720996902324,
+              "pose": [
+                23.12884077452775,
+                -10.1283464110062,
+                -0.11947048950472855
+              ],
+              "body_velocity": [
+                0.029225382933493586,
+                -0.015250925831124508,
+                -0.7403920428849817
+              ],
+              "left": 1.0,
+              "right": -0.7700385451316833,
+              "sum": 0.22996145486831665,
+              "right_minus_left": -1.7700385451316833
+            },
+            {
+              "command_lines": [
+                309,
+                310,
+                311
+              ],
+              "wall_s": 82001.849841652,
+              "source_state_time_s": 3.7,
+              "state_receipt_age_s": 0.02667368900438305,
+              "pose": [
+                23.133037665209788,
+                -10.130629629149317,
+                -0.2018394111700529
+              ],
+              "body_velocity": [
+                0.061038779170931125,
+                -0.015778513230372535,
+                -0.898024406755742
+              ],
+              "left": 1.0,
+              "right": -0.6321212649345398,
+              "sum": 0.3678787350654602,
+              "right_minus_left": -1.6321212649345398
+            },
+            {
+              "command_lines": [
+                317,
+                318,
+                319
+              ],
+              "wall_s": 82001.961028736,
+              "source_state_time_s": 3.8,
+              "state_receipt_age_s": 0.037544969003647566,
+              "pose": [
+                23.140406675429997,
+                -10.13413061669504,
+                -0.2979835695998101
+              ],
+              "body_velocity": [
+                0.10173949011645525,
+                -0.01451018541470328,
+                -1.0143808263494958
+              ],
+              "left": 1.0,
+              "right": -0.8225725293159485,
+              "sum": 0.1774274706840515,
+              "right_minus_left": -1.8225725293159485
+            },
+            {
+              "command_lines": [
+                322,
+                323,
+                324
+              ],
+              "wall_s": 82002.063672546,
+              "source_state_time_s": 3.9,
+              "state_receipt_age_s": 0.0404756510106381,
+              "pose": [
+                23.150726963655433,
+                -10.139230997792813,
+                -0.40491538120022375
+              ],
+              "body_velocity": [
+                0.1183597516550354,
+                -0.009628047413460565,
+                -1.1261583762346912
+              ],
+              "left": 1.0,
+              "right": -0.5034298896789551,
+              "sum": 0.4965701103210449,
+              "right_minus_left": -1.503429889678955
+            },
+            {
+              "command_lines": [
+                329,
+                330,
+                331
+              ],
+              "wall_s": 82002.17463851,
+              "source_state_time_s": 4.0,
+              "state_receipt_age_s": 0.05119407099846285,
+              "pose": [
+                23.162080707499616,
+                -10.145585900600397,
+                -0.5220772677749537
+              ],
+              "body_velocity": [
+                0.15525141463590514,
+                -0.000705921961523609,
+                -1.2015469475944234
+              ],
+              "left": 1.0,
+              "right": -0.8659131526947021,
+              "sum": 0.13408684730529785,
+              "right_minus_left": -1.8659131526947021
+            },
+            {
+              "command_lines": [
+                334,
+                335,
+                336
+              ],
+              "wall_s": 82002.276745583,
+              "source_state_time_s": 4.1,
+              "state_receipt_age_s": 0.05320650500652846,
+              "pose": [
+                23.177234155153435,
+                -10.154755866922573,
+                -0.6452286916806887
+              ],
+              "body_velocity": [
+                0.1814559364856811,
+                0.015895593803183825,
+                -1.273696571537304
+              ],
+              "left": 1.0,
+              "right": -0.4557730555534363,
+              "sum": 0.5442269444465637,
+              "right_minus_left": -1.4557730555534363
+            },
+            {
+              "command_lines": [
+                341,
+                342,
+                343
+              ],
+              "wall_s": 82002.387346976,
+              "source_state_time_s": 4.2,
+              "state_receipt_age_s": 0.06349592299375217,
+              "pose": [
+                23.192990250884876,
+                -10.16504938696466,
+                -0.7764673683036519
+              ],
+              "body_velocity": [
+                0.20941725291974803,
+                0.03459024002536097,
+                -1.3315162048849292
+              ],
+              "left": 1.0,
+              "right": -0.9258598685264587,
+              "sum": 0.07414013147354126,
+              "right_minus_left": -1.9258598685264587
+            },
+            {
+              "command_lines": [
+                346,
+                347,
+                348
+              ],
+              "wall_s": 82002.490034981,
+              "source_state_time_s": 4.3,
+              "state_receipt_age_s": 0.06617840001126751,
+              "pose": [
+                23.21204127289407,
+                -10.179690089642204,
+                -0.9111250592720503
+              ],
+              "body_velocity": [
+                0.2411776214739045,
+                0.056560816483864226,
+                -1.376947106824919
+              ],
+              "left": 1.0,
+              "right": -0.45535746216773987,
+              "sum": 0.5446425378322601,
+              "right_minus_left": -1.4553574621677399
+            },
+            {
+              "command_lines": [
+                353,
+                354,
+                355
+              ],
+              "wall_s": 82002.600442545,
+              "source_state_time_s": 4.4,
+              "state_receipt_age_s": 0.07644015399273485,
+              "pose": [
+                23.230603725766983,
+                -10.195456013383442,
+                -1.0526659488652577
+              ],
+              "body_velocity": [
+                0.24624488392182725,
+                0.07692204291670704,
+                -1.4345070153341137
+              ],
+              "left": 1.0,
+              "right": -0.9714909791946411,
+              "sum": 0.028509020805358887,
+              "right_minus_left": -1.9714909791946411
+            },
+            {
+              "command_lines": [
+                358,
+                359,
+                360
+              ],
+              "wall_s": 82002.703735475,
+              "source_state_time_s": 4.5,
+              "state_receipt_age_s": 0.07952892601315398,
+              "pose": [
+                23.250325899380368,
+                -10.21622619716306,
+                -1.1964368584564056
+              ],
+              "body_velocity": [
+                0.2792301558106383,
+                0.10180565734093046,
+                -1.4569242101217201
+              ],
+              "left": 1.0,
+              "right": -0.4531019926071167,
+              "sum": 0.5468980073928833,
+              "right_minus_left": -1.4531019926071167
+            },
+            {
+              "command_lines": [
+                365,
+                366,
+                367
+              ],
+              "wall_s": 82002.813748609,
+              "source_state_time_s": 4.6,
+              "state_receipt_age_s": 0.08941968699218705,
+              "pose": [
+                23.26896709513834,
+                -10.237591706248324,
+                -1.345825657336929
+              ],
+              "body_velocity": [
+                0.2539930944033054,
+                0.12706547946965793,
+                -1.5161395363531018
+              ],
+              "left": 1.0,
+              "right": 0.2244090437889099,
+              "sum": 1.22440904378891,
+              "right_minus_left": -0.7755909562110901
+            },
+            {
+              "command_lines": [
+                370,
+                371,
+                372
+              ],
+              "wall_s": 82002.917115976,
+              "source_state_time_s": 4.7,
+              "state_receipt_age_s": 0.09255887600011192,
+              "pose": [
+                23.286912125374865,
+                -10.263036080376466,
+                -1.4967247038007472
+              ],
+              "body_velocity": [
+                0.3123131253753108,
+                0.15455972483547556,
+                -1.4927640608570132
+              ],
+              "left": 1.0,
+              "right": 0.4745892882347107,
+              "sum": 1.4745892882347107,
+              "right_minus_left": -0.5254107117652893
+            },
+            {
+              "command_lines": [
+                380,
+                381,
+                382
+              ],
+              "wall_s": 82003.027989798,
+              "source_state_time_s": 4.9,
+              "state_receipt_age_s": 0.003228916000807658,
+              "pose": [
+                23.3176935167995,
+                -10.358882984095436,
+                -1.77141246919812
+              ],
+              "body_velocity": [
+                0.6180775828772209,
+                0.23861233197956222,
+                -1.249538560142549
+              ],
+              "left": 0.22572287917137146,
+              "right": 1.0,
+              "sum": 1.2257228791713715,
+              "right_minus_left": 0.7742771208286285
+            },
+            {
+              "command_lines": [
+                385,
+                386,
+                387
+              ],
+              "wall_s": 82003.130182414,
+              "source_state_time_s": 5.0,
+              "state_receipt_age_s": 0.005082019997644238,
+              "pose": [
+                23.32632292245579,
+                -10.429606437299796,
+                -1.8809078172909588
+              ],
+              "body_velocity": [
+                0.7006699929948632,
+                0.2889869588532917,
+                -0.9464567510672902
+              ],
+              "left": -0.5233529806137085,
+              "right": 1.0,
+              "sum": 0.4766470193862915,
+              "right_minus_left": 1.5233529806137085
+            },
+            {
+              "command_lines": [
+                392,
+                393,
+                394
+              ],
+              "wall_s": 82003.240046596,
+              "source_state_time_s": 5.1,
+              "state_receipt_age_s": 0.01493088499410078,
+              "pose": [
+                23.33199548086246,
+                -10.50444682077388,
+                -1.9564911949716273
+              ],
+              "body_velocity": [
+                0.6638243276982674,
+                0.32847192037109146,
+                -0.5746411208166389
+              ],
+              "left": -0.8763875961303711,
+              "right": 1.0,
+              "sum": 0.1236124038696289,
+              "right_minus_left": 1.876387596130371
+            },
+            {
+              "command_lines": [
+                399,
+                400,
+                401
+              ],
+              "wall_s": 82003.347319833,
+              "source_state_time_s": 5.2,
+              "state_receipt_age_s": 0.021703061007428914,
+              "pose": [
+                23.338022555973946,
+                -10.576423524171181,
+                -1.9951690503219666
+              ],
+              "body_velocity": [
+                0.6122919355138357,
+                0.35007452139976825,
+                -0.20699749056640074
+              ],
+              "left": -0.9765017628669739,
+              "right": 1.0,
+              "sum": 0.023498237133026123,
+              "right_minus_left": 1.9765017628669739
+            },
+            {
+              "command_lines": [
+                404,
+                405,
+                406
+              ],
+              "wall_s": 82003.450446961,
+              "source_state_time_s": 5.3,
+              "state_receipt_age_s": 0.024976009997772053,
+              "pose": [
+                23.344983556123303,
+                -10.645854895243257,
+                -1.9988856651908782
+              ],
+              "body_velocity": [
+                0.5989592471128139,
+                0.3499719278381722,
+                0.12304545282061594
+              ],
+              "left": -0.8770747780799866,
+              "right": 1.0,
+              "sum": 0.12292522192001343,
+              "right_minus_left": 1.8770747780799866
+            }
+          ]
+        }
+      },
+      "repeat": 3,
+      "source_rmse_kd010_divided_by_kd0": 1.359737552480344,
+      "mse_contribution_delta_by_bin": [
+        0.0017980319000323315,
+        0.0035960729400773862,
+        0.00014003234254072363
+      ]
+    }
+  ],
+  "los_inputs": [
+    {
+      "target_progress_m": 0.0,
+      "actual_progress_m": 0.0006552737291070088,
+      "odom_event": {
+        "event": "odom",
+        "wall_monotonic_s": 79584.841289344,
+        "sim_time_s": 2.8,
+        "pose": [
+          23.125375638065105,
+          -10.125655273729107,
+          -6.5168263539018e-05
+        ],
+        "body_velocity": [
+          0.0017802946505586215,
+          -0.0008922943203543874,
+          5.441589882997826e-07
+        ],
+        "frame_id": "otter/odom",
+        "child_frame_id": "otter/base_link",
+        "event_line": 167
+      },
+      "route_pruned": [
+        [
+          23.25,
+          -10.25,
+          0.0
+        ],
+        [
+          23.25,
+          -10.75,
+          0.0
+        ],
+        [
+          23.25,
+          -11.25,
+          0.0
+        ],
+        [
+          23.25,
+          -11.75,
+          0.0
+        ],
+        [
+          23.25,
+          -12.25,
+          0.0
+        ],
+        [
+          23.25,
+          -12.75,
+          0.0
+        ],
+        [
+          23.25,
+          -13.25,
+          0.0
+        ],
+        [
+          23.25,
+          -13.75,
+          0.0
+        ],
+        [
+          23.25,
+          -14.25,
+          0.0
+        ],
+        [
+          23.25,
+          -14.75,
+          0.0
+        ],
+        [
+          23.25,
+          -15.25,
+          0.0
+        ],
+        [
+          23.25,
+          -15.75,
+          0.0
+        ],
+        [
+          23.25,
+          -16.25,
+          0.0
+        ],
+        [
+          23.25,
+          -16.75,
+          0.0
+        ],
+        [
+          23.25,
+          -17.25,
+          0.0
+        ],
+        [
+          23.25,
+          -17.75,
+          0.0
+        ],
+        [
+          23.25,
+          -18.25,
+          0.0
+        ],
+        [
+          23.25,
+          -18.75,
+          0.0
+        ],
+        [
+          23.25,
+          -19.25,
+          0.0
+        ],
+        [
+          23.25,
+          -19.75,
+          0.0
+        ],
+        [
+          23.25,
+          -20.25,
+          0.0
+        ],
+        [
+          23.25,
+          -20.75,
+          0.0
+        ],
+        [
+          23.25,
+          -21.25,
+          0.0
+        ],
+        [
+          23.25,
+          -21.75,
+          0.0
+        ],
+        [
+          23.25,
+          -22.25,
+          0.0
+        ]
+      ],
+      "goal": [
+        23.125,
+        -22.125,
+        -1.5707963267948966
+      ],
+      "los_config": {
+        "lookahead_distance": 1.0,
+        "switch_dist": 5.0,
+        "kp_yaw": 1.0,
+        "yaw_rate_max": 0.3,
+        "trajectory_time": 20.0,
+        "trajectory_time_interval": 0.5,
+        "goal_tolerance": 1.0,
+        "slowdown_distance": 3.0
+      },
+      "model": {
+        "ns": "otter",
+        "name": "otter",
+        "type": "Differential",
+        "cruising_speed": 1.0,
+        "max_force": 50.0,
+        "mass": 29.84,
+        "i_z": 10.03,
+        "L": 1.35,
+        "W": 1.0,
+        "D": 0.395,
+        "velocity_min": 0.0,
+        "velocity_max": 1.0,
+        "acceleration_min": -1.0,
+        "acceleration_max": 1.0,
+        "jerk_min": -2.0,
+        "jerk_max": 2.0,
+        "x_dot_u": 5.0,
+        "x_dot_v": 0.0,
+        "x_dot_r": 0.0,
+        "y_dot_u": 0.0,
+        "y_dot_v": 5.0,
+        "y_dot_r": 0.0,
+        "n_dot_u": 0.0,
+        "n_dot_v": 0.0,
+        "n_dot_r": 1.0,
+        "x_u": -20.0,
+        "x_v": 0.0,
+        "x_r": 0.0,
+        "y_u": 0.0,
+        "y_v": -20.0,
+        "y_r": 0.0,
+        "n_u": 0.0,
+        "n_v": 0.0,
+        "n_r": -20.0,
+        "x_u_u": 0.0,
+        "y_v_v": 0.0,
+        "n_r_r": 0.0
+      },
+      "initial_route_remaining_m": 12.136661266930819,
+      "initial_euclidean_goal_m": 12.124985207126667,
+      "status": "success",
+      "trajectory_rows": [
+        [
+          0.0,
+          0.0,
+          23.125375638065105,
+          -10.125655273729107,
+          -6.516826353886174e-05,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.5,
+          0.49951344915547263,
+          23.622417093991267,
+          -10.170538188640798,
+          -0.15006516826353788,
+          -0.3002121229081111,
+          0.999293423243351,
+          -0.00141315351329796
+        ],
+        [
+          1.0,
+          0.9994666464223537,
+          24.107595577497836,
+          -10.289304424944111,
+          -0.30006516826353735,
+          -0.3,
+          1.0,
+          0.00141315351329796
+        ],
+        [
+          1.5,
+          1.4994666464223538,
+          24.569621626526633,
+          -10.479257701179165,
+          -0.45006516826353815,
+          -0.3,
+          1.0,
+          0.0
+        ],
+        [
+          2.0,
+          1.9994354339922344,
+          24.99804611871764,
+          -10.73610707782721,
+          -0.6000651682635385,
+          -0.3,
+          1.0,
+          0.0
+        ],
+        [
+          2.5,
+          2.496942282730674,
+          25.381403877372364,
+          -11.052499441880434,
+          -0.7500651682635389,
+          -0.3018826282913188,
+          0.9937637077629321,
+          -0.012472584474135795
+        ],
+        [
+          3.0,
+          2.988974080023056,
+          25.70956015840699,
+          -11.418521832626253,
+          -0.9000651682635392,
+          -0.30599196171555143,
+          0.9804179113661766,
+          -0.026691592793510965
+        ],
+        [
+          3.5,
+          3.472567755720298,
+          25.974736090017988,
+          -11.822406646040095,
+          -1.0500651682635396,
+          -0.31198906463985054,
+          0.961572163903596,
+          -0.03769149492516122
+        ],
+        [
+          4.0,
+          3.9450393127565855,
+          26.171967816554755,
+          -12.251273143887516,
+          -1.2000651682635397,
+          -0.32004111604035834,
+          0.9373795583257775,
+          -0.0483852111556371
+        ],
+        [
+          4.5,
+          4.403851500595988,
+          26.29914306719862,
+          -12.69167682563075,
+          -1.3500651682635398,
+          -0.3303159968473713,
+          0.9082212271379052,
+          -0.05831666237574451
+        ],
+        [
+          5.0,
+          4.846731596717461,
+          26.357027498102166,
+          -13.1303547904281,
+          -1.50006516826354,
+          -0.3429684593992409,
+          0.8747160031143785,
+          -0.06701044804705347
+        ],
+        [
+          5.5,
+          5.2717929142330995,
+          26.349069978030183,
+          -13.554957965808274,
+          -1.65006516826354,
+          -0.3581114029859896,
+          0.8377281412950062,
+          -0.0739757236387446
+        ],
+        [
+          6.0,
+          5.677656072018489,
+          26.2809943996417,
+          -13.954699690354897,
+          -1.8000651682635402,
+          -0.375768631453478,
+          0.7983636069876191,
+          -0.07872906861477413
+        ],
+        [
+          6.5,
+          6.063560756491572,
+          26.16021045507324,
+          -14.32084859023105,
+          -1.9500651682635404,
+          -0.395807802281456,
+          0.7579436238264757,
+          -0.08083996632228674
+        ],
+        [
+          7.0,
+          6.429452645898532,
+          25.995105302785987,
+          -14.647001457528475,
+          -2.10006516826354,
+          -0.41786067311211517,
+          0.7179426524292889,
+          -0.08000194279437367
+        ],
+        [
+          7.5,
+          6.776025108988805,
+          25.79430770789238,
+          -14.92909400343213,
+          -2.250065168263539,
+          -0.4412531322891734,
+          0.6798818592938537,
+          -0.0761215862708704
+        ],
+        [
+          8.0,
+          7.104695566519589,
+          25.566035803309603,
+          -15.16514796213938,
+          -2.400065168263538,
+          -0.46498377947479697,
+          0.6451837961720998,
+          -0.06939612624350788
+        ],
+        [
+          8.5,
+          7.4175021836958654,
+          25.319062904018484,
+          -15.35681437743737,
+          -2.5272181774110853,
+          -0.3134674677828471,
+          0.614981220284987,
+          -0.06040515177422545
+        ],
+        [
+          9.0,
+          7.716761659530576,
+          25.067974081833952,
+          -15.519574700436888,
+          -2.5852670520564307,
+          -0.12219973695706016,
+          0.5893703877792895,
+          -0.05122166501139502
+        ],
+        [
+          9.5,
+          8.00448274733855,
+          24.82220766373501,
+          -15.669180388164978,
+          -2.5960339045929905,
+          0.014246347097813302,
+          0.5674414382862871,
+          -0.043857898986004784
+        ],
+        [
+          10.0,
+          8.28215714243793,
+          24.58642269588846,
+          -15.815825147580012,
+          -2.5741670909962084,
+          0.11905871474391938,
+          0.5481416808481632,
+          -0.03859951487624791
+        ],
+        [
+          10.5,
+          8.55123840047049,
+          24.363363519611095,
+          -15.966276437751267,
+          -2.5277605692118046,
+          0.2069099360266397,
+          0.5315608868365111,
+          -0.033161588023304045
+        ],
+        [
+          11.0,
+          8.811782260720806,
+          24.15631332060568,
+          -16.12435215208787,
+          -2.461291667210731,
+          0.2865373953896344,
+          0.5144823856841048,
+          -0.03415700230481278
+        ],
+        [
+          11.5,
+          9.064199460324025,
+          23.968086152801526,
+          -16.292424059947766,
+          -2.377891506276811,
+          0.3589088354746946,
+          0.4983806767720367,
+          -0.03220341782413616
+        ],
+        [
+          12.0,
+          9.308504560345966,
+          23.80160153333849,
+          -16.47109104799222,
+          -2.280968444783758,
+          0.42024023234007685,
+          0.482062395295006,
+          -0.032636562954061366
+        ],
+        [
+          12.5,
+          9.544497002709846,
+          23.659301362730844,
+          -16.659220873700896,
+          -2.175390294750832,
+          0.4624008626040733,
+          0.4653289773308734,
+          -0.03346683592826516
+        ],
+        [
+          13.0,
+          9.772161751177448,
+          23.542285056910906,
+          -16.85438804748895,
+          -2.067534715058511,
+          0.47747092245978645,
+          0.4486416673032961,
+          -0.03337462005515468
+        ],
+        [
+          13.5,
+          9.991434869533647,
+          23.450033825533357,
+          -17.053209260290444,
+          -1.9641830009931762,
+          0.46337097719884296,
+          0.43184477026141477,
+          -0.03359379408376262
+        ],
+        [
+          14.0,
+          10.202363743858417,
+          23.380355368369543,
+          -17.252221279408765,
+          -1.8710134248054964,
+          0.4242343046588486,
+          0.41522647668077267,
+          -0.03323658716128419
+        ],
+        [
+          14.5,
+          10.405049051753489,
+          23.33460391458348,
+          -17.44957786741494,
+          -1.757082158941408,
+          0.4660281545850846,
+          0.39883205127791604,
+          -0.032788850805713254
+        ],
+        [
+          15.0,
+          10.599643581722365,
+          23.30712095819496,
+          -17.642186988115725,
+          -1.6869808710819723,
+          0.29875669942178795,
+          0.38282731671668774,
+          -0.03200946912245661
+        ],
+        [
+          15.5,
+          10.786397074039355,
+          23.29056618550632,
+          -17.828192677427932,
+          -1.6438420444855337,
+          0.19158942540565257,
+          0.36737090174717213,
+          -0.030912829939031217
+        ],
+        [
+          16.0,
+          10.965598808905062,
+          23.280505389074612,
+          -18.007107200615525,
+          -1.6172939637811463,
+          0.12288013578300865,
+          0.352504349988615,
+          -0.029733103517114223
+        ],
+        [
+          16.5,
+          11.137544457657715,
+          23.274297152300544,
+          -18.17893907660504,
+          -1.6009556796281064,
+          0.0788157749846595,
+          0.33822698201884416,
+          -0.02855473593954172
+        ],
+        [
+          17.0,
+          11.302524301763116,
+          23.270376129902424,
+          -18.343871716440766,
+          -1.5909006585308874,
+          0.05055367060127783,
+          0.32452336867206444,
+          -0.02740722669355944
+        ],
+        [
+          17.5,
+          11.460819256098926,
+          23.267816373674446,
+          -18.50214575372104,
+          -1.5847125097183903,
+          0.03242614329241639,
+          0.311373329698448,
+          -0.02630007794723288
+        ],
+        [
+          18.0,
+          11.61269972289546,
+          23.266070422398297,
+          -18.65401610524265,
+          -1.5809041411275468,
+          0.02079883738575795,
+          0.2987555479935026,
+          -0.02523556340989075
+        ],
+        [
+          18.5,
+          11.75842546317809,
+          23.26481453703957,
+          -18.799736404799077,
+          -1.5785603582586532,
+          0.013340842598517465,
+          0.2866488598660491,
+          -0.02421337625490705
+        ],
+        [
+          19.0,
+          11.898245826437433,
+          23.263857151140325,
+          -18.93955347977502,
+          -1.5771179246167544,
+          0.008557120095543611,
+          0.27503270107050526,
+          -0.02323231759108768
+        ],
+        [
+          19.5,
+          12.032400099298858,
+          23.26308477286624,
+          -19.073705525357184,
+          -1.576230208028605,
+          0.005488732394800483,
+          0.26388724687849263,
+          -0.022290908384025254
+        ],
+        [
+          20.0,
+          12.161117886692175,
+          23.262430030824387,
+          -19.202421646130492,
+          -1.5756838808110027,
+          0.0035205985915253775,
+          0.2531934418430258,
+          -0.021387610070933705
+        ]
+      ],
+      "references": [
+        {
+          "preview_s": 2.6,
+          "query_age_s": 0.0,
+          "reference": {
+            "time": 2.6,
+            "s": 2.5953486421891507,
+            "x": 25.447035133579288,
+            "y": -11.125703920029597,
+            "theta": -0.7800651682635391,
+            "curv": -0.3027044949761653,
+            "velocity": 0.991094548483581,
+            "acceleration": -0.015316386138010831
+          },
+          "course_error_rad": -0.7800000000000002,
+          "yaw_unwrapped_kd0": -1.5600000000000005,
+          "yaw_wrapped_kd0": -1.5600000000000005,
+          "wrap_crossing": false,
+          "raw_differential_before_thruster_clipping": -3.949367088607596,
+          "speed_error_mps": 0.9891031574629765
+        },
+        {
+          "preview_s": 3.0,
+          "query_age_s": 0.0,
+          "reference": {
+            "time": 3.0,
+            "s": 2.988974080023056,
+            "x": 25.70956015840699,
+            "y": -11.418521832626253,
+            "theta": -0.9000651682635392,
+            "curv": -0.30599196171555143,
+            "velocity": 0.9804179113661766,
+            "acceleration": -0.026691592793510965
+          },
+          "course_error_rad": -0.9000000000000004,
+          "yaw_unwrapped_kd0": -1.8000000000000007,
+          "yaw_wrapped_kd0": -1.8000000000000007,
+          "wrap_crossing": false,
+          "raw_differential_before_thruster_clipping": -4.556962025316457,
+          "speed_error_mps": 0.9784265203455721
+        }
+      ],
+      "theta_delta_30_minus_26": -0.1200000000000001,
+      "velocity_delta_30_minus_26": -0.010676637117404408,
+      "analytic_straight_only": {
+        "python_continuous_v_at_26": 0.8071651732018734,
+        "python_continuous_v_at_30": 0.7809962354620096,
+        "cpp_label_30_physical_26_linear_v": 0.7855667486941093
+      }
+    },
+    {
+      "target_progress_m": 3.0,
+      "actual_progress_m": 3.010500099344995,
+      "odom_event": {
+        "event": "odom",
+        "wall_monotonic_s": 79592.409858542,
+        "sim_time_s": 8.3,
+        "pose": [
+          23.410703547889415,
+          -13.135500099344995,
+          -1.4151304457606817
+        ],
+        "body_velocity": [
+          0.8588968297940749,
+          -0.13749929525846186,
+          0.4454693135211529
+        ],
+        "frame_id": "otter/odom",
+        "child_frame_id": "otter/base_link",
+        "event_line": 579
+      },
+      "route_pruned": [
+        [
+          23.25,
+          -13.25,
+          0.0
+        ],
+        [
+          23.25,
+          -13.75,
+          0.0
+        ],
+        [
+          23.25,
+          -14.25,
+          0.0
+        ],
+        [
+          23.25,
+          -14.75,
+          0.0
+        ],
+        [
+          23.25,
+          -15.25,
+          0.0
+        ],
+        [
+          23.25,
+          -15.75,
+          0.0
+        ],
+        [
+          23.25,
+          -16.25,
+          0.0
+        ],
+        [
+          23.25,
+          -16.75,
+          0.0
+        ],
+        [
+          23.25,
+          -17.25,
+          0.0
+        ],
+        [
+          23.25,
+          -17.75,
+          0.0
+        ],
+        [
+          23.25,
+          -18.25,
+          0.0
+        ],
+        [
+          23.25,
+          -18.75,
+          0.0
+        ],
+        [
+          23.25,
+          -19.25,
+          0.0
+        ],
+        [
+          23.25,
+          -19.75,
+          0.0
+        ],
+        [
+          23.25,
+          -20.25,
+          0.0
+        ],
+        [
+          23.25,
+          -20.75,
+          0.0
+        ],
+        [
+          23.25,
+          -21.25,
+          0.0
+        ],
+        [
+          23.25,
+          -21.75,
+          0.0
+        ],
+        [
+          23.25,
+          -22.25,
+          0.0
+        ]
+      ],
+      "goal": [
+        23.125,
+        -22.125,
+        -1.5707963267948966
+      ],
+      "los_config": {
+        "lookahead_distance": 1.0,
+        "switch_dist": 5.0,
+        "kp_yaw": 1.0,
+        "yaw_rate_max": 0.3,
+        "trajectory_time": 20.0,
+        "trajectory_time_interval": 0.5,
+        "goal_tolerance": 1.0,
+        "slowdown_distance": 3.0
+      },
+      "model": {
+        "ns": "otter",
+        "name": "otter",
+        "type": "Differential",
+        "cruising_speed": 1.0,
+        "max_force": 50.0,
+        "mass": 29.84,
+        "i_z": 10.03,
+        "L": 1.35,
+        "W": 1.0,
+        "D": 0.395,
+        "velocity_min": 0.0,
+        "velocity_max": 1.0,
+        "acceleration_min": -1.0,
+        "acceleration_max": 1.0,
+        "jerk_min": -2.0,
+        "jerk_max": 2.0,
+        "x_dot_u": 5.0,
+        "x_dot_v": 0.0,
+        "x_dot_r": 0.0,
+        "y_dot_u": 0.0,
+        "y_dot_v": 5.0,
+        "y_dot_r": 0.0,
+        "n_dot_u": 0.0,
+        "n_dot_v": 0.0,
+        "n_dot_r": 1.0,
+        "x_u": -20.0,
+        "x_v": 0.0,
+        "x_r": 0.0,
+        "y_u": 0.0,
+        "y_v": -20.0,
+        "y_r": 0.0,
+        "n_u": 0.0,
+        "n_v": 0.0,
+        "n_r": -20.0,
+        "x_u_u": 0.0,
+        "y_v_v": 0.0,
+        "n_r_r": 0.0
+      },
+      "initial_route_remaining_m": 9.135165929666616,
+      "initial_euclidean_goal_m": 9.115916523824927,
+      "status": "success",
+      "trajectory_rows": [
+        [
+          0.0,
+          0.0,
+          23.410703547889415,
+          -13.135500099344995,
+          -1.4151304457606817,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.5,
+          0.4891980380120946,
+          23.445367002642858,
+          -13.623120757592321,
+          -1.5514494642148857,
+          -0.24423618935150024,
+          0.9576275402687344,
+          -0.08474491946253115
+        ],
+        [
+          1.0,
+          0.9523439736760628,
+          23.428901451769793,
+          -14.085854379800569,
+          -1.6366981334531514,
+          -0.1433611274387988,
+          0.9060448523517532,
+          -0.10316537583396235
+        ],
+        [
+          1.5,
+          1.390384657938146,
+          23.38853780231994,
+          -14.522009923345431,
+          -1.675523840141932,
+          -0.05409461614994137,
+          0.8567400320188819,
+          -0.09860964066574263
+        ],
+        [
+          2.0,
+          1.8046777178983517,
+          23.343045786893104,
+          -14.933797499128609,
+          -1.6808504875838581,
+          0.01159922506642588,
+          0.8103324868680936,
+          -0.09281509030157675
+        ],
+        [
+          2.5,
+          2.196651140743824,
+          23.302948538727055,
+          -15.3237105258584,
+          -1.6662754884645499,
+          0.05114434060680846,
+          0.7667539767142928,
+          -0.08715702030760153
+        ],
+        [
+          3.0,
+          2.5676121096171975,
+          23.272582600412914,
+          -15.693418129203526,
+          -1.6429943063494392,
+          0.0679624779072914,
+          0.7256906541060507,
+          -0.08212664521648416
+        ],
+        [
+          3.5,
+          2.9187256621714877,
+          23.252375109446465,
+          -16.043941466286796,
+          -1.6186896320159903,
+          0.06831279436925157,
+          0.6868708779338744,
+          -0.07763955234435271
+        ],
+        [
+          4.0,
+          3.2510554513199876,
+          23.240740372396516,
+          -16.376061894692857,
+          -1.5976877463406018,
+          0.058797521200209264,
+          0.6501191291765757,
+          -0.0735034975145974
+        ],
+        [
+          4.5,
+          3.5655984871502437,
+          23.23540433752964,
+          -16.690556668882344,
+          -1.5817419677298412,
+          0.04490345938449826,
+          0.615317911658407,
+          -0.06960243503633734
+        ],
+        [
+          5.0,
+          3.86330072494951,
+          23.234175439121053,
+          -16.988255104035613,
+          -1.5709534799757308,
+          0.030471714760007856,
+          0.5823704458602098,
+          -0.06589493159639437
+        ],
+        [
+          5.5,
+          4.145061332431245,
+          23.23529251420503,
+          -17.27001308910311,
+          -1.5645558351891111,
+          0.01775937898141136,
+          0.5511842876198181,
+          -0.06237231648078345
+        ],
+        [
+          6.0,
+          4.411733552336158,
+          23.23750616531757,
+          -17.53667603634062,
+          -1.5614682295936695,
+          0.007777652416295747,
+          0.5216682147428277,
+          -0.05903214575398086
+        ],
+        [
+          6.5,
+          4.664125655382158,
+          23.24002276332736,
+          -17.789055587861167,
+          -1.560626671470641,
+          0.0006960548853469622,
+          0.49373345954062076,
+          -0.05586951040441379
+        ],
+        [
+          7.0,
+          4.903002636580668,
+          23.24239727718889,
+          -18.02792076320845,
+          -1.5611449716462438,
+          -0.0037991942232496034,
+          0.46729510075557706,
+          -0.052876717570087384
+        ],
+        [
+          7.5,
+          5.129088357189959,
+          23.24442314957535,
+          -18.253997392496345,
+          -1.5623642885255997,
+          -0.006236315042882593,
+          0.44227265865916987,
+          -0.05004488419281439
+        ],
+        [
+          8.0,
+          5.343067784468342,
+          23.24604092364193,
+          -18.467970685187293,
+          -1.5638403120223898,
+          -0.007182296676943845,
+          0.4185901010504548,
+          -0.04736511521743014
+        ],
+        [
+          8.5,
+          5.54558914125335,
+          23.247181215864266,
+          -18.670488781986602,
+          -1.5661202238701255,
+          -0.010786626567045985,
+          0.39617557214605886,
+          -0.04482905780879187
+        ],
+        [
+          9.0,
+          5.737265908908625,
+          23.247880305360376,
+          -18.862164256433694,
+          -1.5677445404310086,
+          -0.007110515624354385,
+          0.374961159974119,
+          -0.042428824343879734
+        ],
+        [
+          9.5,
+          5.918678745901484,
+          23.248317488083842,
+          -19.043576559893257,
+          -1.5687579493697208,
+          -0.004687234165854187,
+          0.35488267357694175,
+          -0.040156972794354484
+        ],
+        [
+          10.0,
+          6.090377248225394,
+          23.248598711707302,
+          -19.215274829421784,
+          -1.5693902138799891,
+          -0.003089813360780478,
+          0.3358793300435045,
+          -0.03800668706687449
+        ],
+        [
+          10.5,
+          6.252881594512975,
+          23.248786607497514,
+          -19.37777906616531,
+          -1.5697846828859403,
+          -0.0020367975257506894,
+          0.3178935735148164,
+          -0.035971513057376225
+        ],
+        [
+          11.0,
+          6.406684113351155,
+          23.248918224826753,
+          -19.531581528349655,
+          -1.5700307915872778,
+          -0.001342652042442078,
+          0.300870919919286,
+          -0.0340453071910608
+        ],
+        [
+          11.5,
+          6.552250771680401,
+          23.249015503612043,
+          -19.677148154049917,
+          -1.5701843384872674,
+          -0.0008850730100682996,
+          0.2847597989450623,
+          -0.03222224194844736
+        ],
+        [
+          12.0,
+          6.690022585338835,
+          23.24909145842047,
+          -19.814919946725237,
+          -1.5702801361993681,
+          -0.000583438009298296,
+          0.2695114003935768,
+          -0.03049679710297104
+        ],
+        [
+          12.5,
+          6.820416954754256,
+          23.24915383031212,
+          -19.94531430120652,
+          -1.5703399042679345,
+          -0.00038460093925187086,
+          0.25507952725715854,
+          -0.0288637462728365
+        ],
+        [
+          13.0,
+          6.94382892936271,
+          23.24920724338953,
+          -20.068726264250078,
+          -1.5703771934885464,
+          -0.0002535280186899434,
+          0.24142045611021734,
+          -0.027318142293882408
+        ],
+        [
+          13.5,
+          7.06063240441192,
+          23.249254478380145,
+          -20.18552972974615,
+          -1.5704004581850186,
+          -0.0001671250631701115,
+          0.22849280477218448,
+          -0.025855302676065728
+        ],
+        [
+          14.0,
+          7.171181253711951,
+          23.249297224826446,
+          -20.29607857078085,
+          -1.5704149729990335,
+          -0.00011016844167805118,
+          0.21625740698170806,
+          -0.02447079558095283
+        ],
+        [
+          14.5,
+          7.275810401741547,
+          23.24933652539082,
+          -20.40070771142914,
+          -1.5704240287727103,
+          -7.26227731000282e-05,
+          0.20467719375413335,
+          -0.02316042645514943
+        ],
+        [
+          15.0,
+          7.374836838349634,
+          23.249373038349507,
+          -20.499734141305595,
+          -1.570429678658185,
+          -4.7872758229634195e-05,
+          0.1937170810818828,
+          -0.02192022534450111
+        ],
+        [
+          15.5,
+          7.468560579122991,
+          23.24940719272171,
+          -20.593457875855723,
+          -1.5704332036144202,
+          -3.155760766688617e-05,
+          0.1833438636445316,
+          -0.020746434874702402
+        ],
+        [
+          16.0,
+          7.557265574328513,
+          23.249439279993894,
+          -20.682162865257762,
+          -1.5704354028300531,
+          -2.0802699450734472e-05,
+          0.17352611420914085,
+          -0.019635498870781476
+        ],
+        [
+          16.5,
+          7.641220569183398,
+          23.249469508397713,
+          -20.7661178546707,
+          -1.5704367749178396,
+          -1.371308968461169e-05,
+          0.16423408841701903,
+          -0.018584051584243644
+        ],
+        [
+          17.0,
+          7.72067991805943,
+          23.249498035069955,
+          -20.84557719842606,
+          -1.5704376309616332,
+          -9.039635908005645e-06,
+          0.15543963466880223,
+          -0.017588907496433603
+        ],
+        [
+          17.5,
+          7.795884355088053,
+          23.249524985146213,
+          -20.9207816306258,
+          -1.5704381650462484,
+          -5.958906350896188e-06,
+          0.14711610883496554,
+          -0.016647051667673385
+        ],
+        [
+          18.0,
+          7.8670617235008695,
+          23.24955046313353,
+          -20.99195899447869,
+          -1.5704384982609487,
+          -3.9280968187000836e-06,
+          0.13923829353341197,
+          -0.01575563060310714
+        ],
+        [
+          18.5,
+          7.934427665915219,
+          23.24957455971857,
+          -21.0593249325834,
+          -1.5704387061531684,
+          -2.5893920099507524e-06,
+          0.13178232172960155,
+          -0.014911943607620826
+        ],
+        [
+          19.0,
+          7.998186277656143,
+          23.249597355875583,
+          -21.123083540249073,
+          -1.5704388358568557,
+          -1.7069210437229654e-06,
+          0.12472560442775607,
+          -0.014113434603690966
+        ],
+        [
+          19.5,
+          8.058530725094082,
+          23.249618925375163,
+          -21.18342798383211,
+          -1.5704389167788189,
+          -1.125198249210148e-06,
+          0.11804676223407867,
+          -0.013357684387354796
+        ],
+        [
+          20.0,
+          8.115643830871646,
+          23.24963933634435,
+          -21.24054108596246,
+          -1.5704389672659265,
+          -7.417279925632621e-07,
+          0.1117255605846396,
+          -0.012642403298878141
+        ]
+      ],
+      "references": [
+        {
+          "preview_s": 2.6,
+          "query_age_s": 0.0,
+          "reference": {
+            "time": 2.6,
+            "s": 2.270843334518499,
+            "x": 23.296875351064227,
+            "y": -15.397652046527426,
+            "theta": -1.6616192520415278,
+            "curv": 0.054507968066905055,
+            "velocity": 0.7585413121926444,
+            "acceleration": -0.08615094528937806
+          },
+          "course_error_rad": -0.2464888062808459,
+          "yaw_unwrapped_kd0": -0.4929776125616918,
+          "yaw_wrapped_kd0": -0.4929776125616918,
+          "wrap_crossing": false,
+          "raw_differential_before_thruster_clipping": -1.2480445887637768,
+          "speed_error_mps": -0.11129190195066807
+        },
+        {
+          "preview_s": 3.0,
+          "query_age_s": 0.0,
+          "reference": {
+            "time": 3.0,
+            "s": 2.5676121096171975,
+            "x": 23.272582600412914,
+            "y": -15.693418129203526,
+            "theta": -1.6429943063494392,
+            "curv": 0.0679624779072914,
+            "velocity": 0.7256906541060507,
+            "acceleration": -0.08212664521648416
+          },
+          "course_error_rad": -0.22786386058875774,
+          "yaw_unwrapped_kd0": -0.4557277211775155,
+          "yaw_wrapped_kd0": -0.4557277211775155,
+          "wrap_crossing": false,
+          "raw_differential_before_thruster_clipping": -1.153741066272191,
+          "speed_error_mps": -0.14414256003726178
+        }
+      ],
+      "theta_delta_30_minus_26": 0.018624945692088613,
+      "velocity_delta_30_minus_26": -0.03285065808659371,
+      "analytic_straight_only": {
+        "python_continuous_v_at_26": 0.7523042679871895,
+        "python_continuous_v_at_30": 0.7200740249519673,
+        "cpp_label_30_physical_26_linear_v": 0.7147845756151053
+      }
+    },
+    {
+      "target_progress_m": 6.0,
+      "actual_progress_m": 6.01856905573203,
+      "odom_event": {
+        "event": "odom",
+        "wall_monotonic_s": 79596.216716925,
+        "sim_time_s": 12.1,
+        "pose": [
+          23.356141165333174,
+          -16.14356905573203,
+          -1.6199387515186938
+        ],
+        "body_velocity": [
+          0.7173150602006132,
+          0.011674306134188822,
+          0.4594209445522806
+        ],
+        "frame_id": "otter/odom",
+        "child_frame_id": "otter/base_link",
+        "event_line": 804
+      },
+      "route_pruned": [
+        [
+          23.25,
+          -16.25,
+          0.0
+        ],
+        [
+          23.25,
+          -16.75,
+          0.0
+        ],
+        [
+          23.25,
+          -17.25,
+          0.0
+        ],
+        [
+          23.25,
+          -17.75,
+          0.0
+        ],
+        [
+          23.25,
+          -18.25,
+          0.0
+        ],
+        [
+          23.25,
+          -18.75,
+          0.0
+        ],
+        [
+          23.25,
+          -19.25,
+          0.0
+        ],
+        [
+          23.25,
+          -19.75,
+          0.0
+        ],
+        [
+          23.25,
+          -20.25,
+          0.0
+        ],
+        [
+          23.25,
+          -20.75,
+          0.0
+        ],
+        [
+          23.25,
+          -21.25,
+          0.0
+        ],
+        [
+          23.25,
+          -21.75,
+          0.0
+        ],
+        [
+          23.25,
+          -22.25,
+          0.0
+        ]
+      ],
+      "goal": [
+        23.125,
+        -22.125,
+        -1.5707963267948966
+      ],
+      "los_config": {
+        "lookahead_distance": 1.0,
+        "switch_dist": 5.0,
+        "kp_yaw": 1.0,
+        "yaw_rate_max": 0.3,
+        "trajectory_time": 20.0,
+        "trajectory_time_interval": 0.5,
+        "goal_tolerance": 1.0,
+        "slowdown_distance": 3.0
+      },
+      "model": {
+        "ns": "otter",
+        "name": "otter",
+        "type": "Differential",
+        "cruising_speed": 1.0,
+        "max_force": 50.0,
+        "mass": 29.84,
+        "i_z": 10.03,
+        "L": 1.35,
+        "W": 1.0,
+        "D": 0.395,
+        "velocity_min": 0.0,
+        "velocity_max": 1.0,
+        "acceleration_min": -1.0,
+        "acceleration_max": 1.0,
+        "jerk_min": -2.0,
+        "jerk_max": 2.0,
+        "x_dot_u": 5.0,
+        "x_dot_v": 0.0,
+        "x_dot_r": 0.0,
+        "y_dot_u": 0.0,
+        "y_dot_v": 5.0,
+        "y_dot_r": 0.0,
+        "n_dot_u": 0.0,
+        "n_dot_v": 0.0,
+        "n_dot_r": 1.0,
+        "x_u": -20.0,
+        "x_v": 0.0,
+        "x_r": 0.0,
+        "y_u": 0.0,
+        "y_v": -20.0,
+        "y_r": 0.0,
+        "n_u": 0.0,
+        "n_v": 0.0,
+        "n_r": -20.0,
+        "x_u_u": 0.0,
+        "y_v_v": 0.0,
+        "n_r_r": 0.0
+      },
+      "initial_route_remaining_m": 6.1156496058181355,
+      "initial_euclidean_goal_m": 6.107353340366979,
+      "status": "success",
+      "trajectory_rows": [
+        [
+          0.0,
+          0.0,
+          23.356141165333174,
+          -16.14356905573203,
+          -1.6199387515186938,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.5,
+          0.4836642833017086,
+          23.326261315551566,
+          -16.62630473089618,
+          -1.6379269785045028,
+          -0.018075226226503708,
+          0.9355962551076515,
+          -0.12880748978469692
+        ],
+        [
+          1.0,
+          0.9288871256527952,
+          23.296349285351695,
+          -17.07052136625376,
+          -1.6360781826696977,
+          0.017236678282692004,
+          0.8612631462283179,
+          -0.14866621775866729
+        ],
+        [
+          1.5,
+          1.3388106430464095,
+          23.272392983461362,
+          -17.479741455203424,
+          -1.623730851812941,
+          0.03692178082319406,
+          0.793025493290864,
+          -0.13647530587490775
+        ],
+        [
+          2.0,
+          1.7162914497343187,
+          23.255920166547757,
+          -17.856858856721853,
+          -1.6079900297939722,
+          0.04345068355067671,
+          0.7302834305762194,
+          -0.12548412542928933
+        ],
+        [
+          2.5,
+          2.0639139925105963,
+          23.246107280132648,
+          -18.204339911246283,
+          -1.5932059180144529,
+          0.04096587924952952,
+          0.6725201807173513,
+          -0.1155264997177361
+        ],
+        [
+          3.0,
+          2.384038213087691,
+          23.24126197472273,
+          -18.52442577904167,
+          -1.5814188096499457,
+          0.03355392718693719,
+          0.6193173349045225,
+          -0.10640569162565772
+        ],
+        [
+          3.5,
+          2.678834826338362,
+          23.239663831587606,
+          -18.81921731090703,
+          -1.5731165893476438,
+          0.024399265427312272,
+          0.5703153857606785,
+          -0.09800389828768785
+        ],
+        [
+          4.0,
+          2.9503052365143527,
+          23.23992959275434,
+          -19.090687329722947,
+          -1.56793725978097,
+          0.015573572619001304,
+          0.5251873319632329,
+          -0.09025610759489133
+        ],
+        [
+          4.5,
+          3.2002944972096627,
+          23.24109491422952,
+          -19.340673808757344,
+          -1.5651767151212677,
+          0.008171991557614082,
+          0.48362972028993223,
+          -0.08311522334660126
+        ],
+        [
+          5.0,
+          3.430502473808816,
+          23.242561344795938,
+          -19.570877106301584,
+          -1.5640935245426393,
+          0.002580211715964298,
+          0.4453609384559139,
+          -0.07653756366803666
+        ],
+        [
+          5.5,
+          3.6424946361744768,
+          23.24384201580797,
+          -19.78286537309149,
+          -1.5654505246789803,
+          -0.007594519347297349,
+          0.410120653616713,
+          -0.07048056967840177
+        ],
+        [
+          6.0,
+          3.8377125038079516,
+          23.244737942203045,
+          -19.978081174550073,
+          -1.566652828098891,
+          -0.005288266438818183,
+          0.37766908082899026,
+          -0.06490314557544552
+        ],
+        [
+          6.5,
+          4.0174833713749045,
+          23.245395625477542,
+          -20.157850835162623,
+          -1.567423779356867,
+          -0.003682361706107322,
+          0.34778525098034513,
+          -0.059767659697290254
+        ],
+        [
+          7.0,
+          4.183029499071362,
+          23.24590244871903,
+          -20.323396185555616,
+          -1.5679181353156912,
+          -0.002564127384034358,
+          0.32026602099182344,
+          -0.055038459977043375
+        ],
+        [
+          7.5,
+          4.33547644331887,
+          23.246310816498195,
+          -20.475842582284894,
+          -1.5682351304752442,
+          -0.0017854708409053529,
+          0.29492430015748505,
+          -0.050683441668676776
+        ],
+        [
+          8.0,
+          4.475860702350296,
+          23.246652415006597,
+          -20.61622642549643,
+          -1.5684383968259255,
+          -0.0012432713700257054,
+          0.2715877934825658,
+          -0.04667301334983853
+        ],
+        [
+          8.5,
+          4.605136760740015,
+          23.246946637694947,
+          -20.745502148991108,
+          -1.5685687370161776,
+          -0.0008657232996851192,
+          0.2500978360592924,
+          -0.04297991484654673
+        ],
+        [
+          9.0,
+          4.724183578004064,
+          23.2472055652092,
+          -20.86454868464006,
+          -1.5686523148693376,
+          -0.000602826423390948,
+          0.2303083164952175,
+          -0.03957903912814986
+        ],
+        [
+          9.5,
+          4.833810564337751,
+          23.247436910280882,
+          -20.974175426859034,
+          -1.5687059073762062,
+          -0.00041976425631442437,
+          0.2120846843235036,
+          -0.036447264343427765
+        ],
+        [
+          10.0,
+          4.934763083723053,
+          23.24764576059722,
+          -21.075127730205256,
+          -1.5687402724224977,
+          -0.000292293144596766,
+          0.19530303549806785,
+          -0.033563297650871515
+        ],
+        [
+          10.5,
+          5.027727521671528,
+          23.24783561157636,
+          -21.168091974296065,
+          -1.568762308271829,
+          -0.00020353158018547696,
+          0.17984927007823173,
+          -0.030907530839672237
+        ],
+        [
+          11.0,
+          5.1133359520018615,
+          23.24800897955083,
+          -21.25370022907948,
+          -1.5687764382878842,
+          -0.00014172451495543775,
+          0.165618316497988,
+          -0.028461907160487465
+        ],
+        [
+          11.5,
+          5.1133359520018615,
+          23.24800897955083,
+          -21.25370022907948,
+          -1.5687764382878842,
+          0.0,
+          0.0,
+          -0.331236632995976
+        ]
+      ],
+      "references": [
+        {
+          "preview_s": 2.6,
+          "query_age_s": 0.0,
+          "reference": {
+            "time": 2.6,
+            "s": 2.1279388366260155,
+            "x": 23.245138219050663,
+            "y": -18.26835708480536,
+            "theta": -1.5908484963415515,
+            "curv": 0.039483488837011055,
+            "velocity": 0.6618796115547856,
+            "acceleration": -0.11370233809932041
+          },
+          "course_error_rad": 0.029090255177142588,
+          "yaw_unwrapped_kd0": 0.058180510354285175,
+          "yaw_wrapped_kd0": 0.058180510354285175,
+          "wrap_crossing": false,
+          "raw_differential_before_thruster_clipping": 0.14729243127667133,
+          "speed_error_mps": -0.055530442050768625
+        },
+        {
+          "preview_s": 3.0,
+          "query_age_s": 0.0,
+          "reference": {
+            "time": 3.0,
+            "s": 2.384038213087691,
+            "x": 23.24126197472273,
+            "y": -18.52442577904167,
+            "theta": -1.5814188096499457,
+            "curv": 0.03355392718693719,
+            "velocity": 0.6193173349045225,
+            "acceleration": -0.10640569162565772
+          },
+          "course_error_rad": 0.0385199418687483,
+          "yaw_unwrapped_kd0": 0.0770398837374966,
+          "yaw_wrapped_kd0": 0.0770398837374966,
+          "wrap_crossing": false,
+          "raw_differential_before_thruster_clipping": 0.19503768034809263,
+          "speed_error_mps": -0.09809271870103176
+        }
+      ],
+      "theta_delta_30_minus_26": 0.00942968669160571,
+      "velocity_delta_30_minus_26": -0.04256227665026313,
+      "analytic_straight_only": {
+        "python_continuous_v_at_26": 0.6536790411946596,
+        "python_continuous_v_at_30": 0.6122927375133014,
+        "cpp_label_30_physical_26_linear_v": 0.5742836781990133
+      }
+    },
+    {
+      "target_progress_m": 9.0,
+      "actual_progress_m": 8.994158183562494,
+      "odom_event": {
+        "event": "odom",
+        "wall_monotonic_s": 79601.127795481,
+        "sim_time_s": 17.0,
+        "pose": [
+          23.297723080578045,
+          -19.119158183562494,
+          -1.522945738087846
+        ],
+        "body_velocity": [
+          0.4862354101126169,
+          -0.030927455076768688,
+          -0.1684087989524205
+        ],
+        "frame_id": "otter/odom",
+        "child_frame_id": "otter/base_link",
+        "event_line": 1093
+      },
+      "route_pruned": [
+        [
+          23.25,
+          -19.25,
+          0.0
+        ],
+        [
+          23.25,
+          -19.75,
+          0.0
+        ],
+        [
+          23.25,
+          -20.25,
+          0.0
+        ],
+        [
+          23.25,
+          -20.75,
+          0.0
+        ],
+        [
+          23.25,
+          -21.25,
+          0.0
+        ],
+        [
+          23.25,
+          -21.75,
+          0.0
+        ],
+        [
+          23.25,
+          -22.25,
+          0.0
+        ]
+      ],
+      "goal": [
+        23.125,
+        -22.125,
+        -1.5707963267948966
+      ],
+      "los_config": {
+        "lookahead_distance": 1.0,
+        "switch_dist": 5.0,
+        "kp_yaw": 1.0,
+        "yaw_rate_max": 0.3,
+        "trajectory_time": 20.0,
+        "trajectory_time_interval": 0.5,
+        "goal_tolerance": 1.0,
+        "slowdown_distance": 3.0
+      },
+      "model": {
+        "ns": "otter",
+        "name": "otter",
+        "type": "Differential",
+        "cruising_speed": 1.0,
+        "max_force": 50.0,
+        "mass": 29.84,
+        "i_z": 10.03,
+        "L": 1.35,
+        "W": 1.0,
+        "D": 0.395,
+        "velocity_min": 0.0,
+        "velocity_max": 1.0,
+        "acceleration_min": -1.0,
+        "acceleration_max": 1.0,
+        "jerk_min": -2.0,
+        "jerk_max": 2.0,
+        "x_dot_u": 5.0,
+        "x_dot_v": 0.0,
+        "x_dot_r": 0.0,
+        "y_dot_u": 0.0,
+        "y_dot_v": 5.0,
+        "y_dot_r": 0.0,
+        "n_dot_u": 0.0,
+        "n_dot_v": 0.0,
+        "n_dot_r": 1.0,
+        "x_u": -20.0,
+        "x_v": 0.0,
+        "x_r": 0.0,
+        "y_u": 0.0,
+        "y_v": -20.0,
+        "y_r": 0.0,
+        "n_u": 0.0,
+        "n_v": 0.0,
+        "n_r": -20.0,
+        "x_u_u": 0.0,
+        "y_v_v": 0.0,
+        "n_r_r": 0.0
+      },
+      "initial_route_remaining_m": 3.132644362802697,
+      "initial_euclidean_goal_m": 3.1312055141707904,
+      "status": "success",
+      "trajectory_rows": [
+        [
+          0.0,
+          0.0,
+          23.297723080578045,
+          -19.119158183562494,
+          -1.522945738087846,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.5,
+          0.46908924675223546,
+          23.30809319300845,
+          -19.588102346086867,
+          -1.5646410144294896,
+          -0.0804985611534236,
+          0.8784748137523832,
+          -0.24305037249523354
+        ],
+        [
+          1.0,
+          0.8679607499636939,
+          23.303998496416096,
+          -19.986943334048135,
+          -1.5904931033756204,
+          -0.0531368143218865,
+          0.7468322476534636,
+          -0.26328513219783933
+        ],
+        [
+          1.5,
+          1.2070276685520347,
+          23.294540668366114,
+          -20.325876584369414,
+          -1.6028879191258831,
+          -0.0252955206096485,
+          0.6348217176784284,
+          -0.22402105995007027
+        ],
+        [
+          2.0,
+          1.4952600667554659,
+          23.284578384840135,
+          -20.6139366852972,
+          -1.6061430489921227,
+          -0.002311344174184463,
+          0.539657343662422,
+          -0.19032874803201283
+        ],
+        [
+          2.5,
+          1.7403041736556997,
+          23.276583665153897,
+          -20.858849917018457,
+          -1.600811522663963,
+          0.025573960624112147,
+          0.45880797287380914,
+          -0.16169874157722575
+        ],
+        [
+          3.0,
+          1.9486530490907545,
+          23.270939572969766,
+          -21.06712215640145,
+          -1.596072365273511,
+          0.020888267081206766,
+          0.390109073930885,
+          -0.13739779788584827
+        ],
+        [
+          3.5,
+          2.125804700227119,
+          23.26682177130104,
+          -21.24422587165888,
+          -1.5927811142948836,
+          0.017061178268534562,
+          0.3316954536982099,
+          -0.1168272404653502
+        ],
+        [
+          4.0,
+          2.1579154244502634,
+          23.266132770663397,
+          -21.276329203078785,
+          -1.5922549994046893,
+          0.0,
+          0.0,
+          -0.6633909073964198
+        ]
+      ],
+      "references": [
+        {
+          "preview_s": 2.6,
+          "query_age_s": 0.0,
+          "reference": {
+            "time": 2.6,
+            "s": 1.7819739487427106,
+            "x": 23.27545484671707,
+            "y": -20.900504364895056,
+            "theta": -1.5998636911858726,
+            "curv": 0.02463682191553107,
+            "velocity": 0.44506819308522433,
+            "acceleration": -0.15683855283895023
+          },
+          "course_error_rad": -0.07691795309802663,
+          "yaw_unwrapped_kd0": -0.15383590619605325,
+          "yaw_wrapped_kd0": -0.15383590619605325,
+          "wrap_crossing": false,
+          "raw_differential_before_thruster_clipping": -0.38945799036975504,
+          "speed_error_mps": -0.04214980896817916
+        },
+        {
+          "preview_s": 3.0,
+          "query_age_s": 0.0,
+          "reference": {
+            "time": 3.0,
+            "s": 1.9486530490907545,
+            "x": 23.270939572969766,
+            "y": -21.06712215640145,
+            "theta": -1.596072365273511,
+            "curv": 0.020888267081206766,
+            "velocity": 0.390109073930885,
+            "acceleration": -0.13739779788584827
+          },
+          "course_error_rad": -0.07312662718566498,
+          "yaw_unwrapped_kd0": -0.14625325437132997,
+          "yaw_wrapped_kd0": -0.14625325437132997,
+          "wrap_crossing": false,
+          "raw_differential_before_thruster_clipping": -0.37026140347172143,
+          "speed_error_mps": -0.09710892812251848
+        }
+      ],
+      "theta_delta_30_minus_26": 0.0037913259123616427,
+      "velocity_delta_30_minus_26": -0.05495911915433932,
+      "analytic_straight_only": {
+        "python_continuous_v_at_26": 0.4360624851738143,
+        "python_continuous_v_at_30": 0.3837909090981412,
+        "cpp_label_30_physical_26_linear_v": 0.16964888180182736
+      }
+    }
+  ]
+}
