@@ -1,4 +1,5 @@
 from concurrent.futures import Future
+from dataclasses import replace
 import numpy as np
 import pytest
 from common.models import AlgorithmStatus, GridSnapshot, VesselState
@@ -77,12 +78,54 @@ def test_worker_keeps_only_latest_pending_and_invalidates():
     worker.offer(request(2))
     worker.offer(request(3))
     assert len(executor.jobs) == 1 and worker.pending.version == 3 and worker.replaced == 1
-    executor.jobs[0][1].set_result('old version result')
-    assert worker.poll() == 'old version result'
+    old_result = plan_navigation(request(1))
+    executor.jobs[0][1].set_result(old_result)
+    assert worker.poll() is old_result
     assert len(executor.jobs) == 2 and executor.jobs[1][0].version == 3
+    assert not len(executor.jobs[1][0].route)  # Never copy an old goal's route.
     worker.offer(request(4))
     worker.invalidate()
     assert worker.pending is None
-    executor.jobs[1][1].set_result('cancelled task result')
-    assert worker.poll() == 'cancelled task result'  # Caller must reject its task version.
+    cancelled_result = plan_navigation(request(3))
+    executor.jobs[1][1].set_result(cancelled_result)
+    assert worker.poll() is cancelled_result  # Caller must reject its task version.
     worker.close()
+
+
+def test_first_search_refreshes_pending_route_but_keeps_latest_inputs():
+    class Executor:
+        def __init__(self):
+            self.jobs = []
+        def submit(self, fn, job):
+            future = Future()
+            future.set_running_or_notify_cancel()
+            self.jobs.append((job, future))
+            return future
+    executor = Executor()
+    worker = LatestPlanWorker(executor)
+    first = request()
+    latest = replace(first, state=replace(first.state, x=2.4, stamp=10.2))
+    worker.offer(first)
+    worker.offer(latest)
+    completed = plan_navigation(first)
+    executor.jobs[0][1].set_result(completed)
+    assert worker.poll() is completed
+    dispatched = executor.jobs[1][0]
+    assert dispatched.state is latest.state and dispatched.grid is latest.grid
+    assert dispatched.parameters is latest.parameters
+    np.testing.assert_array_equal(dispatched.route, completed.route)
+    assert not np.shares_memory(dispatched.route, completed.route)
+    repeated = plan_navigation(dispatched)
+    assert repeated.status == AlgorithmStatus.SUCCESS
+    assert not repeated.searched
+
+
+def test_pending_route_is_rechecked_against_latest_obstacles():
+    first = request()
+    completed = plan_navigation(first)
+    blocked = first.grid.data.copy()
+    blocked[:, 12] = 254
+    latest = replace(first, route=completed.route,
+                     grid=GridSnapshot(blocked, 1., stamp=10.2))
+    response = plan_navigation(latest)
+    assert response.searched and response.status == AlgorithmStatus.NO_PATH

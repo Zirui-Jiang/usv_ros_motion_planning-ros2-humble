@@ -1,5 +1,5 @@
 """ROS-independent planning worker and navigation freshness rules."""
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import math
 import time
 import numpy as np
@@ -141,7 +141,17 @@ class LatestPlanWorker:
             return None
         future, self.future = self.future, None
         try:
-            return future.result()
+            result = future.result()
+            # A request queued while the first global search is running still
+            # contains an empty route. Carry the completed route into that
+            # request before dispatch, otherwise process startup causes a
+            # second search from a different cell as soon as the boat moves.
+            # Keep the latest state, map and parameters: plan_navigation will
+            # revalidate this route against that map before reusing it.
+            if (self.pending is not None and self.pending.version == result.version
+                    and result.status in (AlgorithmStatus.SUCCESS, AlgorithmStatus.GOAL_REACHED)):
+                self.pending = replace(self.pending, route=result.route.copy())
+            return result
         finally:
             self._start()
 
