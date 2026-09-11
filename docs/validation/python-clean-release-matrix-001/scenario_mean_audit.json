@@ -1,0 +1,1523 @@
+{
+  "source_report": {
+    "absolute_path": "/home/usv/usv_migration/results/python-clean-release-comparison-001/report.json",
+    "bytes": 2046040,
+    "sha256": "ee36898a8ad47b8cb337c578e8525529066db5f3b320ae2075b139a4d7f4ff6d"
+  },
+  "definition": {
+    "aggregation": "scenario_mean",
+    "rmse_metric": "source_time_trapezoid",
+    "required_repeats": [
+      1,
+      2,
+      3
+    ],
+    "population": "same controller/scenario fixed repeats 1,2,3 on both modes; no replacement or best-subset selection",
+    "statistic": "arithmetic mean of per-trial RMSE and duration, sample standard deviation ddof=1, worst=max; not pooled RMSE or mean of ratios",
+    "eligibility": "all six trials completed and passed with valid source-time scores and nonnegative finite selected RMSE/duration",
+    "descriptive_scope": "fixed-repeat observed values, including failed trials; missing values remain null; means of incomplete/ineligible groups are descriptive only",
+    "summary": {
+      "groups": 6,
+      "eligible_groups": 2,
+      "passed_groups": 2,
+      "failed_groups": 0,
+      "incomparable_groups": 4,
+      "all_eligible_passed": true,
+      "all_groups_comparable": false
+    }
+  },
+  "summary": {
+    "pairs": 18,
+    "comparable_pairs": 7,
+    "passed_pairs": 7,
+    "failed_pairs": 0,
+    "not_comparable_pairs": 11,
+    "fault_trials": 3,
+    "fault_passed": 3,
+    "performance_trials": 18,
+    "performance_passed": 15,
+    "performance_failed": 0,
+    "performance_unknown": 3,
+    "all_performance_passed": false,
+    "all_sources_finished": true,
+    "all_passed": false,
+    "per_repeat_all_passed": false
+  },
+  "groups": [
+    {
+      "controller": "lqr",
+      "scenario": "single_obstacle",
+      "comparable": false,
+      "passed": null,
+      "reasons": [
+        "cpp_requires_exact_repeats_1_2_3",
+        "cpp_repeat_1_missing",
+        "cpp_repeat_2_missing",
+        "cpp_repeat_3_missing"
+      ],
+      "python_metrics": {
+        "cross_track_rmse_m": {
+          "values": [
+            0.41382340364016984,
+            0.36584272291517933,
+            0.40890017376158766
+          ],
+          "count": 3,
+          "mean": 0.3961887667723123,
+          "std_ddof1": 0.026395479375143357,
+          "worst": 0.41382340364016984
+        },
+        "duration_sim_s": {
+          "values": [
+            18.4,
+            18.5,
+            18.3
+          ],
+          "count": 3,
+          "mean": 18.400000000000002,
+          "std_ddof1": 0.09999999999999964,
+          "worst": 18.5
+        },
+        "legacy_wall_rmse_m": {
+          "values": [
+            0.41425702286746907,
+            0.3398516199655018,
+            0.4126891837064037
+          ],
+          "count": 3,
+          "mean": 0.3889326088464582,
+          "std_ddof1": 0.042512611447171375,
+          "worst": 0.41425702286746907
+        },
+        "source_time_trapezoid_rmse_m": {
+          "values": [
+            0.41382340364016984,
+            0.36584272291517933,
+            0.40890017376158766
+          ],
+          "count": 3,
+          "mean": 0.3961887667723123,
+          "std_ddof1": 0.026395479375143357,
+          "worst": 0.41382340364016984
+        }
+      },
+      "cpp_metrics": {
+        "cross_track_rmse_m": {
+          "values": [
+            null,
+            null,
+            null
+          ],
+          "count": 0,
+          "mean": null,
+          "std_ddof1": null,
+          "worst": null
+        },
+        "duration_sim_s": {
+          "values": [
+            null,
+            null,
+            null
+          ],
+          "count": 0,
+          "mean": null,
+          "std_ddof1": null,
+          "worst": null
+        },
+        "legacy_wall_rmse_m": {
+          "values": [
+            null,
+            null,
+            null
+          ],
+          "count": 0,
+          "mean": null,
+          "std_ddof1": null,
+          "worst": null
+        },
+        "source_time_trapezoid_rmse_m": {
+          "values": [
+            null,
+            null,
+            null
+          ],
+          "count": 0,
+          "mean": null,
+          "std_ddof1": null,
+          "worst": null
+        }
+      },
+      "ratio_metrics": {},
+      "individual_comparisons": [
+        {
+          "controller": "lqr",
+          "scenario": "single_obstacle",
+          "repeat": 1,
+          "comparable": false,
+          "passed": null,
+          "reasons": [
+            "cpp_result_missing"
+          ],
+          "metrics": {},
+          "python_source": {
+            "run_directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+            "summary_path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_single_obstacle_01/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789104852.1000473,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "3025879296557d6d25f3d62ab6e69f83c39b7d997c344948b1d890ce4e922d26",
+            "manifest_mode": "live",
+            "git_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537"
+          },
+          "cpp_source": null
+        },
+        {
+          "controller": "lqr",
+          "scenario": "single_obstacle",
+          "repeat": 2,
+          "comparable": false,
+          "passed": null,
+          "reasons": [
+            "cpp_result_missing"
+          ],
+          "metrics": {},
+          "python_source": {
+            "run_directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+            "summary_path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_single_obstacle_02/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789104852.1000473,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "ed2316b5438a9b217bff352fa1f2e4f0e227c1f6a37d1f1f836c295bc3157fad",
+            "manifest_mode": "live",
+            "git_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537"
+          },
+          "cpp_source": null
+        },
+        {
+          "controller": "lqr",
+          "scenario": "single_obstacle",
+          "repeat": 3,
+          "comparable": false,
+          "passed": null,
+          "reasons": [
+            "cpp_result_missing"
+          ],
+          "metrics": {},
+          "python_source": {
+            "run_directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+            "summary_path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_single_obstacle_03/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789104852.1000473,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "efaf9778769307ef4dbf352e0260f2dcda2aa16dd4576782b04874538c191cb9",
+            "manifest_mode": "live",
+            "git_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537"
+          },
+          "cpp_source": null
+        }
+      ]
+    },
+    {
+      "controller": "lqr",
+      "scenario": "straight",
+      "comparable": false,
+      "passed": null,
+      "reasons": [
+        "cpp_requires_exact_repeats_1_2_3",
+        "cpp_repeat_1_missing",
+        "cpp_repeat_2_missing",
+        "cpp_repeat_3_missing"
+      ],
+      "python_metrics": {
+        "cross_track_rmse_m": {
+          "values": [
+            0.057832093417726674,
+            0.0592442219551326,
+            0.05972984025705944
+          ],
+          "count": 3,
+          "mean": 0.05893538520997291,
+          "std_ddof1": 0.0009858477914566747,
+          "worst": 0.05972984025705944
+        },
+        "duration_sim_s": {
+          "values": [
+            16.1,
+            16.1,
+            16.3
+          ],
+          "count": 3,
+          "mean": 16.166666666666668,
+          "std_ddof1": 0.11547005383792475,
+          "worst": 16.3
+        },
+        "legacy_wall_rmse_m": {
+          "values": [
+            0.047613739919101124,
+            0.05508274036520926,
+            0.05436908371822367
+          ],
+          "count": 3,
+          "mean": 0.05235518800084468,
+          "std_ddof1": 0.004121689445645915,
+          "worst": 0.05508274036520926
+        },
+        "source_time_trapezoid_rmse_m": {
+          "values": [
+            0.057832093417726674,
+            0.0592442219551326,
+            0.05972984025705944
+          ],
+          "count": 3,
+          "mean": 0.05893538520997291,
+          "std_ddof1": 0.0009858477914566747,
+          "worst": 0.05972984025705944
+        }
+      },
+      "cpp_metrics": {
+        "cross_track_rmse_m": {
+          "values": [
+            null,
+            null,
+            null
+          ],
+          "count": 0,
+          "mean": null,
+          "std_ddof1": null,
+          "worst": null
+        },
+        "duration_sim_s": {
+          "values": [
+            null,
+            null,
+            null
+          ],
+          "count": 0,
+          "mean": null,
+          "std_ddof1": null,
+          "worst": null
+        },
+        "legacy_wall_rmse_m": {
+          "values": [
+            null,
+            null,
+            null
+          ],
+          "count": 0,
+          "mean": null,
+          "std_ddof1": null,
+          "worst": null
+        },
+        "source_time_trapezoid_rmse_m": {
+          "values": [
+            null,
+            null,
+            null
+          ],
+          "count": 0,
+          "mean": null,
+          "std_ddof1": null,
+          "worst": null
+        }
+      },
+      "ratio_metrics": {},
+      "individual_comparisons": [
+        {
+          "controller": "lqr",
+          "scenario": "straight",
+          "repeat": 1,
+          "comparable": false,
+          "passed": null,
+          "reasons": [
+            "cpp_result_missing"
+          ],
+          "metrics": {},
+          "python_source": {
+            "run_directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+            "summary_path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_straight_01/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789104852.1000473,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "259ed83a92dd389c5477a07d4d447b07718aba9ae6ef77851ca59e4efa766ff5",
+            "manifest_mode": "live",
+            "git_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537"
+          },
+          "cpp_source": null
+        },
+        {
+          "controller": "lqr",
+          "scenario": "straight",
+          "repeat": 2,
+          "comparable": false,
+          "passed": null,
+          "reasons": [
+            "cpp_result_missing"
+          ],
+          "metrics": {},
+          "python_source": {
+            "run_directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+            "summary_path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_straight_02/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789104852.1000473,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "ba61dbeecc5226894a318c6c9e1fd69cb8e51ef28711a6f96a70f97d5ee8d289",
+            "manifest_mode": "live",
+            "git_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537"
+          },
+          "cpp_source": null
+        },
+        {
+          "controller": "lqr",
+          "scenario": "straight",
+          "repeat": 3,
+          "comparable": false,
+          "passed": null,
+          "reasons": [
+            "cpp_result_missing"
+          ],
+          "metrics": {},
+          "python_source": {
+            "run_directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+            "summary_path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_straight_03/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789104852.1000473,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "453207c8dacb178d3e62bbf32dc5c5ad10c31be91dfc432b60a7ff998eb134c4",
+            "manifest_mode": "live",
+            "git_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537"
+          },
+          "cpp_source": null
+        }
+      ]
+    },
+    {
+      "controller": "lqr",
+      "scenario": "turn",
+      "comparable": false,
+      "passed": null,
+      "reasons": [
+        "cpp_requires_exact_repeats_1_2_3",
+        "cpp_repeat_1_missing",
+        "cpp_repeat_2_missing",
+        "cpp_repeat_3_missing"
+      ],
+      "python_metrics": {
+        "cross_track_rmse_m": {
+          "values": [
+            0.9973602579136088,
+            0.9883841272052277,
+            0.9921997821556716
+          ],
+          "count": 3,
+          "mean": 0.9926480557581693,
+          "std_ddof1": 0.004504824362892276,
+          "worst": 0.9973602579136088
+        },
+        "duration_sim_s": {
+          "values": [
+            17.900000000000002,
+            17.9,
+            17.8
+          ],
+          "count": 3,
+          "mean": 17.866666666666667,
+          "std_ddof1": 0.05773502691896237,
+          "worst": 17.900000000000002
+        },
+        "legacy_wall_rmse_m": {
+          "values": [
+            0.965313641587113,
+            1.086356355376243,
+            0.9983917167985568
+          ],
+          "count": 3,
+          "mean": 1.0166872379206375,
+          "std_ddof1": 0.06256100390982941,
+          "worst": 1.086356355376243
+        },
+        "source_time_trapezoid_rmse_m": {
+          "values": [
+            0.9973602579136088,
+            0.9883841272052277,
+            0.9921997821556716
+          ],
+          "count": 3,
+          "mean": 0.9926480557581693,
+          "std_ddof1": 0.004504824362892276,
+          "worst": 0.9973602579136088
+        }
+      },
+      "cpp_metrics": {
+        "cross_track_rmse_m": {
+          "values": [
+            null,
+            null,
+            null
+          ],
+          "count": 0,
+          "mean": null,
+          "std_ddof1": null,
+          "worst": null
+        },
+        "duration_sim_s": {
+          "values": [
+            null,
+            null,
+            null
+          ],
+          "count": 0,
+          "mean": null,
+          "std_ddof1": null,
+          "worst": null
+        },
+        "legacy_wall_rmse_m": {
+          "values": [
+            null,
+            null,
+            null
+          ],
+          "count": 0,
+          "mean": null,
+          "std_ddof1": null,
+          "worst": null
+        },
+        "source_time_trapezoid_rmse_m": {
+          "values": [
+            null,
+            null,
+            null
+          ],
+          "count": 0,
+          "mean": null,
+          "std_ddof1": null,
+          "worst": null
+        }
+      },
+      "ratio_metrics": {},
+      "individual_comparisons": [
+        {
+          "controller": "lqr",
+          "scenario": "turn",
+          "repeat": 1,
+          "comparable": false,
+          "passed": null,
+          "reasons": [
+            "cpp_result_missing"
+          ],
+          "metrics": {},
+          "python_source": {
+            "run_directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+            "summary_path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_turn_01/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789104852.1000473,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "69c0f94ea25202990199768601fa9ad0f4293427f60714a7e8b9c8aabd343190",
+            "manifest_mode": "live",
+            "git_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537"
+          },
+          "cpp_source": null
+        },
+        {
+          "controller": "lqr",
+          "scenario": "turn",
+          "repeat": 2,
+          "comparable": false,
+          "passed": null,
+          "reasons": [
+            "cpp_result_missing"
+          ],
+          "metrics": {},
+          "python_source": {
+            "run_directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+            "summary_path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_turn_02/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789104852.1000473,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "dac90604906d4ef50faad825f653182119572e1643b0e33407999c6d39296167",
+            "manifest_mode": "live",
+            "git_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537"
+          },
+          "cpp_source": null
+        },
+        {
+          "controller": "lqr",
+          "scenario": "turn",
+          "repeat": 3,
+          "comparable": false,
+          "passed": null,
+          "reasons": [
+            "cpp_result_missing"
+          ],
+          "metrics": {},
+          "python_source": {
+            "run_directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+            "summary_path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_turn_03/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789104852.1000473,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "d3d8d17af7016e6fcad79da4871e5e1cd301ea190bc7501ae7d53d0e0fb113e0",
+            "manifest_mode": "live",
+            "git_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537"
+          },
+          "cpp_source": null
+        }
+      ]
+    },
+    {
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "comparable": false,
+      "passed": null,
+      "reasons": [
+        "cpp_repeat_2_not_completed_and_passed",
+        "cpp_repeat_3_not_completed_and_passed"
+      ],
+      "python_metrics": {
+        "cross_track_rmse_m": {
+          "values": [
+            0.2020807314053436,
+            0.20475245525553507,
+            0.2035230534369199
+          ],
+          "count": 3,
+          "mean": 0.2034520800325995,
+          "std_ddof1": 0.001337275215133776,
+          "worst": 0.20475245525553507
+        },
+        "duration_sim_s": {
+          "values": [
+            22.500000000000004,
+            22.5,
+            22.700000000000003
+          ],
+          "count": 3,
+          "mean": 22.566666666666666,
+          "std_ddof1": 0.11547005383792576,
+          "worst": 22.700000000000003
+        },
+        "legacy_wall_rmse_m": {
+          "values": [
+            0.20457651599035606,
+            0.19565647856599763,
+            0.203761289346821
+          ],
+          "count": 3,
+          "mean": 0.20133142796772488,
+          "std_ddof1": 0.00493152477984303,
+          "worst": 0.20457651599035606
+        },
+        "source_time_trapezoid_rmse_m": {
+          "values": [
+            0.2020807314053436,
+            0.20475245525553507,
+            0.2035230534369199
+          ],
+          "count": 3,
+          "mean": 0.2034520800325995,
+          "std_ddof1": 0.001337275215133776,
+          "worst": 0.20475245525553507
+        }
+      },
+      "cpp_metrics": {
+        "cross_track_rmse_m": {
+          "values": [
+            0.48812363919388824,
+            0.4493193856300327,
+            0.4433721179801313
+          ],
+          "count": 3,
+          "mean": 0.46027171426801744,
+          "std_ddof1": 0.02430308189679138,
+          "worst": 0.48812363919388824
+        },
+        "duration_sim_s": {
+          "values": [
+            30.4,
+            27.900000000000002,
+            26.800000000000004
+          ],
+          "count": 3,
+          "mean": 28.36666666666667,
+          "std_ddof1": 1.8448125469362253,
+          "worst": 30.4
+        },
+        "legacy_wall_rmse_m": {
+          "values": [
+            0.47340155887704577,
+            0.45056586770272855,
+            0.441366425854831
+          ],
+          "count": 3,
+          "mean": 0.4551112841448684,
+          "std_ddof1": 0.016494182153477803,
+          "worst": 0.47340155887704577
+        },
+        "source_time_trapezoid_rmse_m": {
+          "values": [
+            0.48812363919388824,
+            0.4493193856300327,
+            0.4433721179801313
+          ],
+          "count": 3,
+          "mean": 0.46027171426801744,
+          "std_ddof1": 0.02430308189679138,
+          "worst": 0.48812363919388824
+        }
+      },
+      "ratio_metrics": {},
+      "individual_comparisons": [
+        {
+          "controller": "pid",
+          "scenario": "single_obstacle",
+          "repeat": 1,
+          "comparable": true,
+          "passed": true,
+          "reasons": [],
+          "metrics": {
+            "cross_track_rmse_m": {
+              "python": 0.2020807314053436,
+              "cpp": 0.48812363919388824,
+              "ratio": 0.41399497008395214,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            },
+            "duration_sim_s": {
+              "python": 22.500000000000004,
+              "cpp": 30.4,
+              "ratio": 0.7401315789473686,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            }
+          },
+          "python_source": {
+            "run_directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+            "summary_path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_single_obstacle_01/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789104852.1000473,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "416d1ea9f88b969eaf050b95f3c1225a4677ac8090633531bb81089760102dd0",
+            "manifest_mode": "live",
+            "git_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537"
+          },
+          "cpp_source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_01/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "73fe8f867ef414a64145a63baca216b09e20f1343279df55edd095c105aef657",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "rmse_metric": "source_time_trapezoid",
+          "rmse_alternatives": {
+            "legacy_wall": {
+              "python": 0.20457651599035606,
+              "cpp": 0.47340155887704577,
+              "ratio": 0.4321416187889861,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            },
+            "source_time_trapezoid": {
+              "python": 0.2020807314053436,
+              "cpp": 0.48812363919388824,
+              "ratio": 0.41399497008395214,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            }
+          }
+        },
+        {
+          "controller": "pid",
+          "scenario": "single_obstacle",
+          "repeat": 2,
+          "comparable": false,
+          "passed": null,
+          "reasons": [
+            "cpp_not_completed_and_passed: result=completed, passed=False, manifest_mode=live, reason=['footprint_clearance_limit_or_missing_observation']"
+          ],
+          "metrics": {},
+          "python_source": {
+            "run_directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+            "summary_path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_single_obstacle_02/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789104852.1000473,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "bee521f48cfcda0633ec98f04a1a34faab1164b4a6737039970fffdf95400074",
+            "manifest_mode": "live",
+            "git_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537"
+          },
+          "cpp_source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_02/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "1ae88b92f30ebd3a5a141cc4ae99bb864fb2c22b1b5623ae88768d20ed214701",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          }
+        },
+        {
+          "controller": "pid",
+          "scenario": "single_obstacle",
+          "repeat": 3,
+          "comparable": false,
+          "passed": null,
+          "reasons": [
+            "cpp_not_completed_and_passed: result=completed, passed=False, manifest_mode=live, reason=['footprint_clearance_limit_or_missing_observation']"
+          ],
+          "metrics": {},
+          "python_source": {
+            "run_directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+            "summary_path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_single_obstacle_03/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789104852.1000473,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "99b1e27997aec66e871b9aafb62695ab395dbab69b72604fd78a7f91b028b729",
+            "manifest_mode": "live",
+            "git_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537"
+          },
+          "cpp_source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_03/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "6327f629cf81bc914bd004c213a2b2e574a08ff8434736541abff208579e3af8",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          }
+        }
+      ]
+    },
+    {
+      "controller": "pid",
+      "scenario": "straight",
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "python_metrics": {
+        "cross_track_rmse_m": {
+          "values": [
+            0.06076667427693279,
+            0.05908001207736192,
+            0.0599059774621237
+          ],
+          "count": 3,
+          "mean": 0.0599175546054728,
+          "std_ddof1": 0.0008433906962679915,
+          "worst": 0.06076667427693279
+        },
+        "duration_sim_s": {
+          "values": [
+            20.9,
+            20.7,
+            20.8
+          ],
+          "count": 3,
+          "mean": 20.8,
+          "std_ddof1": 0.09999999999999964,
+          "worst": 20.9
+        },
+        "legacy_wall_rmse_m": {
+          "values": [
+            0.05717367003321939,
+            0.055764260680234747,
+            0.06322757898512528
+          ],
+          "count": 3,
+          "mean": 0.05872183656619314,
+          "std_ddof1": 0.0039652105543581785,
+          "worst": 0.06322757898512528
+        },
+        "source_time_trapezoid_rmse_m": {
+          "values": [
+            0.06076667427693279,
+            0.05908001207736192,
+            0.0599059774621237
+          ],
+          "count": 3,
+          "mean": 0.0599175546054728,
+          "std_ddof1": 0.0008433906962679915,
+          "worst": 0.06076667427693279
+        }
+      },
+      "cpp_metrics": {
+        "cross_track_rmse_m": {
+          "values": [
+            0.056497946901014624,
+            0.05604783648137904,
+            0.05739899322811656
+          ],
+          "count": 3,
+          "mean": 0.056648258870170075,
+          "std_ddof1": 0.0006880053812414006,
+          "worst": 0.05739899322811656
+        },
+        "duration_sim_s": {
+          "values": [
+            23.5,
+            20.8,
+            23.200000000000003
+          ],
+          "count": 3,
+          "mean": 22.5,
+          "std_ddof1": 1.4798648586948744,
+          "worst": 23.5
+        },
+        "legacy_wall_rmse_m": {
+          "values": [
+            0.05505332370087926,
+            0.06445820968450416,
+            0.06005010502067915
+          ],
+          "count": 3,
+          "mean": 0.059853879468687525,
+          "std_ddof1": 0.004705512558870379,
+          "worst": 0.06445820968450416
+        },
+        "source_time_trapezoid_rmse_m": {
+          "values": [
+            0.056497946901014624,
+            0.05604783648137904,
+            0.05739899322811656
+          ],
+          "count": 3,
+          "mean": 0.056648258870170075,
+          "std_ddof1": 0.0006880053812414006,
+          "worst": 0.05739899322811656
+        }
+      },
+      "ratio_metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.0599175546054728,
+          "cpp": 0.056648258870170075,
+          "ratio": 1.0577122015840856,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        },
+        "duration_sim_s": {
+          "python": 20.8,
+          "cpp": 22.5,
+          "ratio": 0.9244444444444445,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        }
+      },
+      "individual_comparisons": [
+        {
+          "controller": "pid",
+          "scenario": "straight",
+          "repeat": 1,
+          "comparable": true,
+          "passed": true,
+          "reasons": [],
+          "metrics": {
+            "cross_track_rmse_m": {
+              "python": 0.06076667427693279,
+              "cpp": 0.056497946901014624,
+              "ratio": 1.0755554424552285,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            },
+            "duration_sim_s": {
+              "python": 20.9,
+              "cpp": 23.5,
+              "ratio": 0.8893617021276595,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            }
+          },
+          "python_source": {
+            "run_directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+            "summary_path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_straight_01/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789104852.1000473,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "70a7b62e0e779b1c97e7291e1f6085646d1c7bb6a9f45be5c45ddc1fc3f649cd",
+            "manifest_mode": "live",
+            "git_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537"
+          },
+          "cpp_source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_01/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "0dea73b97c1ffda8b249fa65356d866375f5637a762db836a7a2f908765b260f",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "rmse_metric": "source_time_trapezoid",
+          "rmse_alternatives": {
+            "legacy_wall": {
+              "python": 0.05717367003321939,
+              "cpp": 0.05505332370087926,
+              "ratio": 1.038514410934762,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            },
+            "source_time_trapezoid": {
+              "python": 0.06076667427693279,
+              "cpp": 0.056497946901014624,
+              "ratio": 1.0755554424552285,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            }
+          }
+        },
+        {
+          "controller": "pid",
+          "scenario": "straight",
+          "repeat": 2,
+          "comparable": true,
+          "passed": true,
+          "reasons": [],
+          "metrics": {
+            "cross_track_rmse_m": {
+              "python": 0.05908001207736192,
+              "cpp": 0.05604783648137904,
+              "ratio": 1.0540997795158475,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            },
+            "duration_sim_s": {
+              "python": 20.7,
+              "cpp": 20.8,
+              "ratio": 0.9951923076923076,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            }
+          },
+          "python_source": {
+            "run_directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+            "summary_path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_straight_02/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789104852.1000473,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "5e6fa6c3b5bff02338b19dfaa036738fc6e2b7b3ff27c0ce4011e7b3ac1a6172",
+            "manifest_mode": "live",
+            "git_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537"
+          },
+          "cpp_source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_02/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "60728577cc2c924b44c9a5269122a9b547f8ae6bac95fdce60e9aaa57ee53e9f",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "rmse_metric": "source_time_trapezoid",
+          "rmse_alternatives": {
+            "legacy_wall": {
+              "python": 0.055764260680234747,
+              "cpp": 0.06445820968450416,
+              "ratio": 0.8651227043564715,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            },
+            "source_time_trapezoid": {
+              "python": 0.05908001207736192,
+              "cpp": 0.05604783648137904,
+              "ratio": 1.0540997795158475,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            }
+          }
+        },
+        {
+          "controller": "pid",
+          "scenario": "straight",
+          "repeat": 3,
+          "comparable": true,
+          "passed": true,
+          "reasons": [],
+          "metrics": {
+            "cross_track_rmse_m": {
+              "python": 0.0599059774621237,
+              "cpp": 0.05739899322811656,
+              "ratio": 1.0436764495858633,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            },
+            "duration_sim_s": {
+              "python": 20.8,
+              "cpp": 23.200000000000003,
+              "ratio": 0.8965517241379309,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            }
+          },
+          "python_source": {
+            "run_directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+            "summary_path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_straight_03/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789104852.1000473,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "ad20ce6ee78948026b85285000bbe0b26d81a3d85d16045e13d6acbf3188e1ac",
+            "manifest_mode": "live",
+            "git_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537"
+          },
+          "cpp_source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_03/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "dd71fb33ab2787b1e5a4576dc511a5c0b2a0db4db81378b0f00c8740d90785a8",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "rmse_metric": "source_time_trapezoid",
+          "rmse_alternatives": {
+            "legacy_wall": {
+              "python": 0.06322757898512528,
+              "cpp": 0.06005010502067915,
+              "ratio": 1.0529137120301775,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            },
+            "source_time_trapezoid": {
+              "python": 0.0599059774621237,
+              "cpp": 0.05739899322811656,
+              "ratio": 1.0436764495858633,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "controller": "pid",
+      "scenario": "turn",
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "python_metrics": {
+        "cross_track_rmse_m": {
+          "values": [
+            0.08281935799185221,
+            0.09633074959888185,
+            0.07794247934885204
+          ],
+          "count": 3,
+          "mean": 0.08569752897986203,
+          "std_ddof1": 0.009526018154202677,
+          "worst": 0.09633074959888185
+        },
+        "duration_sim_s": {
+          "values": [
+            20.500000000000004,
+            20.8,
+            20.6
+          ],
+          "count": 3,
+          "mean": 20.633333333333336,
+          "std_ddof1": 0.15275252316519336,
+          "worst": 20.8
+        },
+        "legacy_wall_rmse_m": {
+          "values": [
+            0.08542160929545572,
+            0.10116252185263687,
+            0.07836234134987223
+          ],
+          "count": 3,
+          "mean": 0.08831549083265494,
+          "std_ddof1": 0.01167231641548365,
+          "worst": 0.10116252185263687
+        },
+        "source_time_trapezoid_rmse_m": {
+          "values": [
+            0.08281935799185221,
+            0.09633074959888185,
+            0.07794247934885204
+          ],
+          "count": 3,
+          "mean": 0.08569752897986203,
+          "std_ddof1": 0.009526018154202677,
+          "worst": 0.09633074959888185
+        }
+      },
+      "cpp_metrics": {
+        "cross_track_rmse_m": {
+          "values": [
+            0.09421815965392949,
+            0.11547769752406983,
+            0.07901091859200489
+          ],
+          "count": 3,
+          "mean": 0.09623559192333474,
+          "std_ddof1": 0.018316905200968098,
+          "worst": 0.11547769752406983
+        },
+        "duration_sim_s": {
+          "values": [
+            22.6,
+            23.1,
+            23.400000000000002
+          ],
+          "count": 3,
+          "mean": 23.033333333333335,
+          "std_ddof1": 0.40414518843273833,
+          "worst": 23.400000000000002
+        },
+        "legacy_wall_rmse_m": {
+          "values": [
+            0.10650134242880807,
+            0.12227657845549479,
+            0.0846425405653086
+          ],
+          "count": 3,
+          "mean": 0.10447348714987048,
+          "std_ddof1": 0.01889879228295366,
+          "worst": 0.12227657845549479
+        },
+        "source_time_trapezoid_rmse_m": {
+          "values": [
+            0.09421815965392949,
+            0.11547769752406983,
+            0.07901091859200489
+          ],
+          "count": 3,
+          "mean": 0.09623559192333474,
+          "std_ddof1": 0.018316905200968098,
+          "worst": 0.11547769752406983
+        }
+      },
+      "ratio_metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.08569752897986203,
+          "cpp": 0.09623559192333474,
+          "ratio": 0.8904972398167639,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        },
+        "duration_sim_s": {
+          "python": 20.633333333333336,
+          "cpp": 23.033333333333335,
+          "ratio": 0.8958031837916064,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        }
+      },
+      "individual_comparisons": [
+        {
+          "controller": "pid",
+          "scenario": "turn",
+          "repeat": 1,
+          "comparable": true,
+          "passed": true,
+          "reasons": [],
+          "metrics": {
+            "cross_track_rmse_m": {
+              "python": 0.08281935799185221,
+              "cpp": 0.09421815965392949,
+              "ratio": 0.8790169357590304,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            },
+            "duration_sim_s": {
+              "python": 20.500000000000004,
+              "cpp": 22.6,
+              "ratio": 0.9070796460176992,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            }
+          },
+          "python_source": {
+            "run_directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+            "summary_path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_turn_01/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789104852.1000473,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "defcc8896c66da0a710f62ac3bc2f6f688ffad20596e67faec313a995ce62805",
+            "manifest_mode": "live",
+            "git_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537"
+          },
+          "cpp_source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_01/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "b3fce7bbb3765e88b5e453478869848d961d3a344d5c7f90fbdcf979034b6a9a",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "rmse_metric": "source_time_trapezoid",
+          "rmse_alternatives": {
+            "legacy_wall": {
+              "python": 0.08542160929545572,
+              "cpp": 0.10650134242880807,
+              "ratio": 0.8020707283812567,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            },
+            "source_time_trapezoid": {
+              "python": 0.08281935799185221,
+              "cpp": 0.09421815965392949,
+              "ratio": 0.8790169357590304,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            }
+          }
+        },
+        {
+          "controller": "pid",
+          "scenario": "turn",
+          "repeat": 2,
+          "comparable": true,
+          "passed": true,
+          "reasons": [],
+          "metrics": {
+            "cross_track_rmse_m": {
+              "python": 0.09633074959888185,
+              "cpp": 0.11547769752406983,
+              "ratio": 0.8341935426864824,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            },
+            "duration_sim_s": {
+              "python": 20.8,
+              "cpp": 23.1,
+              "ratio": 0.9004329004329004,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            }
+          },
+          "python_source": {
+            "run_directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+            "summary_path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_turn_02/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789104852.1000473,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "77f1d3a5718e36dc02e95abec36b9e4cc7f7b4f60da747928e681eb6b2adb355",
+            "manifest_mode": "live",
+            "git_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537"
+          },
+          "cpp_source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_02/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "feed24badb07d662ec568dc3fe96eb886e71ffabe478d9c1df2b3d5b96799db6",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "rmse_metric": "source_time_trapezoid",
+          "rmse_alternatives": {
+            "legacy_wall": {
+              "python": 0.10116252185263687,
+              "cpp": 0.12227657845549479,
+              "ratio": 0.8273254218464835,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            },
+            "source_time_trapezoid": {
+              "python": 0.09633074959888185,
+              "cpp": 0.11547769752406983,
+              "ratio": 0.8341935426864824,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            }
+          }
+        },
+        {
+          "controller": "pid",
+          "scenario": "turn",
+          "repeat": 3,
+          "comparable": true,
+          "passed": true,
+          "reasons": [],
+          "metrics": {
+            "cross_track_rmse_m": {
+              "python": 0.07794247934885204,
+              "cpp": 0.07901091859200489,
+              "ratio": 0.9864773215880449,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            },
+            "duration_sim_s": {
+              "python": 20.6,
+              "cpp": 23.400000000000002,
+              "ratio": 0.8803418803418803,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            }
+          },
+          "python_source": {
+            "run_directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+            "summary_path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_turn_03/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789104852.1000473,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "1da0e582625434d67608673bda253166a86549dbb79298938c90a54c43ed9888",
+            "manifest_mode": "live",
+            "git_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537"
+          },
+          "cpp_source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_03/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "5d16a65ce15ea8701061eac7df987505515e276c0dcd80c236fd9e851d631dda",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "rmse_metric": "source_time_trapezoid",
+          "rmse_alternatives": {
+            "legacy_wall": {
+              "python": 0.07836234134987223,
+              "cpp": 0.0846425405653086,
+              "ratio": 0.9258032760655301,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            },
+            "source_time_trapezoid": {
+              "python": 0.07794247934885204,
+              "cpp": 0.07901091859200489,
+              "ratio": 0.9864773215880449,
+              "limit": 1.1,
+              "zero_baseline_atol": 1e-06,
+              "comparable": true,
+              "passed": true,
+              "reason": "",
+              "method": "python_divided_by_cpp"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

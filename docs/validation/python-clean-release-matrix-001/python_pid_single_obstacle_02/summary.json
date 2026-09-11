@@ -1,0 +1,176 @@
+{
+  "trial": "python_pid_single_obstacle_02",
+  "mode": "python",
+  "controller": "pid",
+  "scenario": "single_obstacle",
+  "fault": null,
+  "repeat": 2,
+  "result": "completed",
+  "passed": true,
+  "reasons": [],
+  "arrived": true,
+  "duration_wall_s": 24.53516531600326,
+  "effective_arrival_distance_m": 1.5,
+  "duration_sim_s": 22.5,
+  "costmap_topic": "/otter/costmap_raw",
+  "cross_track_initial_m": {
+    "count": 237,
+    "mean": 0.14702853103905061,
+    "rms": 0.19565647856599763,
+    "p95": 0.46484920146902453,
+    "max": 0.5288138224775469
+  },
+  "cross_track_live_m": {
+    "count": 226,
+    "mean": 0.19326514711251103,
+    "rms": 0.24749616807448274,
+    "p95": 0.50218890019109,
+    "max": 0.5750830881645934
+  },
+  "minimum_footprint_clearance_m": 0.7570241463476594,
+  "goal_to_first_path_wall_s": 0.282018344005337,
+  "goal_to_first_nonzero_command_wall_s": 0.29289649399288464,
+  "command_receipt_gap_ms": {
+    "count": 230,
+    "mean": 106.61647181740314,
+    "rms": 106.92813789467522,
+    "p95": 111.8931710079778,
+    "max": 118.34295799781103
+  },
+  "observed_odom_receipt_to_command_receipt_ms": {
+    "count": 231,
+    "mean": 142.70833132799123,
+    "rms": 383.4498069676718,
+    "p95": 974.5686309906887,
+    "max": 2146.924598986516
+  },
+  "path_header_age_sim_ms": {
+    "count": 109,
+    "mean": 0.9174311926615658,
+    "rms": 9.57826285221165,
+    "p95": 3.552713678800501e-12,
+    "max": 100.00000000000142
+  },
+  "status": {
+    "state": "GOAL_REACHED",
+    "reason": "",
+    "version": 2,
+    "stamp": 28.3,
+    "controller": "pid",
+    "goal": null,
+    "metrics": {
+      "control_ms": {
+        "count": 301,
+        "p50": 0.23792398860678077,
+        "p95": 3.784209009609185,
+        "p99": 4.414751994772814,
+        "max": 11.07940600195434
+      },
+      "costmap_conversion_ms": {
+        "count": 28,
+        "p50": 0.9509465089649893,
+        "p95": 3.1972521494026287,
+        "p99": 3.618740440288093,
+        "max": 3.6795519990846515
+      },
+      "planning_ms": {
+        "count": 107,
+        "p50": 5.567617990891449,
+        "p95": 8.912595396395773,
+        "p99": 9.942661487148142,
+        "max": 10.93914000375662
+      }
+    },
+    "counters": {
+      "pending_replacements": 1,
+      "global_searches": 5
+    },
+    "process": {
+      "pid": 124625,
+      "cpu_seconds": 1.5683200000000002,
+      "peak_rss_kib": 71104,
+      "monotonic": 84862.280735597
+    }
+  },
+  "mapping_status": {
+    "stamp": 28.200000000000003,
+    "queue_size": 1,
+    "integrated_scans": 419,
+    "scan_overruns": 0,
+    "queue_counters": {
+      "accepted": 421,
+      "processed": 419,
+      "overflow": 0,
+      "expired": 1,
+      "duplicate": 0,
+      "invalid": 0,
+      "invalid_consumed": 0,
+      "resets": 0
+    },
+    "invalid_scans": 0,
+    "queue_observation_window": {
+      "window_s": 5.0,
+      "sampling_phase": "after_drain",
+      "capacity": 5,
+      "tf_wait_timeout_s": 0.2,
+      "observation_count": 376,
+      "pending_observations": 277,
+      "empty_observations": 99,
+      "max_queue_size": 2,
+      "latest_queue_size": 1,
+      "latest_oldest_pending_age_ms": 10.240862000500783,
+      "oldest_pending_age_ms": {
+        "count": 277,
+        "p50": 31.427904003066942,
+        "p95": 74.59418979124165,
+        "p99": 89.40570744278376,
+        "max": 97.44536799553316
+      },
+      "oldest_pending_distinct_count": 51,
+      "latest_oldest_pending": {
+        "frame_id": "otter/lidar_link",
+        "stamp_ns": 28210000000,
+        "received_at_monotonic_s": 84862.121686187
+      },
+      "max_observation_gap_ms": 59.16219799837563,
+      "observed_span_s": 4.993112042007851,
+      "first_observed_monotonic_s": 84857.138815007,
+      "last_observed_monotonic_s": 84862.131927049
+    },
+    "invalid_beams": 0,
+    "processing_ms": {
+      "count": 256,
+      "p50": 21.047321002697572,
+      "p95": 24.337646256753942,
+      "p99": 26.080350304255255,
+      "max": 27.35473299981095
+    },
+    "queue_ms": {
+      "count": 256,
+      "p50": 54.71256750024622,
+      "p95": 99.20600324767292,
+      "p99": 105.3312286494474,
+      "max": 108.06871499517001
+    },
+    "serialization_and_publish_ms": {
+      "count": 56,
+      "p50": 0.3170655036228709,
+      "p95": 1.0089204988616984,
+      "p99": 1.4922356494935245,
+      "max": 1.7823919915826991
+    },
+    "observed_scan_period_ms": {
+      "count": 256,
+      "p50": 67.0,
+      "p95": 67.0,
+      "p99": 67.0,
+      "max": 67.0
+    },
+    "process": {
+      "pid": 124621,
+      "cpu_seconds": 10.081464,
+      "peak_rss_kib": 69312,
+      "monotonic": 84862.133170009
+    }
+  }
+}
