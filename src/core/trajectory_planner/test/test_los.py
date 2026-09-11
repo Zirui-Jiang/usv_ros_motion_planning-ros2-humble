@@ -83,3 +83,19 @@ def test_slowdown_floor_preserves_far_field_legacy_ratio():
     a = LosTrajectoryPlanner(USVModel(), {"slowdown_distance": 3.}).plan(path, state)
     b = LosTrajectoryPlanner(USVModel(), {"slowdown_distance": 1e-9}).plan(path, state)
     np.testing.assert_array_equal(a.trajectory.points, b.trajectory.points)
+
+
+def test_nearby_waypoints_advance_once_per_output_after_current_segment_guidance():
+    # All points are within the 5 m switching radius, but the original LOS
+    # must not jump immediately from the two horizontal segments to the bend.
+    path = [[0., 0., 0.], [.1, 0., 0.], [.2, 0., 0.], [.2, 1., 0.], [3., 1., 0.]]
+    result = LosTrajectoryPlanner(USVModel(), {
+        'trajectory_time': 1., 'trajectory_time_interval': .5,
+        'lookahead_distance': 1., 'switch_dist': 5.,
+    }).plan(path, VesselState())
+    assert result.status == AlgorithmStatus.SUCCESS
+    assert result.trajectory[1].theta == pytest.approx(0., abs=1e-12)
+    assert result.trajectory[1].y == pytest.approx(0., abs=1e-12)
+    # At the next output boundary the current horizontal heading is computed
+    # before advancing, leaving exactly four 0.1 s bounded yaw steps.
+    assert result.trajectory[2].theta == pytest.approx(.12, abs=1e-12)

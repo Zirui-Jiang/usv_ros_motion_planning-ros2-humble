@@ -99,6 +99,7 @@ class LosTrajectoryPlanner:
             output_time = min(output_index * dt, horizon)
             previous_speed = speed
             yaw_rate = 0.0
+            allow_switch = True
             while elapsed < output_time - 1e-12:
                 inner_dt = min(0.1, output_time - elapsed)
                 if np.linalg.norm(xy - goal) <= goal_tolerance:
@@ -111,8 +112,6 @@ class LosTrajectoryPlanner:
                     desired_yaw = math.atan2(target[1] - xy[1], target[0] - xy[0])
                     remaining = np.linalg.norm(target - xy)
                 else:
-                    while index < len(waypoints) - 2 and np.linalg.norm(waypoints[index + 1, :2] - xy) < cfg["switch_dist"]:
-                        index += 1
                     start = waypoints[index, :2]
                     target = waypoints[index + 1, :2]
                     delta = target - start
@@ -124,6 +123,14 @@ class LosTrajectoryPlanner:
                         desired_yaw = math.atan2(target[1] - xy[1], target[0] - xy[0])
                     remaining = np.linalg.norm(target - xy) + np.linalg.norm(
                         np.diff(waypoints[index + 1:, :2], axis=0), axis=1).sum()
+                    # Preserve the original waypoint progression: calculate
+                    # guidance from the current segment first, then advance at
+                    # most once at t=0, output_dt, 2*output_dt, ... . Jumping
+                    # over every point within switch_dist changes cornering.
+                    if (allow_switch and index < len(waypoints) - 2
+                            and np.linalg.norm(target - xy) < cfg["switch_dist"]):
+                        index += 1
+                allow_switch = False
                 heading_error = wrap_angle(desired_yaw - yaw)
                 yaw_rate = float(np.clip(cfg["kp_yaw"] * heading_error, -cfg["yaw_rate_max"], cfg["yaw_rate_max"]))
                 speed = self.model.cruising_speed * float(np.clip(remaining / speed_denominator, 0.0, 1.0))

@@ -4,6 +4,7 @@ Run in an isolated ROS_DOMAIN_ID. No Gazebo or running project nodes are used.
 """
 
 import time
+import json
 
 import numpy as np
 import pytest
@@ -16,6 +17,7 @@ from rclpy.node import Node
 from rclpy.parameter import Parameter
 from rosgraph_msgs.msg import Clock
 from sensor_msgs.msg import LaserScan
+from std_msgs.msg import String
 from tf2_ros import TransformBroadcaster
 
 from perception.mapping_node import MappingNode
@@ -37,6 +39,9 @@ def test_exact_tf_duplicate_expiry_clock_rollback_and_map_publication():
         broadcaster = TransformBroadcaster(driver)
         maps = []
         map_sub = driver.create_subscription(OccupancyGrid, "map", maps.append, 10)
+        statuses = []
+        status_sub = driver.create_subscription(
+            String, "mapping_status", lambda message: statuses.append(json.loads(message.data)), 10)
 
         def spin(seconds=0.05):
             deadline = time.monotonic() + seconds
@@ -93,6 +98,18 @@ def test_exact_tf_duplicate_expiry_clock_rollback_and_map_publication():
         # A newer scan has no exact-time TF and must not use the transform at 10s.
         set_clock(10.1)
         scan(10.1)
+        until(lambda: len(mapper.pending) == 1)
+        spin(0.03)
+        mapper._log_metrics()
+        until(lambda: bool(statuses))
+        observation = statuses[-1]['queue_observation_window']
+        assert observation['sampling_phase'] == 'after_drain'
+        assert observation['capacity'] == 5
+        assert observation['tf_wait_timeout_s'] == 0.2
+        assert observation['observation_count'] > 0
+        assert observation['max_queue_size'] >= 1
+        assert observation['oldest_pending_age_ms']['count'] >= 1
+        assert observation['latest_oldest_pending']['stamp_ns'] == 10_100_000_000
         until(lambda: mapper.pending.counters.expired == 1)
         assert mapper.integrated_scans == 1
         np.testing.assert_array_equal(mapper.mapper.data, snapshot)

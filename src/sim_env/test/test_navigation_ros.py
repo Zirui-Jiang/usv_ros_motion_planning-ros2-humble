@@ -18,6 +18,36 @@ from sim_env.simulation import Simulator
 from sim_env.configuration import C, T
 
 
+def test_transient_controller_timeout_is_counted_and_publishes_zero(monkeypatch):
+    import numpy as np
+    from common.models import AlgorithmStatus, ControlCommand, GridSnapshot, VesselState
+    from trajectory_planner import Trajectory
+    rclpy.init(args=['--ros-args', '-r', '__ns:=/navigation_timeout_smoke'])
+    simulator = None
+    try:
+        simulator = Simulator()
+        now = simulator.now_seconds()
+        simulator.grid = GridSnapshot(np.zeros((40, 40), np.uint8), 1., -10., -10., now, simulator.frame)
+        simulator.state = VesselState(stamp=now, frame_id=simulator.frame)
+        simulator.trajectory = Trajectory([[0., 0., 0., 0., 0., 0., 1., 0.],
+                                           [1., 1., 1., 0., 0., 0., 1., 0.]], now, simulator.frame, (5., 0.))
+        simulator.goal = (5., 0., 0.)
+        commands = []
+        monkeypatch.setattr(simulator, '_publish_command', commands.append)
+        monkeypatch.setattr(simulator.controller, 'compute', lambda *args: ControlCommand(
+            left=1., right=1., status=AlgorithmStatus.TIMEOUT, message='injected one-step timeout'))
+        simulator.last_control = now - .1
+        simulator._control()
+        assert simulator.mode == 'CONTROL_ERROR' and simulator.goal is not None
+        assert simulator.counters['control_result_timeout'] == 1
+        assert commands[-1].left == commands[-1].right == 0.
+    finally:
+        if simulator is not None:
+            simulator.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
+
+
 def test_current_hull_blocks_control_even_when_reference_and_centre_are_clear(monkeypatch):
     import numpy as np
     from common.models import GridSnapshot, VesselState

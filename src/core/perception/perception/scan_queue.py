@@ -4,6 +4,8 @@ from collections import deque
 from dataclasses import dataclass
 import math
 
+import numpy as np
+
 
 @dataclass(frozen=True)
 class PendingScan:
@@ -33,6 +35,9 @@ class ScanQueue:
         self.counters = QueueCounters()
         self._pending = deque()
         self._last_stamp_by_frame = {}
+        # Diagnostic observations do not participate in admission or expiry.
+        self._observations = deque()
+        self.observation_window_s = 5.0
 
     def __len__(self):
         return len(self._pending)
@@ -76,9 +81,72 @@ class ScanQueue:
             completed += 1
         return completed
 
+    def observe_pending(self, now):
+        """Record queue length and oldest wall age after a completed drain.
+
+        Sampling is explicit so diagnostics never add clock reads between
+        deadline checks or alter which scans the drain processes.
+        """
+        if not math.isfinite(now):
+            raise ValueError("observation time must be finite monotonic wall time")
+        if self._observations and now < self._observations[-1][0]:
+            raise ValueError("observation time must not move backwards")
+        oldest = min(self._pending, key=lambda scan: scan.received_at) if self._pending else None
+        oldest_ms = max(0.0, now - oldest.received_at) * 1000.0 if oldest else None
+        identity = (oldest.frame_id, oldest.stamp_ns, oldest.received_at) if oldest else None
+        self._observations.append((now, len(self._pending), oldest_ms, identity))
+        self._prune_observations(now)
+
+    def _prune_observations(self, now):
+        while self._observations and self._observations[0][0] < now - self.observation_window_s:
+            self._observations.popleft()
+
+    def observation_summary(self, now):
+        """Describe only actual post-drain observations in the last five seconds.
+
+        Empty queues contribute length zero but no pending age. Missing samples
+        therefore remain distinguishable from an observed empty queue.
+        """
+        if not math.isfinite(now):
+            raise ValueError("observation time must be finite monotonic wall time")
+        if self._observations and now < self._observations[-1][0]:
+            raise ValueError("summary time must not precede the latest observation")
+        self._prune_observations(now)
+        observations = self._observations
+        ages = [row[2] for row in observations if row[2] is not None]
+        identities = [row[3] for row in observations if row[3] is not None]
+        gaps_ms = [(b[0] - a[0]) * 1000.0 for a, b in zip(observations, list(observations)[1:])]
+        latest_identity = observations[-1][3] if observations else None
+        age_summary = {'count': len(ages)}
+        if ages:
+            age_summary.update({name: float(value) for name, value in zip(
+                ('p50', 'p95', 'p99'), np.percentile(ages, [50, 95, 99]))})
+            age_summary['max'] = max(ages)
+        return {
+            'window_s': self.observation_window_s,
+            'sampling_phase': 'after_drain',
+            'capacity': self.capacity,
+            'tf_wait_timeout_s': self.tf_wait_timeout,
+            'observation_count': len(observations),
+            'pending_observations': len(ages),
+            'empty_observations': len(observations) - len(ages),
+            'max_queue_size': max((row[1] for row in observations), default=None),
+            'latest_queue_size': observations[-1][1] if observations else None,
+            'latest_oldest_pending_age_ms': observations[-1][2] if observations else None,
+            'oldest_pending_age_ms': age_summary,
+            'oldest_pending_distinct_count': len(set(identities)),
+            'latest_oldest_pending': (dict(zip(('frame_id', 'stamp_ns', 'received_at_monotonic_s'),
+                                               latest_identity)) if latest_identity else None),
+            'max_observation_gap_ms': max(gaps_ms, default=None),
+            'observed_span_s': observations[-1][0] - observations[0][0] if observations else 0.0,
+            'first_observed_monotonic_s': observations[0][0] if observations else None,
+            'last_observed_monotonic_s': observations[-1][0] if observations else None,
+        }
+
     def reset(self):
         self._pending.clear()
         self._last_stamp_by_frame.clear()
+        self._observations.clear()
         self.counters.resets += 1
 
 

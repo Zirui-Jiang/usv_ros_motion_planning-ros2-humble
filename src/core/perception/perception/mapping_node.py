@@ -113,6 +113,7 @@ class MappingNode(Node):
     def _drain(self):
         self._observe_clock()
         self.pending.drain(time.monotonic, self._try_process)
+        self.pending.observe_pending(time.monotonic())
 
     def _try_process(self, pending):
         scan = pending.payload
@@ -176,6 +177,7 @@ class MappingNode(Node):
             'stamp': self.get_clock().now().nanoseconds * 1e-9, 'queue_size': len(self.pending),
             'integrated_scans': self.integrated_scans, 'scan_overruns': self.scan_overruns,
             'queue_counters': vars(counts), 'invalid_scans': self.invalid_scans,
+            'queue_observation_window': self.pending.observation_summary(time.monotonic()),
             'invalid_beams': self.invalid_beams,
             'processing_ms': summary(self.processing_ms), 'queue_ms': summary(self.waiting_ms),
             'serialization_and_publish_ms': summary(self.serialization_ms),

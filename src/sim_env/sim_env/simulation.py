@@ -303,6 +303,9 @@ class Simulator(Node):
                         self.mode, self.reason = 'SETTLING', command.message
                     elif command.status != AlgorithmStatus.SUCCESS or not command.is_valid():
                         self.mode, self.reason = 'CONTROL_ERROR', command.message
+                        # Count every control-step failure; one-second status
+                        # snapshots alone can miss a transient solver timeout.
+                        self.counters['control_result_' + command.status.value] += 1
                         command = ControlCommand()
                 elif dt <= 0:
                     self.mode = 'SIMULATION_PAUSED'

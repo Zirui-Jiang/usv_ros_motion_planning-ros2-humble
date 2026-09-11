@@ -1,4 +1,5 @@
 from perception.scan_queue import ClockGuard, ScanQueue
+import pytest
 
 
 def put(queue, stamp, received=0.0, frame="lidar"):
@@ -79,3 +80,71 @@ def test_deadline_is_rechecked_after_slow_processing():
     times = iter([0.15, 0.21])
     assert queue.drain(lambda: next(times), lambda entry: True) == 1
     assert queue.counters.expired == 1
+
+
+def test_single_frame_pipeline_is_distinguished_from_one_stuck_scan():
+    queue = ScanQueue()
+    for stamp in range(1, 11):
+        received = stamp * 0.1
+        put(queue, stamp, received=received)
+        queue.drain(received + 0.01, lambda entry: entry.stamp_ns < stamp)
+        queue.observe_pending(received + 0.01)
+    report = queue.observation_summary(1.02)
+    assert report['sampling_phase'] == 'after_drain'
+    assert report['max_queue_size'] == report['latest_queue_size'] == 1
+    assert report['empty_observations'] == 0
+    assert report['oldest_pending_distinct_count'] == 10
+    assert report['oldest_pending_age_ms']['max'] == pytest.approx(10.0)
+    assert report['latest_oldest_pending']['stamp_ns'] == 10
+    assert queue.counters.processed == 9
+    assert queue.counters.expired == queue.counters.overflow == 0
+
+
+def test_post_drain_age_does_not_hide_expiry_counter_or_change_deadlines():
+    queue = ScanQueue()
+    for stamp in range(1, 4):
+        put(queue, stamp, received=0.0)
+    queue.drain(0.1, lambda entry: False)
+    queue.observe_pending(0.1)
+    queue.drain(0.2, lambda entry: False)
+    queue.observe_pending(0.2)
+    report = queue.observation_summary(0.2)
+    assert report['capacity'] == 5
+    assert report['tf_wait_timeout_s'] == 0.2
+    assert report['max_queue_size'] == 3
+    assert report['latest_queue_size'] == 0
+    assert report['latest_oldest_pending_age_ms'] is None
+    assert report['empty_observations'] == 1
+    assert report['oldest_pending_age_ms']['max'] == 100.0
+    assert queue.counters.expired == 3
+    assert queue.counters.processed == 0
+
+
+def test_observations_expire_by_wall_window_and_reset_has_no_fake_zero_sample():
+    queue = ScanQueue()
+    assert queue.observation_summary(0.0)['max_queue_size'] is None
+    put(queue, 1, received=0.0)
+    queue.observe_pending(0.1)
+    queue.drain(0.3, lambda entry: False)
+    queue.observe_pending(0.3)
+    queue.observe_pending(5.2)
+    report = queue.observation_summary(5.2)
+    assert report['observation_count'] == 2
+    assert report['max_queue_size'] == 0
+    assert report['oldest_pending_age_ms'] == {'count': 0}
+    assert report['max_observation_gap_ms'] == pytest.approx(4900.0)
+    assert report['observed_span_s'] == pytest.approx(4.9)
+    assert queue.observation_summary(10.21)['observation_count'] == 0
+    queue.observe_pending(10.3)
+    queue.reset()
+    assert queue.observation_summary(10.3)['observation_count'] == 0
+
+
+def test_observation_clock_contract_rejects_nonfinite_and_backward_values():
+    queue = ScanQueue()
+    queue.observe_pending(1.0)
+    for invalid in (float('nan'), float('inf'), 0.5):
+        with pytest.raises(ValueError):
+            queue.observe_pending(invalid)
+        with pytest.raises(ValueError):
+            queue.observation_summary(invalid)

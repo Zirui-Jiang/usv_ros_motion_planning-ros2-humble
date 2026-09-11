@@ -20,6 +20,26 @@
 
 基本导入关系为：`sim_env.runtime → path_planner / trajectory_planner / common`，`sim_env.simulation → controller / common / runtime`；`controller → trajectory_planner / common`。建图内核不依赖导航规划，ROS 消息和 TF 处理集中在各自适配层。
 
+```mermaid
+flowchart LR
+    G[Gazebo 与原传感器/水动力插件] --> F[sim_env 真值定位 C++]
+    F -->|odom / TF| N[sim_env Python 导航节点]
+    G -->|LiDAR| M[perception Python 建图]
+    M -->|map| V[RViz 地图显示]
+    G -->|LiDAR| K[sim_env C++ Nav2 代价地图支撑]
+    K -->|costmap_raw| N
+    N -->|状态/地图/目标快照| W[独立规划工作进程]
+    W --> P[path_planner A* / Dijkstra / GBFS]
+    P --> T[trajectory_planner LOS]
+    T -->|参考轨迹| N
+    N --> C[controller PID / LQR]
+    C -->|归一化左右推力| G
+```
+
+规划进程中的包通过 Python 对象调用连接。`common` 提供这些模块共享的数据与几何接口；
+`path_processor` 保留 RDP/SG 的独立可调用实现。上图没有把建图输出连接到 Nav2 static layer，
+与当前实际插件配置一致。
+
 Gazebo、波浪/水动力/浮力/推进器插件、Otter URDF、RViz 目标设置插件、动态 XML/RViz 配置工具保持在原工程中。原 C++ 算法源码及部分 CMake 文件暂留作迁移核对；对于已切换为 `ament_python` 的包，这些 CMake 文件不代表仍在构建 C++ 算法库。Dubins、Reeds–Shepp、Bezier、B 样条、三次样条和五次多项式等非活跃通用曲线库尚未提供对应 Python 全量实现。
 
 本次实现使用已有 LiDAR 和仿真真值定位，未新增 SLAM、AIS/Radar 融合、目标跟踪或 COLREGs 动态避碰算法。它为后续算法研究提供可单独测试的接口。
@@ -245,11 +265,21 @@ ros2 service call /otter/cancel_navigation std_srvs/srv/Trigger "{}"
 | `SIMULATION_PAUSED` | 控制周期中 ROS 时间没有前进；steady-clock 定时器继续发零推力 |
 | `NO_PATH` / `TIMEOUT` / `INVALID_INPUT` / `PLANNING_ERROR` | 规划失败、搜索预算耗尽、非法输入或工作进程异常；清参考并保持零推力，保留原因 |
 | `CONTROL_ERROR` | 控制计算失败、非有限或越界输出；使用零推力 |
+| `CURRENT_FOOTPRINT_BLOCKED` | 当前实艇与 lethal/unknown 方格相交；清参考并保持零推力，保留目标 |
+| `SETTLING` | 已进入位置容差但速度仍大于 0.25 m/s；零推力、保留任务，直到稳定到达或漂出后重新引导 |
 | `CANCELLED` / `GOAL_REACHED` | 清目标、轨迹、路径和控制器历史；以后保持零推力，直到收到新目标 |
 | `INVALID_GOAL` | 新目标格式或 TF 不可用；旧任务已先清除，不继续上一目标 |
 | `CLOCK_RESET` | ROS 时间回跳；清目标、输入、参考、待处理 odom 和 TF 历史；等待输入恢复后需重新发目标 |
 
 默认规划频率 5 Hz、控制频率 10 Hz；状态、地图、参考时效阈值分别为 0.5、1.5、1.0 s。A* 搜索默认 1 s/200000 展开节点；LQR 配置另有 `solve_timeout=0.08 s` 和迭代上限。搜索预算不等于整条导航链路的硬实时保证，碰撞复核、进程传输、ROS 回调和执行器通信仍需分别测量。
+
+全局搜索继续使用 `254 × obstacle_factor` 作为障碍偏好阈值。局部轨迹和当前实艇采用
+`navigation.footprint_length=2.2`、`navigation.footprint_width=1.2` 的完整矩形检查
+lethal/unknown 方格，避免把软膨胀代价重复当成物理障碍。尺寸必须覆盖所用模型的真实艇体，
+属于启动参数。LQR 复验默认使用 `lookahead_time=2.0`，
+`Q=[1,1,100,10,10,10]`、`R=[20,20]`，最大迭代数 5000；
+零预瞄候选已因实测转圈撤回。LOS 的 `slowdown_distance=3.0` 保持近目标
+重规划的减速参考，这些参数只在启动时配置。
 
 ## 7. 数值接口与验收入口
 

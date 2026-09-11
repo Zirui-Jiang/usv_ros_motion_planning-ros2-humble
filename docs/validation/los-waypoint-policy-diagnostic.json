@@ -1,0 +1,106 @@
+{
+  "classification": "offline captured-input Python policy comparison, not execution of original C++ and not Gazebo closed loop",
+  "source_capture": "scripts\\validation\\diagnostics\\obstacle_raw_002",
+  "source_cpp_policy_lines": "src/core/trajectory_planner/src/los_trajectory_planner.cpp:98-107",
+  "current_los_sha256": "642fc2180394ae704d20a84c864b105909dfd65def553068f43873f8099810c0",
+  "candidate_rule": "Compute current segment heading first, then advance at most one nonfinal waypoint at t=0,0.5,... if distance<switch_dist; retain all current timing/speed/boundary corrections",
+  "time_alignment_limitation": "The map and state snapshot were captured before goal publication; first global route arrives later. This is captured-input replay, not an assertion of the exact private worker snapshot. Map/state/route stamps are retained in los_replay.json.",
+  "variants": [
+    {
+      "variant": "current_multi_skip",
+      "lookahead_distance": 1.0,
+      "status": "success",
+      "raw_map_swept_footprint_clear": true,
+      "circle_sampled_minimum_clearance_m": 1.2653827992285125,
+      "sample_corner_motion_bound_m": 0.02,
+      "first_output_pose": [
+        23.483230149612847,
+        -9.985748151753485,
+        0.058776167107761346
+      ],
+      "pose_at_3s": [
+        25.393540667151882,
+        -9.097038690809581,
+        0.786299805956137
+      ],
+      "last_pose": [
+        32.37275349967732,
+        -8.088364393517155,
+        -0.6281900717984548
+      ],
+      "last_time": 20.0
+    },
+    {
+      "variant": "candidate_single_step",
+      "lookahead_distance": 1.0,
+      "status": "success",
+      "raw_map_swept_footprint_clear": true,
+      "circle_sampled_minimum_clearance_m": 0.7091691912110947,
+      "sample_corner_motion_bound_m": 0.02,
+      "first_output_pose": [
+        23.49178466588427,
+        -9.969006578173893,
+        0.09640155450453891
+      ],
+      "pose_at_3s": [
+        25.5258040348286,
+        -9.224699012284102,
+        0.7032839839716605
+      ],
+      "last_pose": [
+        32.4504268971903,
+        -8.508403541849072,
+        -0.528923076813594
+      ],
+      "last_time": 20.0
+    },
+    {
+      "variant": "current_multi_skip",
+      "lookahead_distance": 5.0,
+      "status": "success",
+      "raw_map_swept_footprint_clear": false,
+      "circle_sampled_minimum_clearance_m": -0.49549246803619973,
+      "sample_corner_motion_bound_m": 0.02,
+      "first_output_pose": [
+        23.481030785888688,
+        -9.956673016897204,
+        0.15003581074035566
+      ],
+      "pose_at_3s": [
+        25.535098320322955,
+        -9.323552531770895,
+        0.3290503652104517
+      ],
+      "last_pose": [
+        32.39664807724341,
+        -9.474980342576373,
+        -0.19899003588306519
+      ],
+      "last_time": 20.0
+    },
+    {
+      "variant": "candidate_single_step",
+      "lookahead_distance": 5.0,
+      "status": "success",
+      "raw_map_swept_footprint_clear": true,
+      "circle_sampled_minimum_clearance_m": 0.17483544324350575,
+      "sample_corner_motion_bound_m": 0.02,
+      "first_output_pose": [
+        23.492919857967806,
+        -9.99344158112075,
+        0.020298980508393072
+      ],
+      "pose_at_3s": [
+        25.60454584350272,
+        -9.453299118000892,
+        0.6017466315989433
+      ],
+      "last_pose": [
+        32.464314637217726,
+        -9.129673203096548,
+        -0.330586721103205
+      ],
+      "last_time": 20.0
+    }
+  ]
+}

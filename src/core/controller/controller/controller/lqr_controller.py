@@ -17,9 +17,9 @@ from .controller import Controller, select_config, stop
 
 
 class LQRController(Controller):
-    DEFAULTS = {"goal_distance_tolerance": 1.0, "goal_speed_tolerance": 0.25, "lookahead_time": 0.0,
-                "discrete_dt": 0.1, "solve_eps": 0.1, "max_iterations": 1000,
-                "Q_matrix_diag": [100, 100, 100, 10, 10, 0], "R_matrix_diag": [1, 1],
+    DEFAULTS = {"goal_distance_tolerance": 1.0, "goal_speed_tolerance": 0.25, "lookahead_time": 2.0,
+                "discrete_dt": 0.1, "solve_eps": 0.1, "max_iterations": 5000,
+                "Q_matrix_diag": [1, 1, 100, 10, 10, 10], "R_matrix_diag": [20, 20],
                 "solve_timeout": 0.0}
 
     def __init__(self, model, config=None):

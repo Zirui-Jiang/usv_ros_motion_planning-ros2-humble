@@ -16,12 +16,12 @@ controller:
   lqr_controller:
     goal_distance_tolerance: 1.0
     goal_speed_tolerance: 0.25
-    # Track the trajectory's current time. Receding plans start at the current
-    # vessel pose; a permanent 2 s position lead caused saturated acceleration.
-    lookahead_time: 0.0
+    # Rolling LOS plans need preview for coupled sway/yaw feedback. Lower
+    # position weights and stronger input penalties prevent permanent full thrust.
+    lookahead_time: 2.0
     discrete_dt: 0.1
     solve_eps: 0.1
-    max_iterations: 1000
+    max_iterations: 5000
     solve_timeout: 0.08
-    Q_matrix_diag: [100, 100, 100, 10, 10, 0]
-    R_matrix_diag: [1, 1]
+    Q_matrix_diag: [1, 1, 100, 10, 10, 10]
+    R_matrix_diag: [20, 20]
