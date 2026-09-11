@@ -1,8 +1,9 @@
 # Python 导航迁移验收报告
 
-本报告记录固定版本的实现与实测证据。原场景正式矩阵已经完成：18 条导航和 3 条
-故障检查通过，但一次相对 RMSE 超限、一次积压判定证据不足，不能标为全部验收通过。
-格内起点的追加矩阵单独执行和统计。完整原始事件流和地图保存在 WSL，仓库归档保存摘要、参数、来源路径及
+本报告记录固定版本的实现与实测证据。`e381832` 格内正式复验已完成：18 条导航和
+3 条故障检查通过，七对有效基线中六对满足相对门槛，完整性能为 17 条通过、1 条
+unknown；因此不能标为全部验收通过。此前原场景及格内失败矩阵单独保留。
+完整原始事件流和地图保存在 WSL，仓库归档保存摘要、参数、来源路径及
 SHA256，不能用候选试验代替最终矩阵。
 
 ## 1. 版本与交付边界
@@ -11,10 +12,12 @@ SHA256，不能用候选试验代替最终矩阵。
 | --- | --- |
 | 未修改的原项目 | `main` / `cpp-baseline`：`ed4ed1803b1d520e19712df82f54ffac6ff313b3` |
 | 可执行 C++ 对照 | `baseline-validation`：`632734ba31478bdb833e15949287b53ae9334cf3` |
-| 当前正式 Python 数值版本 | `4ef01a645ada5fb816c8e1a412fa6cd779723539` |
+| 原场景 Python 数值版本 | `4ef01a645ada5fb816c8e1a412fa6cd779723539` |
+| 软区驶出及路线复用修复后的格内版本 | `e38183218fce7044e686a0f697ed13f456f49039` |
 | C++ 独立构建区 | `/home/usv/usv_migration/baseline` |
 | Python 独立构建区 | `/home/usv/usv_migration/python` |
 | 正式矩阵原始目录 | `/home/usv/usv_migration/results/python-final-matrix-001` |
+| 格内复验原始目录 | `/home/usv/usv_migration/results/python-release-grid-001` |
 
 C++ 验证分支补齐库安装、headless/controller 选择入口和 LQR 等值数组类型；另将
 LOS 前视设为 1 m、模型生成等待设为 120 s。原 tag 保持不变。
@@ -30,13 +33,14 @@ Python 算法通过导入和对象调用连接；导航节点使用独立工作�
 | 层次 | 已有证据 | 当前边界 |
 | --- | --- | --- |
 | 静态检查与构建 | C++ 和 Python 各 13 包构建通过；纯包导入及节点入口检查已有通过记录 | 删除替换源码后的全新普通安装构建待最后执行 |
-| 单元测试 | 原正式版本 264 项；当前恢复软区驶出后的候选 362 项通过，包含真实 ROS 测试 | 候选尚待闭环；清理后将再核对安装和源码 |
+| 单元测试 | 原正式版本 264 项；`e381832` 全仓 368 项通过，包含真实 ROS 测试 | 清理后将再核对安装和源码 |
 | ROS 集成 | goal、odom、TF、clock、scan、raw costmap、路径及推力链路；在线参数、取消、过期输入、时间回退 | GUI 初始化证据与可视画面确认分别记录 |
 | 闭环验收 | 原场景 PID/LQR 各三场景、各三次共 18 条导航，以及 3 条故障检查通过 | 9 对有效 PID 基线中 8 对通过相对门槛；1 对 RMSE 超限；LQR 基线不可比；格内追加矩阵另列 |
 
 全仓库测试记录：[JUnit](validation/source-tests-calibrated-candidate.xml)。
 `79a109f` 候选：[334 项 JUnit](validation/source-tests-factor025-candidate.xml)；
-恢复软区驶出后：[362 项 JUnit](validation/source-tests-soft-inflation-escape.xml)。新计数比较器
+恢复软区驶出后：[362 项 JUnit](validation/source-tests-soft-inflation-escape.xml)；
+统一路线复用后：[368 项 JUnit](validation/source-tests-route-reuse.xml)。新计数比较器
 与旧 synthetic fixtures 的同步中间轮曾有 22 项失败，已保存为
 [中间轮记录](validation/source-tests-counter-schema-in-progress.xml)；完成新旧 schema
 兼容后再跑全仓通过，未把中间轮视为有效发布版本。
@@ -157,8 +161,43 @@ PID 完成后暂停（七条通过、两条圆柱裕度失败），LQR 首例中
 `79a109f` 的 factor=0.25 候选仅运行第一例后中断：观察最小间隙为 0.721369 m，
 但持续报 `start or goal is blocked` 而未到达。两份捕获输入均为起点 raw75、
 目标 raw0、全艇 hard 检查通过；63.5 阈值下的严格起点拒绝导致死锁。
-见 [候选归档](validation/python-factor025-candidate-001/README.md)。当前正在恢复原 C++
-已有的软代价下降驶出行为，原中断候选不追改为成功。
+见 [候选归档](validation/python-factor025-candidate-001/README.md)。`c0139be` 已恢复原 C++
+已有的软代价下降驶出行为，并完成三次独立圆柱候选，间隙为 0.747–0.829 m；
+原中断候选不追改为成功。
+
+### 5.1 软区驶出与路线复用修复后的格内复验
+
+`e381832` 按 [提前固定协议](validation/soft-escape-release-protocol.md) 完成 18 条导航和
+3 条故障。运行前后全部源码、安装和验收脚本指纹相同。PID 圆柱三次间隙为
+0.803666、0.791767、0.831053 m，LQR 为 0.868580、0.875396、0.869449 m。
+直航/转弯每例仅一次全局搜索；圆柱 PID 为 3/4/3 次、LQR 均为 3 次。
+取消零推力延迟为 2.980 ms，独立里程计断流延迟为 0.418201 s，目标更换用例到达。
+见 [完整原始归档](validation/python-release-grid-001/README.md)。
+
+七个有效 PID 配对中六个通过。直航首例正式 RMSE 为 0.0864591 m，C++ 为
+0.0550533 m，比值 1.57046；另外两条 C++ 圆柱基线裕度失败及九条 LQR 缺少基线，
+共十一项不可比。LQR 转弯 RMSE 为 1.025206、1.289636、0.979844 m，明显高于 PID，
+不因到达通过而隐去跟踪质量差异。
+
+十八条导航的控制及扫描计算耗时均满足原预算，完整性能为 17 通过、1 unknown。
+LQR 直航首例在相邻完整窗口中 TF 过期数连续增加 1 和 2；计数守恒、观察到的
+drain 后队列均有界，但不足以证明正常 TF 条件下的持续吞吐，因此保留 unknown。
+
+首例直航诊断发现：两版地图原点、分辨率和起点格相同，路径前 24 点也相同，
+Python 末点为精确目标，C++ 为格中心。Python 的 231 个墙钟误差样本对应 201 个
+odom 源时刻，C++ 为 245 对应 228；两版暂停位置不同，重复采样改变了误差权重。
+按真实 odom 源时间梯形积分的诊断比例仍为 1.12728，不能据去重改判通过。
+实际运动中的差异主要集中在 `x≥32 m` 的末段，Python 较早趋向精确目标。
+据此另行固定 PID 2.4 s 预瞄候选，保持原增益、控制公式和门槛；候选不替补本矩阵。
+
+独立 `/proc` 采样完整覆盖十八条导航，共 699 个快照、约 698 s；导航加 worker
+CPU 均值为单核的 10.24%、P95 为 19.02%，同刻 RSS 合计峰值为 114.00 MiB。
+一次 `/proc` 读取错误、共享页重复计数可能和独立断流窗口的记录限制均保留，详见
+[进程性能报告](validation/python-release-grid-001-process-performance.md)。
+
+两例在采集结束后的 SIGINT 阶段异常：PID 圆柱 01 的 gzserver 退出 -6；圆柱 03 的
+fake_localization 退出 -11。其他十八个 Gazebo 试验的八个进程均正常退出。
+后者没有崩溃栈，不能把源码中可见的 ModelStates 数组边界缺陷直接当作这次根因。
 
 ## 6. 环境和已知限制
 
