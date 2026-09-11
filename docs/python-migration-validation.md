@@ -1,8 +1,9 @@
 # Python 导航迁移验收报告
 
-本报告记录固定版本的实现与实测证据。`e381832` 格内正式复验已完成：18 条导航和
-3 条故障检查通过，七对有效基线中六对满足相对门槛，完整性能为 17 条通过、1 条
-unknown；因此不能标为全部验收通过。此前原场景及格内失败矩阵单独保留。
+本报告记录固定版本的实现与实测证据。最新 `3afb25f` 栅格终点正式复验已完成：
+18 条导航和 3 条故障功能检查通过；按采集前固定的源时间 RMSE，七对有效基线中
+六对满足相对门槛，PID 转弯 01 为 1.10912972，超过 1.10。完整性能为 16 条通过、
+2 条 unknown；因此完整验收尚未通过，M5 清理尚未执行。此前失败矩阵单独保留。
 完整原始事件流和地图保存在 WSL，仓库归档保存摘要、参数、来源路径及
 SHA256，不能用候选试验代替最终矩阵。
 
@@ -19,6 +20,7 @@ SHA256，不能用候选试验代替最终矩阵。
 | Python 独立构建区 | `/home/usv/usv_migration/python` |
 | 正式矩阵原始目录 | `/home/usv/usv_migration/results/python-final-matrix-001` |
 | 格内复验原始目录 | `/home/usv/usv_migration/results/python-release-grid-001` |
+| 最新栅格终点复验原始目录 | `/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001` |
 
 C++ 验证分支补齐库安装、headless/controller 选择入口和 LQR 等值数组类型；另将
 LOS 前视设为 1 m、模型生成等待设为 120 s。原 tag 保持不变。
@@ -36,7 +38,7 @@ Python 算法通过导入和对象调用连接；导航节点使用独立工作�
 | 静态检查与构建 | C++ 和 Python 各 13 包构建通过；纯包导入及节点入口检查已有通过记录 | 删除替换源码后的全新普通安装构建待最后执行 |
 | 单元测试及源码回归 | 原正式版本 264 项；`e381832` 368 项；`3afb25f` 全仓 404 项，包含真实 ROS 测试 | 清理后将再核对安装和源码 |
 | ROS 集成 | goal、odom、TF、clock、scan、raw costmap、路径及推力链路；在线参数、取消、过期输入、时间回退 | GUI 初始化证据与可视画面确认分别记录 |
-| 闭环验收 | 原场景 PID/LQR 各三场景、各三次共 18 条导航，以及 3 条故障检查通过 | 9 对有效 PID 基线中 8 对通过相对门槛；1 对 RMSE 超限；LQR 基线不可比；格内追加矩阵另列 |
+| 闭环验收 | 最新栅格终点版 PID/LQR 各三场景、各三次共 18 条导航，以及 3 条故障功能检查通过 | 7 对有效 PID 基线中 6 对通过源时间相对门槛；转弯 01 超限；11 对不可比；完整性能 16 通过、2 unknown |
 
 全仓库测试记录：[JUnit](validation/source-tests-calibrated-candidate.xml)。
 `79a109f` 候选：[334 项 JUnit](validation/source-tests-factor025-candidate.xml)；
@@ -221,6 +223,34 @@ PID 2.4 s 候选转弯在原规则下失败；2.5 s 五候选在原规则下全�
 不小于控制器容差时才追加合法连接。实际任务仍按真实目标位置和速度判定。
 源码和 404 项回归已固定，候选与后续完整矩阵必须使用新的输出目录，不能替换
 此前试验或以反事实评分代替实际重跑。
+
+该版随后完成固定的 18 条导航与 3 条故障功能检查，运行前后 513 个源码、680 个
+安装文件及 88 个验收文件的指纹完全相同。正式源时间比较为 **6/7 通过**，转弯 01
+为 `0.1045001608 / 0.09421815965 = 1.10912971776`，超过 1.10；九条 LQR 无合格
+旧版结果、两条 CPP 圆柱裕度失败，另有 11 对不可比。全部 27 份正常导航源时间
+覆盖有效。legacy 墙钟也是 6/7，但失败为直航 03（1.10054400653），不能在两种
+指标间挑选通过项。完整逐例值见
+[原始归档](validation/python-grid-endpoint-final-matrix-001/README.md) 和
+[冻结比较](validation/python-grid-endpoint-final-comparison/report.md)。
+
+本轮 PID 圆柱三次最小裕度为 0.663200、0.785057、0.810616 m，LQR 为 0.885133、
+0.867981、0.887848 m。取消零命令观察延迟为 3.668 ms，独立断流为 0.424809 s，
+目标更换在 25.7 s 仿真时间到达。控制与扫描计算各 18/18 通过；PID/LQR 直航 03
+在连续窗口出现 TF 过期，积压两项保留 unknown。LQR 直航 01、转弯 01 各有一次
+80 ms 求解预算超时后恢复；P99 通过不等于零超时。20 次 Gazebo launch 中 18 次
+全部八个进程正常退出，两次 gzserver 在 SIGINT 后 self-join 异常退出 -6。
+
+623 个独立 `/proc` 样本完整覆盖十八条导航。导航加 worker CPU 均值为单核的
+10.46%、P95 为 20.01%，同刻 RSS 合计峰值为 115.63 MiB（共享页可能重复计入）。
+三次进程读取错误及独立断流尾部覆盖限制分别记录，见
+[OS 旁路报告](validation/python-grid-endpoint-final-matrix-001-process-performance.md)。
+
+[转弯分段诊断](validation/python-grid-endpoint-final-comparison/turn01-diagnostic/README.md)
+确认正式与候选首路径完全相同、参数相同，差值来自前中段实际横偏而非尾部评分。
+原 ocean 的 PMS `gain=0.1` 在 `amplitude=0` 时仍产生波浪，且双方 goal 的绝对
+仿真时刻未锁定；[可复现性审计](validation/ocean-repeatability-audit/README.md)
+将其保留为潜在混杂因素，没有据此改判失败或认定其为根因。后续修复仍需独立闭环
+复验，当前不执行 M5 旧源码清理。
 
 ### 5.3 正常 TF 条件下的建图吞吐
 

@@ -1,0 +1,454 @@
+{
+  "classification": "Default PID2.6 grid-endpoint compatibility candidate; original legacy samples preserved alongside separately computed source-time metrics.",
+  "fixed_install": "3afb25f84232e560c62599a721dc0bfbe1a21657",
+  "no_parameter_overrides": true,
+  "status_sampling_limit": "1 Hz status observations do not prove absence of sub-second transitions.",
+  "trials": [
+    {
+      "trial": "python_pid_straight_01",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 20.900000000000002,
+      "duration_wall_s": 20.895836262003286,
+      "legacy_fixed_cte_rms_m": 0.057474177236551884,
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 78977.579608803,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 2.8000000000000003
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 78998.475416065,
+        "sim_time_s": 23.700000000000003,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 17,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [],
+      "failure_snapshots": [],
+      "exit_health": {
+        "clean_process_count": 7,
+        "abnormal_exit_lines": [
+          {
+            "line": 92,
+            "text": "[ERROR] [joint_state_publisher-3]: process has died [pid 112551, exit code -11, cmd '/opt/ros/humble/lib/joint_state_publisher/joint_state_publisher --ros-args --params-file /tmp/launch_params_z6a9_uvb'].",
+            "after_launch_sigint": true
+          }
+        ]
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-straight-candidate-001/python_pid_straight_01/events.jsonl",
+        "bytes": 759570,
+        "sha256": "02c4d06abc50e5b02f3e0992bbffe26971a3b92ce22e0f6d731d3e2b14f068ad"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-straight-candidate-001/python_pid_straight_01/launch.log",
+        "bytes": 14424,
+        "sha256": "74ec72f657edb9f09beab1600af7965c3ba1f52e74f84f0780746a3cda6bc52a"
+      }
+    },
+    {
+      "trial": "python_pid_straight_02",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 21.0,
+      "duration_wall_s": 24.845028759009438,
+      "legacy_fixed_cte_rms_m": 0.08600432227635922,
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79005.711836534,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 2.8000000000000003
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 79030.556842001,
+        "sim_time_s": 23.8,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "SIMULATION_PAUSED": 4,
+        "NAVIGATING": 17,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 79006.382764366,
+          "payload": {
+            "state": "SIMULATION_PAUSED",
+            "reason": "",
+            "version": 1,
+            "stamp": 3.1,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 51,
+                "p50": 0.04338599683251232,
+                "p95": 0.17877399659482762,
+                "p99": 5.611894492176361,
+                "max": 7.059614988975227
+              },
+              "costmap_conversion_ms": {
+                "count": 3,
+                "p50": 0.21586600632872432,
+                "p95": 0.3747033988474868,
+                "p99": 0.38882227818248793,
+                "max": 0.3923519980162382
+              },
+              "planning_ms": {
+                "count": 2,
+                "p50": 9.670182007539552,
+                "p95": 10.83253831093316,
+                "p99": 10.935858871234814,
+                "max": 10.961689011310227
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 1
+            },
+            "process": {
+              "pid": 112776,
+              "cpu_seconds": 0.5044339999999999,
+              "peak_rss_kib": 68924,
+              "monotonic": 79006.382505965
+            }
+          }
+        },
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 79007.44680131,
+          "payload": {
+            "state": "SIMULATION_PAUSED",
+            "reason": "",
+            "version": 1,
+            "stamp": 3.1,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 61,
+                "p50": 0.04704701132141054,
+                "p95": 0.19347300985828042,
+                "p99": 5.322350392816584,
+                "max": 7.059614988975227
+              },
+              "costmap_conversion_ms": {
+                "count": 3,
+                "p50": 0.21586600632872432,
+                "p95": 0.3747033988474868,
+                "p99": 0.38882227818248793,
+                "max": 0.3923519980162382
+              },
+              "planning_ms": {
+                "count": 2,
+                "p50": 9.670182007539552,
+                "p95": 10.83253831093316,
+                "p99": 10.935858871234814,
+                "max": 10.961689011310227
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 1
+            },
+            "process": {
+              "pid": 112776,
+              "cpu_seconds": 0.516685,
+              "peak_rss_kib": 68924,
+              "monotonic": 79007.446567791
+            }
+          }
+        },
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 79008.511517331,
+          "payload": {
+            "state": "SIMULATION_PAUSED",
+            "reason": "",
+            "version": 1,
+            "stamp": 3.2,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 71,
+                "p50": 0.05097000394016504,
+                "p95": 0.19742150470847264,
+                "p99": 5.1801639958284715,
+                "max": 7.059614988975227
+              },
+              "costmap_conversion_ms": {
+                "count": 3,
+                "p50": 0.21586600632872432,
+                "p95": 0.3747033988474868,
+                "p99": 0.38882227818248793,
+                "max": 0.3923519980162382
+              },
+              "planning_ms": {
+                "count": 3,
+                "p50": 10.03659599518869,
+                "p95": 10.869179709698074,
+                "p99": 10.943187150987796,
+                "max": 10.961689011310227
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 1
+            },
+            "process": {
+              "pid": 112776,
+              "cpu_seconds": 0.534531,
+              "peak_rss_kib": 68924,
+              "monotonic": 79008.51111349
+            }
+          }
+        },
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 79009.57593562,
+          "payload": {
+            "state": "SIMULATION_PAUSED",
+            "reason": "",
+            "version": 1,
+            "stamp": 3.3000000000000003,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 81,
+                "p50": 0.06367299647536129,
+                "p95": 0.20136999955866486,
+                "p99": 4.911670996807524,
+                "max": 7.059614988975227
+              },
+              "costmap_conversion_ms": {
+                "count": 3,
+                "p50": 0.21586600632872432,
+                "p95": 0.3747033988474868,
+                "p99": 0.38882227818248793,
+                "max": 0.3923519980162382
+              },
+              "planning_ms": {
+                "count": 3,
+                "p50": 10.03659599518869,
+                "p95": 10.869179709698074,
+                "p99": 10.943187150987796,
+                "max": 10.961689011310227
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 1
+            },
+            "process": {
+              "pid": 112776,
+              "cpu_seconds": 0.547042,
+              "peak_rss_kib": 68924,
+              "monotonic": 79009.575329874
+            }
+          }
+        }
+      ],
+      "failure_snapshots": [],
+      "exit_health": {
+        "clean_process_count": 8,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-straight-candidate-001/python_pid_straight_02/events.jsonl",
+        "bytes": 803652,
+        "sha256": "d2521610f3a43e8565a7d986b516e6927053eb0f81c0c4e16f0e61e405be5925"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-straight-candidate-001/python_pid_straight_02/launch.log",
+        "bytes": 14006,
+        "sha256": "e1809698a7c1ceb64d52ffb1e978ca59baef3426c2871b72b8d4ef709eb1fc37"
+      }
+    },
+    {
+      "trial": "python_pid_straight_03",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 20.6,
+      "duration_wall_s": 22.62109286300256,
+      "legacy_fixed_cte_rms_m": 0.06514609718187933,
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79037.51756382,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 2.9000000000000004
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 79060.138634528,
+        "sim_time_s": 23.5,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "SIMULATION_PAUSED": 2,
+        "NAVIGATING": 16,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 79038.54508211,
+          "payload": {
+            "state": "SIMULATION_PAUSED",
+            "reason": "",
+            "version": 1,
+            "stamp": 3.6,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 51,
+                "p50": 0.0400889985030517,
+                "p95": 5.496438003319781,
+                "p99": 7.838485995307565,
+                "max": 7.859213990741409
+              },
+              "costmap_conversion_ms": {
+                "count": 4,
+                "p50": 0.27656250313157216,
+                "p95": 2.6569120956992256,
+                "p99": 2.9812344144738736,
+                "max": 3.0623149941675365
+              },
+              "planning_ms": {
+                "count": 5,
+                "p50": 8.31423899217043,
+                "p95": 8.865977398818359,
+                "p99": 8.887423480628058,
+                "max": 8.892785001080483
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 1
+            },
+            "process": {
+              "pid": 113000,
+              "cpu_seconds": 0.570245,
+              "peak_rss_kib": 69864,
+              "monotonic": 79038.54481558
+            }
+          }
+        },
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 79039.608145491,
+          "payload": {
+            "state": "SIMULATION_PAUSED",
+            "reason": "",
+            "version": 1,
+            "stamp": 3.6,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 61,
+                "p50": 0.04064899985678494,
+                "p95": 4.240228008711711,
+                "p99": 7.834340396220796,
+                "max": 7.859213990741409
+              },
+              "costmap_conversion_ms": {
+                "count": 4,
+                "p50": 0.27656250313157216,
+                "p95": 2.6569120956992256,
+                "p99": 2.9812344144738736,
+                "max": 3.0623149941675365
+              },
+              "planning_ms": {
+                "count": 5,
+                "p50": 8.31423899217043,
+                "p95": 8.865977398818359,
+                "p99": 8.887423480628058,
+                "max": 8.892785001080483
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 1
+            },
+            "process": {
+              "pid": 113000,
+              "cpu_seconds": 0.583646,
+              "peak_rss_kib": 69864,
+              "monotonic": 79039.607859791
+            }
+          }
+        }
+      ],
+      "failure_snapshots": [],
+      "exit_health": {
+        "clean_process_count": 8,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-straight-candidate-001/python_pid_straight_03/events.jsonl",
+        "bytes": 779871,
+        "sha256": "1c8cd078bb8b4857ca40d968a70ef88140a5c0819cc5ea19d3273aec0901fabd"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-straight-candidate-001/python_pid_straight_03/launch.log",
+        "bytes": 14004,
+        "sha256": "77ad705fde768dd0d42af2eafbc74100068fe0dcab5e705e5078371f21f756a0"
+      }
+    }
+  ],
+  "residual_process_check": []
+}

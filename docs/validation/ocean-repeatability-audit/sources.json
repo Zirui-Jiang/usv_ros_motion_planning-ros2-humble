@@ -1,0 +1,515 @@
+{
+  "schema_version": 1,
+  "recorded_utc": "2026-09-11T04:40:17.213899+00:00",
+  "scope": "Read-only source, installed-world and historical-event audit. No simulation was started, no tested source/install/environment/threshold was changed. Only this new audit directory is written.",
+  "fixed_commits": {
+    "baseline": "632734ba31478bdb833e15949287b53ae9334cf3",
+    "python": "3afb25f84232e560c62599a721dc0bfbe1a21657"
+  },
+  "code_pairs": [
+    {
+      "relative_path": "src/sim_env/worlds/ocean.world",
+      "baseline": {
+        "absolute_path": "/home/usv/usv_migration/baseline/src/sim_env/worlds/ocean.world",
+        "bytes": 12995,
+        "sha256": "c3b3daf40fd4e8815da1a6566da56514da0b8556c18b54bf1e96927be0585d1d"
+      },
+      "python": {
+        "absolute_path": "/home/usv/usv_migration/python/src/sim_env/worlds/ocean.world",
+        "bytes": 12995,
+        "sha256": "c3b3daf40fd4e8815da1a6566da56514da0b8556c18b54bf1e96927be0585d1d"
+      },
+      "bytes_identical": true,
+      "python_source_excerpts": [
+        {
+          "start_line": 53,
+          "end_line": 69,
+          "text": "53:         <update_rate>30</update_rate>\n54:         <size>1000 1000</size>\n55:         <cell_count>50 50</cell_count>\n56:         <wave>\n57:           <model>PMS</model>\n58:           <period>5</period>\n59:           <number>3</number>\n60:           <scale>2.5</scale>\n61:           <gain>0.1</gain>\n62:           <direction>1.0 0.0</direction>\n63:           <angle>0.4</angle>\n64:           <tau>2.0</tau>\n65:           <amplitude>0.0</amplitude>\n66:           \n67:           <steepness>0.0</steepness>\n68:         </wave>\n69:       </plugin>"
+        },
+        {
+          "start_line": 125,
+          "end_line": 135,
+          "text": "125:     <plugin name=\"wind\" filename=\"libusv_gazebo_wind_plugin.so\">\n126:       <wind_obj>\n127:         <name>wamv</name>\n128:         <link_name>wamv/base_link</link_name>\n129:         <coeff_vector>.5 .5 .33</coeff_vector>\n130:       </wind_obj>\n131:       <wind_direction>270</wind_direction>\n132:       <wind_mean_velocity>0</wind_mean_velocity>\n133:       <var_wind_gain_constants>0</var_wind_gain_constants>\n134:       <var_wind_time_constants>2</var_wind_time_constants>\n135:       <random_seed />"
+        },
+        {
+          "start_line": 151,
+          "end_line": 155,
+          "text": "151:     <physics type=\"ode\">\n152:       <max_step_size>0.001</max_step_size>\n153:       <real_time_factor>1</real_time_factor>\n154:       <real_time_update_rate>1000</real_time_update_rate>\n155:     </physics>"
+        }
+      ]
+    },
+    {
+      "relative_path": "src/sim_env/urdf/otter/otter.urdf.xacro",
+      "baseline": {
+        "absolute_path": "/home/usv/usv_migration/baseline/src/sim_env/urdf/otter/otter.urdf.xacro",
+        "bytes": 2543,
+        "sha256": "3b9a9dcfc89df2bd24e7a35603e4f60a1c55df66f0069dbe04565c1ae55dfad1"
+      },
+      "python": {
+        "absolute_path": "/home/usv/usv_migration/python/src/sim_env/urdf/otter/otter.urdf.xacro",
+        "bytes": 2543,
+        "sha256": "3b9a9dcfc89df2bd24e7a35603e4f60a1c55df66f0069dbe04565c1ae55dfad1"
+      },
+      "bytes_identical": true,
+      "python_source_excerpts": [
+        {
+          "start_line": 41,
+          "end_line": 48,
+          "text": "41:   <!-- USV dynamics plugin -->\n42:   <xacro:usv_dynamics_gazebo name=\"otter\"/>\n43: \n44:   <!-- Attach wind plugin -->\n45:   <xacro:usv_wind_gazebo name=\"otter\"/>\n46: \n47:   <!-- USV thrust plugin -->\n48:   <xacro:otter_usv_thrust_gazebo name=\"otter\"/>"
+        },
+        {
+          "start_line": 50,
+          "end_line": 63,
+          "text": "50:   <!-- Add simulated GPS -->\n51:   <xacro:if value=\"$(arg gps_enabled)\">\n52:     <xacro:otter_gps name=\"gps\" x=\"0.08\" y=\"0.1\" z=\"0.395\" />\n53:   </xacro:if>\n54: \n55:   <!-- Add Simulated IMU -->\n56:   <xacro:if value=\"$(arg imu_enabled)\">\n57:     <xacro:otter_imu name=\"imu\" x=\"0.08\" y=\"-0.1\" z=\"0.385\" />\n58:   </xacro:if>\n59: \n60:   <!-- Add planar LIDAR -->\n61:   <xacro:if value=\"$(arg lidar_enabled)\">\n62:     <xacro:otter_lidar name=\"lidar\" x=\"0\" y=\"0.0\" z=\"0.40\" min_range=\"1.2\" max_range=\"25\" visualize=\"false\" />\n63:   </xacro:if>"
+        }
+      ]
+    },
+    {
+      "relative_path": "src/sim_env/urdf/otter/dynamics/otter_gazebo_dynamics_plugin.xacro",
+      "baseline": {
+        "absolute_path": "/home/usv/usv_migration/baseline/src/sim_env/urdf/otter/dynamics/otter_gazebo_dynamics_plugin.xacro",
+        "bytes": 1152,
+        "sha256": "4f7cba242e3a75bf7ddf9364462e895526a1aae5366598e5e9d363e33fac6bda"
+      },
+      "python": {
+        "absolute_path": "/home/usv/usv_migration/python/src/sim_env/urdf/otter/dynamics/otter_gazebo_dynamics_plugin.xacro",
+        "bytes": 1152,
+        "sha256": "4f7cba242e3a75bf7ddf9364462e895526a1aae5366598e5e9d363e33fac6bda"
+      },
+      "bytes_identical": true,
+      "python_source_excerpts": [
+        {
+          "start_line": 25,
+          "end_line": 33,
+          "text": "25:         <!-- General dimensions -->\n26:         <boatWidth>1.0</boatWidth>\n27:         <boatLength>1.35</boatLength>\n28:         <!-- Length discretization, AKA, \"N\" -->\n29:         <length_n>2</length_n>\n30:         <length_n>2</length_n>\n31:         <!-- Wave model -->\n32:         <wave_model>ocean_waves</wave_model>\n33:       </plugin>"
+        }
+      ]
+    },
+    {
+      "relative_path": "src/sim_env/urdf/otter/dynamics/otter_gazebo_wind_plugin.xacro",
+      "baseline": {
+        "absolute_path": "/home/usv/usv_migration/baseline/src/sim_env/urdf/otter/dynamics/otter_gazebo_wind_plugin.xacro",
+        "bytes": 918,
+        "sha256": "29398277fc2b9c092c0b81544e8f793138f662cca1612a8ada7afb44f169f018"
+      },
+      "python": {
+        "absolute_path": "/home/usv/usv_migration/python/src/sim_env/urdf/otter/dynamics/otter_gazebo_wind_plugin.xacro",
+        "bytes": 918,
+        "sha256": "29398277fc2b9c092c0b81544e8f793138f662cca1612a8ada7afb44f169f018"
+      },
+      "bytes_identical": true,
+      "python_source_excerpts": [
+        {
+          "start_line": 12,
+          "end_line": 17,
+          "text": "12:         <wind_direction>270</wind_direction>\n13:         <wind_mean_velocity>0</wind_mean_velocity>\n14:         <var_wind_gain_constants>0</var_wind_gain_constants>\n15:         <var_wind_time_constants>2</var_wind_time_constants>\n16:         <random_seed />\n17:         <update_rate>10</update_rate>"
+        }
+      ]
+    },
+    {
+      "relative_path": "src/sim_env/urdf/otter/sensors/otter_lidar.xacro",
+      "baseline": {
+        "absolute_path": "/home/usv/usv_migration/baseline/src/sim_env/urdf/otter/sensors/otter_lidar.xacro",
+        "bytes": 2138,
+        "sha256": "f44aa6d3e2bafbf38f10b83f8668baf6b0ba99c31b6fb49395e961176c668dd7"
+      },
+      "python": {
+        "absolute_path": "/home/usv/usv_migration/python/src/sim_env/urdf/otter/sensors/otter_lidar.xacro",
+        "bytes": 2138,
+        "sha256": "f44aa6d3e2bafbf38f10b83f8668baf6b0ba99c31b6fb49395e961176c668dd7"
+      },
+      "bytes_identical": true,
+      "python_source_excerpts": [
+        {
+          "start_line": 21,
+          "end_line": 43,
+          "text": "21:       <sensor type=\"ray\" name=\"lidar_${name}\">\n22:         <update_rate>15</update_rate>\n23: \t      <visualize>${visualize}</visualize>\n24:         <ray>\n25:           <scan>\n26:             <horizontal>\n27:               <samples>2000</samples> <!--change from 720 to 2000-->\n28:               <resolution>1</resolution>\n29:               <min_angle>-3.14159265359</min_angle>\n30:               <max_angle>3.14159265359</max_angle>\n31:             </horizontal>\n32:           </scan>\n33:           <range>\n34:             <!-- Minimum distance of the beam -->\n35:             <min>${min_range}</min>\n36:             <!-- Maximum distance of the beam -->\n37:             <max>${max_range}</max>\n38:             <!-- Linear resolution of the beam -->\n39:             <resolution>0.03</resolution> <!--changed from 0.02 to 0.03-->\n40:           </range>\n41:         </ray>\n42:         <!-- ROS 2 gazebo_ros_pkgs ray sensor (laser scan output) -->\n43:         <plugin name=\"lidar\" filename=\"libgazebo_ros_ray_sensor.so\">"
+        }
+      ]
+    },
+    {
+      "relative_path": "src/plugins/gazebo_plugins/wave_gazebo_plugins/src/Wavefield.cc",
+      "baseline": {
+        "absolute_path": "/home/usv/usv_migration/baseline/src/plugins/gazebo_plugins/wave_gazebo_plugins/src/Wavefield.cc",
+        "bytes": 19888,
+        "sha256": "a611a9282a8c0a518e5d512c7828f90423950f7b3f25dda6a60423203a0e4174"
+      },
+      "python": {
+        "absolute_path": "/home/usv/usv_migration/python/src/plugins/gazebo_plugins/wave_gazebo_plugins/src/Wavefield.cc",
+        "bytes": 19888,
+        "sha256": "a611a9282a8c0a518e5d512c7828f90423950f7b3f25dda6a60423203a0e4174"
+      },
+      "bytes_identical": true,
+      "python_source_excerpts": [
+        {
+          "start_line": 63,
+          "end_line": 67,
+          "text": "63:       steepness(1.0),\n64:       amplitude(0.0),\n65:       period(1.0),\n66:       phase(0.0),\n67:       direction(1, 0),"
+        },
+        {
+          "start_line": 191,
+          "end_line": 197,
+          "text": "191:     // \\brief Pierson-Moskowitz wave spectrum\n192:     public: double pm(double omega, double omega_p)\n193:     {\n194:       double alpha = 0.0081;\n195:       double g = 9.81;\n196:       return alpha*std::pow(g, 2.0)/std::pow(omega, 5.0)* \\\n197:         std::exp(-(5.0/4.0)*std::pow(omega_p/omega, 4.0));"
+        },
+        {
+          "start_line": 220,
+          "end_line": 245,
+          "text": "220:       // Vector for spaceing\n221:       std::vector<double> omega_spacing;\n222:       omega_spacing.push_back(this->angularFrequency*(1.0-1.0/this->scale));\n223:       omega_spacing.push_back(this->angularFrequency* \\\n224:                               (this->scale-1.0/this->scale)/2.0);\n225:       omega_spacing.push_back(this->angularFrequency*(this->scale-1.0));\n226: \n227:       for (size_t i = 0; i < this->number; ++i)\n228:       {\n229:         const int n = i - 1;\n230:         const double scaleFactor = std::pow(this->scale, n);\n231:         const double omega = this->angularFrequency*scaleFactor;\n232:         const double pms = pm(omega, this->angularFrequency);\n233:         const double a = this->gain*std::sqrt(2.0*pms*omega_spacing[i]);\n234:         const double k = Physics::DeepWaterDispersionToWavenumber(omega);\n235:         const double phi = this->phase;\n236:         double q = 0.0;\n237:         if (a != 0)\n238:         {\n239:           q = std::min(1.0, this->steepness / (a * k * this->number));\n240:         }\n241: \n242:         this->amplitudes.push_back(a);\n243:         this->angularFrequencies.push_back(omega);\n244:         this->phases.push_back(phi);\n245:         this->steepnesses.push_back(q);"
+        },
+        {
+          "start_line": 514,
+          "end_line": 536,
+          "text": "514:   double WavefieldSampler::ComputeDepthSimply(\n515:     const WaveParameters& _waveParams,\n516:     const ignition::math::Vector3d& _point,\n517:     double time,\n518:     double time_init /*=0*/\n519:   )\n520:   {\n521:     double h = 0.0;\n522:     for (std::size_t ii = 0; ii < _waveParams.Number(); ++ii)\n523:     {\n524:       double k = _waveParams.Wavenumber_V()[ii];\n525:       double a = _waveParams.Amplitude_V()[ii];\n526:       double dx =  _waveParams.Direction_V()[ii].X();\n527:       double dy =  _waveParams.Direction_V()[ii].Y();\n528:       double dot = _point.X()*dx + _point.Y()*dy;\n529:       double omega = _waveParams.AngularFrequency_V()[ii];\n530:       double theta = k*dot - omega*time;\n531:       double c = cos(theta);\n532:       h += a*c;\n533:     }\n534: \n535:     // Exponentially grow the waves\n536:     return h*(1-exp(-1.0*(time-time_init)/_waveParams.Tau()));"
+        }
+      ]
+    },
+    {
+      "relative_path": "src/plugins/gazebo_plugins/wave_gazebo_plugins/src/WavefieldModelPlugin.cc",
+      "baseline": {
+        "absolute_path": "/home/usv/usv_migration/baseline/src/plugins/gazebo_plugins/wave_gazebo_plugins/src/WavefieldModelPlugin.cc",
+        "bytes": 6334,
+        "sha256": "9b6a1a53f1917c3924681c196357d7e22b020e146fe286f6b7cc3b10f6f9932d"
+      },
+      "python": {
+        "absolute_path": "/home/usv/usv_migration/python/src/plugins/gazebo_plugins/wave_gazebo_plugins/src/WavefieldModelPlugin.cc",
+        "bytes": 6334,
+        "sha256": "9b6a1a53f1917c3924681c196357d7e22b020e146fe286f6b7cc3b10f6f9932d"
+      },
+      "bytes_identical": true,
+      "python_source_excerpts": [
+        {
+          "start_line": 132,
+          "end_line": 140,
+          "text": "132:   void WavefieldModelPlugin::Reset()\n133:   {\n134:     // Reset time\n135:     #if GAZEBO_MAJOR_VERSION >= 8\n136:       this->data->prevTime = this->data->world->SimTime();\n137:     #else\n138:       this->data->prevTime = this->data->world->GetSimTime();\n139:     #endif\n140:   }"
+        }
+      ]
+    },
+    {
+      "relative_path": "src/plugins/gazebo_plugins/usv_gazebo_plugins/src/usv_gazebo_dynamics_plugin.cc",
+      "baseline": {
+        "absolute_path": "/home/usv/usv_migration/baseline/src/plugins/gazebo_plugins/usv_gazebo_plugins/src/usv_gazebo_dynamics_plugin.cc",
+        "bytes": 13008,
+        "sha256": "428e01ee7e3fb8ed77076a70f98a09c221b021ce8ba04eece108cbe33309c953"
+      },
+      "python": {
+        "absolute_path": "/home/usv/usv_migration/python/src/plugins/gazebo_plugins/usv_gazebo_plugins/src/usv_gazebo_dynamics_plugin.cc",
+        "bytes": 13008,
+        "sha256": "428e01ee7e3fb8ed77076a70f98a09c221b021ce8ba04eece108cbe33309c953"
+      },
+      "bytes_identical": true,
+      "python_source_excerpts": [
+        {
+          "start_line": 180,
+          "end_line": 187,
+          "text": "180: \n181: #if GAZEBO_MAJOR_VERSION >= 8\n182:   const common::Time kTimeNow = this->world->SimTime();\n183: #else\n184:   const common::Time kTimeNow = this->world->GetSimTime();\n185: #endif\n186:   double dt = (kTimeNow - this->prevUpdateTime).Double();\n187:   this->prevUpdateTime = kTimeNow;"
+        },
+        {
+          "start_line": 212,
+          "end_line": 219,
+          "text": "212:   // Estimate the linear and angular accelerations.\n213:   // Note the the GetRelativeLinearAccel() and AngularAccel() functions\n214:   // appear to be unreliable\n215:   const ignition::math::Vector3d kAccelLinearBody = (kVelLinearBody - this->prevLinVel) / dt;\n216:   this->prevLinVel = kVelLinearBody;\n217:   gzdbg << \"Accel linear: \" << kAccelLinearBody;\n218:   const ignition::math::Vector3d kAccelAngularBody = (kVelAngularBody - this->prevAngVel) / dt;\n219:   this->prevAngVel = kVelAngularBody;"
+        },
+        {
+          "start_line": 309,
+          "end_line": 334,
+          "text": "309:       double simTime = kTimeNow.Double();\n310:       // double depth = WavefieldSampler::ComputeDepthDirectly(\n311:       //  *waveParams, X, simTime);\n312:       double depth = 0.0;\n313:       if (waveParams)\n314:       {\n315:         depth = WavefieldSampler::ComputeDepthSimply(*waveParams, X, simTime);\n316:       }\n317: \n318:       // Vertical wave displacement.\n319:       double dz = depth + X.Z();\n320: \n321:       // Total z location of boat grid point relative to water surface\n322:       double deltaZ = (this->waterLevel + dz) - kDdz;\n323:       deltaZ = std::max(deltaZ, 0.0);  // enforce only upward buoy force\n324:       deltaZ = std::min(deltaZ, this->paramHullRadius);\n325:       // Buoyancy force at grid point\n326:       const float kBuoyForce = CircleSegment(this->paramHullRadius, deltaZ) * this->paramBoatLength /\n327:                                (static_cast<float>(this->paramLengthN)) * GRAVITY * this->waterDensity;\n328:       gzdbg << \"buoyForce: \" << kBuoyForce;\n329: \n330:       // Apply force at grid point\n331:       // From web, Appears that position is in the link frame\n332:       // and force is in world frame\n333:       this->link->AddForceAtRelativePosition(ignition::math::Vector3d(0, 0, kBuoyForce),\n334:                                              ignition::math::Vector3d(bpnt.x(), bpnt.y(), bpnt.z()));"
+        }
+      ]
+    },
+    {
+      "relative_path": "src/plugins/gazebo_plugins/usv_gazebo_plugins/src/usv_gazebo_wind_plugin.cc",
+      "baseline": {
+        "absolute_path": "/home/usv/usv_migration/baseline/src/plugins/gazebo_plugins/usv_gazebo_plugins/src/usv_gazebo_wind_plugin.cc",
+        "bytes": 9459,
+        "sha256": "46dc75911b4f8c26ef60eaa46690e9f93e69cf8f9aa3444b754aac4079d6142f"
+      },
+      "python": {
+        "absolute_path": "/home/usv/usv_migration/python/src/plugins/gazebo_plugins/usv_gazebo_plugins/src/usv_gazebo_wind_plugin.cc",
+        "bytes": 9459,
+        "sha256": "46dc75911b4f8c26ef60eaa46690e9f93e69cf8f9aa3444b754aac4079d6142f"
+      },
+      "bytes_identical": true,
+      "python_source_excerpts": [
+        {
+          "start_line": 139,
+          "end_line": 159,
+          "text": "139:   // Setting the  seed for the random generator.\n140:   unsigned int seed = std::random_device{}();\n141:   if (_sdf->HasElement(\"random_seed\") && _sdf->GetElement(\"random_seed\")->Get<unsigned int>() != 0)\n142:   {\n143:     seed = _sdf->GetElement(\"random_seed\")->Get<unsigned int>();\n144:   }\n145: \n146:   gzmsg << \"Random seed value = \" << seed << std::endl;\n147:   this->randGenerator.reset(new std::mt19937(seed));\n148: \n149:   // Calculate filter constant\n150:   this->filterGain = this->gainConstant * sqrt(2.0 * this->timeConstant);\n151:   gzmsg << \"Var wind filter gain = \" << this->filterGain << std::endl;\n152: \n153:   // Initialize previous time and previous velocity\n154: #if GAZEBO_MAJOR_VERSION >= 8\n155:   this->previousTime = this->world->SimTime().Double();\n156: #else\n157:   this->previousTime = this->world->GetSimTime().Double();\n158: #endif\n159:   this->varVel = 0;"
+        },
+        {
+          "start_line": 209,
+          "end_line": 216,
+          "text": "209:   double dT = currentTime - this->previousTime;\n210:   std::normal_distribution<double> dist(0, 1);\n211:   double randomDist = dist(*this->randGenerator);\n212: \n213:   // Current variable wind velocity\n214:   this->varVel += 1.0 / this->timeConstant * (-1.0 * this->varVel + this->filterGain / sqrt(dT) * randomDist) * dT;\n215:   // Current wind velocity\n216:   double velocity = this->varVel + this->windMeanVelocity;"
+        }
+      ]
+    },
+    {
+      "relative_path": "src/sim_env/launch/main.launch.py",
+      "baseline": {
+        "absolute_path": "/home/usv/usv_migration/baseline/src/sim_env/launch/main.launch.py",
+        "bytes": 10368,
+        "sha256": "3838dde2b04beb53498bef961c1ee3967b742dd746478de963f60f7541713b52"
+      },
+      "python": {
+        "absolute_path": "/home/usv/usv_migration/python/src/sim_env/launch/main.launch.py",
+        "bytes": 9533,
+        "sha256": "765494f3d8f03da8ca3322195ad47f55d8ab6d490dd6bd1cbe3c6e685c27fc68"
+      },
+      "bytes_identical": false,
+      "python_source_excerpts": [
+        {
+          "start_line": 66,
+          "end_line": 69,
+          "text": "66:     robot_description = Command([\n67:         \"xacro \", os.path.join(share, \"urdf\", \"otter\", \"otter.urdf.xacro\"),\n68:         \" namespace:=\", namespace, \" imu_enabled:=false gps_enabled:=false\",\n69:     ])"
+        },
+        {
+          "start_line": 83,
+          "end_line": 91,
+          "text": "83:         launch_arguments={\n84:             \"world\": os.path.join(share, \"worlds\", value(\"world\") + \".world\"),\n85:             \"gui\": \"true\" if gazebo_gui else \"false\", \"verbose\": \"false\",\n86:         }.items())\n87:     spawn = Node(\n88:         package=\"gazebo_ros\", executable=\"spawn_entity.py\",\n89:         arguments=[\"-entity\", namespace, \"-topic\", \"robot_description\",\n90:                    \"-timeout\", \"120.0\",\n91:                    \"-x\", str(pose[\"x\"]), \"-y\", str(pose[\"y\"]),"
+        }
+      ]
+    }
+  ],
+  "installed_worlds": [
+    {
+      "absolute_path": "/home/usv/usv_migration/baseline/install/sim_env/share/sim_env/worlds/ocean.world",
+      "bytes": 12995,
+      "sha256": "c3b3daf40fd4e8815da1a6566da56514da0b8556c18b54bf1e96927be0585d1d"
+    },
+    {
+      "absolute_path": "/home/usv/usv_migration/python/install/sim_env/share/sim_env/worlds/ocean.world",
+      "bytes": 12995,
+      "sha256": "c3b3daf40fd4e8815da1a6566da56514da0b8556c18b54bf1e96927be0585d1d"
+    }
+  ],
+  "installed_worlds_identical": true,
+  "harness_sources": [
+    {
+      "role": "baseline_runtime_harness",
+      "git_commit": "4ef01a645ada5fb816c8e1a412fa6cd779723539",
+      "git_path": "scripts/validation/ros_acceptance.py",
+      "blob_sha256": "c93e230d164b87414d96a5017725980b943fc372df1fd1427012ecccd7d07b18",
+      "setup_world_start_line": 536,
+      "setup_world_block_sha256": "5605aaf9307fc94b014cee831f280d1f03a28adbc3786dfa381be871a558487d",
+      "setup_world_text": "def setup_world(probe, config, scenario, trial_id, process):\n    empty = probe.types[\"Empty\"]\n    call_service(probe, empty, [\"/reset_world\", \"/gazebo/reset_world\"], empty.Request(), optional=True)\n    kind = probe.types[\"SetEntityState\"]\n    request = kind.Request()\n    request.state.name = probe.namespace.strip(\"/\")\n    request.state.reference_frame = \"world\"\n    request.state.pose.position.x, request.state.pose.position.y = config[\"start\"][:2]\n    request.state.pose.position.z = 0.0\n    request.state.pose.orientation.z = math.sin(config[\"start\"][2] / 2)\n    request.state.pose.orientation.w = math.cos(config[\"start\"][2] / 2)\n    response = call_service(probe, kind, [\"/gazebo/set_entity_state\", \"/set_entity_state\"], request)\n    if not response.success:\n        raise TrialBlocked(\"Gazebo could not reset the vessel state\")\n    settled_since = time.monotonic()\n    if not wait_until(probe, lambda: probe.pose is not None and probe.odom_wall > settled_since and\n                      math.hypot(probe.pose[0] - config[\"start\"][0], probe.pose[1] - config[\"start\"][1]) < 0.5,\n                      10, process):\n        raise TrialBlocked(\"reset vessel pose was not observed\")\n    # Wait for a fresh post-reset map, then prove the corridor is clear before spawn.\n    if not wait_until(probe, lambda: probe.costmap_wall is not None and probe.costmap_wall > settled_since + 1,\n                      15, process):\n        raise TrialBlocked(\"fresh costmap was not received after reset\")\n    preflight_corridor(probe, config[\"start\"], scenario[\"goal\"], config[\"thresholds\"][\"preflight_corridor_half_width_m\"])\n    for obstacle in scenario[\"obstacles\"]:\n        spawn = probe.types[\"SpawnEntity\"]\n        request = spawn.Request()\n        request.name = \"acceptance_\" + trial_id + \"_\" + obstacle[\"name\"]\n        request.reference_frame = \"world\"\n        request.initial_pose.position.x, request.initial_pose.position.y = obstacle[\"x\"], obstacle[\"y\"]\n        request.initial_pose.position.z = obstacle[\"height\"] / 2 - 1.0\n        request.initial_pose.orientation.w = 1.0\n        request.xml = f'''<sdf version=\"1.6\"><model name=\"{request.name}\"><static>true</static><link name=\"body\">\n<collision name=\"collision\"><geometry><cylinder><radius>{obstacle['radius']}</radius><length>{obstacle['height']}</length></cylinder></geometry></collision>\n<visual name=\"visual\"><geometry><cylinder><radius>{obstacle['radius']}</radius><length>{obstacle['height']}</length></cylinder></geometry></visual>\n</link></model></sdf>'''\n        response = call_service(probe, spawn, [\"/spawn_entity\", \"/gazebo/spawn_entity\"], request)\n        if not response.success:\n            raise TrialBlocked(\"obstacle spawn failed: \" + response.status_message)\n        probe.log.write(\"obstacle_spawned\", entity_name=request.name, geometry=obstacle)\n    if scenario[\"obstacles\"]:\n        spawned_at = time.monotonic()\n        if not wait_until(probe, lambda: probe.costmap_wall > spawned_at + 2, 15, process):\n            raise TrialBlocked(\"no fresh costmap after obstacle spawn\")\n        width, height, resolution, ox, oy, data, kind = probe.costmap\n        for obstacle in scenario[\"obstacles\"]:\n            ix, iy = int((obstacle[\"x\"] - ox) / resolution), int((obstacle[\"y\"] - oy) / resolution)\n            radius_cells = max(1, math.ceil(obstacle[\"radius\"] / resolution) + 1)\n            costs = [data[y * width + x] for y in range(max(0, iy - radius_cells), min(height, iy + radius_cells + 1))\n                     for x in range(max(0, ix - radius_cells), min(width, ix + radius_cells + 1))]\n            if not any(c >= 254 and c != 255 if kind == \"raw\" else c >= 99 for c in costs):\n                raise TrialBlocked(\"spawned cylinder was not observed as occupied in costmap\")\n"
+    },
+    {
+      "role": "python_runtime_harness",
+      "git_commit": "3afb25f84232e560c62599a721dc0bfbe1a21657",
+      "git_path": "scripts/validation/ros_acceptance.py",
+      "blob_sha256": "ea6cc881c617902ab53ce03049c820d5b3e096373296815cf752b4be1bcd9412",
+      "setup_world_start_line": 536,
+      "setup_world_block_sha256": "5605aaf9307fc94b014cee831f280d1f03a28adbc3786dfa381be871a558487d",
+      "setup_world_text": "def setup_world(probe, config, scenario, trial_id, process):\n    empty = probe.types[\"Empty\"]\n    call_service(probe, empty, [\"/reset_world\", \"/gazebo/reset_world\"], empty.Request(), optional=True)\n    kind = probe.types[\"SetEntityState\"]\n    request = kind.Request()\n    request.state.name = probe.namespace.strip(\"/\")\n    request.state.reference_frame = \"world\"\n    request.state.pose.position.x, request.state.pose.position.y = config[\"start\"][:2]\n    request.state.pose.position.z = 0.0\n    request.state.pose.orientation.z = math.sin(config[\"start\"][2] / 2)\n    request.state.pose.orientation.w = math.cos(config[\"start\"][2] / 2)\n    response = call_service(probe, kind, [\"/gazebo/set_entity_state\", \"/set_entity_state\"], request)\n    if not response.success:\n        raise TrialBlocked(\"Gazebo could not reset the vessel state\")\n    settled_since = time.monotonic()\n    if not wait_until(probe, lambda: probe.pose is not None and probe.odom_wall > settled_since and\n                      math.hypot(probe.pose[0] - config[\"start\"][0], probe.pose[1] - config[\"start\"][1]) < 0.5,\n                      10, process):\n        raise TrialBlocked(\"reset vessel pose was not observed\")\n    # Wait for a fresh post-reset map, then prove the corridor is clear before spawn.\n    if not wait_until(probe, lambda: probe.costmap_wall is not None and probe.costmap_wall > settled_since + 1,\n                      15, process):\n        raise TrialBlocked(\"fresh costmap was not received after reset\")\n    preflight_corridor(probe, config[\"start\"], scenario[\"goal\"], config[\"thresholds\"][\"preflight_corridor_half_width_m\"])\n    for obstacle in scenario[\"obstacles\"]:\n        spawn = probe.types[\"SpawnEntity\"]\n        request = spawn.Request()\n        request.name = \"acceptance_\" + trial_id + \"_\" + obstacle[\"name\"]\n        request.reference_frame = \"world\"\n        request.initial_pose.position.x, request.initial_pose.position.y = obstacle[\"x\"], obstacle[\"y\"]\n        request.initial_pose.position.z = obstacle[\"height\"] / 2 - 1.0\n        request.initial_pose.orientation.w = 1.0\n        request.xml = f'''<sdf version=\"1.6\"><model name=\"{request.name}\"><static>true</static><link name=\"body\">\n<collision name=\"collision\"><geometry><cylinder><radius>{obstacle['radius']}</radius><length>{obstacle['height']}</length></cylinder></geometry></collision>\n<visual name=\"visual\"><geometry><cylinder><radius>{obstacle['radius']}</radius><length>{obstacle['height']}</length></cylinder></geometry></visual>\n</link></model></sdf>'''\n        response = call_service(probe, spawn, [\"/spawn_entity\", \"/gazebo/spawn_entity\"], request)\n        if not response.success:\n            raise TrialBlocked(\"obstacle spawn failed: \" + response.status_message)\n        probe.log.write(\"obstacle_spawned\", entity_name=request.name, geometry=obstacle)\n    if scenario[\"obstacles\"]:\n        spawned_at = time.monotonic()\n        if not wait_until(probe, lambda: probe.costmap_wall > spawned_at + 2, 15, process):\n            raise TrialBlocked(\"no fresh costmap after obstacle spawn\")\n        width, height, resolution, ox, oy, data, kind = probe.costmap\n        for obstacle in scenario[\"obstacles\"]:\n            ix, iy = int((obstacle[\"x\"] - ox) / resolution), int((obstacle[\"y\"] - oy) / resolution)\n            radius_cells = max(1, math.ceil(obstacle[\"radius\"] / resolution) + 1)\n            costs = [data[y * width + x] for y in range(max(0, iy - radius_cells), min(height, iy + radius_cells + 1))\n                     for x in range(max(0, ix - radius_cells), min(width, ix + radius_cells + 1))]\n            if not any(c >= 254 and c != 255 if kind == \"raw\" else c >= 99 for c in costs):\n                raise TrialBlocked(\"spawned cylinder was not observed as occupied in costmap\")\n"
+    }
+  ],
+  "setup_world_blocks_identical": true,
+  "gazebo_system_launch": {
+    "absolute_path": "/opt/ros/humble/share/gazebo_ros/launch/gzserver.launch.py",
+    "bytes": 9661,
+    "sha256": "eece20685b10a5e9a73ae6acb63a005ab1de65f6ae6a9ad212c1883ea8adbb61",
+    "excerpts": [
+      {
+        "start_line": 50,
+        "end_line": 53,
+        "text": "50:         _arg_command('record_period'),\n51:         _arg_command('record_filter'),\n52:         _arg_command('seed'),\n53:         _arg_command('iters'),"
+      },
+      {
+        "start_line": 154,
+        "end_line": 156,
+        "text": "154:         DeclareLaunchArgument(\n155:             'seed', default_value='', description='Start with a given a random number seed.'\n156:         ),"
+      }
+    ]
+  },
+  "formula_evaluation": {
+    "classification": "Source-formula calculation; not a Gazebo measurement or observed disturbance trace",
+    "parameters": {
+      "model": "PMS",
+      "period_s": 5,
+      "number": 3,
+      "scale": 2.5,
+      "gain": 0.1,
+      "amplitude_parameter_m": 0,
+      "tau_s": 2
+    },
+    "spectrum_formula": "S(omega)=0.0081*9.81^2/omega^5*exp(-1.25*(omega_peak/omega)^4)",
+    "component_formula": "a_i=gain*sqrt(2*S(omega_i)*delta_omega_i)",
+    "surface_formula": "h(x,y,t)=[sum_i a_i*cos(k_i*(x*dx_i+y*dy_i)-omega_i*t)]*(1-exp(-t/tau)); default time_init=0",
+    "components": [
+      {
+        "index": 0,
+        "angular_frequency_rad_s": 0.5026548245743669,
+        "omega_spacing_rad_s": 0.7539822368615503,
+        "spectral_density": 1.5124760547484445e-20,
+        "amplitude_m": 1.51021857951673e-11
+      },
+      {
+        "index": 1,
+        "angular_frequency_rad_s": 1.2566370614359172,
+        "omega_spacing_rad_s": 1.3194689145077132,
+        "spectral_density": 0.0712698116652066,
+        "amplitude_m": 0.04336779935275926
+      },
+      {
+        "index": 2,
+        "angular_frequency_rad_s": 3.141592653589793,
+        "omega_spacing_rad_s": 1.8849555921538759,
+        "spectral_density": 0.002467040316138936,
+        "amplitude_m": 0.009643921857807802
+      }
+    ],
+    "amplitude_parameter_used_in_pms_component_formula": false,
+    "phase_vector_used_by_compute_depth_simply": false
+  },
+  "goal_event_evidence": [
+    {
+      "mode": "baseline",
+      "source": {
+        "absolute_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_01/events.jsonl",
+        "bytes": 670481,
+        "sha256": "76a9b9645af80d264d0979449940051d2691bfd0dae7e16caa75780c3b8a5bd6"
+      },
+      "selected_events": [
+        {
+          "line": 104,
+          "record": {
+            "event": "odom",
+            "wall_monotonic_s": 71053.780499221,
+            "sim_time_s": 3.1,
+            "pose": [
+              23.125448586101143,
+              -10.125740187623077,
+              -5.5116683727433203e-05
+            ],
+            "body_velocity": [
+              0.005966550627078135,
+              0.0009463231393242434,
+              0.0001590532477263061
+            ],
+            "frame_id": "otter/odom",
+            "child_frame_id": "otter/base_link"
+          }
+        },
+        {
+          "line": 107,
+          "record": {
+            "event": "goal_published",
+            "wall_monotonic_s": 71053.81068736,
+            "goal": [
+              23.125,
+              -22.125,
+              -1.5707963267948966
+            ],
+            "sim_time_s": 3.1
+          }
+        },
+        {
+          "line": 113,
+          "record": {
+            "event": "odom",
+            "wall_monotonic_s": 71053.880876216,
+            "sim_time_s": 3.2,
+            "pose": [
+              23.125912821845453,
+              -10.125785006294716,
+              -0.003544124789690841
+            ],
+            "body_velocity": [
+              0.0025876213580530716,
+              -0.004167196480089283,
+              -0.14677231614350114
+            ],
+            "frame_id": "otter/odom",
+            "child_frame_id": "otter/base_link"
+          }
+        }
+      ]
+    },
+    {
+      "mode": "python",
+      "source": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_turn_01/events.jsonl",
+        "bytes": 759068,
+        "sha256": "eb2b97bfa8355c8b95e104733b413e98000e018300216bc84c8268e82fbacbde"
+      },
+      "selected_events": [
+        {
+          "line": 167,
+          "record": {
+            "event": "odom",
+            "wall_monotonic_s": 79584.841289344,
+            "sim_time_s": 2.8,
+            "pose": [
+              23.125375638065105,
+              -10.125655273729107,
+              -6.5168263539018e-05
+            ],
+            "body_velocity": [
+              0.0017802946505586215,
+              -0.0008922943203543874,
+              5.441589882997826e-07
+            ],
+            "frame_id": "otter/odom",
+            "child_frame_id": "otter/base_link"
+          }
+        },
+        {
+          "line": 173,
+          "record": {
+            "event": "goal_published",
+            "wall_monotonic_s": 79584.976664309,
+            "goal": [
+              23.125,
+              -22.125,
+              -1.5707963267948966
+            ],
+            "sim_time_s": 2.8000000000000003
+          }
+        },
+        {
+          "line": 175,
+          "record": {
+            "event": "odom",
+            "wall_monotonic_s": 79584.977425959,
+            "sim_time_s": 2.9,
+            "pose": [
+              23.12545465672152,
+              -10.125745090788477,
+              -6.260594560286001e-05
+            ],
+            "body_velocity": [
+              -0.0012655795473949872,
+              -0.000958799526964284,
+              -8.456477535127755e-06
+            ],
+            "frame_id": "otter/odom",
+            "child_frame_id": "otter/base_link"
+          }
+        }
+      ]
+    }
+  ],
+  "conclusions": {
+    "goal_sim_times_s": {
+      "baseline": 3.1,
+      "python": 2.8
+    },
+    "goal_time_difference_s": 0.3,
+    "same_absolute_wave_start_time_enforced": false,
+    "random_wave_phase_found_in_reviewed_path": false,
+    "wind_seed_explicitly_fixed": false,
+    "wind_mean_and_gain_both_zero": true,
+    "wind_seed_is_proven_cause_of_tracking_difference": false,
+    "gazebo_global_seed_passed_by_project_launch": false,
+    "imu_gps_enabled_in_both_launches": false,
+    "lidar_noise_block_present": false,
+    "wave_is_proven_cause_of_tracking_difference": false,
+    "original_comparison_result_unchanged": true
+  },
+  "limitations": [
+    "No wave-height/force trace was measured or replayed. Formula amplitudes are not measured vessel motion.",
+    "The reviewed goal sim_time is a harness observation supported by adjacent odom source stamps, not an instrumented physics tick of command application.",
+    "Empty wind seed and Gazebo seed omission are uncontrolled settings, not evidence of nonzero random wind under mean=0/gain=0.",
+    "Code/world equality is not bitwise trajectory reproducibility; asynchronous readiness, sensor and command phases are not locked by setup_world.",
+    "The existing optional reset_world call is followed by pose reset and map readiness, not a fixed sim-time goal barrier or complete 6-DOF settling criterion.",
+    "No causal attribution for the 1.10912971776 source-time tracking ratio is made; the frozen 1.10 threshold and failure remain unchanged."
+  ]
+}

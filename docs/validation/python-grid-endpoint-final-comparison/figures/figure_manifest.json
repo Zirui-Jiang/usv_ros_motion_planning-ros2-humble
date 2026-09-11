@@ -1,0 +1,596 @@
+{
+  "generated_utc": "2026-09-11T04:26:22.071676+00:00",
+  "script": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/scripts/validation/plot_acceptance.py",
+  "script_sha256": "969be7da2a6d54f4ce8d87977f57c8f9fe3df8f9bbfd5f0304d60fbefb25df5c",
+  "report": "/home/usv/usv_migration/results/python-grid-endpoint-final-comparison-001/report.json",
+  "report_sha256": "c7257f7b756978dcfe6d2e0f2627b05908528bfd0a0bd48c80d6f11a9321539e",
+  "matplotlib_version": "3.5.1",
+  "python_version": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+  "path_mappings": [],
+  "max_track_gap_sim_s": 0.35,
+  "summary_verdict_unchanged": {
+    "pairs": 18,
+    "comparable_pairs": 7,
+    "passed_pairs": 6,
+    "failed_pairs": 1,
+    "not_comparable_pairs": 11,
+    "fault_trials": 3,
+    "fault_passed": 3,
+    "performance_trials": 18,
+    "performance_passed": 16,
+    "performance_failed": 0,
+    "performance_unknown": 2,
+    "all_performance_passed": false,
+    "all_sources_finished": true,
+    "all_passed": false
+  },
+  "rmse_metric": "source_time_trapezoid",
+  "tracking_protocol": {
+    "source_max_gap_s": 0.5,
+    "boundary_max_gap_s": 0.5,
+    "window": "latest pre-goal odometry plus all odometry received through acquisition_finished; actual first/last source times, no extrapolation",
+    "reference": "first nonempty path received after goal, frozen by receipt order, ignoring path header time",
+    "integral": "sqrt(sum(dt*(error_i^2+error_i+1^2)/2)/sum(dt)); finite discrete trapezoid approximation, not continuous true-error guarantee",
+    "unknown": "missing/invalid fields, conflicting same-stamp poses, source rollback, insufficient span or coverage, gaps>0.5s, missing explicit frame contract",
+    "percentiles": "nearest-rank P95/max of unique observed source-pose errors, not time-weighted or continuous extrema"
+  },
+  "frame_contract": {
+    "name": "otter_fake_localization",
+    "status": "explicit_project_assertion",
+    "scope": "Only the audited otter fake-localization project: map->odom is identity; this does not establish identity for arbitrary recorded data.",
+    "path_frame": "otter/map",
+    "odom_frames": [
+      "otter/odom",
+      "otter/map"
+    ],
+    "child_frame": "otter/base_link",
+    "verified_sources": [
+      {
+        "mode": "cpp",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3",
+        "source": "src/sim_env/src/fake_localization_node.cpp",
+        "source_lines": [
+          89,
+          94
+        ],
+        "source_sha256": "b3f0e7a47b1328787c9fba138b0ec04701b679e6951828ed4a653df176789a4e",
+        "identity_evidence": "Default zero translation and rotation.w=1; map_frame to odom_frame; odom header frame at line 114.",
+        "launch_log": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_01/launch.log",
+        "launch_log_line": 10,
+        "launch_log_sha256": "113d5b195135cd9366886196b22a4b8dc4ab7c30b5d7a967c57eab94d4d2bcc1",
+        "logged_frame_chain": [
+          "otter/map",
+          "otter/odom",
+          "otter/base_link"
+        ]
+      },
+      {
+        "mode": "python",
+        "git_commit": "e38183218fce7044e686a0f697ed13f456f49039",
+        "source": "src/sim_env/src/fake_localization_node.cpp",
+        "source_lines": [
+          91,
+          96
+        ],
+        "source_sha256": "5f9f2bf08715742c1384c22c7c932ec2f3d0630ffbd16ad15103f48d54aaac5e",
+        "identity_evidence": "Default zero translation and rotation.w=1; map_frame to odom_frame; odom header frame at line 116.",
+        "launch_log": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_straight_01/launch.log",
+        "launch_log_line": 20,
+        "launch_log_sha256": "b028adf5e279fbc28e68571b33e657608d3d57042923ffdb1f1bade31ec5b08f",
+        "logged_frame_chain": [
+          "otter/map",
+          "otter/odom",
+          "otter/base_link"
+        ]
+      }
+    ],
+    "version_scope": "These are the audited baseline/e381 implementations and logs. For later source versions the explicit caller assertion requires confirming this unchanged transform contract; matching frame strings alone is not proof."
+  },
+  "sources": [
+    {
+      "trial": "python_pid_straight_01",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 1,
+      "summary_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_straight_01/summary.json",
+      "summary_sha256": "637ef1e3c78b0bab8f4e6b5a9fd118c56df79ae03c68cf20814c8581edcc147b",
+      "events_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_straight_01/events.jsonl",
+      "events_sha256": "49011de7fd0a380ee2b89eed1d038d3945ac1cd8babdc6b5e3a7712bddc0b64c",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "python_pid_straight_02",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 2,
+      "summary_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_straight_02/summary.json",
+      "summary_sha256": "6e826abcabb7d27cf2636ca6b3a94358538bd11497e02f55077c3917b883fff9",
+      "events_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_straight_02/events.jsonl",
+      "events_sha256": "5767686652af5b4b93a7553c34d19fc94b4235d7fcadaa0373c3d28831f47a61",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "python_pid_straight_03",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 3,
+      "summary_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_straight_03/summary.json",
+      "summary_sha256": "44be9eccfd50c4b2d7e17fa62f62fd72444a97254329c7c9a33491f26fc7c6d7",
+      "events_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_straight_03/events.jsonl",
+      "events_sha256": "f65ff74555c9a4e420400459898bc39f1e9fe4095439ecafeb875409180c2fcc",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "python_pid_turn_01",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "turn",
+      "repeat": 1,
+      "summary_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_turn_01/summary.json",
+      "summary_sha256": "bca62ce1b62734e9ff93f123a9c493c9ad26ab5a03deb89050cb4d544c29c019",
+      "events_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_turn_01/events.jsonl",
+      "events_sha256": "eb2b97bfa8355c8b95e104733b413e98000e018300216bc84c8268e82fbacbde",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "python_pid_turn_02",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "turn",
+      "repeat": 2,
+      "summary_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_turn_02/summary.json",
+      "summary_sha256": "64184bdcd673ef920a54059df507cefe772b603e0be52077d7e7b8c03e32fe71",
+      "events_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_turn_02/events.jsonl",
+      "events_sha256": "d4f888a0fbd0084d86f6101a996539773fed1fad0a009475c8f0772910b862cf",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "python_pid_turn_03",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "turn",
+      "repeat": 3,
+      "summary_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_turn_03/summary.json",
+      "summary_sha256": "1d6fc5cb2df77f6aafffddd441e749ea7ee297f7c4d97add8c1969df75d0f823",
+      "events_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_turn_03/events.jsonl",
+      "events_sha256": "bfeac8caba03a88e770b286b6c1a7e4b5daf3a10a9110b43303e59b884e62917",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "python_pid_single_obstacle_01",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "repeat": 1,
+      "summary_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_single_obstacle_01/summary.json",
+      "summary_sha256": "e0cf863b8166339fb98154b79217e617ff1335e8219d2d4d63d2af1887e63066",
+      "events_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_single_obstacle_01/events.jsonl",
+      "events_sha256": "d25711e2bb9d808b6ffda8aeeddf6a4719948800b596791489cb8c5fe972d570",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "python_pid_single_obstacle_02",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "repeat": 2,
+      "summary_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_single_obstacle_02/summary.json",
+      "summary_sha256": "0d1fbeae4be6184b73e6a21b422b6867b511591db6b3b517fea03e325d02b0ae",
+      "events_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_single_obstacle_02/events.jsonl",
+      "events_sha256": "bfcb66ebb4509f266590feafa04dac1ed92400a83a6456492217d25900638201",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "python_pid_single_obstacle_03",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "repeat": 3,
+      "summary_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_single_obstacle_03/summary.json",
+      "summary_sha256": "73300403199ce0db92b30373192b7ef120879f297f6178d634a4b5cc52f79b66",
+      "events_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_single_obstacle_03/events.jsonl",
+      "events_sha256": "18ec57d1d0633bd6676715d66b72ec43609dce4f1df83ad42b651aaa4f3e1933",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "python_lqr_straight_01",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "straight",
+      "repeat": 1,
+      "summary_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_straight_01/summary.json",
+      "summary_sha256": "a651de001b70d779bf2b7680716dc89e522b178dd8110afe22e91e75918fc854",
+      "events_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_straight_01/events.jsonl",
+      "events_sha256": "b663ed308ea305bf7be9352625393bbf3e375f1e73ad9a99316da1d4271933de",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "python_lqr_straight_02",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "straight",
+      "repeat": 2,
+      "summary_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_straight_02/summary.json",
+      "summary_sha256": "fb1788e4ce1e72ac2d59314fd0c5fc98c635785012231da05816b4ff599647df",
+      "events_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_straight_02/events.jsonl",
+      "events_sha256": "493517e76d7c2bf0f5a73756b44ff08f46620e4a66a01c7953c4ec76ec9b6c13",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "python_lqr_straight_03",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "straight",
+      "repeat": 3,
+      "summary_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_straight_03/summary.json",
+      "summary_sha256": "7d6e54c1aa28826d6b006aa02b8e0e80314e325b06c93b56b89d8d6ea0c9b9c6",
+      "events_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_straight_03/events.jsonl",
+      "events_sha256": "3a22f598d0f843031ef09a84233e20d9eb8b0f2c86dbc3dc2d03af794c5f3c84",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "python_lqr_turn_01",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "turn",
+      "repeat": 1,
+      "summary_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_turn_01/summary.json",
+      "summary_sha256": "2a5dc061a811127a41b38e35dc627caa6a864d1073f392481aa116868e031d3e",
+      "events_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_turn_01/events.jsonl",
+      "events_sha256": "f6e9f73db31b2f95e1ae942af3bb92aa5758b4cda1c913817f4dc6698952b287",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "python_lqr_turn_02",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "turn",
+      "repeat": 2,
+      "summary_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_turn_02/summary.json",
+      "summary_sha256": "79487b0edfae41ec387421805cf4fd04a343dc204d81bfe07f689246e7af2768",
+      "events_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_turn_02/events.jsonl",
+      "events_sha256": "c45b3208a0cd223128a82664243b41620b0bddb2b9719dd478ab6b860eddd2ec",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "python_lqr_turn_03",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "turn",
+      "repeat": 3,
+      "summary_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_turn_03/summary.json",
+      "summary_sha256": "6162f71776cdf26b9cc0d206b2d8b0c225a9342f08e3b8d805677218f8db5848",
+      "events_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_turn_03/events.jsonl",
+      "events_sha256": "e8527306b2dc80938ed3aa51693cd9c2b42760ad1d12e1fe18727b6fa0cdb0d8",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "python_lqr_single_obstacle_01",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "single_obstacle",
+      "repeat": 1,
+      "summary_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_single_obstacle_01/summary.json",
+      "summary_sha256": "758d4a17b1750254178929294c9321d44327f3eda6780f26b2470ce54eb64736",
+      "events_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_single_obstacle_01/events.jsonl",
+      "events_sha256": "5aef3279b6cd6d701c915de5eab51060fe10a9e4767a78e86ceb5ffc9bdd2360",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "python_lqr_single_obstacle_02",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "single_obstacle",
+      "repeat": 2,
+      "summary_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_single_obstacle_02/summary.json",
+      "summary_sha256": "5251b3dae8105282593ac3ec4e9482d8dd09daa114656ffaa2f71eedf7d5ae30",
+      "events_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_single_obstacle_02/events.jsonl",
+      "events_sha256": "ade0ff583b31b6ab238650fd54c80ca6519a17de3391c0cb8aff72cda9115a43",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "python_lqr_single_obstacle_03",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "single_obstacle",
+      "repeat": 3,
+      "summary_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_single_obstacle_03/summary.json",
+      "summary_sha256": "6b7c990b95831d87c5ee38aaf7c3c2ef09f2d57da6943db73e6eb093b1007513",
+      "events_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_single_obstacle_03/events.jsonl",
+      "events_sha256": "348519c7dd90a3c890eed305b9014be63d02e99a2806f268095ecfd5cd29564f",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "cpp_pid_straight_01",
+      "mode": "cpp",
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 1,
+      "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_01/summary.json",
+      "summary_sha256": "0dea73b97c1ffda8b249fa65356d866375f5637a762db836a7a2f908765b260f",
+      "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_01/events.jsonl",
+      "events_sha256": "8457e5670d0b2bd5c36955fa3fbfb662bd5814698ef8c67b72e5643134f41fe1",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "cpp_pid_straight_02",
+      "mode": "cpp",
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 2,
+      "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_02/summary.json",
+      "summary_sha256": "60728577cc2c924b44c9a5269122a9b547f8ae6bac95fdce60e9aaa57ee53e9f",
+      "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_02/events.jsonl",
+      "events_sha256": "72719e569a71c695ef489ac39ee2930ef40425ce00b6d62cb7de5eb1ee638de7",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "cpp_pid_straight_03",
+      "mode": "cpp",
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 3,
+      "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_03/summary.json",
+      "summary_sha256": "dd71fb33ab2787b1e5a4576dc511a5c0b2a0db4db81378b0f00c8740d90785a8",
+      "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_03/events.jsonl",
+      "events_sha256": "5b7cf1fd9e38e1ae8bbf1e6b7f94b5670913e4243079bc65fd752e63ecd81b6f",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "cpp_pid_turn_01",
+      "mode": "cpp",
+      "controller": "pid",
+      "scenario": "turn",
+      "repeat": 1,
+      "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_01/summary.json",
+      "summary_sha256": "b3fce7bbb3765e88b5e453478869848d961d3a344d5c7f90fbdcf979034b6a9a",
+      "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_01/events.jsonl",
+      "events_sha256": "76a9b9645af80d264d0979449940051d2691bfd0dae7e16caa75780c3b8a5bd6",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "cpp_pid_turn_02",
+      "mode": "cpp",
+      "controller": "pid",
+      "scenario": "turn",
+      "repeat": 2,
+      "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_02/summary.json",
+      "summary_sha256": "feed24badb07d662ec568dc3fe96eb886e71ffabe478d9c1df2b3d5b96799db6",
+      "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_02/events.jsonl",
+      "events_sha256": "1cd34ae0d6b0fd24ff3401bb1e33f41de04fec3a380f6601266493aed315d4da",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "cpp_pid_turn_03",
+      "mode": "cpp",
+      "controller": "pid",
+      "scenario": "turn",
+      "repeat": 3,
+      "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_03/summary.json",
+      "summary_sha256": "5d16a65ce15ea8701061eac7df987505515e276c0dcd80c236fd9e851d631dda",
+      "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_03/events.jsonl",
+      "events_sha256": "3bca3346477b78170c3859b1739d02942e443e2d0ac44b813e6fa2d4ed584f9d",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "cpp_pid_single_obstacle_01",
+      "mode": "cpp",
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "repeat": 1,
+      "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_01/summary.json",
+      "summary_sha256": "73fe8f867ef414a64145a63baca216b09e20f1343279df55edd095c105aef657",
+      "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_01/events.jsonl",
+      "events_sha256": "89f7033299c2512c8d6a021201e69933c836bebafd1ee4e82d9d8e52315a6c2a",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "cpp_pid_single_obstacle_02",
+      "mode": "cpp",
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "repeat": 2,
+      "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_02/summary.json",
+      "summary_sha256": "1ae88b92f30ebd3a5a141cc4ae99bb864fb2c22b1b5623ae88768d20ed214701",
+      "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_02/events.jsonl",
+      "events_sha256": "828c4078500085c47b0691e33b93505646a4ce60c0318660d98abb6857d5e3d1",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    },
+    {
+      "trial": "cpp_pid_single_obstacle_03",
+      "mode": "cpp",
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "repeat": 3,
+      "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_03/summary.json",
+      "summary_sha256": "6327f629cf81bc914bd004c213a2b2e574a08ff8434736541abff208579e3af8",
+      "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_03/events.jsonl",
+      "events_sha256": "51cb387033f90df6546fb99259ec4ec17500d86b2601b7666afb491f621130c8",
+      "missing_events": false,
+      "trajectory_end_fallback_to_trial_finished": false,
+      "trajectory_window_complete": true
+    }
+  ],
+  "excluded_scope": [
+    {
+      "trial": "python_pid_goal_change_01",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 1,
+      "reason": "outside normal PID/LQR three-scenario figure scope"
+    },
+    {
+      "trial": "python_pid_cancel_01",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 1,
+      "reason": "outside normal PID/LQR three-scenario figure scope"
+    },
+    {
+      "trial": "python_pid_odom_dropout",
+      "mode": "python",
+      "controller": null,
+      "scenario": null,
+      "repeat": null,
+      "reason": "outside normal PID/LQR three-scenario figure scope"
+    }
+  ],
+  "issues": [],
+  "figures": [
+    {
+      "path": "trajectories.png",
+      "sha256": "df2874bafc3021bcd9208f82dc623e17b15412a9307d705d646e4f9354fd0e3b",
+      "width_inches": 10.0,
+      "height_inches": 10.0,
+      "dpi": 300
+    },
+    {
+      "path": "trajectories.pdf",
+      "sha256": "a132172eff8516d5f3bf1c9b24b58943e5e4408a58aeaa209b130e0a633baac8",
+      "width_inches": 10.0,
+      "height_inches": 10.0,
+      "dpi": null
+    },
+    {
+      "path": "navigation_metrics.png",
+      "sha256": "6d7dc81ac132478429d42c3a6101ec5c45c5b7e39db2eb5b55b259b4c22f9c24",
+      "width_inches": 12.0,
+      "height_inches": 6.2,
+      "dpi": 300
+    },
+    {
+      "path": "navigation_metrics.pdf",
+      "sha256": "8d2b0669f8bd448fd08159616536f1d11fe8440b40182ee56c0b0ccd1879c89d",
+      "width_inches": 12.0,
+      "height_inches": 6.2,
+      "dpi": null
+    },
+    {
+      "path": "pairwise_ratios.png",
+      "sha256": "1d8177c0d96ac2d7435a88dc89d774dfde76d806848c9a39e0f704322906cbb1",
+      "width_inches": 12.0,
+      "height_inches": 5.8,
+      "dpi": 300
+    },
+    {
+      "path": "pairwise_ratios.pdf",
+      "sha256": "d14645b24972b298bb2228385a4c5cb9b05e7c7263516c0e142e22458b7663de",
+      "width_inches": 12.0,
+      "height_inches": 5.8,
+      "dpi": null
+    },
+    {
+      "path": "control_timing.png",
+      "sha256": "a8d63d6512f26fd7dc35bd94e78d12bb90c052fd563b36e4fa047babadd550d7",
+      "width_inches": 11.0,
+      "height_inches": 9.0,
+      "dpi": 300
+    },
+    {
+      "path": "control_timing.pdf",
+      "sha256": "710c355fbdbbac49f3959a48d98aae47bd575cf17d3a2463c37a6567b34a9157",
+      "width_inches": 11.0,
+      "height_inches": 9.0,
+      "dpi": null
+    },
+    {
+      "path": "mapping_timing.png",
+      "sha256": "1d8fea45c9a2aa94761df94021da2671cfafa86de8d423051d55f6863cd3873f",
+      "width_inches": 11.0,
+      "height_inches": 9.0,
+      "dpi": 300
+    },
+    {
+      "path": "mapping_timing.pdf",
+      "sha256": "ec31fc230d887390952124b36806095d4fb709b10c4de5340c899c32ad66c77a",
+      "width_inches": 11.0,
+      "height_inches": 9.0,
+      "dpi": null
+    }
+  ],
+  "definitions": [
+    "No raw samples, summaries, or acceptance verdicts are rewritten.",
+    "Python observed trials are retained, including failed trials; valid C++ means completed and passed.",
+    "Trajectory segments break on invalid samples, simulation clock rollback or configured sample gaps; duplicate samples remain.",
+    "Coordinates are observed vessel centres, not full-footprint clearance or a swept-area proof.",
+    "Cylinder shapes come only from actual obstacle_spawned events; no inferred world or costmap geometry.",
+    "Percentile markers are reported rolling/history windows, never pooled percentiles or message intervals.",
+    "Empty CSV cells mean unavailable, never imputed zero; unfinished durations are not arrival durations.",
+    "Ratios and verdicts are read from the input comparison; unavailable/zero-baseline ratios remain absent."
+  ],
+  "tables": [
+    {
+      "path": "pairwise_ratios.csv",
+      "sha256": "d4974276eb5e1dd5ffddb40566963acefdd8b89bec9aa2dbc558b4b8f262f1c2"
+    },
+    {
+      "path": "timing_windows.csv",
+      "sha256": "b42f1f8a7778ca5b414252037c90a882544752293c55938f4a120bfec5795014"
+    },
+    {
+      "path": "trajectory_samples.csv",
+      "sha256": "a6a7ad7854ddc3540ef0acfb7d035678d59fc9b66d0d798a70ddf9040abdbe15"
+    },
+    {
+      "path": "trial_metrics.csv",
+      "sha256": "01f982ce5e1210b4aa6b7901cb38d4efd0347bb4ebdaec363c5795f7279067d1"
+    }
+  ]
+}

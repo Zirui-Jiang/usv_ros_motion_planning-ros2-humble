@@ -12,7 +12,7 @@
 | 静态检查与构建 | C++ 与 Python 各 13 包构建通过 | 替换源码清理后的全新普通安装区构建待最后执行 |
 | 单元测试及源码回归 | `3afb25f` 全仓 404 项通过 | 含算法、实际 ROS 节点、软区驶出、路线复用、建图 deadline、源时间度量、栅格终点与小容差目标连接 |
 | ROS 集成 | 已通过已执行的接口与故障回归 | 覆盖目标、状态、地图、TF、时钟、扫描、推力、在线参数、任务取消、断流、时间回退和规划进程隔离 |
-| 闭环验收 | 已完成 `e381832` 格内矩阵 18/18 导航、3/3 故障；新终点修复待复验 | 旧墙钟七个有效配对六过一败；源时间回溯四过三败；11 个无有效 C++ 基线；live 性能 17 通过、1 unknown |
+| 闭环验收 | `3afb25f` 完整矩阵 18/18 导航、3/3 故障功能通过，完整验收未通过 | 预固定源时间指标七个有效配对六过一败；PID 转弯 01 比值 1.10912972 超过 1.10；11 对不可比；live 性能 16 通过、2 unknown |
 
 原场景矩阵的数值与验收脚本版本为 `4ef01a6`；原始结果和运行前后 SHA 校验见
 [正式矩阵归档](validation/python-final-matrix-001/README.md)。已运行结果与仍未满足的
@@ -45,8 +45,20 @@ Python 对应矩阵已暂停：九条 PID 已完成，其中两条圆柱安全�
 `source_time_trapezoid`，保留旧值并列。旧版三个直航仍失败，PID 2.5 s 候选五条中
 也仅两条通过，已撤回该参数调整。`3afb25f` 保留 PID 2.6 s，并恢复原栅格终点，
 以终止圆包含关系解决精确目标容差；按
-[新预固定协议](validation/grid-endpoint-source-time-protocol.md) 进行独立复验。
-当前尚未启动最终旧 C++ 源码清理。
+[新预固定协议](validation/grid-endpoint-source-time-protocol.md) 完成独立复验。
+详见 [完整矩阵](validation/python-grid-endpoint-final-matrix-001/README.md) 与
+[源时间比较](validation/python-grid-endpoint-final-comparison/report.md)。全部 27 份正常
+导航源时间覆盖有效。PID 转弯 01 的超标集中于实际前、中段横偏，同配置候选的通过
+不能替补正式失败；[分段诊断](validation/python-grid-endpoint-final-comparison/turn01-diagnostic/README.md)
+保留了启动延迟和暂停相位差。原 world 的 PMS 波浪仍生效、起航绝对仿真时刻未锁定，
+属于 [未控制因素](validation/ocean-repeatability-audit/README.md)，尚不能据此确定失败原因。
+当前继续诊断，尚未启动最终旧 C++ 源码清理。
+
+本轮控制与扫描计算耗时各 18/18 通过，PID/LQR 直航 03 因连续 TF 过期保留积压
+unknown。两次 LQR 求解达到 80 ms 预算后输出零推力并恢复；两次 gzserver 在收尾
+SIGINT 时退出 -6，分别统计，不影响原始采集是否完成的记录。独立进程采样完整覆盖
+18 条导航，导航加 worker CPU 均值为单核的 10.46%、P95 为 20.01%，同刻 RSS 合计
+峰值 115.63 MiB，详见 [进程性能](validation/python-grid-endpoint-final-matrix-001-process-performance.md)。
 
 正常 TF 已可查的独立建图吞吐验证已通过：450 帧、每帧 2000 束、15 Hz，处理
 P95 为 23.288 ms，无过期、溢出或持续积压，三次重复扫描未重复积分。
