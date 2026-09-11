@@ -14,6 +14,7 @@ SHA256，不能用候选试验代替最终矩阵。
 | 可执行 C++ 对照 | `baseline-validation`：`632734ba31478bdb833e15949287b53ae9334cf3` |
 | 原场景 Python 数值版本 | `4ef01a645ada5fb816c8e1a412fa6cd779723539` |
 | 软区驶出及路线复用修复后的格内版本 | `e38183218fce7044e686a0f697ed13f456f49039` |
+| 栅格终点兼容及源时间度量版本 | `3afb25f84232e560c62599a721dc0bfbe1a21657` |
 | C++ 独立构建区 | `/home/usv/usv_migration/baseline` |
 | Python 独立构建区 | `/home/usv/usv_migration/python` |
 | 正式矩阵原始目录 | `/home/usv/usv_migration/results/python-final-matrix-001` |
@@ -33,14 +34,15 @@ Python 算法通过导入和对象调用连接；导航节点使用独立工作�
 | 层次 | 已有证据 | 当前边界 |
 | --- | --- | --- |
 | 静态检查与构建 | C++ 和 Python 各 13 包构建通过；纯包导入及节点入口检查已有通过记录 | 删除替换源码后的全新普通安装构建待最后执行 |
-| 单元测试 | 原正式版本 264 项；`e381832` 全仓 368 项通过，包含真实 ROS 测试 | 清理后将再核对安装和源码 |
+| 单元测试及源码回归 | 原正式版本 264 项；`e381832` 368 项；`3afb25f` 全仓 404 项，包含真实 ROS 测试 | 清理后将再核对安装和源码 |
 | ROS 集成 | goal、odom、TF、clock、scan、raw costmap、路径及推力链路；在线参数、取消、过期输入、时间回退 | GUI 初始化证据与可视画面确认分别记录 |
 | 闭环验收 | 原场景 PID/LQR 各三场景、各三次共 18 条导航，以及 3 条故障检查通过 | 9 对有效 PID 基线中 8 对通过相对门槛；1 对 RMSE 超限；LQR 基线不可比；格内追加矩阵另列 |
 
 全仓库测试记录：[JUnit](validation/source-tests-calibrated-candidate.xml)。
 `79a109f` 候选：[334 项 JUnit](validation/source-tests-factor025-candidate.xml)；
 恢复软区驶出后：[362 项 JUnit](validation/source-tests-soft-inflation-escape.xml)；
-统一路线复用后：[368 项 JUnit](validation/source-tests-route-reuse.xml)。新计数比较器
+统一路线复用后：[368 项 JUnit](validation/source-tests-route-reuse.xml)；
+栅格终点及源时间度量：[404 项 JUnit](validation/source-tests-grid-endpoint.xml)。新计数比较器
 与旧 synthetic fixtures 的同步中间轮曾有 22 项失败，已保存为
 [中间轮记录](validation/source-tests-counter-schema-in-progress.xml)；完成新旧 schema
 兼容后再跑全仓通过，未把中间轮视为有效发布版本。
@@ -198,6 +200,42 @@ CPU 均值为单核的 10.24%、P95 为 19.02%，同刻 RSS 合计峰值为 114.
 两例在采集结束后的 SIGINT 阶段异常：PID 圆柱 01 的 gzserver 退出 -6；圆柱 03 的
 fake_localization 退出 -11。其他十八个 Gazebo 试验的八个进程均正常退出。
 后者没有崩溃栈，不能把源码中可见的 ModelStates 数组边界缺陷直接当作这次根因。
+
+### 5.2 源时间度量与栅格终点复验
+
+新度量按唯一 odom 源时刻，对误差平方作梯形积分；它是有限观测的近似积分，
+不是连续真实轨迹的精确积分。首条有效路径固定，保留目标前最近状态和其后全部
+状态，不外推；源间隔及首尾覆盖缺口预先限为 0.5 s。需显式确认本工程的 map/odom
+恒等 TF 契约，否则输出 unknown。原墙钟分数仍并列保存，默认比较选项保持原规则。
+完整规则见 [预先固定协议](validation/grid-endpoint-source-time-protocol.md)。
+
+这一规则回溯 `e381832` 时，三个直航比例为 1.127282、1.181543、1.162247，均失败；
+三次转弯和唯一有效圆柱通过，即四过三败。原六过一败的墙钟报告不修改。
+PID 2.4 s 候选转弯在原规则下失败；2.5 s 五候选在原规则下全过，但在源时间规则下
+仅两条通过。分段诊断表明，2.5 s 转弯退化主要在前中段，不能靠终点修复推定解决。
+因此撤回预瞄调整，保留已有三次源时间转弯通过的 2.6 s。
+上述重算、分段能量和逐点反事实检查可用
+[独立诊断脚本及证据](validation/source-time-candidate-diagnostics/README.md) 复现。
+
+`3afb25f` 恢复原栅格中心终点，按终止圆包含关系协调真实目标容差；只有格心距离
+不小于控制器容差时才追加合法连接。实际任务仍按真实目标位置和速度判定。
+源码和 404 项回归已固定，候选与后续完整矩阵必须使用新的输出目录，不能替换
+此前试验或以反事实评分代替实际重跑。
+
+### 5.3 正常 TF 条件下的建图吞吐
+
+独立试验保留 1024²、0.5 m、2 Hz 发布、五槽队列与 0.2 s TF 截止。2000 束、15 Hz
+来自原 LiDAR 配置；每束为确定性 24 m 命中，每次扫描前确认其自身时间戳的 TF
+在实际 mapper buffer 中可查。30 s 内 450 帧全部积分且只积分一次，无过期、溢出、
+无效帧或时间回退；处理 P50/P95/P99 为 21.267/23.288/26.260 ms，最大 30.756 ms，
+低于 66.7 ms 输入周期。等待 P95 10.217 ms；发布 60 张图，结束队列为空，追加三次
+重复扫描不改变地图 SHA。
+
+首次系统时钟驱动试验因 WSL 系统时间回退而触发重置并失败，保留原结果；第二次
+用单调时钟产生仿真 /clock，符合稳定时间前提。CPU 为 mapper、驱动与观测合进程的
+42.227% 单核均值，不等同于 mapper 独占 CPU；RSS 64.46–72.74 MiB。
+该证据仅补充正常 TF 前提下吞吐，不将完整 Gazebo 矩阵的 live unknown 回改为通过。
+详见 [两次试验及全部 450 帧记录](validation/normal-tf-throughput-001/README.md)。
 
 ## 6. 环境和已知限制
 

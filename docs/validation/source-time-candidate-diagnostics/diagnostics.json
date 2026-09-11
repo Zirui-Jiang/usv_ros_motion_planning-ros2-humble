@@ -1,0 +1,4112 @@
+{
+  "purpose": "Read-only retrospective diagnostic; not a replacement for frozen historical acceptance reports or a new physical rerun.",
+  "method": {
+    "rmse_metric": "source_time_trapezoid",
+    "rmse_field": "observations.tracking.source_time_trapezoid.rmse_m",
+    "tracking_protocol": {
+      "source_max_gap_s": 0.5,
+      "boundary_max_gap_s": 0.5,
+      "window": "latest pre-goal odometry plus all odometry received through acquisition_finished; actual first/last source times, no extrapolation",
+      "reference": "first nonempty path received after goal, frozen by receipt order, ignoring path header time",
+      "integral": "sqrt(sum(dt*(error_i^2+error_i+1^2)/2)/sum(dt)); finite discrete trapezoid approximation, not continuous true-error guarantee",
+      "unknown": "missing/invalid fields, conflicting same-stamp poses, source rollback, insufficient span or coverage, gaps>0.5s, missing explicit frame contract",
+      "percentiles": "nearest-rank P95/max of unique observed source-pose errors, not time-weighted or continuous extrema"
+    },
+    "frame_contract": {
+      "name": "otter_fake_localization",
+      "status": "explicit_project_assertion",
+      "scope": "Only the audited otter fake-localization project: map->odom is identity; this does not establish identity for arbitrary recorded data.",
+      "path_frame": "otter/map",
+      "odom_frames": [
+        "otter/odom",
+        "otter/map"
+      ],
+      "child_frame": "otter/base_link",
+      "verified_sources": [
+        {
+          "mode": "cpp",
+          "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3",
+          "source": "src/sim_env/src/fake_localization_node.cpp",
+          "source_lines": [
+            89,
+            94
+          ],
+          "source_sha256": "b3f0e7a47b1328787c9fba138b0ec04701b679e6951828ed4a653df176789a4e",
+          "identity_evidence": "Default zero translation and rotation.w=1; map_frame to odom_frame; odom header frame at line 114.",
+          "launch_log": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_01/launch.log",
+          "launch_log_line": 10,
+          "launch_log_sha256": "113d5b195135cd9366886196b22a4b8dc4ab7c30b5d7a967c57eab94d4d2bcc1",
+          "logged_frame_chain": [
+            "otter/map",
+            "otter/odom",
+            "otter/base_link"
+          ]
+        },
+        {
+          "mode": "python",
+          "git_commit": "e38183218fce7044e686a0f697ed13f456f49039",
+          "source": "src/sim_env/src/fake_localization_node.cpp",
+          "source_lines": [
+            91,
+            96
+          ],
+          "source_sha256": "5f9f2bf08715742c1384c22c7c932ec2f3d0630ffbd16ad15103f48d54aaac5e",
+          "identity_evidence": "Default zero translation and rotation.w=1; map_frame to odom_frame; odom header frame at line 116.",
+          "launch_log": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_straight_01/launch.log",
+          "launch_log_line": 20,
+          "launch_log_sha256": "b028adf5e279fbc28e68571b33e657608d3d57042923ffdb1f1bade31ec5b08f",
+          "logged_frame_chain": [
+            "otter/map",
+            "otter/odom",
+            "otter/base_link"
+          ]
+        }
+      ],
+      "version_scope": "These are the audited baseline/e381 implementations and logs. For later source versions the explicit caller assertion requires confirming this unchanged transform contract; matching frame strings alone is not proof."
+    },
+    "duration_field": "duration_sim_s",
+    "ratio_limit": 1.1,
+    "zero_baseline_atol": 1e-06,
+    "zero_baseline_rule": "exactly zero cpp: ratio=null; pass iff abs(python)<=atol",
+    "p99_aggregation": "mean/max of reported per-trial P99, not a pooled sample percentile",
+    "performance_scope": "Python non-fault navigation trials only; control P99<100ms, mapping P95<=observed scan-period P50, independently evidenced stable backlog; unknown is not passed",
+    "backlog_rule": "at least 3 same-epoch snapshots and 2 consecutive approximately-5s intervals, boundary coverage, balanced counters and integration progress; sustained overflow fails; legacy sparse gauges retain recovery rule; new post_drain_latency_v1 additionally requires dense 80%-covered 5s windows, bounded wall-time waiting and identity turnover, without requiring an empty queue; recurrent TF expiry is unknown and isolated expiry only recorded",
+    "cpu": "100*sum(nonnegative same-PID cpu_seconds deltas)/sum(positive same-PID process.monotonic deltas); not machine CPU and excludes planner child/Gazebo",
+    "thruster_variation": "sum(abs(command[i]-command[i-1])) per axis in full recorded JSONL order; no initial/final zero appended; total requires all axes and >=2 valid samples each",
+    "counter_scope": "final reported cumulative counters per completed trial, not sums of status event counters"
+  },
+  "e381_source_diagnostic_summary": {
+    "pairs": 18,
+    "comparable_pairs": 7,
+    "passed_pairs": 4,
+    "failed_pairs": 3,
+    "not_comparable_pairs": 11,
+    "fault_trials": 3,
+    "fault_passed": 3,
+    "performance_trials": 18,
+    "performance_passed": 17,
+    "performance_failed": 0,
+    "performance_unknown": 1,
+    "all_performance_passed": false,
+    "all_sources_finished": true,
+    "all_passed": false
+  },
+  "e381_pairs": [
+    {
+      "controller": "lqr",
+      "scenario": "single_obstacle",
+      "repeat": 1,
+      "comparable": false,
+      "passed": null,
+      "reasons": [
+        "cpp_result_missing"
+      ],
+      "source_rmse": null,
+      "legacy_wall_rmse": null,
+      "duration_sim_s": null,
+      "observations": {
+        "python": {
+          "trial": "python_lqr_single_obstacle_01",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-release-grid-001",
+            "summary_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_single_obstacle_01/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789095677.0842512,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "71903dfce10b0a7e2b4004a5dbdd05b24ac05e71ef3200f0c0787819753331b1",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_single_obstacle_01/events.jsonl",
+          "events_sha256": "ed7f40a584d5fbf756983301d04704af65b6f21b52acf011230599c671fd0d0c",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.41105851727152676,
+            "integrated_squared_error_m2_s": 3.092134614572829,
+            "sample_count": 184,
+            "raw_odom_count": 184,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 5.8,
+            "source_end_s": 24.1,
+            "source_span_s": 18.3,
+            "goal_source_s": 5.800000000000001,
+            "acquisition_source_s": 24.1,
+            "start_offset_s": -8.881784197001252e-16,
+            "end_offset_s": 0.0,
+            "start_coverage_gap_s": 8.881784197001252e-16,
+            "end_coverage_gap_s": 0.0,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.7630500340375024,
+            "error_max_m": 0.8100177398916959,
+            "first_path_event_line": 400,
+            "first_path_sha256": "7f778baed38617908de2d4b86b56e63a1c8957ec922f5dfb92ec09e9c9f49d0b",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.45329368062410913,
+            "sample_count": 194,
+            "error_p95_m": 0.7634693365132927,
+            "error_max_m": 0.8100177398916959,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "lqr",
+      "scenario": "single_obstacle",
+      "repeat": 2,
+      "comparable": false,
+      "passed": null,
+      "reasons": [
+        "cpp_result_missing"
+      ],
+      "source_rmse": null,
+      "legacy_wall_rmse": null,
+      "duration_sim_s": null,
+      "observations": {
+        "python": {
+          "trial": "python_lqr_single_obstacle_02",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-release-grid-001",
+            "summary_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_single_obstacle_02/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789095677.0842512,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "d4f3ebff07f823fba9f7020b1c9b7a79a164749226defa73071f54b4dc0f13af",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_single_obstacle_02/events.jsonl",
+          "events_sha256": "07cb355c29f5c560d63353fa60a1403982a1cc57e2ddf2e12352b2a56ef38eda",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.4116842022463402,
+            "integrated_squared_error_m2_s": 3.084606659301541,
+            "sample_count": 183,
+            "raw_odom_count": 183,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 5.8,
+            "source_end_s": 24.0,
+            "source_span_s": 18.2,
+            "goal_source_s": 5.800000000000001,
+            "acquisition_source_s": 24.1,
+            "start_offset_s": -8.881784197001252e-16,
+            "end_offset_s": -0.10000000000000142,
+            "start_coverage_gap_s": 8.881784197001252e-16,
+            "end_coverage_gap_s": 0.10000000000000142,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.7632014710954893,
+            "error_max_m": 0.821685087057411,
+            "first_path_event_line": 399,
+            "first_path_sha256": "7f778baed38617908de2d4b86b56e63a1c8957ec922f5dfb92ec09e9c9f49d0b",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.423583982210207,
+            "sample_count": 209,
+            "error_p95_m": 0.7628487508154161,
+            "error_max_m": 0.821685087057411,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "lqr",
+      "scenario": "single_obstacle",
+      "repeat": 3,
+      "comparable": false,
+      "passed": null,
+      "reasons": [
+        "cpp_result_missing"
+      ],
+      "source_rmse": null,
+      "legacy_wall_rmse": null,
+      "duration_sim_s": null,
+      "observations": {
+        "python": {
+          "trial": "python_lqr_single_obstacle_03",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-release-grid-001",
+            "summary_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_single_obstacle_03/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789095677.0842512,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "40a6a5d6f224d3a2fa50c3e55f94a65bff92ef76a02468b5b0bc5ab3875275b4",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_single_obstacle_03/events.jsonl",
+          "events_sha256": "450a5997d48efab6d049dd880b512c40f0a4537f9254f44c973a000ba9adea0f",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.4057072497822951,
+            "integrated_squared_error_m2_s": 2.9792305427190366,
+            "sample_count": 182,
+            "raw_odom_count": 182,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 5.6,
+            "source_end_s": 23.7,
+            "source_span_s": 18.1,
+            "goal_source_s": 5.6000000000000005,
+            "acquisition_source_s": 23.8,
+            "start_offset_s": -8.881784197001252e-16,
+            "end_offset_s": -0.10000000000000142,
+            "start_coverage_gap_s": 8.881784197001252e-16,
+            "end_coverage_gap_s": 0.10000000000000142,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.7462830470810843,
+            "error_max_m": 0.802666371434612,
+            "first_path_event_line": 394,
+            "first_path_sha256": "7f778baed38617908de2d4b86b56e63a1c8957ec922f5dfb92ec09e9c9f49d0b",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.4010048826126299,
+            "sample_count": 191,
+            "error_p95_m": 0.7459077267269365,
+            "error_max_m": 0.802666371434612,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "lqr",
+      "scenario": "straight",
+      "repeat": 1,
+      "comparable": false,
+      "passed": null,
+      "reasons": [
+        "cpp_result_missing"
+      ],
+      "source_rmse": null,
+      "legacy_wall_rmse": null,
+      "duration_sim_s": null,
+      "observations": {
+        "python": {
+          "trial": "python_lqr_straight_01",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-release-grid-001",
+            "summary_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_straight_01/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789095677.0842512,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "3d609b9c3a261f51cd034417b87a4f80fbb9d901d3d4b83ef1fe54440651b672",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_straight_01/events.jsonl",
+          "events_sha256": "85e436e552519ed2a6e71aad9fe40863d87ac06a267c1f7ccd6f9b8b8e2d3983",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.06081876279077752,
+            "integrated_squared_error_m2_s": 0.058812858327673724,
+            "sample_count": 160,
+            "raw_odom_count": 160,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 3.0,
+            "source_end_s": 18.9,
+            "source_span_s": 15.899999999999999,
+            "goal_source_s": 3.0,
+            "acquisition_source_s": 19.0,
+            "start_offset_s": 0.0,
+            "end_offset_s": -0.10000000000000142,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 0.10000000000000142,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.1250133654315153,
+            "error_max_m": 0.17607222651902246,
+            "first_path_event_line": 192,
+            "first_path_sha256": "1e619183445557d65b551e6c0299f9bb802c8bcb49808782f1331b6b51d4ba4e",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.05139492701749108,
+            "sample_count": 186,
+            "error_p95_m": 0.12146632076999886,
+            "error_max_m": 0.17601261799463286,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "lqr",
+      "scenario": "straight",
+      "repeat": 2,
+      "comparable": false,
+      "passed": null,
+      "reasons": [
+        "cpp_result_missing"
+      ],
+      "source_rmse": null,
+      "legacy_wall_rmse": null,
+      "duration_sim_s": null,
+      "observations": {
+        "python": {
+          "trial": "python_lqr_straight_02",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-release-grid-001",
+            "summary_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_straight_02/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789095677.0842512,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "14a986895bb66963c7cc092b9a53f6da834d6f5fd6cc3fcde3e067c2e61c8423",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_straight_02/events.jsonl",
+          "events_sha256": "7f892af6dd443124f13a34fd38682da9e4a11259afd22756e8ba2d2f2b8cd8f9",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.06190791075117686,
+            "integrated_squared_error_m2_s": 0.06055491273449574,
+            "sample_count": 159,
+            "raw_odom_count": 159,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 3.0,
+            "source_end_s": 18.8,
+            "source_span_s": 15.8,
+            "goal_source_s": 3.0,
+            "acquisition_source_s": 18.8,
+            "start_offset_s": 0.0,
+            "end_offset_s": 0.0,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 0.0,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.13338934308716244,
+            "error_max_m": 0.17590545329670895,
+            "first_path_event_line": 282,
+            "first_path_sha256": "1e619183445557d65b551e6c0299f9bb802c8bcb49808782f1331b6b51d4ba4e",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.05333110449887301,
+            "sample_count": 168,
+            "error_p95_m": 0.12230901404278605,
+            "error_max_m": 0.175309051140262,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "lqr",
+      "scenario": "straight",
+      "repeat": 3,
+      "comparable": false,
+      "passed": null,
+      "reasons": [
+        "cpp_result_missing"
+      ],
+      "source_rmse": null,
+      "legacy_wall_rmse": null,
+      "duration_sim_s": null,
+      "observations": {
+        "python": {
+          "trial": "python_lqr_straight_03",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-release-grid-001",
+            "summary_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_straight_03/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789095677.0842512,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "c9998a610bfd8f0543ce7a7b910da7f5b4f1b6a7ff3b5e66e16037722cb23de3",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_straight_03/events.jsonl",
+          "events_sha256": "b6ee2c7ada47b2a4598616e99382c58d43091662eb7b4be98eff3df5a2ff7d19",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.06096855039422672,
+            "integrated_squared_error_m2_s": 0.059474626194773804,
+            "sample_count": 161,
+            "raw_odom_count": 161,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 2.7,
+            "source_end_s": 18.7,
+            "source_span_s": 16.0,
+            "goal_source_s": 2.7,
+            "acquisition_source_s": 18.700000000000003,
+            "start_offset_s": 0.0,
+            "end_offset_s": -3.552713678800501e-15,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 3.552713678800501e-15,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.12452769726585622,
+            "error_max_m": 0.1765962032429027,
+            "first_path_event_line": 269,
+            "first_path_sha256": "1e619183445557d65b551e6c0299f9bb802c8bcb49808782f1331b6b51d4ba4e",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.05666181476635967,
+            "sample_count": 156,
+            "error_p95_m": 0.12312333936884912,
+            "error_max_m": 0.1765962032429027,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "lqr",
+      "scenario": "turn",
+      "repeat": 1,
+      "comparable": false,
+      "passed": null,
+      "reasons": [
+        "cpp_result_missing"
+      ],
+      "source_rmse": null,
+      "legacy_wall_rmse": null,
+      "duration_sim_s": null,
+      "observations": {
+        "python": {
+          "trial": "python_lqr_turn_01",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-release-grid-001",
+            "summary_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_turn_01/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789095677.0842512,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "a5e619551033e1837ede0f137e8c895087fdbbf5f71d2dfa3a9c29d3c4976982",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_turn_01/events.jsonl",
+          "events_sha256": "2bc14ed7caf06075fb82a7fa0e06a8fa846a81ede485be5178de5e0916630b45",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 1.0129460957888177,
+            "integrated_squared_error_m2_s": 17.750834418446882,
+            "sample_count": 174,
+            "raw_odom_count": 174,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 2.1,
+            "source_end_s": 19.4,
+            "source_span_s": 17.299999999999997,
+            "goal_source_s": 2.1,
+            "acquisition_source_s": 19.400000000000002,
+            "start_offset_s": 0.0,
+            "end_offset_s": -3.552713678800501e-15,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 3.552713678800501e-15,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 2.190431381049361,
+            "error_max_m": 2.245415669787544,
+            "first_path_event_line": 361,
+            "first_path_sha256": "db7fe7bd3d4fc99c0fb32c503822706b998c5a0d996a810ffcda764d25929afb",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 1.0252062176684225,
+            "sample_count": 167,
+            "error_p95_m": 2.190431381049361,
+            "error_max_m": 2.245415669787544,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "lqr",
+      "scenario": "turn",
+      "repeat": 2,
+      "comparable": false,
+      "passed": null,
+      "reasons": [
+        "cpp_result_missing"
+      ],
+      "source_rmse": null,
+      "legacy_wall_rmse": null,
+      "duration_sim_s": null,
+      "observations": {
+        "python": {
+          "trial": "python_lqr_turn_02",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-release-grid-001",
+            "summary_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_turn_02/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789095677.0842512,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "244f43de13b6736e3880dd8114f47f7f1a69be226f28f23c07c6c2ab09321577",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_turn_02/events.jsonl",
+          "events_sha256": "712f1bd9ab04598f247e348385d8c9fbdc0e9d016b9680dcc3657ea3255ebb53",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 1.0270525972738314,
+            "integrated_squared_error_m2_s": 18.565131861177843,
+            "sample_count": 177,
+            "raw_odom_count": 177,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 2.7,
+            "source_end_s": 20.3,
+            "source_span_s": 17.6,
+            "goal_source_s": 2.7,
+            "acquisition_source_s": 20.3,
+            "start_offset_s": 0.0,
+            "end_offset_s": 0.0,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 0.0,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 2.2028798904978046,
+            "error_max_m": 2.2403185998019026,
+            "first_path_event_line": 274,
+            "first_path_sha256": "db7fe7bd3d4fc99c0fb32c503822706b998c5a0d996a810ffcda764d25929afb",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 1.289635814116163,
+            "sample_count": 201,
+            "error_p95_m": 2.2359247911378652,
+            "error_max_m": 2.2403185998019026,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "lqr",
+      "scenario": "turn",
+      "repeat": 3,
+      "comparable": false,
+      "passed": null,
+      "reasons": [
+        "cpp_result_missing"
+      ],
+      "source_rmse": null,
+      "legacy_wall_rmse": null,
+      "duration_sim_s": null,
+      "observations": {
+        "python": {
+          "trial": "python_lqr_turn_03",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-release-grid-001",
+            "summary_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_turn_03/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789095677.0842512,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "54d1559a59276d0494eabf747babd1fec0fc4681299127b29c890b38f764999f",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_turn_03/events.jsonl",
+          "events_sha256": "507a1e158d3e7fde186363780b7dc6d516165bc589f63fb7c854bebd66c7caf9",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 1.0055101462414382,
+            "integrated_squared_error_m2_s": 17.693386448403377,
+            "sample_count": 176,
+            "raw_odom_count": 176,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 2.8,
+            "source_end_s": 20.3,
+            "source_span_s": 17.5,
+            "goal_source_s": 2.8000000000000003,
+            "acquisition_source_s": 20.3,
+            "start_offset_s": -4.440892098500626e-16,
+            "end_offset_s": 0.0,
+            "start_coverage_gap_s": 4.440892098500626e-16,
+            "end_coverage_gap_s": 0.0,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 2.188689305739242,
+            "error_max_m": 2.2416496503335033,
+            "first_path_event_line": 197,
+            "first_path_sha256": "db7fe7bd3d4fc99c0fb32c503822706b998c5a0d996a810ffcda764d25929afb",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.9798439130000022,
+            "sample_count": 186,
+            "error_p95_m": 2.163984101111364,
+            "error_max_m": 2.2416496503335033,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "repeat": 1,
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "source_rmse": {
+        "python": 0.19977010771892337,
+        "cpp": 0.48812363919388824,
+        "ratio": 0.4092612848024195,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "legacy_wall_rmse": {
+        "python": 0.19521437046584736,
+        "cpp": 0.47340155887704577,
+        "ratio": 0.4123652886334272,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "duration_sim_s": {
+        "python": 22.700000000000003,
+        "cpp": 30.4,
+        "ratio": 0.7467105263157896,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "observations": {
+        "python": {
+          "trial": "python_pid_single_obstacle_01",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-release-grid-001",
+            "summary_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_single_obstacle_01/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789095677.0842512,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "da4cd140aaebd3b9afc0533d00240792ed3e75ac8bdc21874d6e6ce1df2f1a1f",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_single_obstacle_01/events.jsonl",
+          "events_sha256": "1e6c1d2668d5e7a15d1c1204b037f78ea5c61adf1de443753340ef39a0b507e2",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.19977010771892337,
+            "integrated_squared_error_m2_s": 0.9059137777932865,
+            "sample_count": 228,
+            "raw_odom_count": 228,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 5.7,
+            "source_end_s": 28.4,
+            "source_span_s": 22.7,
+            "goal_source_s": 5.7,
+            "acquisition_source_s": 28.400000000000002,
+            "start_offset_s": 0.0,
+            "end_offset_s": -3.552713678800501e-15,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 3.552713678800501e-15,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.44121470157732645,
+            "error_max_m": 0.5294226087279625,
+            "first_path_event_line": 389,
+            "first_path_sha256": "7f778baed38617908de2d4b86b56e63a1c8957ec922f5dfb92ec09e9c9f49d0b",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.19521437046584736,
+            "sample_count": 233,
+            "error_p95_m": 0.44121470157732645,
+            "error_max_m": 0.5294226087279625,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        },
+        "cpp": {
+          "trial": "cpp_pid_single_obstacle_01",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_01/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "73fe8f867ef414a64145a63baca216b09e20f1343279df55edd095c105aef657",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_01/events.jsonl",
+          "events_sha256": "89f7033299c2512c8d6a021201e69933c836bebafd1ee4e82d9d8e52315a6c2a",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.48812363919388824,
+            "integrated_squared_error_m2_s": 7.24324648905251,
+            "sample_count": 305,
+            "raw_odom_count": 305,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 5.6,
+            "source_end_s": 36.0,
+            "source_span_s": 30.4,
+            "goal_source_s": 5.6000000000000005,
+            "acquisition_source_s": 36.0,
+            "start_offset_s": -8.881784197001252e-16,
+            "end_offset_s": 0.0,
+            "start_coverage_gap_s": 8.881784197001252e-16,
+            "end_coverage_gap_s": 0.0,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.8624685157272349,
+            "error_max_m": 0.9217161967861981,
+            "first_path_event_line": 213,
+            "first_path_sha256": "8b1f7fa2a7e57249da3a1af1bcaec0275bdc7601c31348a527d79eefa44dad58",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.47340155887704577,
+            "sample_count": 317,
+            "error_p95_m": 0.8624685157272349,
+            "error_max_m": 0.9217161967861981,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "repeat": 2,
+      "comparable": false,
+      "passed": null,
+      "reasons": [
+        "cpp_not_completed_and_passed: result=completed, passed=False, manifest_mode=live, reason=['footprint_clearance_limit_or_missing_observation']"
+      ],
+      "source_rmse": null,
+      "legacy_wall_rmse": null,
+      "duration_sim_s": null,
+      "observations": {
+        "python": {
+          "trial": "python_pid_single_obstacle_02",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-release-grid-001",
+            "summary_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_single_obstacle_02/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789095677.0842512,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "2fd84ea5e8e3ee3727bb419c2158e9f0824db0cb6d189f28110f9befe0217961",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_single_obstacle_02/events.jsonl",
+          "events_sha256": "85b4922e72a8861200571fea4f201a3cb76189b6df5441a96ebe7b988ac8d68e",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.19741342916619756,
+            "integrated_squared_error_m2_s": 0.8807686015425551,
+            "sample_count": 227,
+            "raw_odom_count": 227,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 6.0,
+            "source_end_s": 28.6,
+            "source_span_s": 22.6,
+            "goal_source_s": 6.0,
+            "acquisition_source_s": 28.6,
+            "start_offset_s": 0.0,
+            "end_offset_s": 0.0,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 0.0,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.4205888824020576,
+            "error_max_m": 0.5312628613265973,
+            "first_path_event_line": 400,
+            "first_path_sha256": "7f778baed38617908de2d4b86b56e63a1c8957ec922f5dfb92ec09e9c9f49d0b",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.19181965972577755,
+            "sample_count": 233,
+            "error_p95_m": 0.4205888824020576,
+            "error_max_m": 0.5312628613265973,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        },
+        "cpp": {
+          "trial": "cpp_pid_single_obstacle_02",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_02/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "1ae88b92f30ebd3a5a141cc4ae99bb864fb2c22b1b5623ae88768d20ed214701",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_02/events.jsonl",
+          "events_sha256": "828c4078500085c47b0691e33b93505646a4ce60c0318660d98abb6857d5e3d1",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.4493193856300327,
+            "integrated_squared_error_m2_s": 5.632672697452307,
+            "sample_count": 280,
+            "raw_odom_count": 280,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 5.7,
+            "source_end_s": 33.6,
+            "source_span_s": 27.900000000000002,
+            "goal_source_s": 5.7,
+            "acquisition_source_s": 33.6,
+            "start_offset_s": 0.0,
+            "end_offset_s": 0.0,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 0.0,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.7785168729939459,
+            "error_max_m": 0.82926243139324,
+            "first_path_event_line": 216,
+            "first_path_sha256": "8b1f7fa2a7e57249da3a1af1bcaec0275bdc7601c31348a527d79eefa44dad58",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.45056586770272855,
+            "sample_count": 270,
+            "error_p95_m": 0.7828890526332081,
+            "error_max_m": 0.82926243139324,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "repeat": 3,
+      "comparable": false,
+      "passed": null,
+      "reasons": [
+        "cpp_not_completed_and_passed: result=completed, passed=False, manifest_mode=live, reason=['footprint_clearance_limit_or_missing_observation']"
+      ],
+      "source_rmse": null,
+      "legacy_wall_rmse": null,
+      "duration_sim_s": null,
+      "observations": {
+        "python": {
+          "trial": "python_pid_single_obstacle_03",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-release-grid-001",
+            "summary_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_single_obstacle_03/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789095677.0842512,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "4741ab91f693593fd396a0b27940d71ca4bba9478410da2ef23ba4149e912c99",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_single_obstacle_03/events.jsonl",
+          "events_sha256": "d5a2d8c94dcd1d11c94dca371b9b723da323c0f5093190426c38e92c2e73d2cf",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.20152631998260634,
+            "integrated_squared_error_m2_s": 0.9219118685581127,
+            "sample_count": 228,
+            "raw_odom_count": 228,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 6.0,
+            "source_end_s": 28.7,
+            "source_span_s": 22.7,
+            "goal_source_s": 6.0,
+            "acquisition_source_s": 28.700000000000003,
+            "start_offset_s": 0.0,
+            "end_offset_s": -3.552713678800501e-15,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 3.552713678800501e-15,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.4353869058642885,
+            "error_max_m": 0.5326425683286118,
+            "first_path_event_line": 400,
+            "first_path_sha256": "7f778baed38617908de2d4b86b56e63a1c8957ec922f5dfb92ec09e9c9f49d0b",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.24224583481944348,
+            "sample_count": 251,
+            "error_p95_m": 0.43418482219576227,
+            "error_max_m": 0.5326425683286118,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        },
+        "cpp": {
+          "trial": "cpp_pid_single_obstacle_03",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_03/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "6327f629cf81bc914bd004c213a2b2e574a08ff8434736541abff208579e3af8",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_03/events.jsonl",
+          "events_sha256": "51cb387033f90df6546fb99259ec4ec17500d86b2601b7666afb491f621130c8",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.4433721179801313,
+            "integrated_squared_error_m2_s": 5.248654894558407,
+            "sample_count": 268,
+            "raw_odom_count": 268,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 5.4,
+            "source_end_s": 32.1,
+            "source_span_s": 26.700000000000003,
+            "goal_source_s": 5.4,
+            "acquisition_source_s": 32.2,
+            "start_offset_s": 0.0,
+            "end_offset_s": -0.10000000000000142,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 0.10000000000000142,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.7813622061458496,
+            "error_max_m": 0.8272375448165241,
+            "first_path_event_line": 217,
+            "first_path_sha256": "8b1f7fa2a7e57249da3a1af1bcaec0275bdc7601c31348a527d79eefa44dad58",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.441366425854831,
+            "sample_count": 264,
+            "error_p95_m": 0.7788597515181301,
+            "error_max_m": 0.8272375448165241,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 1,
+      "comparable": true,
+      "passed": false,
+      "reasons": [],
+      "source_rmse": {
+        "python": 0.06368914648128908,
+        "cpp": 0.056497946901014624,
+        "ratio": 1.127282493873159,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": false,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "legacy_wall_rmse": {
+        "python": 0.08645912465925228,
+        "cpp": 0.05505332370087926,
+        "ratio": 1.5704614880113303,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": false,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "duration_sim_s": {
+        "python": 20.7,
+        "cpp": 23.5,
+        "ratio": 0.8808510638297872,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "observations": {
+        "python": {
+          "trial": "python_pid_straight_01",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-release-grid-001",
+            "summary_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_straight_01/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789095677.0842512,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "3997519afc14a21f291043d0d39510c434cbefdd8dd22e06df4a8e526d226ebc",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_straight_01/events.jsonl",
+          "events_sha256": "f756d706db17ddb55ef0ea6cfd4255da08cf6dcbe3199552d5b95daa715aaa57",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.06368914648128908,
+            "integrated_squared_error_m2_s": 0.083559932018011,
+            "sample_count": 207,
+            "raw_odom_count": 207,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 3.1,
+            "source_end_s": 23.7,
+            "source_span_s": 20.599999999999998,
+            "goal_source_s": 3.1,
+            "acquisition_source_s": 23.8,
+            "start_offset_s": 0.0,
+            "end_offset_s": -0.10000000000000142,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 0.10000000000000142,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.12220749350031213,
+            "error_max_m": 0.17568885560154085,
+            "first_path_event_line": 1188,
+            "first_path_sha256": "1e619183445557d65b551e6c0299f9bb802c8bcb49808782f1331b6b51d4ba4e",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.08645912465925228,
+            "sample_count": 231,
+            "error_p95_m": 0.17568885560154085,
+            "error_max_m": 0.17568885560154085,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        },
+        "cpp": {
+          "trial": "cpp_pid_straight_01",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_01/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "0dea73b97c1ffda8b249fa65356d866375f5637a762db836a7a2f908765b260f",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_01/events.jsonl",
+          "events_sha256": "8457e5670d0b2bd5c36955fa3fbfb662bd5814698ef8c67b72e5643134f41fe1",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.056497946901014624,
+            "integrated_squared_error_m2_s": 0.07469322129429892,
+            "sample_count": 235,
+            "raw_odom_count": 235,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 2.9,
+            "source_end_s": 26.3,
+            "source_span_s": 23.400000000000002,
+            "goal_source_s": 2.9000000000000004,
+            "acquisition_source_s": 26.400000000000002,
+            "start_offset_s": -4.440892098500626e-16,
+            "end_offset_s": -0.10000000000000142,
+            "start_coverage_gap_s": 4.440892098500626e-16,
+            "end_coverage_gap_s": 0.10000000000000142,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.11913281199320558,
+            "error_max_m": 0.17601600147192067,
+            "first_path_event_line": 111,
+            "first_path_sha256": "92ce6c84f95eeea81c1704ac2c9a49ae19843bc917ecff6ce6339731c76a105a",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.05505332370087926,
+            "sample_count": 245,
+            "error_p95_m": 0.1166824749087656,
+            "error_max_m": 0.1758127839061492,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 2,
+      "comparable": true,
+      "passed": false,
+      "reasons": [],
+      "source_rmse": {
+        "python": 0.06622294451602286,
+        "cpp": 0.05604783648137904,
+        "ratio": 1.1815432793382548,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": false,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "legacy_wall_rmse": {
+        "python": 0.06553042364790676,
+        "cpp": 0.06445820968450416,
+        "ratio": 1.0166342498286973,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "duration_sim_s": {
+        "python": 21.0,
+        "cpp": 20.8,
+        "ratio": 1.0096153846153846,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "observations": {
+        "python": {
+          "trial": "python_pid_straight_02",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-release-grid-001",
+            "summary_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_straight_02/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789095677.0842512,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "1e81a3d3ef44fa6a0a6cb84d7a73b3744733adb49b021a445378609a8bb3eb9c",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_straight_02/events.jsonl",
+          "events_sha256": "3c1c9f45b54cc45b4e9727b475c9b1205997b6f10d0e27876f815aa41542806f",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.06622294451602286,
+            "integrated_squared_error_m2_s": 0.09209504598781708,
+            "sample_count": 211,
+            "raw_odom_count": 211,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 3.0,
+            "source_end_s": 24.0,
+            "source_span_s": 21.0,
+            "goal_source_s": 3.0,
+            "acquisition_source_s": 24.0,
+            "start_offset_s": 0.0,
+            "end_offset_s": 0.0,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 0.0,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.12352773704464326,
+            "error_max_m": 0.17603174421433962,
+            "first_path_event_line": 1029,
+            "first_path_sha256": "1e619183445557d65b551e6c0299f9bb802c8bcb49808782f1331b6b51d4ba4e",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.06553042364790676,
+            "sample_count": 216,
+            "error_p95_m": 0.11892077638602316,
+            "error_max_m": 0.17553942750925955,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        },
+        "cpp": {
+          "trial": "cpp_pid_straight_02",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_02/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "60728577cc2c924b44c9a5269122a9b547f8ae6bac95fdce60e9aaa57ee53e9f",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_02/events.jsonl",
+          "events_sha256": "72719e569a71c695ef489ac39ee2930ef40425ce00b6d62cb7de5eb1ee638de7",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.05604783648137904,
+            "integrated_squared_error_m2_s": 0.06534028746426278,
+            "sample_count": 209,
+            "raw_odom_count": 209,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 3.0,
+            "source_end_s": 23.8,
+            "source_span_s": 20.8,
+            "goal_source_s": 3.0,
+            "acquisition_source_s": 23.8,
+            "start_offset_s": 0.0,
+            "end_offset_s": 0.0,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 0.0,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.12030093634123595,
+            "error_max_m": 0.17599640760696525,
+            "first_path_event_line": 238,
+            "first_path_sha256": "92ce6c84f95eeea81c1704ac2c9a49ae19843bc917ecff6ce6339731c76a105a",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.06445820968450416,
+            "sample_count": 211,
+            "error_p95_m": 0.1315549182489151,
+            "error_max_m": 0.17473683308682883,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 3,
+      "comparable": true,
+      "passed": false,
+      "reasons": [],
+      "source_rmse": {
+        "python": 0.06671182945465938,
+        "cpp": 0.05739899322811656,
+        "ratio": 1.1622473793143289,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": false,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "legacy_wall_rmse": {
+        "python": 0.0608278904751601,
+        "cpp": 0.06005010502067915,
+        "ratio": 1.012952274674842,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "duration_sim_s": {
+        "python": 20.800000000000004,
+        "cpp": 23.200000000000003,
+        "ratio": 0.8965517241379312,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "observations": {
+        "python": {
+          "trial": "python_pid_straight_03",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-release-grid-001",
+            "summary_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_straight_03/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789095677.0842512,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "3cad794b9a9a1a0f2a2b07d4a233a218cc7bb2ea8d6718760859c38364d86463",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_straight_03/events.jsonl",
+          "events_sha256": "aba67b97337a20c7e6c30e4158cd5e739bd56472e9c270fbed37dbed2e04381c",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.06671182945465938,
+            "integrated_squared_error_m2_s": 0.09256973833510124,
+            "sample_count": 209,
+            "raw_odom_count": 209,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 2.9,
+            "source_end_s": 23.7,
+            "source_span_s": 20.8,
+            "goal_source_s": 2.9000000000000004,
+            "acquisition_source_s": 23.700000000000003,
+            "start_offset_s": -4.440892098500626e-16,
+            "end_offset_s": -3.552713678800501e-15,
+            "start_coverage_gap_s": 4.440892098500626e-16,
+            "end_coverage_gap_s": 3.552713678800501e-15,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.12302836944960127,
+            "error_max_m": 0.1761625370129772,
+            "first_path_event_line": 1173,
+            "first_path_sha256": "1e619183445557d65b551e6c0299f9bb802c8bcb49808782f1331b6b51d4ba4e",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.0608278904751601,
+            "sample_count": 229,
+            "error_p95_m": 0.11596423190541749,
+            "error_max_m": 0.17556448583271905,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        },
+        "cpp": {
+          "trial": "cpp_pid_straight_03",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_03/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "dd71fb33ab2787b1e5a4576dc511a5c0b2a0db4db81378b0f00c8740d90785a8",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_03/events.jsonl",
+          "events_sha256": "5b7cf1fd9e38e1ae8bbf1e6b7f94b5670913e4243079bc65fd752e63ecd81b6f",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.05739899322811656,
+            "integrated_squared_error_m2_s": 0.0764357506275518,
+            "sample_count": 233,
+            "raw_odom_count": 233,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 3.0,
+            "source_end_s": 26.2,
+            "source_span_s": 23.2,
+            "goal_source_s": 3.0,
+            "acquisition_source_s": 26.200000000000003,
+            "start_offset_s": 0.0,
+            "end_offset_s": -3.552713678800501e-15,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 3.552713678800501e-15,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.12000470635477534,
+            "error_max_m": 0.17580181498991213,
+            "first_path_event_line": 186,
+            "first_path_sha256": "92ce6c84f95eeea81c1704ac2c9a49ae19843bc917ecff6ce6339731c76a105a",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.06005010502067915,
+            "sample_count": 234,
+            "error_p95_m": 0.11839170753534312,
+            "error_max_m": 0.1755846769710921,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "turn",
+      "repeat": 1,
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "source_rmse": {
+        "python": 0.09151078443955299,
+        "cpp": 0.09421815965392949,
+        "ratio": 0.9712648259706951,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "legacy_wall_rmse": {
+        "python": 0.09008375764800132,
+        "cpp": 0.10650134242880807,
+        "ratio": 0.8458462174617071,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "duration_sim_s": {
+        "python": 20.6,
+        "cpp": 22.6,
+        "ratio": 0.911504424778761,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "observations": {
+        "python": {
+          "trial": "python_pid_turn_01",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-release-grid-001",
+            "summary_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_turn_01/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789095677.0842512,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "9518481b78dc9c4535ae4f90486a5090afad1062c1aa192fc8fdbbdcbf605ba6",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_turn_01/events.jsonl",
+          "events_sha256": "2f1e8ec323643c9466791d176b813686534b7c44ed86fb987b827f3accd38974",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.09151078443955299,
+            "integrated_squared_error_m2_s": 0.17167158520921783,
+            "sample_count": 206,
+            "raw_odom_count": 206,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 2.9,
+            "source_end_s": 23.4,
+            "source_span_s": 20.5,
+            "goal_source_s": 2.9000000000000004,
+            "acquisition_source_s": 23.5,
+            "start_offset_s": -4.440892098500626e-16,
+            "end_offset_s": -0.10000000000000142,
+            "start_coverage_gap_s": 4.440892098500626e-16,
+            "end_coverage_gap_s": 0.10000000000000142,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.15967461083264303,
+            "error_max_m": 0.17612419494977852,
+            "first_path_event_line": 198,
+            "first_path_sha256": "db7fe7bd3d4fc99c0fb32c503822706b998c5a0d996a810ffcda764d25929afb",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.09008375764800132,
+            "sample_count": 214,
+            "error_p95_m": 0.13769840180706083,
+            "error_max_m": 0.17579297065125463,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        },
+        "cpp": {
+          "trial": "cpp_pid_turn_01",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_01/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "b3fce7bbb3765e88b5e453478869848d961d3a344d5c7f90fbdcf979034b6a9a",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_01/events.jsonl",
+          "events_sha256": "76a9b9645af80d264d0979449940051d2691bfd0dae7e16caa75780c3b8a5bd6",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.09421815965392949,
+            "integrated_squared_error_m2_s": 0.2006215923537576,
+            "sample_count": 227,
+            "raw_odom_count": 227,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 3.1,
+            "source_end_s": 25.7,
+            "source_span_s": 22.599999999999998,
+            "goal_source_s": 3.1,
+            "acquisition_source_s": 25.700000000000003,
+            "start_offset_s": 0.0,
+            "end_offset_s": -3.552713678800501e-15,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 3.552713678800501e-15,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.17687521165645137,
+            "error_max_m": 0.19374182432954967,
+            "first_path_event_line": 114,
+            "first_path_sha256": "2940d97cbb144b8795b67c933b4a5d7d54fe5b1eb55b4c14c81a85c367ead4e6",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.10650134242880807,
+            "sample_count": 240,
+            "error_p95_m": 0.18985443554573322,
+            "error_max_m": 0.19374182432954967,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "turn",
+      "repeat": 2,
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "source_rmse": {
+        "python": 0.08854192182761153,
+        "cpp": 0.11547769752406983,
+        "ratio": 0.7667447803863262,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "legacy_wall_rmse": {
+        "python": 0.08495078305557742,
+        "cpp": 0.12227657845549479,
+        "ratio": 0.6947428864023791,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "duration_sim_s": {
+        "python": 20.5,
+        "cpp": 23.1,
+        "ratio": 0.8874458874458874,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "observations": {
+        "python": {
+          "trial": "python_pid_turn_02",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-release-grid-001",
+            "summary_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_turn_02/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789095677.0842512,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "638785cfdb91429550c86b3355c35a823c8992b626ae233f0083fd510f17c4e8",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_turn_02/events.jsonl",
+          "events_sha256": "f30aa51dfd738e6d7e160c10a1a5e2d050373b0c7ee84bbb5fe78e26fd925c4e",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.08854192182761153,
+            "integrated_squared_error_m2_s": 0.16071327437900088,
+            "sample_count": 206,
+            "raw_odom_count": 206,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 2.6,
+            "source_end_s": 23.1,
+            "source_span_s": 20.5,
+            "goal_source_s": 2.6,
+            "acquisition_source_s": 23.1,
+            "start_offset_s": 0.0,
+            "end_offset_s": 0.0,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 0.0,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.1497413952267047,
+            "error_max_m": 0.17721770708272405,
+            "first_path_event_line": 269,
+            "first_path_sha256": "db7fe7bd3d4fc99c0fb32c503822706b998c5a0d996a810ffcda764d25929afb",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.08495078305557742,
+            "sample_count": 217,
+            "error_p95_m": 0.14229262940314769,
+            "error_max_m": 0.17721770708272405,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        },
+        "cpp": {
+          "trial": "cpp_pid_turn_02",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_02/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "feed24badb07d662ec568dc3fe96eb886e71ffabe478d9c1df2b3d5b96799db6",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_02/events.jsonl",
+          "events_sha256": "1cd34ae0d6b0fd24ff3401bb1e33f41de04fec3a380f6601266493aed315d4da",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.11547769752406983,
+            "integrated_squared_error_m2_s": 0.306707268385593,
+            "sample_count": 231,
+            "raw_odom_count": 231,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 2.6,
+            "source_end_s": 25.6,
+            "source_span_s": 23.0,
+            "goal_source_s": 2.6,
+            "acquisition_source_s": 25.700000000000003,
+            "start_offset_s": 0.0,
+            "end_offset_s": -0.10000000000000142,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 0.10000000000000142,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.2040754637599136,
+            "error_max_m": 0.22473984873987618,
+            "first_path_event_line": 185,
+            "first_path_sha256": "2940d97cbb144b8795b67c933b4a5d7d54fe5b1eb55b4c14c81a85c367ead4e6",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.12227657845549479,
+            "sample_count": 234,
+            "error_p95_m": 0.22176719702420655,
+            "error_max_m": 0.22473984873987618,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "turn",
+      "repeat": 3,
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "source_rmse": {
+        "python": 0.07409568729481635,
+        "cpp": 0.07901091859200489,
+        "ratio": 0.9377904802933665,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "legacy_wall_rmse": {
+        "python": 0.06841247080281135,
+        "cpp": 0.0846425405653086,
+        "ratio": 0.8082516231897077,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "duration_sim_s": {
+        "python": 20.700000000000003,
+        "cpp": 23.400000000000002,
+        "ratio": 0.8846153846153847,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "observations": {
+        "python": {
+          "trial": "python_pid_turn_03",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-release-grid-001",
+            "summary_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_turn_03/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789095677.0842512,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "82a5c2dbc8de8753e39611edaa03adcd7702369ddd7c3f4fe5d60d6e040633b4",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_turn_03/events.jsonl",
+          "events_sha256": "eded8471210b47873d901df0f933ec44f48a2975b0f894f00b423f9a2fc2655a",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.07409568729481635,
+            "integrated_squared_error_m2_s": 0.11309752003923891,
+            "sample_count": 207,
+            "raw_odom_count": 207,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 2.5,
+            "source_end_s": 23.1,
+            "source_span_s": 20.6,
+            "goal_source_s": 2.5,
+            "acquisition_source_s": 23.200000000000003,
+            "start_offset_s": 0.0,
+            "end_offset_s": -0.10000000000000142,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 0.10000000000000142,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.15741602145805342,
+            "error_max_m": 0.1771515375313505,
+            "first_path_event_line": 269,
+            "first_path_sha256": "db7fe7bd3d4fc99c0fb32c503822706b998c5a0d996a810ffcda764d25929afb",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.06841247080281135,
+            "sample_count": 214,
+            "error_p95_m": 0.10358273572407128,
+            "error_max_m": 0.1771515375313505,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        },
+        "cpp": {
+          "trial": "cpp_pid_turn_03",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_03/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "5d16a65ce15ea8701061eac7df987505515e276c0dcd80c236fd9e851d631dda",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_03/events.jsonl",
+          "events_sha256": "3bca3346477b78170c3859b1739d02942e443e2d0ac44b813e6fa2d4ed584f9d",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.07901091859200489,
+            "integrated_squared_error_m2_s": 0.1460797710080067,
+            "sample_count": 235,
+            "raw_odom_count": 235,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 3.0,
+            "source_end_s": 26.4,
+            "source_span_s": 23.4,
+            "goal_source_s": 3.0,
+            "acquisition_source_s": 26.400000000000002,
+            "start_offset_s": 0.0,
+            "end_offset_s": -3.552713678800501e-15,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 3.552713678800501e-15,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.16886499414409784,
+            "error_max_m": 0.1758412556114327,
+            "first_path_event_line": 189,
+            "first_path_sha256": "2940d97cbb144b8795b67c933b4a5d7d54fe5b1eb55b4c14c81a85c367ead4e6",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.0846425405653086,
+            "sample_count": 248,
+            "error_p95_m": 0.1682859145237805,
+            "error_max_m": 0.1755430113439378,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    }
+  ],
+  "preview25_pairs": [
+    {
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "repeat": 1,
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "source_rmse": {
+        "python": 0.1926592692382672,
+        "cpp": 0.48812363919388824,
+        "ratio": 0.3946935853310328,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "legacy_wall_rmse": {
+        "python": 0.18814935065415064,
+        "cpp": 0.47340155887704577,
+        "ratio": 0.39744134155463934,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "duration_sim_s": {
+        "python": 22.0,
+        "cpp": 30.4,
+        "ratio": 0.7236842105263158,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "observations": {
+        "python": {
+          "trial": "python_pid_single_obstacle_01",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-preview25-obstacle-candidate-001",
+            "summary_path": "/home/usv/usv_migration/results/python-preview25-obstacle-candidate-001/python_pid_single_obstacle_01/summary.json",
+            "source_order": 2,
+            "created_unix_s": 1789097218.383805,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "40258fa105aac835d8696ba497011d4f6f465bc35019a89ce9f20086dac78931",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-preview25-obstacle-candidate-001/python_pid_single_obstacle_01/events.jsonl",
+          "events_sha256": "db6d9a540e4c89c432d32ddfe43d18a520271d28a3dcf152692e8805a668127f",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.1926592692382672,
+            "integrated_squared_error_m2_s": 0.8165870685153088,
+            "sample_count": 221,
+            "raw_odom_count": 221,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 5.9,
+            "source_end_s": 27.9,
+            "source_span_s": 22.0,
+            "goal_source_s": 5.9,
+            "acquisition_source_s": 27.900000000000002,
+            "start_offset_s": 0.0,
+            "end_offset_s": -3.552713678800501e-15,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 3.552713678800501e-15,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.43170861557315676,
+            "error_max_m": 0.5008865097111332,
+            "first_path_event_line": 315,
+            "first_path_sha256": "7f778baed38617908de2d4b86b56e63a1c8957ec922f5dfb92ec09e9c9f49d0b",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.18814935065415064,
+            "sample_count": 229,
+            "error_p95_m": 0.4288387198519849,
+            "error_max_m": 0.5008865097111332,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        },
+        "cpp": {
+          "trial": "cpp_pid_single_obstacle_01",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_01/summary.json",
+            "source_order": 3,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "73fe8f867ef414a64145a63baca216b09e20f1343279df55edd095c105aef657",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_01/events.jsonl",
+          "events_sha256": "89f7033299c2512c8d6a021201e69933c836bebafd1ee4e82d9d8e52315a6c2a",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.48812363919388824,
+            "integrated_squared_error_m2_s": 7.24324648905251,
+            "sample_count": 305,
+            "raw_odom_count": 305,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 5.6,
+            "source_end_s": 36.0,
+            "source_span_s": 30.4,
+            "goal_source_s": 5.6000000000000005,
+            "acquisition_source_s": 36.0,
+            "start_offset_s": -8.881784197001252e-16,
+            "end_offset_s": 0.0,
+            "start_coverage_gap_s": 8.881784197001252e-16,
+            "end_coverage_gap_s": 0.0,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.8624685157272349,
+            "error_max_m": 0.9217161967861981,
+            "first_path_event_line": 213,
+            "first_path_sha256": "8b1f7fa2a7e57249da3a1af1bcaec0275bdc7601c31348a527d79eefa44dad58",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.47340155887704577,
+            "sample_count": 317,
+            "error_p95_m": 0.8624685157272349,
+            "error_max_m": 0.9217161967861981,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 1,
+      "comparable": true,
+      "passed": false,
+      "reasons": [],
+      "source_rmse": {
+        "python": 0.063163174554043,
+        "cpp": 0.056497946901014624,
+        "ratio": 1.117972917931088,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": false,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "legacy_wall_rmse": {
+        "python": 0.06039865434504019,
+        "cpp": 0.05505332370087926,
+        "ratio": 1.0970936954361497,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "duration_sim_s": {
+        "python": 20.200000000000003,
+        "cpp": 23.5,
+        "ratio": 0.8595744680851065,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "observations": {
+        "python": {
+          "trial": "python_pid_straight_01",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-preview25-straight-candidate-001",
+            "summary_path": "/home/usv/usv_migration/results/python-preview25-straight-candidate-001/python_pid_straight_01/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789097103.4251513,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "734f2b059ef88e5ef09e3887817ad5cf4853f66327df37c7ebc67bb0d88b4df6",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-preview25-straight-candidate-001/python_pid_straight_01/events.jsonl",
+          "events_sha256": "07bb3abb7dd4a0b457253bc77c927116f91858d76ade75ad639b765a8306f6a6",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.063163174554043,
+            "integrated_squared_error_m2_s": 0.08019069105686455,
+            "sample_count": 202,
+            "raw_odom_count": 202,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 2.9,
+            "source_end_s": 23.0,
+            "source_span_s": 20.1,
+            "goal_source_s": 2.9000000000000004,
+            "acquisition_source_s": 23.1,
+            "start_offset_s": -4.440892098500626e-16,
+            "end_offset_s": -0.10000000000000142,
+            "start_coverage_gap_s": 4.440892098500626e-16,
+            "end_coverage_gap_s": 0.10000000000000142,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.12228601925736982,
+            "error_max_m": 0.17629928500973974,
+            "first_path_event_line": 279,
+            "first_path_sha256": "1e619183445557d65b551e6c0299f9bb802c8bcb49808782f1331b6b51d4ba4e",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.06039865434504019,
+            "sample_count": 195,
+            "error_p95_m": 0.12012861260659413,
+            "error_max_m": 0.17619632106944239,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        },
+        "cpp": {
+          "trial": "cpp_pid_straight_01",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_01/summary.json",
+            "source_order": 3,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "0dea73b97c1ffda8b249fa65356d866375f5637a762db836a7a2f908765b260f",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_01/events.jsonl",
+          "events_sha256": "8457e5670d0b2bd5c36955fa3fbfb662bd5814698ef8c67b72e5643134f41fe1",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.056497946901014624,
+            "integrated_squared_error_m2_s": 0.07469322129429892,
+            "sample_count": 235,
+            "raw_odom_count": 235,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 2.9,
+            "source_end_s": 26.3,
+            "source_span_s": 23.400000000000002,
+            "goal_source_s": 2.9000000000000004,
+            "acquisition_source_s": 26.400000000000002,
+            "start_offset_s": -4.440892098500626e-16,
+            "end_offset_s": -0.10000000000000142,
+            "start_coverage_gap_s": 4.440892098500626e-16,
+            "end_coverage_gap_s": 0.10000000000000142,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.11913281199320558,
+            "error_max_m": 0.17601600147192067,
+            "first_path_event_line": 111,
+            "first_path_sha256": "92ce6c84f95eeea81c1704ac2c9a49ae19843bc917ecff6ce6339731c76a105a",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.05505332370087926,
+            "sample_count": 245,
+            "error_p95_m": 0.1166824749087656,
+            "error_max_m": 0.1758127839061492,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 2,
+      "comparable": true,
+      "passed": false,
+      "reasons": [],
+      "source_rmse": {
+        "python": 0.06387338965128994,
+        "cpp": 0.05604783648137904,
+        "ratio": 1.1396227519417421,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": false,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "legacy_wall_rmse": {
+        "python": 0.06165297942193488,
+        "cpp": 0.06445820968450416,
+        "ratio": 0.9564798607299255,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "duration_sim_s": {
+        "python": 20.300000000000004,
+        "cpp": 20.8,
+        "ratio": 0.9759615384615387,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "observations": {
+        "python": {
+          "trial": "python_pid_straight_02",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-preview25-straight-candidate-001",
+            "summary_path": "/home/usv/usv_migration/results/python-preview25-straight-candidate-001/python_pid_straight_02/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789097103.4251513,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "f889799abc156ef27bb31f61b9fcd4809708746739be1024df7b066bcd4d8cd4",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-preview25-straight-candidate-001/python_pid_straight_02/events.jsonl",
+          "events_sha256": "eee3d644e44c9987ac78695b1db4113a75452f44e0ad4528d2d333e295a19a1e",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.06387338965128994,
+            "integrated_squared_error_m2_s": 0.08282014108257392,
+            "sample_count": 204,
+            "raw_odom_count": 204,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 2.9,
+            "source_end_s": 23.2,
+            "source_span_s": 20.3,
+            "goal_source_s": 2.9000000000000004,
+            "acquisition_source_s": 23.200000000000003,
+            "start_offset_s": -4.440892098500626e-16,
+            "end_offset_s": -3.552713678800501e-15,
+            "start_coverage_gap_s": 4.440892098500626e-16,
+            "end_coverage_gap_s": 3.552713678800501e-15,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.1223781634766965,
+            "error_max_m": 0.17621986427653816,
+            "first_path_event_line": 393,
+            "first_path_sha256": "1e619183445557d65b551e6c0299f9bb802c8bcb49808782f1331b6b51d4ba4e",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.06165297942193488,
+            "sample_count": 194,
+            "error_p95_m": 0.12023254784417325,
+            "error_max_m": 0.1761758025370031,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        },
+        "cpp": {
+          "trial": "cpp_pid_straight_02",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_02/summary.json",
+            "source_order": 3,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "60728577cc2c924b44c9a5269122a9b547f8ae6bac95fdce60e9aaa57ee53e9f",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_02/events.jsonl",
+          "events_sha256": "72719e569a71c695ef489ac39ee2930ef40425ce00b6d62cb7de5eb1ee638de7",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.05604783648137904,
+            "integrated_squared_error_m2_s": 0.06534028746426278,
+            "sample_count": 209,
+            "raw_odom_count": 209,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 3.0,
+            "source_end_s": 23.8,
+            "source_span_s": 20.8,
+            "goal_source_s": 3.0,
+            "acquisition_source_s": 23.8,
+            "start_offset_s": 0.0,
+            "end_offset_s": 0.0,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 0.0,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.12030093634123595,
+            "error_max_m": 0.17599640760696525,
+            "first_path_event_line": 238,
+            "first_path_sha256": "92ce6c84f95eeea81c1704ac2c9a49ae19843bc917ecff6ce6339731c76a105a",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.06445820968450416,
+            "sample_count": 211,
+            "error_p95_m": 0.1315549182489151,
+            "error_max_m": 0.17473683308682883,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 3,
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "source_rmse": {
+        "python": 0.062859457708257,
+        "cpp": 0.05739899322811656,
+        "ratio": 1.0951317117782766,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "legacy_wall_rmse": {
+        "python": 0.053809050393123704,
+        "cpp": 0.06005010502067915,
+        "ratio": 0.8960692137772907,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "duration_sim_s": {
+        "python": 20.3,
+        "cpp": 23.200000000000003,
+        "ratio": 0.8749999999999999,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "observations": {
+        "python": {
+          "trial": "python_pid_straight_03",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-preview25-straight-candidate-001",
+            "summary_path": "/home/usv/usv_migration/results/python-preview25-straight-candidate-001/python_pid_straight_03/summary.json",
+            "source_order": 0,
+            "created_unix_s": 1789097103.4251513,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "44926c682cf4562a5cdb5b6c6acd97bd0954e7ee44ea7d0ee87609bd212f4d25",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-preview25-straight-candidate-001/python_pid_straight_03/events.jsonl",
+          "events_sha256": "8cd90accdb0d2d0ab3b764bfd42c63644f86cdc7919bc0099919696c877acc29",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.062859457708257,
+            "integrated_squared_error_m2_s": 0.07981649075219822,
+            "sample_count": 203,
+            "raw_odom_count": 203,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 2.7,
+            "source_end_s": 22.9,
+            "source_span_s": 20.2,
+            "goal_source_s": 2.7,
+            "acquisition_source_s": 23.0,
+            "start_offset_s": 0.0,
+            "end_offset_s": -0.10000000000000142,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 0.10000000000000142,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.12201236425481632,
+            "error_max_m": 0.17661726561016905,
+            "first_path_event_line": 271,
+            "first_path_sha256": "1e619183445557d65b551e6c0299f9bb802c8bcb49808782f1331b6b51d4ba4e",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.053809050393123704,
+            "sample_count": 240,
+            "error_p95_m": 0.11399908280688109,
+            "error_max_m": 0.17661726561016905,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        },
+        "cpp": {
+          "trial": "cpp_pid_straight_03",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_03/summary.json",
+            "source_order": 3,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "dd71fb33ab2787b1e5a4576dc511a5c0b2a0db4db81378b0f00c8740d90785a8",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_03/events.jsonl",
+          "events_sha256": "5b7cf1fd9e38e1ae8bbf1e6b7f94b5670913e4243079bc65fd752e63ecd81b6f",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.05739899322811656,
+            "integrated_squared_error_m2_s": 0.0764357506275518,
+            "sample_count": 233,
+            "raw_odom_count": 233,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 3.0,
+            "source_end_s": 26.2,
+            "source_span_s": 23.2,
+            "goal_source_s": 3.0,
+            "acquisition_source_s": 26.200000000000003,
+            "start_offset_s": 0.0,
+            "end_offset_s": -3.552713678800501e-15,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 3.552713678800501e-15,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.12000470635477534,
+            "error_max_m": 0.17580181498991213,
+            "first_path_event_line": 186,
+            "first_path_sha256": "92ce6c84f95eeea81c1704ac2c9a49ae19843bc917ecff6ce6339731c76a105a",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.06005010502067915,
+            "sample_count": 234,
+            "error_p95_m": 0.11839170753534312,
+            "error_max_m": 0.1755846769710921,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "turn",
+      "repeat": 1,
+      "comparable": true,
+      "passed": false,
+      "reasons": [],
+      "source_rmse": {
+        "python": 0.10502622707282491,
+        "cpp": 0.09421815965392949,
+        "ratio": 1.1147132087762517,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": false,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "legacy_wall_rmse": {
+        "python": 0.1004838567536164,
+        "cpp": 0.10650134242880807,
+        "ratio": 0.94349849928686,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "duration_sim_s": {
+        "python": 19.9,
+        "cpp": 22.6,
+        "ratio": 0.8805309734513274,
+        "limit": 1.1,
+        "zero_baseline_atol": 1e-06,
+        "comparable": true,
+        "passed": true,
+        "reason": "",
+        "method": "python_divided_by_cpp"
+      },
+      "observations": {
+        "python": {
+          "trial": "python_pid_turn_01",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/python-preview25-turn-candidate-001",
+            "summary_path": "/home/usv/usv_migration/results/python-preview25-turn-candidate-001/python_pid_turn_01/summary.json",
+            "source_order": 1,
+            "created_unix_s": 1789097190.5568743,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "7132a4ac90bf618a5297b058aff99f05e940eb9a773eb7f6f080fde043c4ee7d",
+            "manifest_mode": "live",
+            "git_commit": "e38183218fce7044e686a0f697ed13f456f49039"
+          },
+          "events_path": "/home/usv/usv_migration/results/python-preview25-turn-candidate-001/python_pid_turn_01/events.jsonl",
+          "events_sha256": "4b8fc8d1ca79ecbc1ea016929c0b6653cff1f3ec55320ebb9658c01c5181ceb8",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.10502622707282491,
+            "integrated_squared_error_m2_s": 0.21950711662573635,
+            "sample_count": 200,
+            "raw_odom_count": 200,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 2.9,
+            "source_end_s": 22.8,
+            "source_span_s": 19.900000000000002,
+            "goal_source_s": 2.9000000000000004,
+            "acquisition_source_s": 22.8,
+            "start_offset_s": -4.440892098500626e-16,
+            "end_offset_s": 0.0,
+            "start_coverage_gap_s": 4.440892098500626e-16,
+            "end_coverage_gap_s": 0.0,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.1762234476987386,
+            "error_max_m": 0.19108305609720233,
+            "first_path_event_line": 278,
+            "first_path_sha256": "db7fe7bd3d4fc99c0fb32c503822706b998c5a0d996a810ffcda764d25929afb",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.1004838567536164,
+            "sample_count": 206,
+            "error_p95_m": 0.17619391478731317,
+            "error_max_m": 0.19108305609720233,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        },
+        "cpp": {
+          "trial": "cpp_pid_turn_01",
+          "source": {
+            "run_directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+            "summary_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_01/summary.json",
+            "source_order": 3,
+            "created_unix_s": 1789091953.994535,
+            "latest_basis": "manifest.created_unix_s",
+            "summary_sha256": "b3fce7bbb3765e88b5e453478869848d961d3a344d5c7f90fbdcf979034b6a9a",
+            "manifest_mode": "live",
+            "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+          },
+          "events_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_01/events.jsonl",
+          "events_sha256": "76a9b9645af80d264d0979449940051d2691bfd0dae7e16caa75780c3b8a5bd6",
+          "source_score": {
+            "metric": "source_time_trapezoid",
+            "status": "valid",
+            "reasons": [],
+            "rmse_m": 0.09421815965392949,
+            "integrated_squared_error_m2_s": 0.2006215923537576,
+            "sample_count": 227,
+            "raw_odom_count": 227,
+            "duplicate_stamp_count": 0,
+            "source_start_s": 3.1,
+            "source_end_s": 25.7,
+            "source_span_s": 22.599999999999998,
+            "goal_source_s": 3.1,
+            "acquisition_source_s": 25.700000000000003,
+            "start_offset_s": 0.0,
+            "end_offset_s": -3.552713678800501e-15,
+            "start_coverage_gap_s": 0.0,
+            "end_coverage_gap_s": 3.552713678800501e-15,
+            "max_source_gap_s": 0.10000000000000142,
+            "max_allowed_source_gap_s": 0.5,
+            "max_allowed_boundary_gap_s": 0.5,
+            "error_p95_m": 0.17687521165645137,
+            "error_max_m": 0.19374182432954967,
+            "first_path_event_line": 114,
+            "first_path_sha256": "2940d97cbb144b8795b67c933b4a5d7d54fe5b1eb55b4c14c81a85c367ead4e6",
+            "frame_contract": "otter_fake_localization",
+            "path_frame": "otter/map",
+            "odom_frames": [
+              "otter/odom"
+            ],
+            "end_event": "acquisition_finished",
+            "boundary_extrapolation": false,
+            "percentile_population": "nearest-rank P95 of unique observed source-pose errors; not time-weighted or continuous extrema"
+          },
+          "legacy_score": {
+            "metric": "legacy_wall",
+            "status": "valid",
+            "rmse_m": 0.10650134242880807,
+            "sample_count": 240,
+            "error_p95_m": 0.18985443554573322,
+            "error_max_m": 0.19374182432954967,
+            "definition": "Unchanged summary cross_track_initial_m.rms of wall-loop latest-pose samples, including repeated source stamps."
+          }
+        }
+      }
+    }
+  ],
+  "decomposition_definition": "Along-route progress is x-23.125 for straight, -y-10.125 for turn. Assign each complete observed source-time trapezoid to the bin of its midpoint progress (<3,3..9,>=9m). All intervals are retained, including tiny negative initial progress; energies sum exactly. Spatial boundary assignment is a diagnostic discretization, not a new acceptance score.",
+  "reference_definition": "Reconstruct preview pose from latest received published trajectory and its 0.5s pose spacing. Python query is state-source age plus configured preview; C++ uses fixed relative preview and ignores its erroneous published absolute header. This is not proof of which asynchronous callback/reference actually produced each command.",
+  "source_code": {
+    "scripts/validation/compare_results.py": {
+      "path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/scripts/validation/compare_results.py",
+      "sha256": "4daf18ab408e17e9354b8a6abc04bed205ab3364e8b59e096b4983c1cb9c6e27"
+    },
+    "scripts/validation/tracking_metrics.py": {
+      "path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/scripts/validation/tracking_metrics.py",
+      "sha256": "43a0c27db9ad40f886dfe25469371ee7efd265f410dc439adb69e64011254ad7"
+    },
+    "scripts/validation/metrics.py": {
+      "path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/scripts/validation/metrics.py",
+      "sha256": "8667fd76511f750e023451bf5ff5c7e51b844448531b9aa38c0d74637ebc74d7"
+    }
+  },
+  "script_sha256": "e84949e30c1d09f7edc3b2803cd3eb706553c60f6bca66209d83e88107a751ea",
+  "decompositions": {
+    "straight": {
+      "prefix_paths_identical": true,
+      "preview25": {
+        "trial": "python_pid_straight_02",
+        "directory": "/home/usv/usv_migration/results/python-preview25-straight-candidate-001/python_pid_straight_02",
+        "events_sha256": "eee3d644e44c9987ac78695b1db4113a75452f44e0ad4528d2d333e295a19a1e",
+        "summary_sha256": "f889799abc156ef27bb31f61b9fcd4809708746739be1024df7b066bcd4d8cd4",
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "preview_s": 2.5,
+        "first_path_event_line": 393,
+        "first_path_last3": [
+          [
+            34.25,
+            -10.25
+          ],
+          [
+            34.75,
+            -10.25
+          ],
+          [
+            35.125,
+            -10.125
+          ]
+        ],
+        "source_duration_s": 20.3,
+        "integrated_error_m2_s": 0.08282014108257392,
+        "source_rmse_m": 0.06387338965128994,
+        "bins": [
+          {
+            "along_route_interval_m": [
+              null,
+              3.0
+            ],
+            "source_duration_s": 4.699999999999999,
+            "error_energy_m2_s": 0.05835910853071151,
+            "source_intervals": 47,
+            "local_rmse_m": 0.11143083775274709,
+            "contribution_to_full_mse_m2": 0.0028748329325473648,
+            "mean_speed": 0.6429932336974566,
+            "mean_heading": -0.019291371804469364,
+            "mean_lateral": -10.14838339747352
+          },
+          {
+            "along_route_interval_m": [
+              3.0,
+              9.0
+            ],
+            "source_duration_s": 9.500000000000002,
+            "error_energy_m2_s": 0.01129506135809891,
+            "source_intervals": 95,
+            "local_rmse_m": 0.034481209769500636,
+            "contribution_to_full_mse_m2": 0.0005564069634531483,
+            "mean_speed": 0.6298888713941866,
+            "mean_heading": -0.007170738540675852,
+            "mean_lateral": -10.220304450865385
+          },
+          {
+            "along_route_interval_m": [
+              9.0,
+              null
+            ],
+            "source_duration_s": 6.099999999999998,
+            "error_energy_m2_s": 0.01316597119376349,
+            "source_intervals": 61,
+            "local_rmse_m": 0.0464581094471552,
+            "contribution_to_full_mse_m2": 0.0006485700095449995,
+            "mean_speed": 0.3808569739117134,
+            "mean_heading": 0.02134566206636156,
+            "mean_lateral": -10.210920835506382
+          }
+        ],
+        "checkpoints": [
+          {
+            "target_along_route_m": 1.0,
+            "actual_along_route_m": 0.9692876113876032,
+            "source_time_s": 4.8,
+            "pose": [
+              24.094287611387603,
+              -10.141456069954126,
+              -0.024694784101185755
+            ],
+            "speed_m_s": 0.7472511765226768,
+            "error_m": 0.10854393004587415,
+            "last_received_reference_query_s": 2.7,
+            "last_received_reference_preview_pose": [
+              26.276845463895857,
+              -10.259944515871357,
+              -0.016991560777857906
+            ],
+            "reference_receipt_age_s": 0.16229118799674325
+          },
+          {
+            "target_along_route_m": 3.0,
+            "actual_along_route_m": 3.0199121535125144,
+            "source_time_s": 7.6,
+            "pose": [
+              26.144912153512514,
+              -10.180991242119756,
+              -0.0047183511765170666
+            ],
+            "speed_m_s": 0.7296606754892221,
+            "error_m": 0.06900875788024408,
+            "last_received_reference_query_s": 2.6999999999999993,
+            "last_received_reference_preview_pose": [
+              28.273142731553268,
+              -10.249244233928897,
+              -0.018896142864549326
+            ],
+            "reference_receipt_age_s": 0.11006821300543379
+          },
+          {
+            "target_along_route_m": 6.0,
+            "actual_along_route_m": 6.027734004262168,
+            "source_time_s": 11.9,
+            "pose": [
+              29.152734004262168,
+              -10.220923625880884,
+              -0.005950110391376407
+            ],
+            "speed_m_s": 0.6551740333276029,
+            "error_m": 0.02907637411911601,
+            "last_received_reference_query_s": 2.5999999999999996,
+            "last_received_reference_preview_pose": [
+              31.151302378140613,
+              -10.247892685550616,
+              -0.009355695916331452
+            ],
+            "reference_receipt_age_s": 0.054730679010390304
+          },
+          {
+            "target_along_route_m": 9.0,
+            "actual_along_route_m": 9.003346955827233,
+            "source_time_s": 17.1,
+            "pose": [
+              32.12834695582723,
+              -10.24129409696345,
+              0.009570417994931132
+            ],
+            "speed_m_s": 0.45750969807394154,
+            "error_m": 0.0087059030365495,
+            "last_received_reference_query_s": 2.6000000000000014,
+            "last_received_reference_preview_pose": [
+              33.81099396774693,
+              -10.241406216500467,
+              0.02998483753918757
+            ],
+            "reference_receipt_age_s": 0.039131990997702815
+          },
+          {
+            "target_along_route_m": 10.0,
+            "actual_along_route_m": 9.98680522162477,
+            "source_time_s": 19.7,
+            "pose": [
+              33.11180522162477,
+              -10.226296087527123,
+              0.055353688578201186
+            ],
+            "speed_m_s": 0.5700332290550216,
+            "error_m": 0.023703912472877064,
+            "last_received_reference_query_s": 2.599999999999998,
+            "last_received_reference_preview_pose": [
+              34.15678890754127,
+              -10.2032566516652,
+              0.05226178461524
+            ],
+            "reference_receipt_age_s": 0.07610114800627343
+          },
+          {
+            "target_along_route_m": 11.0,
+            "actual_along_route_m": 11.015321563816322,
+            "source_time_s": 21.7,
+            "pose": [
+              34.14032156381632,
+              -10.184411568812832,
+              -0.010551787660776597
+            ],
+            "speed_m_s": 0.30036537701801064,
+            "error_m": 0.06558843118716773,
+            "last_received_reference_query_s": 2.599999999999998,
+            "last_received_reference_preview_pose": [
+              34.14572730658949,
+              -10.186999707278689,
+              -0.0055106829170026295
+            ],
+            "reference_receipt_age_s": 0.04679857799783349
+          }
+        ],
+        "counterfactual": {
+          "definition": "Only rescore these exact observed poses after replacing the scoring path endpoint; not a controller/LOS rollout or simulation.",
+          "path_last3": [
+            [
+              34.25,
+              -10.25
+            ],
+            [
+              34.75,
+              -10.25
+            ],
+            [
+              35.25,
+              -10.25
+            ]
+          ],
+          "source_rmse_m": 0.06387338965128994,
+          "integrated_error_m2_s": 0.08282014108257392,
+          "maximum_observed_error_change_m": 0.0
+        },
+        "first_requested_goal_disk_observation": {
+          "source_time_s": 21.7,
+          "pose": [
+            34.14032156381632,
+            -10.184411568812832,
+            -0.010551787660776597
+          ],
+          "speed_m_s": 0.30036537701801064
+        },
+        "last_observation": {
+          "source_time_s": 23.2,
+          "pose": [
+            34.451199902689325,
+            -10.172545605142568,
+            -0.01829841436821297
+          ],
+          "requested_goal_distance_m": 0.6754755034079682,
+          "speed_m_s": 0.13496071854937647
+        }
+      },
+      "cpp": {
+        "trial": "cpp_pid_straight_02",
+        "directory": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_02",
+        "events_sha256": "72719e569a71c695ef489ac39ee2930ef40425ce00b6d62cb7de5eb1ee638de7",
+        "summary_sha256": "60728577cc2c924b44c9a5269122a9b547f8ae6bac95fdce60e9aaa57ee53e9f",
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "preview_s": 3.0,
+        "first_path_event_line": 238,
+        "first_path_last3": [
+          [
+            34.25,
+            -10.25
+          ],
+          [
+            34.75,
+            -10.25
+          ],
+          [
+            35.25,
+            -10.25
+          ]
+        ],
+        "source_duration_s": 20.8,
+        "integrated_error_m2_s": 0.06534028746426278,
+        "source_rmse_m": 0.05604783648137904,
+        "bins": [
+          {
+            "along_route_interval_m": [
+              null,
+              3.0
+            ],
+            "source_duration_s": 3.5,
+            "error_energy_m2_s": 0.044403659288001135,
+            "source_intervals": 35,
+            "local_rmse_m": 0.11263551747371588,
+            "contribution_to_full_mse_m2": 0.0021347913119231315,
+            "mean_speed": 0.8596547876753056,
+            "mean_heading": -0.018654239999166922,
+            "mean_lateral": -10.142639473765072
+          },
+          {
+            "along_route_interval_m": [
+              3.0,
+              9.0
+            ],
+            "source_duration_s": 10.5,
+            "error_energy_m2_s": 0.01992096892511012,
+            "source_intervals": 105,
+            "local_rmse_m": 0.04355726272075385,
+            "contribution_to_full_mse_m2": 0.0009577388906302942,
+            "mean_speed": 0.5717374792297404,
+            "mean_heading": -0.007186658446754141,
+            "mean_lateral": -10.210352051397132
+          },
+          {
+            "along_route_interval_m": [
+              9.0,
+              null
+            ],
+            "source_duration_s": 6.800000000000001,
+            "error_energy_m2_s": 0.0010156592511514867,
+            "source_intervals": 68,
+            "local_rmse_m": 0.012221360586330025,
+            "contribution_to_full_mse_m2": 4.882977168997532e-05,
+            "mean_speed": 0.3609214465689503,
+            "mean_heading": -0.007875312795195336,
+            "mean_lateral": -10.238877569602709
+          }
+        ],
+        "checkpoints": [
+          {
+            "target_along_route_m": 1.0,
+            "actual_along_route_m": 0.9833261597873175,
+            "source_time_s": 4.3,
+            "pose": [
+              24.108326159787318,
+              -10.1342386309108,
+              -0.034619848108381306
+            ],
+            "speed_m_s": 0.9486508373368618,
+            "error_m": 0.1157613690891992,
+            "last_received_reference_query_s": 3.0,
+            "last_received_reference_preview_pose": [
+              26.6095180083265,
+              -10.264865380663428,
+              -0.017150975211407626
+            ],
+            "reference_receipt_age_s": 0.09965000201191287
+          },
+          {
+            "target_along_route_m": 3.0,
+            "actual_along_route_m": 3.0083854820391878,
+            "source_time_s": 6.5,
+            "pose": [
+              26.133385482039188,
+              -10.167115321166836,
+              -0.020370173379925766
+            ],
+            "speed_m_s": 0.860939614186378,
+            "error_m": 0.08288467883316386,
+            "last_received_reference_query_s": 3.0,
+            "last_received_reference_preview_pose": [
+              28.645225369632605,
+              -10.260018334545478,
+              -0.013243817863068053
+            ],
+            "reference_receipt_age_s": 0.09929255199676845
+          },
+          {
+            "target_along_route_m": 6.0,
+            "actual_along_route_m": 5.975444862404942,
+            "source_time_s": 10.4,
+            "pose": [
+              29.10044486240494,
+              -10.208359543615886,
+              -0.009467858983200204
+            ],
+            "speed_m_s": 0.6592943230215035,
+            "error_m": 0.04164045638411373,
+            "last_received_reference_query_s": 3.0,
+            "last_received_reference_preview_pose": [
+              31.633828642917464,
+              -10.254837241059532,
+              -0.00700391888991847
+            ],
+            "reference_receipt_age_s": 0.09945279199746437
+          },
+          {
+            "target_along_route_m": 9.0,
+            "actual_along_route_m": 9.010892478204418,
+            "source_time_s": 17.0,
+            "pose": [
+              32.13589247820442,
+              -10.230431869327337,
+              -0.005318517922227451
+            ],
+            "speed_m_s": 0.3359107671102926,
+            "error_m": 0.019568130672663386,
+            "last_received_reference_query_s": 3.0,
+            "last_received_reference_preview_pose": [
+              34.20232617013329,
+              -10.250067530653867,
+              -0.006292563723358402
+            ],
+            "reference_receipt_age_s": 0.09893527800159063
+          },
+          {
+            "target_along_route_m": 10.0,
+            "actual_along_route_m": 10.003557626433775,
+            "source_time_s": 19.8,
+            "pose": [
+              33.128557626433775,
+              -10.237606301393617,
+              -0.007278983624858194
+            ],
+            "speed_m_s": 0.45063138353485377,
+            "error_m": 0.012393698606382841,
+            "last_received_reference_query_s": 3.0,
+            "last_received_reference_preview_pose": [
+              34.18528987138005,
+              -10.24667882103142,
+              -0.007624060924983134
+            ],
+            "reference_receipt_age_s": 0.09944256600283552
+          },
+          {
+            "target_along_route_m": 11.0,
+            "actual_along_route_m": 11.00569389183341,
+            "source_time_s": 21.9,
+            "pose": [
+              34.13069389183341,
+              -10.243895845903904,
+              -0.009756416783149282
+            ],
+            "speed_m_s": 0.3824479208853042,
+            "error_m": 0.006104154096096437,
+            "last_received_reference_query_s": 3.0,
+            "last_received_reference_preview_pose": [
+              34.450565920432176,
+              -10.245543657193474,
+              -0.007672318229987152
+            ],
+            "reference_receipt_age_s": 0.5999444449989824
+          }
+        ],
+        "counterfactual": {
+          "definition": "Only rescore these exact observed poses after replacing the scoring path endpoint; not a controller/LOS rollout or simulation.",
+          "path_last3": [
+            [
+              34.25,
+              -10.25
+            ],
+            [
+              34.75,
+              -10.25
+            ],
+            [
+              35.25,
+              -10.25
+            ]
+          ],
+          "source_rmse_m": 0.05604783648137904,
+          "integrated_error_m2_s": 0.06534028746426278,
+          "maximum_observed_error_change_m": 0.0
+        },
+        "first_requested_goal_disk_observation": {
+          "source_time_s": 22.0,
+          "pose": [
+            34.167614253149615,
+            -10.244325395507618,
+            -0.009886402974174193
+          ],
+          "speed_m_s": 0.3577923278346955
+        },
+        "last_observation": {
+          "source_time_s": 23.8,
+          "pose": [
+            34.589910230647256,
+            -10.246649911094378,
+            -0.010538358853573952
+          ],
+          "requested_goal_distance_m": 0.5487438037328926,
+          "speed_m_s": 0.13089763400074106
+        }
+      },
+      "full_mse_delta_by_bin": [
+        0.0007400416206242333,
+        -0.00040133192717714593,
+        0.0005997402378550242
+      ],
+      "tail_fraction_of_net_mse_delta": 0.6390753708329189
+    },
+    "turn": {
+      "prefix_paths_identical": true,
+      "preview25": {
+        "trial": "python_pid_turn_01",
+        "directory": "/home/usv/usv_migration/results/python-preview25-turn-candidate-001/python_pid_turn_01",
+        "events_sha256": "4b8fc8d1ca79ecbc1ea016929c0b6653cff1f3ec55320ebb9658c01c5181ceb8",
+        "summary_sha256": "7132a4ac90bf618a5297b058aff99f05e940eb9a773eb7f6f080fde043c4ee7d",
+        "goal": [
+          23.125,
+          -22.125,
+          -1.5707963267948966
+        ],
+        "preview_s": 2.5,
+        "first_path_event_line": 278,
+        "first_path_last3": [
+          [
+            23.25,
+            -21.25
+          ],
+          [
+            23.25,
+            -21.75
+          ],
+          [
+            23.125,
+            -22.125
+          ]
+        ],
+        "source_duration_s": 19.900000000000002,
+        "integrated_error_m2_s": 0.21950711662573635,
+        "source_rmse_m": 0.10502622707282491,
+        "bins": [
+          {
+            "along_route_interval_m": [
+              null,
+              3.0
+            ],
+            "source_duration_s": 5.199999999999999,
+            "error_energy_m2_s": 0.1136937162368863,
+            "source_intervals": 52,
+            "local_rmse_m": 0.14786539892551337,
+            "contribution_to_full_mse_m2": 0.005713252072205341,
+            "mean_speed": 0.590115180072288,
+            "mean_heading": -1.3050045907764614,
+            "mean_lateral": 23.324322530515786
+          },
+          {
+            "along_route_interval_m": [
+              3.0,
+              9.0
+            ],
+            "source_duration_s": 8.700000000000001,
+            "error_energy_m2_s": 0.09639964972617503,
+            "source_intervals": 87,
+            "local_rmse_m": 0.1052635716131452,
+            "contribution_to_full_mse_m2": 0.00484420350382789,
+            "mean_speed": 0.6907872157849677,
+            "mean_heading": -1.5827481948264337,
+            "mean_lateral": 23.347149229201168
+          },
+          {
+            "along_route_interval_m": [
+              9.0,
+              null
+            ],
+            "source_duration_s": 6.0,
+            "error_energy_m2_s": 0.009413750662674959,
+            "source_intervals": 60,
+            "local_rmse_m": 0.03961008007791905,
+            "contribution_to_full_mse_m2": 0.0004730527971193446,
+            "mean_speed": 0.3894864848233282,
+            "mean_heading": -1.6037680082332375,
+            "mean_lateral": 23.241673503559905
+          }
+        ],
+        "checkpoints": [
+          {
+            "target_along_route_m": 1.0,
+            "actual_along_route_m": 0.973330912819133,
+            "source_time_s": 5.8,
+            "pose": [
+              23.37809323124964,
+              -11.098330912819133,
+              -1.6575253630823914
+            ],
+            "speed_m_s": 0.7461476017770997,
+            "error_m": 0.12809323124963967,
+            "last_received_reference_query_s": 2.7,
+            "last_received_reference_preview_pose": [
+              23.1664382981685,
+              -13.268744250669744,
+              -1.5013166668565203
+            ],
+            "reference_receipt_age_s": 0.17928611900424585
+          },
+          {
+            "target_along_route_m": 3.0,
+            "actual_along_route_m": 2.971893233473784,
+            "source_time_s": 8.1,
+            "pose": [
+              23.41521074419428,
+              -13.096893233473784,
+              -1.4899678105856802
+            ],
+            "speed_m_s": 0.8554547069200543,
+            "error_m": 0.1652107441942796,
+            "last_received_reference_query_s": 2.5999999999999996,
+            "last_received_reference_preview_pose": [
+              23.236245491682734,
+              -15.185847043415599,
+              -1.59847888662387
+            ],
+            "reference_receipt_age_s": 0.05043878499418497
+          },
+          {
+            "target_along_route_m": 6.0,
+            "actual_along_route_m": 5.988890180547571,
+            "source_time_s": 11.9,
+            "pose": [
+              23.341518573035433,
+              -16.11389018054757,
+              -1.6530177664355221
+            ],
+            "speed_m_s": 0.724896063170262,
+            "error_m": 0.09151857303543309,
+            "last_received_reference_query_s": 2.5999999999999996,
+            "last_received_reference_preview_pose": [
+              23.212029709654562,
+              -18.092366006110645,
+              -1.5550809054769748
+            ],
+            "reference_receipt_age_s": 0.05059169999731239
+          },
+          {
+            "target_along_route_m": 9.0,
+            "actual_along_route_m": 8.97862773997812,
+            "source_time_s": 16.8,
+            "pose": [
+              23.295341403300192,
+              -19.10362773997812,
+              -1.5214171806830386
+            ],
+            "speed_m_s": 0.48008052793144557,
+            "error_m": 0.045341403300191985,
+            "last_received_reference_query_s": 2.6999999999999993,
+            "last_received_reference_preview_pose": [
+              23.275134672422947,
+              -20.790874463215136,
+              -1.616968208125021
+            ],
+            "reference_receipt_age_s": 0.15373559699219186
+          },
+          {
+            "target_along_route_m": 10.0,
+            "actual_along_route_m": 10.002142394881858,
+            "source_time_s": 19.4,
+            "pose": [
+              23.26370855055247,
+              -20.127142394881858,
+              -1.6600915179566351
+            ],
+            "speed_m_s": 0.6060301410735037,
+            "error_m": 0.013708550552468779,
+            "last_received_reference_query_s": 2.6999999999999993,
+            "last_received_reference_preview_pose": [
+              23.240286105120486,
+              -21.146991021422053,
+              -1.6343526457518203
+            ],
+            "reference_receipt_age_s": 0.11531003500567749
+          },
+          {
+            "target_along_route_m": 11.0,
+            "actual_along_route_m": 10.987631871766094,
+            "source_time_s": 21.3,
+            "pose": [
+              23.200144612469906,
+              -21.112631871766094,
+              -1.5478451884787467
+            ],
+            "speed_m_s": 0.32852216306444915,
+            "error_m": 0.04985538753009422,
+            "last_received_reference_query_s": 2.6000000000000014,
+            "last_received_reference_preview_pose": [
+              23.20621719240888,
+              -21.14958100096614,
+              -1.5713105927843094
+            ],
+            "reference_receipt_age_s": 0.010098115002620034
+          }
+        ],
+        "counterfactual": {
+          "definition": "Only rescore these exact observed poses after replacing the scoring path endpoint; not a controller/LOS rollout or simulation.",
+          "path_last3": [
+            [
+              23.25,
+              -21.25
+            ],
+            [
+              23.25,
+              -21.75
+            ],
+            [
+              23.25,
+              -22.25
+            ]
+          ],
+          "source_rmse_m": 0.10502622707282491,
+          "integrated_error_m2_s": 0.21950711662573635,
+          "maximum_observed_error_change_m": 0.0
+        },
+        "first_requested_goal_disk_observation": {
+          "source_time_s": 21.4,
+          "pose": [
+            23.19786529899394,
+            -21.14456889721819,
+            -1.5446881268910442
+          ],
+          "speed_m_s": 0.3114752293403824
+        },
+        "last_observation": {
+          "source_time_s": 22.8,
+          "pose": [
+            23.186216814492603,
+            -21.436184688021452,
+            -1.5283127979221243
+          ],
+          "requested_goal_distance_m": 0.6915302107592451,
+          "speed_m_s": 0.14003756134354065
+        }
+      },
+      "cpp": {
+        "trial": "cpp_pid_turn_01",
+        "directory": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_01",
+        "events_sha256": "76a9b9645af80d264d0979449940051d2691bfd0dae7e16caa75780c3b8a5bd6",
+        "summary_sha256": "b3fce7bbb3765e88b5e453478869848d961d3a344d5c7f90fbdcf979034b6a9a",
+        "goal": [
+          23.125,
+          -22.125,
+          -1.5707963267948966
+        ],
+        "preview_s": 3.0,
+        "first_path_event_line": 114,
+        "first_path_last3": [
+          [
+            23.25,
+            -21.25
+          ],
+          [
+            23.25,
+            -21.75
+          ],
+          [
+            23.25,
+            -22.25
+          ]
+        ],
+        "source_duration_s": 22.599999999999998,
+        "integrated_error_m2_s": 0.2006215923537576,
+        "source_rmse_m": 0.09421815965392949,
+        "bins": [
+          {
+            "along_route_interval_m": [
+              null,
+              3.0
+            ],
+            "source_duration_s": 5.099999999999999,
+            "error_energy_m2_s": 0.1427632470695372,
+            "source_intervals": 51,
+            "local_rmse_m": 0.16731047051229794,
+            "contribution_to_full_mse_m2": 0.006316957834935274,
+            "mean_speed": 0.5850150675269132,
+            "mean_heading": -1.322816570146358,
+            "mean_lateral": 23.09566989184922
+          },
+          {
+            "along_route_interval_m": [
+              3.0,
+              9.0
+            ],
+            "source_duration_s": 10.600000000000001,
+            "error_energy_m2_s": 0.0535517085930843,
+            "source_intervals": 106,
+            "local_rmse_m": 0.07107776009751328,
+            "contribution_to_full_mse_m2": 0.0023695446280125798,
+            "mean_speed": 0.5702932849051974,
+            "mean_heading": -1.5600882116542183,
+            "mean_lateral": 23.183483616878522
+          },
+          {
+            "along_route_interval_m": [
+              9.0,
+              null
+            ],
+            "source_duration_s": 6.899999999999999,
+            "error_energy_m2_s": 0.004306636691136151,
+            "source_intervals": 69,
+            "local_rmse_m": 0.024982999121246352,
+            "contribution_to_full_mse_m2": 0.0001905591456254934,
+            "mean_speed": 0.3613437860051729,
+            "mean_heading": -1.5581788995516126,
+            "mean_lateral": 23.22738983207382
+          }
+        ],
+        "checkpoints": [
+          {
+            "target_along_route_m": 1.0,
+            "actual_along_route_m": 0.9607766895996175,
+            "source_time_s": 6.0,
+            "pose": [
+              23.0606247323066,
+              -11.085776689599617,
+              -1.3063410099343642
+            ],
+            "speed_m_s": 0.93851261001943,
+            "error_m": 0.18937526769339996,
+            "last_received_reference_query_s": 3.0,
+            "last_received_reference_preview_pose": [
+              23.31018323658719,
+              -13.572387231063876,
+              -1.5891751591194627
+            ],
+            "reference_receipt_age_s": 0.1163519389956491
+          },
+          {
+            "target_along_route_m": 3.0,
+            "actual_along_route_m": 2.96904688627275,
+            "source_time_s": 8.2,
+            "pose": [
+              23.12252144984265,
+              -13.09404688627275,
+              -1.4453760550512855
+            ],
+            "speed_m_s": 0.8598956380083642,
+            "error_m": 0.127478550157349,
+            "last_received_reference_query_s": 3.0,
+            "last_received_reference_preview_pose": [
+              23.28591533663071,
+              -15.599683616472454,
+              -1.577015762685546
+            ],
+            "reference_receipt_age_s": 0.09911244599788915
+          },
+          {
+            "target_along_route_m": 6.0,
+            "actual_along_route_m": 6.001066518077586,
+            "source_time_s": 12.2,
+            "pose": [
+              23.17755395387862,
+              -16.126066518077586,
+              -1.5274980119208945
+            ],
+            "speed_m_s": 0.6555809887067314,
+            "error_m": 0.07244604612138161,
+            "last_received_reference_query_s": 3.0,
+            "last_received_reference_preview_pose": [
+              23.26404880077567,
+              -18.658397634025572,
+              -1.5661829437147097
+            ],
+            "reference_receipt_age_s": 0.09925437699712347
+          },
+          {
+            "target_along_route_m": 9.0,
+            "actual_along_route_m": 9.012894703735725,
+            "source_time_s": 18.8,
+            "pose": [
+              23.216094123809903,
+              -19.137894703735725,
+              -1.563545117741921
+            ],
+            "speed_m_s": 0.3459947321937925,
+            "error_m": 0.03390587619009722,
+            "last_received_reference_query_s": 3.0,
+            "last_received_reference_preview_pose": [
+              23.250119565305333,
+              -21.20342120180449,
+              -1.5598226843105887
+            ],
+            "reference_receipt_age_s": 0.09985894200508483
+          },
+          {
+            "target_along_route_m": 10.0,
+            "actual_along_route_m": 9.984417103658494,
+            "source_time_s": 21.6,
+            "pose": [
+              23.218678881012753,
+              -20.109417103658494,
+              -1.5587257784393769
+            ],
+            "speed_m_s": 0.4266321640127354,
+            "error_m": 0.031321118987246876,
+            "last_received_reference_query_s": 3.0,
+            "last_received_reference_preview_pose": [
+              23.23818119077263,
+              -21.168124838662305,
+              -1.552681808417282
+            ],
+            "reference_receipt_age_s": 0.09939937600574922
+          },
+          {
+            "target_along_route_m": 11.0,
+            "actual_along_route_m": 11.00363722506615,
+            "source_time_s": 23.7,
+            "pose": [
+              23.23560212380766,
+              -21.12863722506615,
+              -1.5597254353715548
+            ],
+            "speed_m_s": 0.4184599387423074,
+            "error_m": 0.014397876192340675,
+            "last_received_reference_query_s": 3.0,
+            "last_received_reference_preview_pose": [
+              23.242485904075586,
+              -21.42450927370738,
+              -1.5568530500134412
+            ],
+            "reference_receipt_age_s": 0.6003390949917957
+          }
+        ],
+        "counterfactual": {
+          "definition": "Only rescore these exact observed poses after replacing the scoring path endpoint; not a controller/LOS rollout or simulation.",
+          "path_last3": [
+            [
+              23.25,
+              -21.25
+            ],
+            [
+              23.25,
+              -21.75
+            ],
+            [
+              23.25,
+              -22.25
+            ]
+          ],
+          "source_rmse_m": 0.09421815965392949,
+          "integrated_error_m2_s": 0.2006215923537576,
+          "maximum_observed_error_change_m": 0.0
+        },
+        "first_requested_goal_disk_observation": {
+          "source_time_s": 23.8,
+          "pose": [
+            23.236407596331247,
+            -21.168767561193622,
+            -1.5600905500350426
+          ],
+          "speed_m_s": 0.3862439814750263
+        },
+        "last_observation": {
+          "source_time_s": 25.7,
+          "pose": [
+            23.240149044170856,
+            -21.630037293189325,
+            -1.5622964830801545
+          ],
+          "requested_goal_distance_m": 0.508180463523355,
+          "speed_m_s": 0.13546280372463934
+        }
+      },
+      "full_mse_delta_by_bin": [
+        -0.0006037057627299334,
+        0.0024746588758153103,
+        0.0002824936514938512
+      ],
+      "tail_fraction_of_net_mse_delta": 0.13118209195621744,
+      "e381_preview26": {
+        "trial": "python_pid_turn_01",
+        "directory": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_turn_01",
+        "events_sha256": "2f1e8ec323643c9466791d176b813686534b7c44ed86fb987b827f3accd38974",
+        "summary_sha256": "9518481b78dc9c4535ae4f90486a5090afad1062c1aa192fc8fdbbdcbf605ba6",
+        "goal": [
+          23.125,
+          -22.125,
+          -1.5707963267948966
+        ],
+        "preview_s": 2.6,
+        "first_path_event_line": 198,
+        "first_path_last3": [
+          [
+            23.25,
+            -21.25
+          ],
+          [
+            23.25,
+            -21.75
+          ],
+          [
+            23.125,
+            -22.125
+          ]
+        ],
+        "source_duration_s": 20.5,
+        "integrated_error_m2_s": 0.17167158520921783,
+        "source_rmse_m": 0.09151078443955299,
+        "bins": [
+          {
+            "along_route_interval_m": [
+              null,
+              3.0
+            ],
+            "source_duration_s": 5.4,
+            "error_energy_m2_s": 0.073258808674515,
+            "source_intervals": 54,
+            "local_rmse_m": 0.11647508768331583,
+            "contribution_to_full_mse_m2": 0.003573600423147073,
+            "mean_speed": 0.5605166622752045,
+            "mean_heading": -1.2470766142099123,
+            "mean_lateral": 23.277364314463263
+          },
+          {
+            "along_route_interval_m": [
+              3.0,
+              9.0
+            ],
+            "source_duration_s": 8.899999999999999,
+            "error_energy_m2_s": 0.08220043477025933,
+            "source_intervals": 89,
+            "local_rmse_m": 0.09610413053959083,
+            "contribution_to_full_mse_m2": 0.004009777305866309,
+            "mean_speed": 0.6776655238666964,
+            "mean_heading": -1.5827125521275063,
+            "mean_lateral": 23.341947510775825
+          },
+          {
+            "along_route_interval_m": [
+              9.0,
+              null
+            ],
+            "source_duration_s": 6.199999999999999,
+            "error_energy_m2_s": 0.016212341764443396,
+            "source_intervals": 62,
+            "local_rmse_m": 0.051136032628419086,
+            "contribution_to_full_mse_m2": 0.0007908459397289461,
+            "mean_speed": 0.37018814306169023,
+            "mean_heading": -1.6125939137526089,
+            "mean_lateral": 23.23182473956254
+          }
+        ],
+        "checkpoints": [
+          {
+            "target_along_route_m": 1.0,
+            "actual_along_route_m": 1.0244226159008658,
+            "source_time_s": 6.1,
+            "pose": [
+              23.318804815165375,
+              -11.149422615900866,
+              -1.4115509431183937
+            ],
+            "speed_m_s": 0.8501835255966717,
+            "error_m": 0.06880481516537529,
+            "last_received_reference_query_s": 2.6999999999999997,
+            "last_received_reference_preview_pose": [
+              23.24296143965897,
+              -13.393948576212921,
+              -1.577850992248472
+            ],
+            "reference_receipt_age_s": 0.02914264699211344
+          },
+          {
+            "target_along_route_m": 3.0,
+            "actual_along_route_m": 2.965755948575991,
+            "source_time_s": 8.3,
+            "pose": [
+              23.374252249998808,
+              -13.09075594857599,
+              -1.4163214283965608
+            ],
+            "speed_m_s": 0.8633551471114725,
+            "error_m": 0.12425224999880768,
+            "last_received_reference_query_s": 2.7000000000000015,
+            "last_received_reference_preview_pose": [
+              23.26258336626066,
+              -15.260564089537777,
+              -1.6158867742721463
+            ],
+            "reference_receipt_age_s": 0.020790447990293615
+          },
+          {
+            "target_along_route_m": 6.0,
+            "actual_along_route_m": 6.016004878937391,
+            "source_time_s": 12.2,
+            "pose": [
+              23.342774255167008,
+              -16.14100487893739,
+              -1.5735777213201034
+            ],
+            "speed_m_s": 0.6450730481303172,
+            "error_m": 0.09277425516700788,
+            "last_received_reference_query_s": 2.7999999999999994,
+            "last_received_reference_preview_pose": [
+              23.230509003044272,
+              -18.19004783533715,
+              -1.5698379071545419
+            ],
+            "reference_receipt_age_s": 1.789443293993827
+          },
+          {
+            "target_along_route_m": 9.0,
+            "actual_along_route_m": 8.995753537945198,
+            "source_time_s": 17.2,
+            "pose": [
+              23.29739580306676,
+              -19.1207535379452,
+              -1.6000585876034759
+            ],
+            "speed_m_s": 0.4721089614790499,
+            "error_m": 0.04739580306675961,
+            "last_received_reference_query_s": 2.7999999999999994,
+            "last_received_reference_preview_pose": [
+              23.26456326350237,
+              -20.848026200558053,
+              -1.6155781283865474
+            ],
+            "reference_receipt_age_s": 0.16310457899817266
+          },
+          {
+            "target_along_route_m": 10.0,
+            "actual_along_route_m": 10.019855170921169,
+            "source_time_s": 20.1,
+            "pose": [
+              23.24797027145351,
+              -20.14485517092117,
+              -1.6539007949464668
+            ],
+            "speed_m_s": 0.5894289169850533,
+            "error_m": 0.0020297285464891957,
+            "last_received_reference_query_s": 2.7000000000000015,
+            "last_received_reference_preview_pose": [
+              23.20207833592384,
+              -21.135842539016615,
+              -1.6271571862258012
+            ],
+            "reference_receipt_age_s": 0.012664687004871666
+          },
+          {
+            "target_along_route_m": 11.0,
+            "actual_along_route_m": 10.989290494583368,
+            "source_time_s": 22.0,
+            "pose": [
+              23.177472762257132,
+              -21.11429049458337,
+              -1.58296494576915
+            ],
+            "speed_m_s": 0.3075820817521804,
+            "error_m": 0.07252723774286807,
+            "last_received_reference_query_s": 2.7999999999999994,
+            "last_received_reference_preview_pose": [
+              23.181424622341527,
+              -21.155962637428203,
+              -1.5890476512137006
+            ],
+            "reference_receipt_age_s": 0.12248468700272497
+          }
+        ],
+        "counterfactual": {
+          "definition": "Only rescore these exact observed poses after replacing the scoring path endpoint; not a controller/LOS rollout or simulation.",
+          "path_last3": [
+            [
+              23.25,
+              -21.25
+            ],
+            [
+              23.25,
+              -21.75
+            ],
+            [
+              23.125,
+              -22.125
+            ]
+          ],
+          "source_rmse_m": 0.09151078443955299,
+          "integrated_error_m2_s": 0.17167158520921783,
+          "maximum_observed_error_change_m": 0.0
+        },
+        "first_requested_goal_disk_observation": {
+          "source_time_s": 22.1,
+          "pose": [
+            23.176144634527898,
+            -21.14402897850297,
+            -1.5829104909523994
+          ],
+          "speed_m_s": 0.28788738055066504
+        },
+        "last_observation": {
+          "source_time_s": 23.4,
+          "pose": [
+            23.158307739372887,
+            -21.409367521247166,
+            -1.582764003158238
+          ],
+          "requested_goal_distance_m": 0.7164071818093798,
+          "speed_m_s": 0.1411767423597943
+        }
+      },
+      "preview25_minus_preview26_mse_by_bin": [
+        0.002139651649058268,
+        0.0008344261979615812,
+        -0.0003177931426096015
+      ]
+    }
+  }
+}
