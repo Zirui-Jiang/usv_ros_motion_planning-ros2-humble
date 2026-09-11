@@ -16,12 +16,17 @@ LiDAR 累积地图与 Nav2 实时代价地图分别工作，当前没有启用 s
 | [迁移差异](docs/python-migration-differences.md) | 原行为、已修复缺陷、未迁移能力和比较边界 |
 | [自动验收入口](scripts/validation/README.md) | 固定场景、重复试验、原始数据与性能指标 |
 | [环境变更](docs/validation/environment-changes.md) | ROS/Gazebo 版本、依赖安装与备份记录 |
+| [清理后的独立构建](docs/validation/python-clean-final-001/README.md) | 固定源码、13 包安装审计、439 项测试和 C++ 数值对照 |
+| [最终场景比较与图表](docs/validation/python-clean-release-comparison-001/README.md) | 场景三次均值、逐次与最差值、适用范围和性能分项 |
 
-在完成独立工作区构建后，用 WSL 新终端加载 ROS 和该安装区：
+清理后的固定源码版本为 `dfb1fb7`，已在独立普通安装区完成 13 包构建和 439 项测试。
+本轮 18 次导航和 3 项故障功能通过；两个具备完整合格 C++ 基线的场景均值通过
+10% 门槛。另四组缺少完整基线、三条积压项证据不足，完整范围见上述验收报告。
+用 WSL 新终端加载 ROS 和该安装区：
 
 ```bash
 source /opt/ros/humble/setup.bash
-source /home/usv/usv_migration/python/install/setup.bash
+source /home/usv/usv_migration/python-clean-final-001/install/setup.bash
 ros2 launch sim_env main.launch.py headless:=true
 # LQR：
 ros2 launch sim_env main.launch.py headless:=true controller_name:=lqr

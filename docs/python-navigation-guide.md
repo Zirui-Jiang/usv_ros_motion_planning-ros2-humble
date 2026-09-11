@@ -48,6 +48,13 @@ Gazebo、波浪/水动力/浮力/推进器插件、Otter URDF、RViz 目标设�
 
 目标环境为 Ubuntu 22.04 / ROS 2 Humble / Gazebo Classic。源码、`build`、`install`、`log` 都放在 WSL Linux 文件系统内，并与 C++ 基线分开。切换实现时使用新的终端，只加载 ROS 基础环境及当前一个工作区。
 
+本机清理后的验收副本为 `/home/usv/usv_migration/python-clean-final-001`，固定提交
+`dfb1fb7fcb77feb868ee87ac986c70d7c4cab537`，使用独立的普通 `build/install/log`。
+后续主分支的报告和文档提交不自动更新该副本。复用现有安装时设置
+`PY_WS=/home/usv/usv_migration/python-clean-final-001` 后从第 3 节启动；需要构建新源码时，
+按下列步骤选择新的提交和目录。历史 `/home/usv/usv_migration/python` 保留 `3afb25f`
+及其试验来源，不作为本轮默认安装区。
+
 下面从 Windows 仓库复制指定提交，不改动原工作目录。必须先将准备验收的源码形成提交；未提交修改不会进入新副本。
 
 ```bash
@@ -100,14 +107,23 @@ python3 -c "import common, path_planner, trajectory_planner, controller, percept
 会拒绝执行。构建、测试和前后指纹保存在新工作区的 `validation` 目录：
 
 ```bash
+CLEAN_WS="$HOME/usv_migration/python-clean-${PY_REV:0:12}"
 bash "$PROJECT_SRC/scripts/validation/build_clean.bash" \
-  "$PROJECT_SRC" "$PY_REV" "$HOME/usv_migration/python-clean-${PY_REV:0:12}"
+  "$PROJECT_SRC" "$PY_REV" "$CLEAN_WS"
 ```
 
+该脚本已经在独立环境执行安装审计。需要手动复查时，打开新 WSL 终端，将
+`CLEAN_WS` 设置为刚才实际构建的绝对路径；下面以本机已经完成的固定安装为例。
+不要沿用此前调试安装的 `$PY_WS` 或 overlay：
+
 ```bash
-python3 scripts/validation/verify_install.py \
+CLEAN_WS="$HOME/usv_migration/python-clean-final-001"
+source /opt/ros/humble/setup.bash
+source "$CLEAN_WS/install/setup.bash"
+PY_WS="$CLEAN_WS"
+python3 "$PY_WS/scripts/validation/verify_install.py" \
   --source "$PY_WS" --install "$PY_WS/install" \
-  --output "$PY_WS/install-audit.json"
+  --output "$PY_WS/validation/install-audit-manual.json"
 ```
 
 每次正式矩阵开始和结束时，使用 `capture_provenance.py` 分别生成 `--phase before` 与
@@ -131,7 +147,7 @@ source "$PY_WS/install/setup.bash"
 ros2 launch sim_env main.launch.py
 ```
 
-关闭窗口或切换到 LQR：
+需要无界面运行或切换到 LQR 时，先结束当前 launch，再执行以下一种启动方式：
 
 ```bash
 ros2 launch sim_env main.launch.py headless:=true controller_name:=lqr
@@ -196,8 +212,13 @@ PID/LQR 的 `goal_distance_tolerance` 必须为有限数且严格大于 `1e-9 m`
 可复现边界及配置检查见 [容差记录](validation/goal-tolerance-boundary/README.md)。
 
 当前控制配置的 PID 预瞄为 2.6 s，LQR 预瞄为 2 s；ROS 导航的 `obstacle_factor`
-校准候选为 0.25。该因子越小，拒绝的软膨胀代价范围越大；它不是以米表示的安全距离。
+默认校准值为 0.25。该因子越小，拒绝的软膨胀代价范围越大；它不是以米表示的安全距离。
 实际验收版本及候选状态以验收报告为准，不能把不同提交的参数混用到同一组结果中。
+
+Otter 的生效控制文件是 `config/robots/otter/controller_params_otter.yaml`。
+`config/controller/pid_controller_params.yaml` 等通用旧模板未被上述默认入口加载，
+修改这些模板不会改变当前 Otter PID。以启动日志列出的最终路径和
+`ros2 param get` 的有效值核对一次实验实际使用的配置。
 
 以下兼容键目前不产生新的算法行为：`path_planner.convert_offset`、`default_tolerance`、`expand_zone`、`show_safety_corridor`。当前实现不会因此获得目标容差搜索、安全走廊算法或旧版搜索展开区可视化。调试统计通过结果中的展开节点数和 `navigation_status` 提供。
 
@@ -312,7 +333,12 @@ result = PathPlannerCore({"planner_name": "astar"}).make_plan(
     state.pose, (5.25, 5.25, 0.0), grid)
 ```
 
-`GridSnapshot` 复制并只读保存 `[y,x]` 二维 uint8 代价图；`VesselState.u/v/r` 是船体坐标速度。`PlanResult.path` 为 `(N,3)` 的 `x,y,theta`；纯网格搜索返回格中心，导航调度层再把末点改为实际目标。`Trajectory.points` 为 `(N,8)`，列顺序为 `time,s,x,y,theta,curv,velocity,acceleration`，时间相对于 `trajectory.stamp`。
+`GridSnapshot` 复制并只读保存 `[y,x]` 二维 uint8 代价图；`VesselState.u/v/r` 是船体坐标速度。
+`PlanResult.path` 为 `(N,3)` 的 `x,y,theta`；纯网格搜索返回格中心。格中心位于真实
+目标容差内时，导航调度保留该末点并缩小 LOS 停止圆；否则追加经过地图检查的
+真实目标连接段。控制器始终以真实请求目标判定完成，具体包含关系见
+[迁移差异](python-migration-differences.md)。`Trajectory.points` 为 `(N,8)`，
+列顺序为 `time,s,x,y,theta,curv,velocity,acceleration`，时间相对于 `trajectory.stamp`。
 
 实际验收使用 [验收脚本说明](../scripts/validation/README.md)，例如先运行一个直线用例：
 

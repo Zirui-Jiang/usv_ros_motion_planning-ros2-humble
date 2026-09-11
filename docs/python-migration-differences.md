@@ -23,9 +23,9 @@ LiDAR 建图使用已有姿态和 TF，不做扫描匹配或位姿估计，不�
 
 ## 2. 保留目录与非活跃依赖
 
-已迁移的六个原包在原目录添加同名 Python 导入包，通过 `ament_python` 安装；`sim_env` 保留混合构建。原 C++ 源码和部分 CMake 描述仍在仓库中供核对，当前 Python 包的 `package.xml` 决定实际构建类型。
+已迁移的六个原包在原目录添加同名 Python 导入包，通过 `ament_python` 安装；`sim_env` 保留混合构建。M5 已从 Python 分支移除被替换的 78 个 C++ 算法、头文件和旧 CMake 文件，实际路径与内容校验见 [清理记录](validation/m5-cleanup/README.md)。原 C++ 实现可从 `main` 或 `cpp-baseline` 核对，当前分支只保留基础仿真及支撑节点所需的 C++ 实现。
 
-`common/src/geometry/curve` 下的 Dubins、Reeds–Shepp、Bezier、B 样条、三次样条、五次多项式等，在原 common CMake 中被编译，但当前 `src` 导航调用链未发现 common 外使用这些曲线的调用。它们没有被列为首版 Python 必须实现的依赖，也没有因源文件保留而成为可导入的 Python 算法。后续启用时需要单独实现、测试和评估运动学适用性。
+原基线 `src/core/common/src/geometry/curve` 下的 Dubins、Reeds–Shepp、Bezier、B 样条、三次样条、五次多项式等，在原 common CMake 中被编译，但原导航调用链未发现 common 外使用这些曲线的调用。它们没有被列为首版 Python 必须实现的依赖；其实现仅保留在 C++ 基线，不是当前可导入的 Python 算法。后续启用时需要单独实现、测试和评估运动学适用性。
 
 原 `src/plugins/gazebo_plugins`、`src/plugins/rviz_plugins/goal_set_plugin`、`dynamic_xml_config`、`dynamic_rviz_config` 等插件与配置工具继续保留。保留工具不意味着其所有配置字段都被新的 `main.launch.py` 消费。
 

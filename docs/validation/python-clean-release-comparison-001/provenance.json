@@ -1,0 +1,431 @@
+{
+  "python_tested_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537",
+  "cpp_tested_commit": "632734ba31478bdb833e15949287b53ae9334cf3",
+  "source_commit_at_archive": "383474603af3016a2a9c0df36949ba1ba47cb23e",
+  "report_generated_utc": "2026-09-11T05:45:40.022032+00:00",
+  "acceptance_aggregation": "scenario_mean",
+  "rmse_metric": "source_time_trapezoid",
+  "frame_contract": "otter_fake_localization",
+  "protocol_fixed_before_this_capture": true,
+  "ratio_limit": 1.1,
+  "zero_baseline_atol": 1e-06,
+  "comparison_exit_code": 1,
+  "scope": "eligible groups pass 2/2, four incomparable; individual valid pairs 7/7, eleven incomparable; independent performance 15 pass / 3 unknown; old matrices unchanged",
+  "source_files": [
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/manifest.json",
+      "sha256": "5271de0f30fb8ab0b9261e28ca5db815bdd6c2f10829f03729fa6840fcaefe4c"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/summary.json",
+      "sha256": "dd09d6ea15c6bb792c30c568e077f282095102ae968823e2c03328db5af5a394"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/manifest.json",
+      "sha256": "b5975f965df44fa61db88206dba2288d5374322384b92463d345901a94dacaba"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/summary.json",
+      "sha256": "3b2dece37509b4a2e9934425fef8641de37187ce7f8394a7247448553305f326"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_straight_01/summary.json",
+      "exists": true,
+      "sha256": "70a7b62e0e779b1c97e7291e1f6085646d1c7bb6a9f45be5c45ddc1fc3f649cd"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_straight_01/events.jsonl",
+      "exists": true,
+      "sha256": "61be157a984702524a82c7b9f461eba68d77d439ed95667cb7a3f79190fc9fc9"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_straight_02/summary.json",
+      "exists": true,
+      "sha256": "5e6fa6c3b5bff02338b19dfaa036738fc6e2b7b3ff27c0ce4011e7b3ac1a6172"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_straight_02/events.jsonl",
+      "exists": true,
+      "sha256": "fc5ea8d66788b27d01980a18e966e6263d77c2bed277f8fc491537b0ddbc71bf"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_straight_03/summary.json",
+      "exists": true,
+      "sha256": "ad20ce6ee78948026b85285000bbe0b26d81a3d85d16045e13d6acbf3188e1ac"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_straight_03/events.jsonl",
+      "exists": true,
+      "sha256": "ab3890e7fde49fd4fcec8d9398e61c49472b3b53559ca6de93c5fc3dd1e84b5e"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_turn_01/summary.json",
+      "exists": true,
+      "sha256": "defcc8896c66da0a710f62ac3bc2f6f688ffad20596e67faec313a995ce62805"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_turn_01/events.jsonl",
+      "exists": true,
+      "sha256": "7ea8bf5652b64bebb4b5d31f70b1ff3e74718ae3405d8cfff4f6b4f89d590f29"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_turn_02/summary.json",
+      "exists": true,
+      "sha256": "77f1d3a5718e36dc02e95abec36b9e4cc7f7b4f60da747928e681eb6b2adb355"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_turn_02/events.jsonl",
+      "exists": true,
+      "sha256": "7cc2decfeb505268d856849db36d71727f1ec5863057b8b634ef48b97f984391"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_turn_03/summary.json",
+      "exists": true,
+      "sha256": "1da0e582625434d67608673bda253166a86549dbb79298938c90a54c43ed9888"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_turn_03/events.jsonl",
+      "exists": true,
+      "sha256": "7463fb3ffd31f34f1acab7bd303deba2e58b846d34edd225f1cea30cbed5d47c"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_single_obstacle_01/summary.json",
+      "exists": true,
+      "sha256": "416d1ea9f88b969eaf050b95f3c1225a4677ac8090633531bb81089760102dd0"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_single_obstacle_01/events.jsonl",
+      "exists": true,
+      "sha256": "e069e9699abbbc3db662734b38b33b86199895ed570804e734830f788bca806d"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_single_obstacle_02/summary.json",
+      "exists": true,
+      "sha256": "bee521f48cfcda0633ec98f04a1a34faab1164b4a6737039970fffdf95400074"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_single_obstacle_02/events.jsonl",
+      "exists": true,
+      "sha256": "bb1de3756c7b53b709902125f72d11fe071d69ae4e7d8af43a85219086f5157e"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_single_obstacle_03/summary.json",
+      "exists": true,
+      "sha256": "99b1e27997aec66e871b9aafb62695ab395dbab69b72604fd78a7f91b028b729"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_single_obstacle_03/events.jsonl",
+      "exists": true,
+      "sha256": "ac64f4bf109a0d5109cb002544128bfc6b098c8202abd1acc8797e2a8c406dc9"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_straight_01/summary.json",
+      "exists": true,
+      "sha256": "259ed83a92dd389c5477a07d4d447b07718aba9ae6ef77851ca59e4efa766ff5"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_straight_01/events.jsonl",
+      "exists": true,
+      "sha256": "c2b7d567914e6e47158b2cdf16e31107cad87ce4fa8bc738729c736b2a354292"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_straight_02/summary.json",
+      "exists": true,
+      "sha256": "ba61dbeecc5226894a318c6c9e1fd69cb8e51ef28711a6f96a70f97d5ee8d289"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_straight_02/events.jsonl",
+      "exists": true,
+      "sha256": "cfa47c05b6afb7473be4c84780c5d67a1c7194c4f8b2cd6f98ef04ad93693074"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_straight_03/summary.json",
+      "exists": true,
+      "sha256": "453207c8dacb178d3e62bbf32dc5c5ad10c31be91dfc432b60a7ff998eb134c4"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_straight_03/events.jsonl",
+      "exists": true,
+      "sha256": "8bc6bd82518ff0be01eb65e08d82ff1ebc16a88d451f7c7a342127e74b683f37"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_turn_01/summary.json",
+      "exists": true,
+      "sha256": "69c0f94ea25202990199768601fa9ad0f4293427f60714a7e8b9c8aabd343190"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_turn_01/events.jsonl",
+      "exists": true,
+      "sha256": "1bbf453cd58ef3f5498fffdfcf0c998781f5e9851ecf9680deae5c84e19e6bcb"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_turn_02/summary.json",
+      "exists": true,
+      "sha256": "dac90604906d4ef50faad825f653182119572e1643b0e33407999c6d39296167"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_turn_02/events.jsonl",
+      "exists": true,
+      "sha256": "04c7bd89c60495fdfb532a943307604232cf542f6d759bd296db6427a0c4cd68"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_turn_03/summary.json",
+      "exists": true,
+      "sha256": "d3d8d17af7016e6fcad79da4871e5e1cd301ea190bc7501ae7d53d0e0fb113e0"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_turn_03/events.jsonl",
+      "exists": true,
+      "sha256": "802e5a4fad564a7d1f0066663aadcab762cc9586a055ed1fc4fbc3ee60c4ba6b"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_single_obstacle_01/summary.json",
+      "exists": true,
+      "sha256": "3025879296557d6d25f3d62ab6e69f83c39b7d997c344948b1d890ce4e922d26"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_single_obstacle_01/events.jsonl",
+      "exists": true,
+      "sha256": "3725a914439390f204c353c12f7552009a1f8c29a4935400b59dbf22aff08e93"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_single_obstacle_02/summary.json",
+      "exists": true,
+      "sha256": "ed2316b5438a9b217bff352fa1f2e4f0e227c1f6a37d1f1f836c295bc3157fad"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_single_obstacle_02/events.jsonl",
+      "exists": true,
+      "sha256": "cc2ebc8829f2a0b8a6fede10da83d357aae6d2a79d8bb9798af434d56e141c37"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_single_obstacle_03/summary.json",
+      "exists": true,
+      "sha256": "efaf9778769307ef4dbf352e0260f2dcda2aa16dd4576782b04874538c191cb9"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_lqr_single_obstacle_03/events.jsonl",
+      "exists": true,
+      "sha256": "dd358a9af98f197429b1762f69d425fe84c8b8ad8fa44526295c97395ca4b177"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_goal_change_01/summary.json",
+      "exists": true,
+      "sha256": "9709625c6c1b7000de0afc3dda2c8e61880a1ed05b7682e5f399a29b01a40910"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_goal_change_01/events.jsonl",
+      "exists": true,
+      "sha256": "7202c6ea28b48d38770c45b5bb3717b0189e731a097ecd651f611755211b347d"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_cancel_01/summary.json",
+      "exists": true,
+      "sha256": "8f21f9c97ba2bedab46fb5a239a209b22062dc92dcb9c20a530d543bc1626d41"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_cancel_01/events.jsonl",
+      "exists": true,
+      "sha256": "d79a9e6882a4704cbe5a79e6752ac724a0020b81945ee18c7d92c02c40163828"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_odom_dropout/summary.json",
+      "exists": true,
+      "sha256": "4777728f0778d38f61ab5ea4dd13cdcdcea24a55a44a742ac2dc443b609de630"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-clean-release-matrix-001/python_pid_odom_dropout/events.jsonl",
+      "exists": true,
+      "sha256": "2c9fd939a5a650b89215ee644a368ee0ecdde999d6c928c523ebd2017353b627"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_01/summary.json",
+      "exists": true,
+      "sha256": "0dea73b97c1ffda8b249fa65356d866375f5637a762db836a7a2f908765b260f"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_01/events.jsonl",
+      "exists": true,
+      "sha256": "8457e5670d0b2bd5c36955fa3fbfb662bd5814698ef8c67b72e5643134f41fe1"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_02/summary.json",
+      "exists": true,
+      "sha256": "60728577cc2c924b44c9a5269122a9b547f8ae6bac95fdce60e9aaa57ee53e9f"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_02/events.jsonl",
+      "exists": true,
+      "sha256": "72719e569a71c695ef489ac39ee2930ef40425ce00b6d62cb7de5eb1ee638de7"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_03/summary.json",
+      "exists": true,
+      "sha256": "dd71fb33ab2787b1e5a4576dc511a5c0b2a0db4db81378b0f00c8740d90785a8"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_03/events.jsonl",
+      "exists": true,
+      "sha256": "5b7cf1fd9e38e1ae8bbf1e6b7f94b5670913e4243079bc65fd752e63ecd81b6f"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_01/summary.json",
+      "exists": true,
+      "sha256": "b3fce7bbb3765e88b5e453478869848d961d3a344d5c7f90fbdcf979034b6a9a"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_01/events.jsonl",
+      "exists": true,
+      "sha256": "76a9b9645af80d264d0979449940051d2691bfd0dae7e16caa75780c3b8a5bd6"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_02/summary.json",
+      "exists": true,
+      "sha256": "feed24badb07d662ec568dc3fe96eb886e71ffabe478d9c1df2b3d5b96799db6"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_02/events.jsonl",
+      "exists": true,
+      "sha256": "1cd34ae0d6b0fd24ff3401bb1e33f41de04fec3a380f6601266493aed315d4da"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_03/summary.json",
+      "exists": true,
+      "sha256": "5d16a65ce15ea8701061eac7df987505515e276c0dcd80c236fd9e851d631dda"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_03/events.jsonl",
+      "exists": true,
+      "sha256": "3bca3346477b78170c3859b1739d02942e443e2d0ac44b813e6fa2d4ed584f9d"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_01/summary.json",
+      "exists": true,
+      "sha256": "73fe8f867ef414a64145a63baca216b09e20f1343279df55edd095c105aef657"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_01/events.jsonl",
+      "exists": true,
+      "sha256": "89f7033299c2512c8d6a021201e69933c836bebafd1ee4e82d9d8e52315a6c2a"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_02/summary.json",
+      "exists": true,
+      "sha256": "1ae88b92f30ebd3a5a141cc4ae99bb864fb2c22b1b5623ae88768d20ed214701"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_02/events.jsonl",
+      "exists": true,
+      "sha256": "828c4078500085c47b0691e33b93505646a4ce60c0318660d98abb6857d5e3d1"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_03/summary.json",
+      "exists": true,
+      "sha256": "6327f629cf81bc914bd004c213a2b2e574a08ff8434736541abff208579e3af8"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_single_obstacle_03/events.jsonl",
+      "exists": true,
+      "sha256": "51cb387033f90df6546fb99259ec4ec17500d86b2601b7666afb491f621130c8"
+    },
+    {
+      "path": "scripts/validation/compare_results.py",
+      "sha256": "e5f76263bb218f032735e89fb64c6b77323b669ffa7c129fa942246ea2859984"
+    },
+    {
+      "path": "scripts/validation/tracking_metrics.py",
+      "sha256": "43a0c27db9ad40f886dfe25469371ee7efd265f410dc439adb69e64011254ad7"
+    },
+    {
+      "path": "scripts/validation/plot_acceptance.py",
+      "sha256": "969be7da2a6d54f4ce8d87977f57c8f9fe3df8f9bbfd5f0304d60fbefb25df5c"
+    },
+    {
+      "path": "docs/validation/scenario-mean-acceptance/plot_scenario_means.py",
+      "sha256": "8d9de86a7b4b92d8846e95d9413fd92d568006389610308e749a4e5ff7fbfe9b"
+    },
+    {
+      "path": "docs/validation/scenario-mean-release-protocol.md",
+      "sha256": "b142b28199ba06a43703f5e9a71c6494c1efe5142c9e10770b19ffe07cf7e34a"
+    },
+    {
+      "path": "docs/validation/python-clean-release-matrix-001/frame_receipt.json",
+      "sha256": "c07dd73b1f3c0f83b2e35db71f241a7915d6853e92f920b0d0d914d2d1f16b3d"
+    },
+    {
+      "path": "docs/validation/python-clean-release-matrix-001/run_audit.json",
+      "sha256": "dd6616a64165b04ef0c59e930951217d76a7e8b41298482d1cea019788fcfe1f"
+    },
+    {
+      "path": "docs/validation/normal-tf-throughput-001/002-summary.json",
+      "sha256": "3a80286afb3410d8dd874279fcfedb552d6f723430e2c699543d7d2420182e5a"
+    }
+  ],
+  "source_roots": [
+    {
+      "directory": "/home/usv/usv_migration/results/python-clean-release-matrix-001",
+      "role": "python",
+      "source_order": 0,
+      "created_unix_s": 1789104852.1000473,
+      "latest_basis": "manifest.created_unix_s",
+      "manifest_mode": "live",
+      "run_finished": true,
+      "interrupted": false,
+      "summary_present": true,
+      "selected_trials": 21,
+      "ignored_trials": [],
+      "planned_navigation_trials": 18,
+      "missing_planned_trials": []
+    },
+    {
+      "directory": "/home/usv/usv_migration/results/baseline-grid-interior-001",
+      "role": "cpp",
+      "source_order": 1,
+      "created_unix_s": 1789091953.994535,
+      "latest_basis": "manifest.created_unix_s",
+      "manifest_mode": "live",
+      "run_finished": true,
+      "interrupted": false,
+      "summary_present": true,
+      "selected_trials": 9,
+      "ignored_trials": [],
+      "planned_navigation_trials": 9,
+      "missing_planned_trials": []
+    }
+  ],
+  "render_outputs": [
+    "/home/usv/usv_migration/results/python-clean-release-figures-001 (preserved first render)",
+    "/home/usv/usv_migration/results/python-clean-release-figures-002 (final display headroom)",
+    "/home/usv/usv_migration/results/python-clean-release-mean-figures-001"
+  ],
+  "normal_tf_supplement": "same mapper source across 3afb25f to dfb1fb7, separate installation and controlled inputs; does not replace live unknown",
+  "outputs": {
+    "README.md": "145a14b98848bd22ebb2b8b77e724b64f007559b3e2f4bbd160cb9a70326ec6a",
+    "export_checks.json": "a3ccbe3799862aec95c65ac009f811fcd856ff9bdc6ad40ca8cc2ad1c3e0e50f",
+    "figures/control_timing.pdf": "ea066be4684d0f9fa2bc05dc62e77a2f653389c7cbc52520f750e0e4e5b38a5e",
+    "figures/control_timing.png": "c13a3eb1726879b7d1098eb96cb1f1499a0cc6a966593d042b37d2827442c0b0",
+    "figures/figure_manifest.json": "3bbd57ce4d1b4e774aeac756f68b8bf75d09f7fc9632540f15320b442d301ba0",
+    "figures/mapping_timing.pdf": "b8bc14d309eb8ba51d6d77f1b4683c307e63dbe961cbdc1474ae75d26232e8e0",
+    "figures/mapping_timing.png": "4941f3730ad380102d82264b0f325c492362743e1d783efa4b8f5fd69974365c",
+    "figures/navigation_metrics.pdf": "30d30c2035276352561c5031d2319072241d07010de587f312067d654a062d89",
+    "figures/navigation_metrics.png": "171b14cf5659441d875a16d84c80a750a99a9c0c6e2f37ddcfab38f260741a81",
+    "figures/pairwise_ratios.csv": "3652b2194963b01741da8ca473e4efa7b745605045cf84bbb1fd7ecfbe20fb4d",
+    "figures/pairwise_ratios.pdf": "b8b665527d1502b5f2c30b32040bb6befcd6ca5566c08acf3b408eee7de68aa1",
+    "figures/pairwise_ratios.png": "2440e5c97a674211b2b34f84042dc3a2ea02d49cbc62503bf1d8430286c6b44f",
+    "figures/timing_windows.csv": "ad43aa37fcbb355df88bd6857f485223eef43d44afab355bf7e0cf29789818fd",
+    "figures/trajectories.pdf": "d77ce9ef419d95810079ec4ab029c653e603f69a26cf07e2e8ed6c8029b10e31",
+    "figures/trajectories.png": "dc89c2538f4ef60a0c9be53e9196f295b77cbc43a70959b2ad3315983fa8699b",
+    "figures/trajectory_samples.csv": "049c6bd4e2330da26d1f0faf0a5a4cb918b86c199f7fe5f9fa1b5168e4ea3743",
+    "figures/trial_metrics.csv": "e6b184182f1d9cfba7471479e4e47b26d8960a579728fffea647e234b842912c",
+    "per_repeat_diagnostics.csv": "09c27d309da6797b8c51a5064d4e9c6f33e831213d39f75983c9a4e7ef9b1842",
+    "plot_acceptance_export.py": "18900ffdd43866defb526c70b42670416260ad978ec6effe765ca76b1206e29b",
+    "rendering_adjustment.json": "caf6c13f32273575bcf08f11358e4e938f54a325aa5c26e87618e5f516aa0f63",
+    "report.json": "ee36898a8ad47b8cb337c578e8525529066db5f3b320ae2075b139a4d7f4ff6d",
+    "report.md": "1bbd55c7b09a64a0803e76a9e32fec0d1b9904db2e88d1d21f72f0110f3d2a42",
+    "scenario_means/scenario_mean_figure_manifest.json": "82d465fec76e7342f3a0770355ba3e5c44ea4142cc915b01e01b1883479d057b",
+    "scenario_means/scenario_means.csv": "bf04c7ff819e950b68ce36eb288593b8293700cd80a5f3f0ff450edbc3d4ab78",
+    "scenario_means/scenario_means.pdf": "19cd0a4c83d94eb390901d0498e194fbd235634534d11ab870e80611f7fcd8cc",
+    "scenario_means/scenario_means.png": "3a5d4a2d26f84151bb8a5cda811042a1a1d479f166c4918ccb35bd1d44c2e8b7",
+    "scenario_statistics.csv": "065ce8b275cb401b24b1763b8a4cfca63aabd11e79a45b3a0eb06174019c5f8e"
+  }
+}
