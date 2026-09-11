@@ -43,7 +43,7 @@ def performance_events(*, control=3.0, processing=20.0, period=100.0,
         count = progress[index]
         nav = {"metrics": {"control_ms": {"count": count, "p99": control}},
                "process": {"pid": 11, "monotonic": stamp}}
-        mapping = {"integrated_scans": count, "queue_size": queues[index],
+        mapping = {"integrated_scans": count, "invalid_scans": 0, "queue_size": queues[index],
                    "processing_ms": {"count": count, "p95": processing, "p99": processing},
                    "observed_scan_period_ms": {"count": count, "p50": period, "p95": period},
                    "queue_counters": {"accepted": count + overflow[index] + expired[index] + queues[index],
@@ -528,3 +528,142 @@ def test_new_contract_accepts_observations_produced_by_real_scan_queue(tmp_path)
     report = paired_report(tmp_path, events)
     assert report["performance"][0]["backlog"]["status"] == "pass"
     assert report["summary"]["all_passed"]
+
+
+def accounted_scan_events(*, new_schema=True, invalid=(0, 1, 3), **kwargs):
+    """Malformed accepted scans are consumed, but never integrated into a map."""
+    events = post_drain_events(**kwargs)
+    mappings = [event["payload"] for event in events if event["event"] == "mapping_status"]
+    for payload, count in zip(mappings, invalid):
+        counters = payload["queue_counters"]
+        payload["invalid_scans"] = count
+        counters["accepted"] += count
+        if new_schema:
+            counters["invalid_consumed"] = count
+        else:
+            counters["processed"] += count
+    return events
+
+
+@pytest.mark.parametrize("new_schema", [False, True])
+def test_scan_counter_versions_preserve_successful_integration_accounting(tmp_path, new_schema):
+    report = paired_report(tmp_path, accounted_scan_events(new_schema=new_schema))
+    backlog = report["performance"][0]["backlog"]
+    assert backlog["status"] == "pass" and report["summary"]["all_passed"]
+    assert backlog["counter_schemas"] == ["successful_integrations_v2" if new_schema else "consumed_scans_v1"]
+    assert backlog["sample_counter_issues"] == []
+    for interval in backlog["intervals"]:
+        assert interval["accounting_balanced"]
+        delta = interval["counter_deltas"]
+        if new_schema:
+            assert delta["processed"] == interval["integrated_delta"]
+            assert delta["invalid_consumed"] == interval["invalid_scans_delta"]
+        else:
+            assert delta["processed"] == interval["integrated_delta"] + interval["invalid_scans_delta"]
+            assert "invalid_consumed" not in delta
+
+
+@pytest.mark.parametrize("new_schema", [False, True])
+@pytest.mark.parametrize("key", ["invalid_scans", "integrated_scans", "queue_size", "accepted",
+                                "processed", "expired", "overflow", "invalid", "duplicate", "resets"])
+@pytest.mark.parametrize("change", ["missing", "negative"])
+def test_missing_or_negative_scan_counters_never_become_zero(tmp_path, new_schema, key, change):
+    events = accounted_scan_events(new_schema=new_schema)
+    payload = [e["payload"] for e in events if e["event"] == "mapping_status"][1]
+    container = payload if key in ("invalid_scans", "integrated_scans", "queue_size") else payload["queue_counters"]
+    if change == "missing":
+        container.pop(key)
+    else:
+        container[key] = -1
+    report = paired_report(tmp_path, events)
+    backlog = report["performance"][0]["backlog"]
+    assert backlog["status"] == "unknown" and not report["summary"]["all_passed"]
+    assert backlog["missing_samples"] == 1
+    assert backlog["sample_counter_issues"][0]["reason"] == "missing_or_invalid_nonnegative_integer_counter"
+
+
+@pytest.mark.parametrize("change", ["missing", "negative", "null", "bool"])
+def test_new_invalid_consumed_must_be_present_and_a_nonnegative_integer(tmp_path, change):
+    events = accounted_scan_events(invalid=(0, 0, 0))
+    counters = [e["payload"]["queue_counters"] for e in events if e["event"] == "mapping_status"][1]
+    if change == "missing":
+        counters.pop("invalid_consumed")
+    else:
+        counters["invalid_consumed"] = {"negative": -1, "null": None, "bool": False}[change]
+    report = paired_report(tmp_path, events)
+    backlog = report["performance"][0]["backlog"]
+    assert backlog["status"] == "unknown" and not report["summary"]["all_passed"]
+    if change == "missing":
+        assert len(backlog["counter_schemas"]) == 2
+        assert any(not interval["same_counter_schema"] for interval in backlog["intervals"])
+    else:
+        assert backlog["missing_samples"] == 1
+
+
+@pytest.mark.parametrize("new_schema", [False, True])
+@pytest.mark.parametrize("change", ["processed_offset", "invalid_offset", "accepted_offset"])
+def test_balanced_interval_deltas_do_not_hide_invalid_lifetime_or_processing_counts(tmp_path, new_schema, change):
+    events = accounted_scan_events(new_schema=new_schema)
+    for payload in [e["payload"] for e in events if e["event"] == "mapping_status"]:
+        counters = payload["queue_counters"]
+        if change == "processed_offset":
+            counters["processed"] += 2
+            counters["accepted"] += 2  # Keep queue conservation; integration relation must catch this.
+        elif change == "invalid_offset":
+            payload["invalid_scans"] += 2
+        else:
+            counters["accepted"] += 2  # Equal offsets cancel in interval-only checks.
+    report = paired_report(tmp_path, events)
+    backlog = report["performance"][0]["backlog"]
+    assert backlog["status"] == "unknown" and not report["summary"]["all_passed"]
+    assert backlog["missing_samples"] == 3
+    assert all(issue["reason"] == "inconsistent_scan_counter_accounting"
+               for issue in backlog["sample_counter_issues"])
+
+
+def test_new_invalid_consumed_is_not_substituted_by_admission_invalid_count(tmp_path):
+    events = accounted_scan_events()
+    for payload in [e["payload"] for e in events if e["event"] == "mapping_status"]:
+        payload["queue_counters"]["invalid"] += 5
+    assert paired_report(tmp_path, events)["performance"][0]["backlog"]["status"] == "pass"
+
+
+def test_new_invalid_consumed_must_match_node_invalid_scans(tmp_path):
+    events = accounted_scan_events()
+    for payload in [e["payload"] for e in events if e["event"] == "mapping_status"]:
+        payload["queue_counters"]["invalid_consumed"] += 2
+        payload["queue_counters"]["accepted"] += 2
+    backlog = paired_report(tmp_path, events)["performance"][0]["backlog"]
+    assert backlog["status"] == "unknown"
+    assert all(not issue["processing_consistent"] for issue in backlog["sample_counter_issues"])
+
+
+def test_invalid_consumption_without_integrations_does_not_prove_throughput(tmp_path):
+    events = accounted_scan_events(progress=(10, 10, 10), invalid=(0, 50, 100))
+    backlog = paired_report(tmp_path, events)["performance"][0]["backlog"]
+    assert backlog["sample_counter_issues"] == []
+    assert backlog["status"] == "unknown"
+    assert backlog["reason"] == "observed_window_does_not_establish_stable_throughput"
+
+
+def test_new_isolated_expired_scan_is_conserved_without_counting_as_processed(tmp_path):
+    backlog = paired_report(tmp_path, accounted_scan_events(expired=(0, 1, 1)))["performance"][0]["backlog"]
+    assert backlog["status"] == "pass" and backlog["expired_delta_observed"] == 1
+    for interval in backlog["intervals"]:
+        assert interval["counter_deltas"]["processed"] == interval["integrated_delta"]
+
+
+def test_preexisting_reset_keeps_interval_balance_without_inventing_dropped_count(tmp_path):
+    events = accounted_scan_events()
+    for payload in [e["payload"] for e in events if e["event"] == "mapping_status"]:
+        payload["queue_counters"]["resets"] = 1
+        payload["queue_counters"]["accepted"] += 2  # Two pending scans discarded before this acquisition window.
+    assert paired_report(tmp_path, events)["performance"][0]["backlog"]["status"] == "pass"
+
+
+def test_safety_stopped_trial_is_not_a_completed_comparable_navigation_result(tmp_path):
+    py = write_run(tmp_path / "py", [result(status="safety_stopped", passed=False)], events=performance_events())
+    cpp = write_run(tmp_path / "cpp", [result("cpp")])
+    report = compare.build_report([("python", py), ("cpp", cpp)])
+    assert not report["comparisons"][0]["comparable"]
+    assert not report["summary"]["all_passed"]

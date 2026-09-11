@@ -1,0 +1,855 @@
+{
+  "classification": "Interrupted grid-interior matrix; do not claim 18 completed",
+  "completed": 9,
+  "passed": 7,
+  "failed_completed": 2,
+  "interrupted_trial": "python_lqr_straight_01",
+  "remaining_lqr_not_run": 8,
+  "supervision_limitation": "External polling found historical negative conservative swept bound from sim15.2 when current state had advanced to sim20.7. A verified SIGINT request then experienced tool dispatch/wait latency; the matrix reached LQR straight01 before interruption. PID circle03 naturally completed in the meantime. Exact source outcomes remain unmodified.",
+  "geometric_review_relative_path": "../../../scripts/validation/diagnostics/grid_interior_circle02/geometry_review.json",
+  "geometric_review_summary": "Observed instantaneous minimum +0.02963710055 m; dense-interpolation conservative lower +0.02958712247 m. Original coarse swept lower -0.00609211814 m retained. This is a failed 0.2 m clearance margin, not established observed physical overlap.",
+  "trials": [
+    {
+      "trial": "python_lqr_straight_01",
+      "passed": false,
+      "result": "interrupted",
+      "reasons": null,
+      "clean_exit_markers": null,
+      "abnormal_exit_lines": [],
+      "launch_log": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/python_lqr_straight_01/launch.log",
+        "present": false,
+        "reason": "trial interrupted before a launch log was created"
+      },
+      "non_nominal_statuses": [],
+      "snapshot_events": []
+    },
+    {
+      "trial": "python_pid_single_obstacle_01",
+      "passed": true,
+      "result": "completed",
+      "reasons": [],
+      "clean_exit_markers": 8,
+      "abnormal_exit_lines": [],
+      "launch_log": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/python_pid_single_obstacle_01/launch.log",
+        "bytes": 13338,
+        "sha256": "d400b61ea3c3ff7ab9038d88f070b10c469c3040f30ca6d26091efb6b24053dd"
+      },
+      "non_nominal_statuses": [
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 71777.891014425,
+          "payload": {
+            "state": "NO_PATH",
+            "reason": "start or goal is blocked",
+            "version": 1,
+            "stamp": 16.8,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 201,
+                "p50": 0.16572599997743964,
+                "p95": 4.656753997551277,
+                "p99": 7.253340998431668,
+                "max": 9.253027994418517
+              },
+              "costmap_conversion_ms": {
+                "count": 17,
+                "p50": 2.0729120005853474,
+                "p95": 4.349879207438789,
+                "p99": 4.505607843748294,
+                "max": 4.54454000282567
+              },
+              "planning_ms": {
+                "count": 55,
+                "p50": 8.835375003400259,
+                "p95": 12.855301405943463,
+                "p99": 13.864108617999591,
+                "max": 13.876445998903364
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 7
+            },
+            "process": {
+              "pid": 99246,
+              "cpu_seconds": 1.1758950000000001,
+              "peak_rss_kib": 71324,
+              "monotonic": 71777.89072587
+            }
+          }
+        },
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 71778.929618068,
+          "payload": {
+            "state": "NO_PATH",
+            "reason": "start or goal is blocked",
+            "version": 1,
+            "stamp": 17.8,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 211,
+                "p50": 0.16639000386931002,
+                "p95": 4.632803997083101,
+                "p99": 7.072288797644443,
+                "max": 9.253027994418517
+              },
+              "costmap_conversion_ms": {
+                "count": 18,
+                "p50": 1.8794159987010062,
+                "p95": 4.337712907727109,
+                "p99": 4.503174583805958,
+                "max": 4.54454000282567
+              },
+              "planning_ms": {
+                "count": 60,
+                "p50": 8.774693997111171,
+                "p95": 12.762921908142742,
+                "p99": 13.862966267915908,
+                "max": 13.876445998903364
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 12
+            },
+            "process": {
+              "pid": 99246,
+              "cpu_seconds": 1.2163460000000001,
+              "peak_rss_kib": 71324,
+              "monotonic": 71778.929310636
+            }
+          }
+        }
+      ],
+      "snapshot_events": [
+        {
+          "event": "navigation_failure_snapshot",
+          "wall_monotonic_s": 71777.907487384,
+          "costmap_path": "costmap_input_79c96a20.npz",
+          "state_path": "state_input_79c96a20.json",
+          "context_path": "navigation_context_79c96a20.json"
+        }
+      ]
+    },
+    {
+      "trial": "python_pid_single_obstacle_02",
+      "passed": false,
+      "result": "completed",
+      "reasons": [
+        "footprint_clearance_limit_or_missing_observation"
+      ],
+      "clean_exit_markers": 8,
+      "abnormal_exit_lines": [],
+      "launch_log": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/python_pid_single_obstacle_02/launch.log",
+        "bytes": 13336,
+        "sha256": "e1c3c282f9dba39a6e6f8d4f58f3502d3041d00915197929b8da07e363d77c71"
+      },
+      "non_nominal_statuses": [
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 71807.932253827,
+          "payload": {
+            "state": "NO_PATH",
+            "reason": "LOS swept footprint intersects lethal or unknown map cells",
+            "version": 1,
+            "stamp": 11.4,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 151,
+                "p50": 0.129694992210716,
+                "p95": 4.15638350386871,
+                "p99": 4.850919503951445,
+                "max": 5.519647995242849
+              },
+              "costmap_conversion_ms": {
+                "count": 11,
+                "p50": 2.649255999131128,
+                "p95": 4.0651440067449585,
+                "p99": 4.501146406983025,
+                "max": 4.610147007042542
+              },
+              "planning_ms": {
+                "count": 36,
+                "p50": 8.635735997813754,
+                "p95": 10.531333002290921,
+                "p99": 12.482684449059887,
+                "max": 12.902367001515813
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 1
+            },
+            "process": {
+              "pid": 99522,
+              "cpu_seconds": 0.8719809999999999,
+              "peak_rss_kib": 71356,
+              "monotonic": 71807.931849262
+            }
+          }
+        },
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 71810.009691875,
+          "payload": {
+            "state": "NO_PATH",
+            "reason": "start or goal is blocked",
+            "version": 1,
+            "stamp": 13.5,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 171,
+                "p50": 0.14782499056309462,
+                "p95": 4.153090005274862,
+                "p99": 4.813073703553529,
+                "max": 5.519647995242849
+              },
+              "costmap_conversion_ms": {
+                "count": 14,
+                "p50": 1.3724105010624044,
+                "p95": 3.901643106655683,
+                "p99": 4.4684462269651695,
+                "max": 4.610147007042542
+              },
+              "planning_ms": {
+                "count": 46,
+                "p50": 8.384050503082108,
+                "p95": 10.106327255925862,
+                "p99": 12.362775148358192,
+                "max": 12.902367001515813
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 6
+            },
+            "process": {
+              "pid": 99522,
+              "cpu_seconds": 0.9549359999999999,
+              "peak_rss_kib": 71364,
+              "monotonic": 71810.009480054
+            }
+          }
+        },
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 71811.048570966,
+          "payload": {
+            "state": "WAITING_REFERENCE",
+            "reason": "Latest map invalidated reference",
+            "version": 1,
+            "stamp": 14.500000000000002,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 181,
+                "p50": 0.1833059941418469,
+                "p95": 4.1526970017002895,
+                "p99": 4.794150803354567,
+                "max": 5.519647995242849
+              },
+              "costmap_conversion_ms": {
+                "count": 15,
+                "p50": 1.7208200006280094,
+                "p95": 3.8471428066259237,
+                "p99": 4.457546166959218,
+                "max": 4.610147007042542
+              },
+              "planning_ms": {
+                "count": 51,
+                "p50": 8.305167008074932,
+                "p95": 10.071968506963458,
+                "p99": 12.30282049800735,
+                "max": 12.902367001515813
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 7,
+              "map_invalidations": 1
+            },
+            "process": {
+              "pid": 99522,
+              "cpu_seconds": 1.001923,
+              "peak_rss_kib": 71364,
+              "monotonic": 71811.048376772
+            }
+          }
+        },
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 71812.118802065,
+          "payload": {
+            "state": "NO_PATH",
+            "reason": "LOS swept footprint intersects lethal or unknown map cells",
+            "version": 1,
+            "stamp": 15.600000000000001,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 191,
+                "p50": 0.1835449947975576,
+                "p95": 4.14242750412086,
+                "p99": 4.775227903155609,
+                "max": 5.519647995242849
+              },
+              "costmap_conversion_ms": {
+                "count": 16,
+                "p50": 0.9561410042806529,
+                "p95": 3.7926425065961666,
+                "p99": 4.446646106953267,
+                "max": 4.610147007042542
+              },
+              "planning_ms": {
+                "count": 57,
+                "p50": 8.099045007838868,
+                "p95": 10.030738008208573,
+                "p99": 12.23087491758633,
+                "max": 12.902367001515813
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 10,
+              "map_invalidations": 1
+            },
+            "process": {
+              "pid": 99522,
+              "cpu_seconds": 1.038138,
+              "peak_rss_kib": 71364,
+              "monotonic": 71812.118566253
+            }
+          }
+        },
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 71813.218668514,
+          "payload": {
+            "state": "NO_PATH",
+            "reason": "LOS swept footprint intersects lethal or unknown map cells",
+            "version": 1,
+            "stamp": 16.7,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 201,
+                "p50": 0.1835449947975576,
+                "p95": 4.132158006541431,
+                "p99": 4.756305002956651,
+                "max": 5.519647995242849
+              },
+              "costmap_conversion_ms": {
+                "count": 17,
+                "p50": 0.19146200793329626,
+                "p95": 3.7381422065664074,
+                "p99": 4.435746046947315,
+                "max": 4.610147007042542
+              },
+              "planning_ms": {
+                "count": 62,
+                "p50": 8.072135504335165,
+                "p95": 9.990841658873249,
+                "p99": 12.170920267235488,
+                "max": 12.902367001515813
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 10,
+              "map_invalidations": 1
+            },
+            "process": {
+              "pid": 99522,
+              "cpu_seconds": 1.071931,
+              "peak_rss_kib": 71364,
+              "monotonic": 71813.218382074
+            }
+          }
+        },
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 71815.418885135,
+          "payload": {
+            "state": "CURRENT_FOOTPRINT_BLOCKED",
+            "reason": "Current vessel footprint intersects lethal or unknown map cells",
+            "version": 1,
+            "stamp": 18.900000000000002,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 221,
+                "p50": 0.20512499031610787,
+                "p95": 4.07128399820067,
+                "p99": 4.696354203042578,
+                "max": 5.519647995242849
+              },
+              "costmap_conversion_ms": {
+                "count": 19,
+                "p50": 0.19146200793329626,
+                "p95": 3.6291416065068893,
+                "p99": 4.413945926935412,
+                "max": 4.610147007042542
+              },
+              "planning_ms": {
+                "count": 73,
+                "p50": 7.191791999503039,
+                "p95": 9.854338807053862,
+                "p99": 12.039020036463628,
+                "max": 12.902367001515813
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 11,
+              "map_invalidations": 1,
+              "current_footprint_blocks": 2
+            },
+            "process": {
+              "pid": 99522,
+              "cpu_seconds": 1.151837,
+              "peak_rss_kib": 71364,
+              "monotonic": 71815.418565589
+            }
+          }
+        }
+      ],
+      "snapshot_events": [
+        {
+          "event": "navigation_failure_snapshot",
+          "wall_monotonic_s": 71807.946730516,
+          "costmap_path": "costmap_input_fbb90af0.npz",
+          "state_path": "state_input_fbb90af0.json",
+          "context_path": "navigation_context_fbb90af0.json"
+        },
+        {
+          "event": "navigation_failure_snapshot",
+          "wall_monotonic_s": 71810.021940199,
+          "costmap_path": "costmap_input_304030b9.npz",
+          "state_path": "state_input_304030b9.json",
+          "context_path": "navigation_context_304030b9.json"
+        }
+      ]
+    },
+    {
+      "trial": "python_pid_single_obstacle_03",
+      "passed": false,
+      "result": "completed",
+      "reasons": [
+        "footprint_clearance_limit_or_missing_observation"
+      ],
+      "clean_exit_markers": 8,
+      "abnormal_exit_lines": [],
+      "launch_log": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/python_pid_single_obstacle_03/launch.log",
+        "bytes": 13070,
+        "sha256": "43f21fc7f7f718e1b06e7373281b372807c63165256becc6b86121bae17757b0"
+      },
+      "non_nominal_statuses": [
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 71846.663601057,
+          "payload": {
+            "state": "NO_PATH",
+            "reason": "start or goal is blocked",
+            "version": 1,
+            "stamp": 13.700000000000001,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 181,
+                "p50": 0.04828399687539786,
+                "p95": 4.310279997298494,
+                "p99": 5.948576595983443,
+                "max": 9.493375997408293
+              },
+              "costmap_conversion_ms": {
+                "count": 13,
+                "p50": 2.5268780009355396,
+                "p95": 5.093721006414849,
+                "p99": 6.610269001103003,
+                "max": 6.989405999775045
+              },
+              "planning_ms": {
+                "count": 45,
+                "p50": 8.83291699574329,
+                "p95": 11.201747797895223,
+                "p99": 13.422541070613088,
+                "max": 15.083779988344759
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 6
+            },
+            "process": {
+              "pid": 99804,
+              "cpu_seconds": 0.971221,
+              "peak_rss_kib": 71236,
+              "monotonic": 71846.663321426
+            }
+          }
+        },
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 71847.708874824,
+          "payload": {
+            "state": "NO_PATH",
+            "reason": "start or goal is blocked",
+            "version": 1,
+            "stamp": 14.8,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 191,
+                "p50": 0.12390800111461431,
+                "p95": 4.303202498704195,
+                "p99": 5.73083629569736,
+                "max": 9.493375997408293
+              },
+              "costmap_conversion_ms": {
+                "count": 15,
+                "p50": 2.062922008917667,
+                "p95": 4.777773507521484,
+                "p99": 6.5470795013243315,
+                "max": 6.989405999775045
+              },
+              "planning_ms": {
+                "count": 51,
+                "p50": 8.572758990339935,
+                "p95": 11.172129998158198,
+                "p99": 13.196008490922395,
+                "max": 15.083779988344759
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 8
+            },
+            "process": {
+              "pid": 99804,
+              "cpu_seconds": 1.020278,
+              "peak_rss_kib": 71236,
+              "monotonic": 71847.708619526
+            }
+          }
+        },
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 71848.753524216,
+          "payload": {
+            "state": "CURRENT_FOOTPRINT_BLOCKED",
+            "reason": "Current vessel footprint intersects lethal or unknown map cells",
+            "version": 1,
+            "stamp": 15.8,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 201,
+                "p50": 0.1473440061090514,
+                "p95": 4.296125000109896,
+                "p99": 5.513095995411277,
+                "max": 9.493375997408293
+              },
+              "costmap_conversion_ms": {
+                "count": 16,
+                "p50": 2.035503006482031,
+                "p95": 4.619799758074805,
+                "p99": 6.515484751434996,
+                "max": 6.989405999775045
+              },
+              "planning_ms": {
+                "count": 56,
+                "p50": 8.405093001783825,
+                "p95": 11.147448498377344,
+                "p99": 13.00723134118017,
+                "max": 15.083779988344759
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 12,
+              "map_invalidations": 1,
+              "current_footprint_blocks": 1
+            },
+            "process": {
+              "pid": 99804,
+              "cpu_seconds": 1.054681,
+              "peak_rss_kib": 71236,
+              "monotonic": 71848.753222683
+            }
+          }
+        },
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 71850.842838796,
+          "payload": {
+            "state": "NO_PATH",
+            "reason": "start or goal is blocked",
+            "version": 1,
+            "stamp": 17.900000000000002,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 221,
+                "p50": 0.18239900236949325,
+                "p95": 4.23380899883341,
+                "p99": 5.431502798455772,
+                "max": 9.493375997408293
+              },
+              "costmap_conversion_ms": {
+                "count": 18,
+                "p50": 1.7953575079445727,
+                "p95": 4.303852259181435,
+                "p99": 6.452295251656318,
+                "max": 6.989405999775045
+              },
+              "planning_ms": {
+                "count": 66,
+                "p50": 8.229840001149569,
+                "p95": 11.04914600000484,
+                "p99": 12.629677041695665,
+                "max": 15.083779988344759
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 17,
+              "map_invalidations": 1,
+              "current_footprint_blocks": 1
+            },
+            "process": {
+              "pid": 99804,
+              "cpu_seconds": 1.1277199999999998,
+              "peak_rss_kib": 71236,
+              "monotonic": 71850.842594709
+            }
+          }
+        }
+      ],
+      "snapshot_events": [
+        {
+          "event": "navigation_failure_snapshot",
+          "wall_monotonic_s": 71846.675714411,
+          "costmap_path": "costmap_input_63f638e2.npz",
+          "state_path": "state_input_63f638e2.json",
+          "context_path": "navigation_context_63f638e2.json"
+        },
+        {
+          "event": "navigation_failure_snapshot",
+          "wall_monotonic_s": 71850.855032529,
+          "costmap_path": "costmap_input_5f490a02.npz",
+          "state_path": "state_input_5f490a02.json",
+          "context_path": "navigation_context_5f490a02.json"
+        }
+      ]
+    },
+    {
+      "trial": "python_pid_straight_01",
+      "passed": true,
+      "result": "completed",
+      "reasons": [],
+      "clean_exit_markers": 8,
+      "abnormal_exit_lines": [],
+      "launch_log": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/python_pid_straight_01/launch.log",
+        "bytes": 13361,
+        "sha256": "cdc8e2bc6cc281f3f5663523127615a8f6c0044ab9fa67eee3fb6cf40c4a3d09"
+      },
+      "non_nominal_statuses": [
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 71587.369840425,
+          "payload": {
+            "state": "WAITING_REFERENCE",
+            "reason": "",
+            "version": 1,
+            "stamp": 3.2,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 51,
+                "p50": 0.042087005567736924,
+                "p95": 0.07176200597314164,
+                "p99": 0.13492350262822583,
+                "max": 0.1834779977798462
+              },
+              "costmap_conversion_ms": {
+                "count": 3,
+                "p50": 0.19359099678695202,
+                "p95": 0.2787805089610629,
+                "p99": 0.28635291004320607,
+                "max": 0.28824601031374186
+              }
+            },
+            "counters": {
+              "pending_replacements": 0
+            },
+            "process": {
+              "pid": 97661,
+              "cpu_seconds": 0.5275409999999999,
+              "peak_rss_kib": 68332,
+              "monotonic": 71587.369551873
+            }
+          }
+        }
+      ],
+      "snapshot_events": [
+        {
+          "event": "navigation_failure_snapshot",
+          "wall_monotonic_s": 71587.390438182,
+          "costmap_path": "costmap_input_bcc735d4.npz",
+          "state_path": "state_input_bcc735d4.json",
+          "context_path": "navigation_context_bcc735d4.json"
+        }
+      ]
+    },
+    {
+      "trial": "python_pid_straight_02",
+      "passed": true,
+      "result": "completed",
+      "reasons": [],
+      "clean_exit_markers": 8,
+      "abnormal_exit_lines": [],
+      "launch_log": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/python_pid_straight_02/launch.log",
+        "bytes": 13361,
+        "sha256": "ada025528978fd05ea90dcf4ce763a4e4f5569713b57286c8f4f8286a40be9b2"
+      },
+      "non_nominal_statuses": [],
+      "snapshot_events": []
+    },
+    {
+      "trial": "python_pid_straight_03",
+      "passed": true,
+      "result": "completed",
+      "reasons": [],
+      "clean_exit_markers": 8,
+      "abnormal_exit_lines": [],
+      "launch_log": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/python_pid_straight_03/launch.log",
+        "bytes": 12854,
+        "sha256": "536594326b9735e001cef33308bc1b667134c22d11809fcced8b528096a288b4"
+      },
+      "non_nominal_statuses": [],
+      "snapshot_events": []
+    },
+    {
+      "trial": "python_pid_turn_01",
+      "passed": true,
+      "result": "completed",
+      "reasons": [],
+      "clean_exit_markers": 8,
+      "abnormal_exit_lines": [],
+      "launch_log": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/python_pid_turn_01/launch.log",
+        "bytes": 12854,
+        "sha256": "d8e2abf54e79ffab5725ef2030b329021b05252aabe581c422fe1fcece28caf6"
+      },
+      "non_nominal_statuses": [],
+      "snapshot_events": []
+    },
+    {
+      "trial": "python_pid_turn_02",
+      "passed": true,
+      "result": "completed",
+      "reasons": [],
+      "clean_exit_markers": 8,
+      "abnormal_exit_lines": [],
+      "launch_log": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/python_pid_turn_02/launch.log",
+        "bytes": 13628,
+        "sha256": "3ec62c5739eaf9fdad0bc5291a023469145d7d46458f655f140255452e6de958"
+      },
+      "non_nominal_statuses": [],
+      "snapshot_events": []
+    },
+    {
+      "trial": "python_pid_turn_03",
+      "passed": true,
+      "result": "completed",
+      "reasons": [],
+      "clean_exit_markers": 8,
+      "abnormal_exit_lines": [],
+      "launch_log": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/python_pid_turn_03/launch.log",
+        "bytes": 13096,
+        "sha256": "42df63aa2fc40cc2f2cb6c227cffcedbbc62ee456e45c6bc87ed7bcf0e98bd7e"
+      },
+      "non_nominal_statuses": [],
+      "snapshot_events": []
+    }
+  ]
+}

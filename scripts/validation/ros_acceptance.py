@@ -19,7 +19,7 @@ import sys
 import time
 import uuid
 
-from metrics import distribution, point_to_polyline_distance, swept_clearance, trial_verdict, wrap_angle
+from metrics import distribution, point_to_polyline_distance, swept_clearance, trial_verdict, wrap_angle, supervision_stop_reason
 
 
 class TrialBlocked(RuntimeError):
@@ -640,6 +640,7 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
         previous_pose = None
         history_index = 0
         next_sample = started
+        safety_stop = None
         while time.monotonic() - started < threshold["max_duration_wall_s"] and probe.sim_time() - sim_started < threshold["max_duration_sim_s"]:
             process.check()
             probe.types["rclpy"].spin_once(probe, timeout_sec=0.02)
@@ -653,7 +654,10 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
                 outcome.update(result="diagnostic_stopped", reason=probe.status.get("reason", "reference failed"))
                 break
             if fault == "goal_change" and not changed and now - started >= 4 and probe.first_command_latency is not None:
-                goal = [23.0, -22.0, -math.pi / 2]
+                replacement = next((s for s in config["scenarios"] if s["name"] == "turn"), None)
+                if replacement is None:
+                    raise TrialBlocked("goal_change requires a turn goal in the scenario file")
+                goal = list(replacement["goal"])
                 probe.publish_goal(goal)
                 changed, fault_action_wall = True, now
                 log.write("fault_goal_replacement", goal=goal)
@@ -687,6 +691,13 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
                                                     config["footprint"]["length_m"], config["footprint"]["width_m"])
                         min_clearance = clearance if min_clearance is None else min(min_clearance, clearance)
                 previous_pose = pose
+            safety_stop = supervision_stop_reason(min_clearance, None, threshold["maximum_cross_track_m"])
+            if safety_stop is not None:
+                log.write("supervision_boundary_stop", reason=safety_stop, pose=probe.pose,
+                          sim_time_s=probe.sim_time(), minimum_footprint_clearance_m=min_clearance)
+                outcome.update(result="safety_stopped", reason=safety_stop, safety_stopped=True)
+                probe.capture_inputs("supervision_boundary_snapshot")
+                break
             if now < next_sample or probe.pose is None:
                 continue
             next_sample = now + 0.1
@@ -706,11 +717,18 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
                       command=probe.commands, goal_distance_m=distance, cross_track_initial_m=fixed_error,
                       cross_track_live_m=live_error, minimum_footprint_clearance_m=min_clearance,
                       arrived=arrived, status=probe.status)
+            safety_stop = supervision_stop_reason(min_clearance, fixed_error, threshold["maximum_cross_track_m"])
+            if safety_stop is not None:
+                log.write("supervision_boundary_stop", reason=safety_stop, pose=probe.pose,
+                          sim_time_s=probe.sim_time(), cross_track_initial_m=fixed_error)
+                outcome.update(result="safety_stopped", reason=safety_stop, safety_stopped=True)
+                probe.capture_inputs("supervision_boundary_snapshot")
+                break
             if arrived and fault != "cancel" and (fault != "goal_change" or changed):
                 break
         # Close the acquisition interval before distribution calculations,
         # JSON serialization and process teardown add wall-clock overhead.
-        log.write("acquisition_finished", sim_time_s=probe.sim_time(), cause="loop_finished")
+        log.write("acquisition_finished", sim_time_s=probe.sim_time(), cause=safety_stop or "loop_finished")
         acquisition_closed = True
         if outcome["result"] == "not_run":
             verdict = trial_verdict(arrived, cross_track, min_clearance, valid_commands, threshold, bool(scenario["obstacles"]))
@@ -940,6 +958,7 @@ def main(argv=None):
     results = []
     run_finished = False
     interrupted = False
+    safety_stopped = False
     try:
         for item in matrix:
             workspace = args.workspace if item["mode"] == "python" else args.baseline_workspace
@@ -947,7 +966,10 @@ def main(argv=None):
             outcome = navigation_trial(args, config, workspace, item["mode"], item["controller"], scene, item["repeat"])
             results.append(outcome)
             print(json.dumps(sanitized(outcome), ensure_ascii=False), flush=True)
-        if args.faults or args.only_faults:
+            if outcome.get("safety_stopped"):
+                safety_stopped = True
+                break
+        if (args.faults or args.only_faults) and not safety_stopped:
             scene = next(s for s in config["scenarios"] if s["name"] == "straight")
             for mode in modes:
                 workspace = args.workspace if mode == "python" else args.baseline_workspace
@@ -955,7 +977,7 @@ def main(argv=None):
                     results.append(navigation_trial(args, config, workspace, mode, "pid", scene, 1, fault=fault))
             if "python" in modes:
                 results.append(odom_dropout_trial(args, config))
-        run_finished = True
+        run_finished = not safety_stopped
     except KeyboardInterrupt:
         interrupted = True
     finally:
@@ -963,7 +985,8 @@ def main(argv=None):
             rclpy.shutdown()
         summary = {"results": results, "completed": sum(r["result"] == "completed" for r in results),
                    "passed": sum(r["passed"] for r in results), "run_finished": run_finished,
-                   "interrupted": interrupted, "all_passed": run_finished and bool(results) and all(r["passed"] for r in results)}
+                   "interrupted": interrupted, "safety_stopped": safety_stopped,
+                   "all_passed": run_finished and bool(results) and all(r["passed"] for r in results)}
         (args.output / "summary.json").write_text(json.dumps(sanitized(summary), ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
     return 130 if interrupted else 0 if run_finished and results and all(r["passed"] for r in results) else 1
 

@@ -15,8 +15,9 @@ path_planner:
   default_tolerance: 0.0
   # whether outline the map or not
   outline_map: true
-  # obstacle inflation factor
-  obstacle_factor: 0.5
+  # Reject raw costs >= 254 * factor. A smaller factor leaves more room
+  # for the finite hull and PID yaw/velocity lag; search costs are unchanged.
+  obstacle_factor: 0.25
   # whether publish expand zone or not
   expand_zone: true
   # safety corridor

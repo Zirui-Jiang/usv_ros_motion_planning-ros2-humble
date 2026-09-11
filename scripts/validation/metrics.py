@@ -74,3 +74,17 @@ def trial_verdict(arrived, cross_track, clearance, command_valid, thresholds, ha
     if has_obstacles and (clearance is None or clearance < thresholds["minimum_clearance_m"]):
         reasons.append("footprint_clearance_limit_or_missing_observation")
     return {"passed": not reasons, "reasons": reasons}
+
+
+def supervision_stop_reason(clearance, cross_track, cross_track_limit):
+    """Stop acquisition at a geometric boundary, independent of human polling.
+
+    Positive clearance below the acceptance margin remains a failed trial but
+    does not trigger this emergency stop. A negative conservative swept bound
+    triggers a stop even before sampled-pose overlap is independently checked.
+    """
+    if clearance is not None and clearance < 0:
+        return "negative_swept_clearance_bound"
+    if cross_track is not None and cross_track > cross_track_limit:
+        return "cross_track_boundary_exceeded"
+    return None

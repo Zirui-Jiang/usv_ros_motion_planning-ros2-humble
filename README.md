@@ -12,6 +12,7 @@ LiDAR 累积地图与 Nav2 实时代价地图分别工作，当前没有启用 s
 | --- | --- |
 | [工程使用指南](docs/python-navigation-guide.md) | WSL 构建、原包分工、launch、YAML 兼容与在线调参、回退 |
 | [实施与验收状态](docs/python-migration-status.md) | 区分静态检查、单元测试、ROS 集成与闭环验收 |
+| [验收报告](docs/python-migration-validation.md) | 固定版本、对照协议、实际证据与适用范围 |
 | [迁移差异](docs/python-migration-differences.md) | 原行为、已修复缺陷、未迁移能力和比较边界 |
 | [自动验收入口](scripts/validation/README.md) | 固定场景、重复试验、原始数据与性能指标 |
 | [环境变更](docs/validation/environment-changes.md) | ROS/Gazebo 版本、依赖安装与备份记录 |

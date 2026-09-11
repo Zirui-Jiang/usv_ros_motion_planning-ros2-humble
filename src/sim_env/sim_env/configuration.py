@@ -10,7 +10,7 @@ C = "usv_simulation.controller."
 T = "usv_simulation.trajectory_planner."
 
 DEFAULTS = {
-    "planner_name": "astar", "obstacle_factor": 0.5,
+    "planner_name": "astar", "obstacle_factor": 0.25,
     "path_planner.outline_map": True, "path_planner.enable_resample": True,
     "path_planner.resample_ratio": 0.5, "path_planner.convert_offset": 0.0,
     "path_planner.default_tolerance": 0.0, "path_planner.expand_zone": True,

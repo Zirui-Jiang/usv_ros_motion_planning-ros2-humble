@@ -1,0 +1,130 @@
+{
+  "classification": "Original safety-margin failure retained. Conservative negative sweep does not establish observed geometric contact.",
+  "trial": "/home/usv/usv_migration/results/python-grid-interior-001/python_pid_single_obstacle_02",
+  "obstacle": {
+    "name": "cylinder",
+    "x": 29.125,
+    "y": -10.125,
+    "radius": 1.0,
+    "height": 4.0
+  },
+  "footprint": {
+    "length_m": 2.2,
+    "width_m": 1.2
+  },
+  "required_minimum_clearance_m": 0.2,
+  "original_summary_clearance_m": -0.006092118140924772,
+  "instantaneous_pose_minimum": {
+    "clearance_m": 0.029637100551803686,
+    "odom": {
+      "event": "odom",
+      "wall_monotonic_s": 71811.883973918,
+      "sim_time_s": 15.4,
+      "pose": [
+        29.758553918814982,
+        -12.233763391553904,
+        1.1220772582981111
+      ],
+      "body_velocity": [
+        0.29458010171619786,
+        -0.2991691071901184,
+        0.16792127325877415
+      ],
+      "frame_id": "otter/odom",
+      "child_frame_id": "otter/base_link"
+    }
+  },
+  "original_worst_segment": {
+    "index": 151,
+    "from_sim_s": 15.1,
+    "to_sim_s": 15.2,
+    "from_wall": 71811.58122533,
+    "to_wall": 71811.682982486,
+    "old_lower_bound_m": -0.006092118140924772,
+    "old_subdivisions": 1,
+    "old_padding_m": 0.04014115280661575,
+    "translation_m": 0.04877426177905054,
+    "yaw_delta_rad": 0.025146156539290754,
+    "exact_endpoint_clearance_m": [
+      0.04063313351435238,
+      0.03404903466569098
+    ],
+    "refined_subdivisions": 803,
+    "refined_sample_min_m": 0.03404903466569098,
+    "refined_interpolation_lower_bound_m": 0.033999045683366425,
+    "refined_padding_m": 4.9988982324552616e-05,
+    "refined_min_fraction": 1.0
+  },
+  "refined_all_segments_minimum": {
+    "index": 153,
+    "from_sim_s": 15.3,
+    "to_sim_s": 15.4,
+    "from_wall": 71811.783998367,
+    "to_wall": 71811.883973918,
+    "old_lower_bound_m": -0.0033484328542217473,
+    "old_subdivisions": 1,
+    "old_padding_m": 0.03298553340602521,
+    "translation_m": 0.04314138981759639,
+    "yaw_delta_rad": 0.01822006578590596,
+    "exact_endpoint_clearance_m": [
+      0.030634501823372462,
+      0.029637100551803686
+    ],
+    "refined_subdivisions": 660,
+    "refined_sample_min_m": 0.029637100551803464,
+    "refined_interpolation_lower_bound_m": 0.029587122470885244,
+    "refined_padding_m": 4.9978080918220016e-05,
+    "refined_min_fraction": 1.0
+  },
+  "refinement_method": "For each recorded consecutive odometry pose, linear XY / shortest yaw interpolation. Corner-motion bound per refined subsegment <=0.0001 m; subtract half that bound from sampled gap. This certifies the chosen interpolation, not unobserved true dynamics between messages.",
+  "unobserved_motion_limit": "No claim of continuous Gazebo collision absence beyond recorded-pose/interpolation evidence. Positive ~3 cm clearance still fails the fixed 0.2 m acceptance margin.",
+  "source_files": [
+    {
+      "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/python_pid_single_obstacle_02/events.jsonl",
+      "bytes": 874698,
+      "sha256": "aba5a33a2a843ae9376d4a847d4c7c2743838dc2137a6daa309e01ff36a4743b"
+    },
+    {
+      "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/python_pid_single_obstacle_02/summary.json",
+      "bytes": 4583,
+      "sha256": "2a4562cc79a04dd087fa509f5316cddcef8f72233df4d4740726ce54a46280e3"
+    },
+    {
+      "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/manifest.json",
+      "bytes": 6150,
+      "sha256": "e46ae111df4b7c2016a928b95c5dd011846dbcdaf98f9a0ffaa1f2e7d572afeb"
+    }
+  ],
+  "snapshot_copies": [
+    {
+      "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/python_pid_single_obstacle_02/costmap_input_fbb90af0.npz",
+      "bytes": 2324,
+      "sha256": "6a4c533d2decda5b25c95279020ff1d6e0c4b8fc5092a0b0e21b0fce9aa1ccc8"
+    },
+    {
+      "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/python_pid_single_obstacle_02/state_input_fbb90af0.json",
+      "bytes": 335,
+      "sha256": "da1f73be582049f4e72ecb4ddf9403137a6ebd2753f39494669c5a44ef162c71"
+    },
+    {
+      "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/python_pid_single_obstacle_02/navigation_context_fbb90af0.json",
+      "bytes": 9827,
+      "sha256": "f9d4cc733170d36769613d206589c9f6b60b866ede661a3bda5de89b9d118e7c"
+    },
+    {
+      "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/python_pid_single_obstacle_02/costmap_input_304030b9.npz",
+      "bytes": 2326,
+      "sha256": "0ec58771a4d80aabd024ea98d66017c44def46d0f7a9895ff78aacde3829ccc8"
+    },
+    {
+      "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/python_pid_single_obstacle_02/state_input_304030b9.json",
+      "bytes": 334,
+      "sha256": "837c77e2643d4ff12bd40ff4c022f0306c5beacf0b576c03d90d400a1e8c07a5"
+    },
+    {
+      "absolute_path": "/home/usv/usv_migration/results/python-grid-interior-001/python_pid_single_obstacle_02/navigation_context_304030b9.json",
+      "bytes": 7614,
+      "sha256": "7b695ada6078832c9446f5fe1a0173c51e0ef23bdda11d12ddabb4259dd79e84"
+    }
+  ]
+}

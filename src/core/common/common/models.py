@@ -124,6 +124,13 @@ class GridSnapshot:
         a.setflags(write=False)
         object.__setattr__(self, "data", a)
 
+    def __reduce__(self):
+        # NumPy's pickle round-trip does not retain the read-only flag.
+        # Re-enter construction at the process boundary to restore validation
+        # and an owned, read-only array in the planning worker as well.
+        return (type(self), (self.data, self.resolution, self.origin_x,
+                            self.origin_y, self.stamp, self.frame_id))
+
     @property
     def width(self):
         return self.data.shape[1]

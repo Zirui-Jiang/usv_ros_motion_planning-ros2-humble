@@ -38,3 +38,13 @@ def test_verdict_never_passes_unobserved_arrival_or_missing_path():
     assert not metrics.trial_verdict(False, [0.1], None, True, thresholds, False)["passed"]
     assert not metrics.trial_verdict(True, [], None, True, thresholds, False)["passed"]
     assert metrics.trial_verdict(True, [0.1], 0.3, True, thresholds, True)["passed"]
+
+
+def test_supervision_stops_on_boundary_without_hiding_positive_margin_failures():
+    assert metrics.supervision_stop_reason(-0.006092, 0.2, 4.0) == "negative_swept_clearance_bound"
+    assert metrics.supervision_stop_reason(0.0, 4.00001, 4.0) == "cross_track_boundary_exceeded"
+    assert metrics.supervision_stop_reason(None, None, 4.0) is None
+    assert metrics.supervision_stop_reason(0.074153, 4.0, 4.0) is None
+    # Positive-but-insufficient margins still fail the ordinary verdict.
+    assert not metrics.trial_verdict(True, [0.2], 0.074153, True,
+                                    {"maximum_cross_track_m": 4, "minimum_clearance_m": 0.2}, True)["passed"]

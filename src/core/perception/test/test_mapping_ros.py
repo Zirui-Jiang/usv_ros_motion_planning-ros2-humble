@@ -18,7 +18,7 @@ from rclpy.parameter import Parameter
 from rosgraph_msgs.msg import Clock
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import String
-from tf2_ros import TransformBroadcaster
+from tf2_ros import StaticTransformBroadcaster, TransformBroadcaster
 
 from perception.mapping_node import MappingNode
 
@@ -37,6 +37,14 @@ def test_exact_tf_duplicate_expiry_clock_rollback_and_map_publication():
         clock_pub = driver.create_publisher(Clock, "/clock", 10)
         scan_pub = driver.create_publisher(LaserScan, "scan", 10)
         broadcaster = TransformBroadcaster(driver)
+        static_broadcaster = StaticTransformBroadcaster(driver)
+        static_transform = TransformStamped()
+        static_transform.header.frame_id = "perception_smoke/base"
+        static_transform.child_frame_id = "perception_smoke/lidar"
+        static_transform.transform.rotation.w = 1.0
+        # Publish the sensor extrinsic once, as robot_state_publisher does.
+        # The same transform must remain usable after the clock rollback below.
+        static_broadcaster.sendTransform(static_transform)
         maps = []
         map_sub = driver.create_subscription(OccupancyGrid, "map", maps.append, 10)
         statuses = []
@@ -65,7 +73,7 @@ def test_exact_tf_duplicate_expiry_clock_rollback_and_map_publication():
         def transform(seconds):
             value = TransformStamped()
             value.header.frame_id = "perception_smoke/map"
-            value.child_frame_id = "perception_smoke/lidar"
+            value.child_frame_id = "perception_smoke/base"
             value.header.stamp.sec = int(seconds)
             value.header.stamp.nanosec = round((seconds - int(seconds)) * 1e9)
             value.transform.rotation.w = 1.0
@@ -122,6 +130,8 @@ def test_exact_tf_duplicate_expiry_clock_rollback_and_map_publication():
         assert len(mapper.pending) == 0
         assert np.all(mapper.mapper.data == -1)
         # A lower scan stamp becomes valid after rollback clears dedup history.
+        # Only the dynamic transform is republished; the static sensor link
+        # must survive Buffer.clear(), as it does in the Humble StaticCache.
         transform(1.0)
         scan(1.0)
         until(lambda: mapper.integrated_scans == 2)

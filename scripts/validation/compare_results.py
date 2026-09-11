@@ -161,8 +161,8 @@ def post_drain_queue_evidence(records):
 
 def backlog_performance(records, window):
     """Finite observation-window evidence, never infer continuous fullness from two gauges."""
-    samples, missing, seen = [], 0, set()
-    required = ("accepted", "processed", "overflow", "expired", "invalid", "resets")
+    samples, missing, seen, sample_issues, schemas = [], 0, set(), [], set()
+    required = ("accepted", "processed", "overflow", "expired", "invalid", "duplicate", "resets")
     for record in records:
         payload, stamp = record["payload"], record["wall_monotonic_s"]
         pid = nested(payload, "process", "pid")
@@ -173,13 +173,43 @@ def backlog_performance(records, window):
             seen.add(identity)
         counts = payload.get("queue_counters")
         queue, integrated = payload.get("queue_size"), payload.get("integrated_scans")
+        invalid_scans = payload.get("invalid_scans")
+        new_schema = isinstance(counts, dict) and "invalid_consumed" in counts
+        schema = "successful_integrations_v2" if new_schema else "consumed_scans_v1"
+        if isinstance(counts, dict):
+            schemas.add(schema)
+        keys = required + (("invalid_consumed",) if new_schema else ())
         if (type(pid) is not int or not number(stamp) or type(queue) is not int or queue < 0
-                or type(integrated) is not int or integrated < 0 or not isinstance(counts, dict)
-                or any(type(counts.get(k)) is not int or counts[k] < 0 for k in required)):
+                or type(integrated) is not int or integrated < 0
+                or type(invalid_scans) is not int or invalid_scans < 0 or not isinstance(counts, dict)
+                or any(type(counts.get(k)) is not int or counts[k] < 0 for k in keys)):
             missing += 1
+            sample_issues.append({"source": record["source"], "schema": schema,
+                                  "reason": "missing_or_invalid_nonnegative_integer_counter"})
+            continue
+        # Old processed counted every consumed callback (including invalid
+        # scans); v2 counts only actual integrations and separates invalids.
+        # Neither schema counts admission-time invalid/duplicate input as
+        # accepted work. Missing measurements are never inferred as zero.
+        processing_consistent = (counts["processed"] == integrated
+                                 and counts["invalid_consumed"] == invalid_scans) if new_schema else (
+                                     counts["processed"] == integrated + invalid_scans)
+        consumed_invalid = counts["invalid_consumed"] if new_schema else 0
+        # Reset clears pending entries without a dropped-on-reset counter.
+        # Across such epochs only interval conservation is observable; do not
+        # assert an unsupported lifetime balance or hide an in-window reset.
+        lifetime_balanced = (counts["resets"] > 0 or counts["accepted"] - counts["processed"]
+                             - consumed_invalid - counts["expired"] - counts["overflow"] == queue)
+        if not processing_consistent or not lifetime_balanced:
+            missing += 1
+            sample_issues.append({"source": record["source"], "schema": schema,
+                                  "reason": "inconsistent_scan_counter_accounting",
+                                  "processing_consistent": processing_consistent,
+                                  "lifetime_balanced_or_unobservable_after_reset": lifetime_balanced})
             continue
         samples.append({"wall_monotonic_s": stamp, "pid": pid, "queue_size": queue,
                         "integrated_scans": integrated, "queue_counters": counts,
+                        "invalid_scans": invalid_scans, "counter_schema": schema,
                         "source": record["source"]})
     intervals, gaps, invalid = [], 0, 0
     overflow_run = 0
@@ -188,16 +218,22 @@ def backlog_performance(records, window):
         duration = current["wall_monotonic_s"] - previous["wall_monotonic_s"]
         a, b = previous["queue_counters"], current["queue_counters"]
         same_epoch = previous["pid"] == current["pid"] and a["resets"] == b["resets"]
+        same_schema = previous["counter_schema"] == current["counter_schema"]
         # The producer publishes every 5s. Short final-summary intervals are
         # retained as partial evidence; missing scheduled snapshots break runs.
-        continuous = same_epoch and 0 < duration <= 1.5 * MAPPING_REPORT_PERIOD_S
+        continuous = same_epoch and same_schema and 0 < duration <= 1.5 * MAPPING_REPORT_PERIOD_S
         full_interval = continuous and duration >= 0.8 * MAPPING_REPORT_PERIOD_S
         delta = {k: b[k] - a[k] for k in required}
+        new_schema = same_schema and current["counter_schema"] == "successful_integrations_v2"
+        if new_schema:
+            delta["invalid_consumed"] = b["invalid_consumed"] - a["invalid_consumed"]
         integrated_delta = current["integrated_scans"] - previous["integrated_scans"]
-        valid = continuous and all(v >= 0 for v in delta.values()) and integrated_delta >= 0
+        invalid_scans_delta = current["invalid_scans"] - previous["invalid_scans"]
+        valid = (continuous and all(v >= 0 for v in delta.values())
+                 and integrated_delta >= 0 and invalid_scans_delta >= 0)
         queue_delta = current["queue_size"] - previous["queue_size"]
         balanced = (valid and delta["accepted"] - delta["processed"] - delta["overflow"]
-                    - delta["expired"] == queue_delta)
+                    - delta["expired"] - (delta["invalid_consumed"] if new_schema else 0) == queue_delta)
         if not continuous:
             gaps += 1
         if not valid or not balanced:
@@ -209,8 +245,11 @@ def backlog_performance(records, window):
         sustained_overflow |= overflow_run >= 2
         intervals.append({"start": previous["wall_monotonic_s"], "end": current["wall_monotonic_s"],
                           "duration_s": duration, "full_metrics_interval": full_interval,
-                          "same_epoch": same_epoch, "valid": valid, "accounting_balanced": balanced,
+                          "same_epoch": same_epoch, "same_counter_schema": same_schema,
+                          "counter_schema": current["counter_schema"] if same_schema else "mixed",
+                          "valid": valid, "accounting_balanced": balanced,
                           "counter_deltas": delta, "integrated_delta": integrated_delta,
+                          "invalid_scans_delta": invalid_scans_delta,
                           "queue_delta": queue_delta})
     full = [v for v in intervals if v["full_metrics_interval"] and v["valid"] and v["accounting_balanced"]]
     observed_start = samples[0]["wall_monotonic_s"] if samples else None
@@ -219,6 +258,7 @@ def backlog_performance(records, window):
                         and observed_start - window["start"] <= 1.5 * MAPPING_REPORT_PERIOD_S
                         and window["end"] - observed_end <= 1.5 * MAPPING_REPORT_PERIOD_S)
     evidence = dict(status_samples=len(samples), missing_samples=missing, full_intervals=len(full),
+                    counter_schemas=sorted(schemas), sample_counter_issues=sample_issues,
                     observation_start=observed_start, observation_end=observed_end,
                     observation_span_s=observed_end-observed_start if samples else None,
                     expected_metrics_period_s=MAPPING_REPORT_PERIOD_S,
@@ -233,7 +273,7 @@ def backlog_performance(records, window):
     evidence["observation_policy"] = "post_drain_latency_v1" if post_drain else "legacy_sparse_gauges"
     if sustained_overflow:
         return verdict("fail", "overflow_increased_in_at_least_two_consecutive_metrics_intervals", **evidence)
-    if (not boundary_covered or missing or invalid or gaps or len(full) < 2):
+    if (not boundary_covered or missing or invalid or gaps or len(full) < 2 or len(schemas) != 1):
         return verdict("unknown", "insufficient_contiguous_queue_counter_evidence", **evidence)
     # Positive processing, balanced counters and no overflow support stability
     # over this window. A witnessed decline distinguishes a 1-2 scan endpoint
@@ -773,6 +813,7 @@ def markdown(report):
               "窗口为第一次 goal_published 至 acquisition_finished；旧记录明确回退到 trial_finished，该末端可能包含统计落盘时间。状态中的耗时分位数来自节点计算历史，可能含启动样本，各窗口样本数不相加。控制 P99 必须小于100ms；有实际积分扫描的建图处理 P95 不得超过同一状态中扫描时间戳间隔的 P50。扫描周期仅作为预算，不充当算法耗时。C++ 无对应遥测不要求性能对等。", "",
               "积压至少需要3次同一进程/时钟周期的有效快照、2个连续约5s间隔，并覆盖试验窗口首尾。连续两个间隔 overflow 增长判失败；单次溢出、采样缺口、停滞或计数不自洽标待审。处理持续进展、队列计数平衡、无溢出增长时，有明确队列回落的末端1～2扫描瞬态净增不单独否决；持续非减且净增仍待审。两次 queue>0 不能证明持续积压，偶发 TF 过期单列记录。结论仅覆盖观测窗口，不保证无限时长稳定。", "",
               "新增 queue_observation_window 使用独立 post_drain_latency_v1 规则：每个5s后drain观测窗至少覆盖80%，最大观测间隔和末端新鲜度不超过配置的TF墙钟截止；已有积分进展和计数守恒之外，还要求完成扫描等待时间及有效pending年龄分布有界、持续非空时有最老身份轮换。实测空队列以empty_observations表示，不伪造年龄零样本。满足时允许固定单帧流水等待，无需一定看到队列清空；连续区间TF过期增长仅能待审，不能由剩余扫描年龄推断没有过期。旧记录仍沿用上述稀疏观测规则，缺失/混合新字段不退回宽松判定。后drain最大值不代表剔除过期项前或连续时域的峰值。", "",
+              "计数按字段版本校验：新字段queue_counters.invalid_consumed存在时，processed必须等于integrated_scans，invalid_consumed必须等于invalid_scans，accepted减去processed、invalid_consumed、expired、overflow等于pending；旧字段缺失时，processed必须等于integrated_scans加invalid_scans，守恒式不重复扣除无效扫描。入队前拒绝的invalid/duplicate不计入accepted。无reset历史时另查累计守恒，reset曾清空的队列缺少丢弃计数时仅查同epoch区间守恒。缺失、负数、版本混合或计数不一致均不当作零或通过，具体原因保存在sample_counter_issues及intervals。", "",
               "| Python试验 | 总状态 | 控制耗时 | 建图耗时 | 积压 | 状态样本/完整间隔/跨度s |", "| --- | --- | --- | --- | --- | --- |"]
     for trial in report["performance"]:
         observed = trial.get("observed_performance", trial)

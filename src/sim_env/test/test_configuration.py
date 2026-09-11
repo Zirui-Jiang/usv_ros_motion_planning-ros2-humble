@@ -8,7 +8,7 @@ def test_original_configuration_loads_and_aliases_work():
     p = load_project_parameters(base/"robots/otter/dynamics_otter.yaml", base/"robots/otter/controller_params_otter.yaml", base/"trajectory_planner/trajectory_planner_params.yaml", base/"path_planner/common_planner_params.yaml")
     assert p[C+"control_frequency"] == 10.0
     assert p[C+"pid_controller.k_p_speed"] == 2.0
-    assert p["obstacle_factor"] == .5
+    assert p["obstacle_factor"] == .25
     assert all(type(v) is float for v in p[C+"lqr_controller.Q_matrix_diag"])
 
 

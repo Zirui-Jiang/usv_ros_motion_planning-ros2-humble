@@ -2,6 +2,7 @@
 
 from collections import deque
 from dataclasses import dataclass
+from enum import Enum
 import math
 
 import numpy as np
@@ -15,6 +16,13 @@ class PendingScan:
     received_at: float
 
 
+class ScanResult(Enum):
+    WAITING = 'waiting'
+    PROCESSED = 'processed'
+    EXPIRED = 'expired'
+    INVALID = 'invalid'
+
+
 @dataclass
 class QueueCounters:
     accepted: int = 0
@@ -23,6 +31,7 @@ class QueueCounters:
     expired: int = 0
     duplicate: int = 0
     invalid: int = 0
+    invalid_consumed: int = 0
     resets: int = 0
 
 
@@ -60,11 +69,13 @@ class ScanQueue:
         return True
 
     def drain(self, now, process):
-        """Process in arrival order; False means its exact-time TF is pending.
+        """Process in arrival order; count only successful map integrations.
 
         ``now`` is monotonic wall time or a callable returning it. A callable
         rechecks the deadline between scans, including time spent processing.
         An expired or displaced scan can never be re-enqueued in this epoch.
+        The callback returns ScanResult; legacy False/True mean WAITING/PROCESSED.
+        EXPIRED is a post-TF admission rejection; INVALID consumes malformed input.
         """
         completed = 0
         while self._pending:
@@ -74,12 +85,46 @@ class ScanQueue:
                 self._pending.popleft()
                 self.counters.expired += 1
                 continue
-            if not process(pending):
+            result = process(pending)
+            if result is False:
+                result = ScanResult.WAITING
+            elif result is True:
+                result = ScanResult.PROCESSED
+            if result == ScanResult.WAITING:
+                # A nonblocking TF lookup can still cross the deadline while
+                # executing or being descheduled. Do not defer this expiry.
+                current = now() if callable(now) else now
+                if current - pending.received_at >= self.tf_wait_timeout:
+                    self._pending.popleft()
+                    self.counters.expired += 1
+                    continue
                 break
+            if result not in (ScanResult.PROCESSED, ScanResult.EXPIRED, ScanResult.INVALID):
+                raise ValueError('scan callback must return ScanResult or bool')
             self._pending.popleft()
-            self.counters.processed += 1
-            completed += 1
+            if result == ScanResult.EXPIRED:
+                self.counters.expired += 1
+            elif result == ScanResult.INVALID:
+                self.counters.invalid_consumed += 1
+            else:
+                self.counters.processed += 1
+                completed += 1
         return completed
+
+    def expire_pending(self, now):
+        """Discard expired entries at one explicit monotonic checkpoint.
+
+        A caller may then observe_pending(now) with this same timestamp. This
+        is actual queue maintenance, not a diagnostic clamp or an extra retry.
+        """
+        if not math.isfinite(now):
+            raise ValueError('expiry time must be finite monotonic wall time')
+        retained = deque(scan for scan in self._pending
+                         if now - scan.received_at < self.tf_wait_timeout)
+        expired = len(self._pending) - len(retained)
+        self._pending = retained
+        self.counters.expired += expired
+        return expired
 
     def observe_pending(self, now):
         """Record queue length and oldest wall age after a completed drain.

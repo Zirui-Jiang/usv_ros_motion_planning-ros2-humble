@@ -1,0 +1,803 @@
+{
+  "scope": "original boundary-sensitive protocol only; grid-interior reruns excluded",
+  "report_sha256": "bfafc3f0e401207c7ba1014cbd2d668b2b737802a53a490c576349e59e5497a6",
+  "summary": {
+    "pairs": 18,
+    "comparable_pairs": 9,
+    "passed_pairs": 8,
+    "failed_pairs": 1,
+    "not_comparable_pairs": 9,
+    "fault_trials": 3,
+    "fault_passed": 3,
+    "performance_trials": 18,
+    "performance_passed": 17,
+    "performance_failed": 0,
+    "performance_unknown": 1,
+    "all_performance_passed": false,
+    "all_sources_finished": false,
+    "all_passed": false
+  },
+  "pdf_checks": [
+    {
+      "file": "control_timing.pdf",
+      "pages": 1,
+      "page_size_points": [
+        [
+          792.0,
+          648.0
+        ]
+      ],
+      "text_characters": 1357,
+      "baseline_missing_note_present": false,
+      "sha256": "f5a93268945a2ea622dc173a83261c77052807fb74058e41132b23a12b6a1412"
+    },
+    {
+      "file": "mapping_timing.pdf",
+      "pages": 1,
+      "page_size_points": [
+        [
+          792.0,
+          648.0
+        ]
+      ],
+      "text_characters": 1419,
+      "baseline_missing_note_present": false,
+      "sha256": "e269119d36622b2e3b9644c9ab83b3999db59b300c8015914dfcd61adcc95e9c"
+    },
+    {
+      "file": "navigation_metrics.pdf",
+      "pages": 1,
+      "page_size_points": [
+        [
+          864.0,
+          446.4
+        ]
+      ],
+      "text_characters": 969,
+      "baseline_missing_note_present": true,
+      "sha256": "b9b32e19f3f37da8df5e792c389aeabdbb8585f697bc2af534ed7dd3970dd93c"
+    },
+    {
+      "file": "pairwise_ratios.pdf",
+      "pages": 1,
+      "page_size_points": [
+        [
+          864.0,
+          417.6
+        ]
+      ],
+      "text_characters": 1014,
+      "baseline_missing_note_present": true,
+      "sha256": "cd354dae112d2d035a04a25e6ef52579ced0d46331738caf2803e63fe003b2dc"
+    },
+    {
+      "file": "trajectories.pdf",
+      "pages": 1,
+      "page_size_points": [
+        [
+          720.0,
+          720.0
+        ]
+      ],
+      "text_characters": 1050,
+      "baseline_missing_note_present": true,
+      "sha256": "4c2c859fd5c914c6c7cb1a166d0f09041f0af23a413a152cbf386a460c29e0c9"
+    }
+  ],
+  "png_visual_review": {
+    "files": [
+      "trajectories.png",
+      "navigation_metrics.png",
+      "pairwise_ratios.png",
+      "control_timing.png",
+      "mapping_timing.png"
+    ],
+    "checked": [
+      "no label/title clipping after layout revision",
+      "equal map units and shared per-scenario map extents",
+      "visible no-valid-C++-baseline annotations",
+      "straight02 relative RMSE failure remains visible",
+      "reported-window percentiles labelled separately from pooled/raw timing"
+    ],
+    "result": "reviewed"
+  },
+  "hash_checks": [
+    {
+      "path": "trajectories.png",
+      "matches_manifest": true
+    },
+    {
+      "path": "trajectories.pdf",
+      "matches_manifest": true
+    },
+    {
+      "path": "navigation_metrics.png",
+      "matches_manifest": true
+    },
+    {
+      "path": "navigation_metrics.pdf",
+      "matches_manifest": true
+    },
+    {
+      "path": "pairwise_ratios.png",
+      "matches_manifest": true
+    },
+    {
+      "path": "pairwise_ratios.pdf",
+      "matches_manifest": true
+    },
+    {
+      "path": "control_timing.png",
+      "matches_manifest": true
+    },
+    {
+      "path": "control_timing.pdf",
+      "matches_manifest": true
+    },
+    {
+      "path": "mapping_timing.png",
+      "matches_manifest": true
+    },
+    {
+      "path": "mapping_timing.pdf",
+      "matches_manifest": true
+    },
+    {
+      "path": "pairwise_ratios.csv",
+      "matches_manifest": true
+    },
+    {
+      "path": "timing_windows.csv",
+      "matches_manifest": true
+    },
+    {
+      "path": "trajectory_samples.csv",
+      "matches_manifest": true
+    },
+    {
+      "path": "trial_metrics.csv",
+      "matches_manifest": true
+    }
+  ],
+  "pid_pairs": [
+    {
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "repeat": 1,
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.18051663054715955,
+          "cpp": 0.2859645226434731,
+          "ratio": 0.6312553350270623,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        },
+        "duration_sim_s": {
+          "python": 22.3,
+          "cpp": 26.1,
+          "ratio": 0.8544061302681992,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        }
+      },
+      "python_source": {
+        "run_directory": "/home/usv/usv_migration/results/python-final-matrix-001",
+        "summary_path": "/home/usv/usv_migration/results/python-final-matrix-001/python_pid_single_obstacle_01/summary.json",
+        "source_order": 0,
+        "created_unix_s": 1789091242.7442298,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "c21b6b53e08d8921dba7d29eee1d782935c9e88d547a934d9d8592a9d3bf85a1",
+        "manifest_mode": "live",
+        "git_commit": "4ef01a645ada5fb816c8e1a412fa6cd779723539"
+      },
+      "cpp_source": {
+        "run_directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+        "summary_path": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_pid_single_obstacle_01/summary.json",
+        "source_order": 1,
+        "created_unix_s": 1789060806.022348,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "312556fb748166e2238b4ae9d6a4b4eafbd1c6ed42d705b69866d5a2a106d513",
+        "manifest_mode": "live",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "repeat": 2,
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.1506914843722827,
+          "cpp": 0.26857298516653555,
+          "ratio": 0.5610820622142714,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        },
+        "duration_sim_s": {
+          "python": 22.200000000000003,
+          "cpp": 27.800000000000004,
+          "ratio": 0.7985611510791367,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        }
+      },
+      "python_source": {
+        "run_directory": "/home/usv/usv_migration/results/python-final-matrix-001",
+        "summary_path": "/home/usv/usv_migration/results/python-final-matrix-001/python_pid_single_obstacle_02/summary.json",
+        "source_order": 0,
+        "created_unix_s": 1789091242.7442298,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "b2e1bdbd436d268a9bea2b33009b3e314f58abda88ad0ae0510aa3260644b7b3",
+        "manifest_mode": "live",
+        "git_commit": "4ef01a645ada5fb816c8e1a412fa6cd779723539"
+      },
+      "cpp_source": {
+        "run_directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+        "summary_path": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_pid_single_obstacle_02/summary.json",
+        "source_order": 1,
+        "created_unix_s": 1789060806.022348,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "95bd1a1a3f99d81e8e45c38d7393dce5ff387b013aba6fd8ce1c4aba9da6600f",
+        "manifest_mode": "live",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "repeat": 3,
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.28448960622032055,
+          "cpp": 0.3079671946989555,
+          "ratio": 0.9237659436370007,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        },
+        "duration_sim_s": {
+          "python": 21.3,
+          "cpp": 27.799999999999997,
+          "ratio": 0.7661870503597124,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        }
+      },
+      "python_source": {
+        "run_directory": "/home/usv/usv_migration/results/python-final-matrix-001",
+        "summary_path": "/home/usv/usv_migration/results/python-final-matrix-001/python_pid_single_obstacle_03/summary.json",
+        "source_order": 0,
+        "created_unix_s": 1789091242.7442298,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "771dde8ab8b2beac618630dd6dec48c9d792c0ab8118f751112cd52da3d08bd5",
+        "manifest_mode": "live",
+        "git_commit": "4ef01a645ada5fb816c8e1a412fa6cd779723539"
+      },
+      "cpp_source": {
+        "run_directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+        "summary_path": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_pid_single_obstacle_03/summary.json",
+        "source_order": 1,
+        "created_unix_s": 1789060806.022348,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "601b41d6b8411489960402fe9a51b0c27aa9b3760e39774ba127e47783bd9a3f",
+        "manifest_mode": "live",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 1,
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.1492117319629049,
+          "cpp": 0.1824650957436304,
+          "ratio": 0.8177549320038305,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        },
+        "duration_sim_s": {
+          "python": 19.1,
+          "cpp": 26.900000000000002,
+          "ratio": 0.7100371747211895,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        }
+      },
+      "python_source": {
+        "run_directory": "/home/usv/usv_migration/results/python-final-matrix-001",
+        "summary_path": "/home/usv/usv_migration/results/python-final-matrix-001/python_pid_straight_01/summary.json",
+        "source_order": 0,
+        "created_unix_s": 1789091242.7442298,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "63697d676c1de75384211f4a516349e9728802dd11ecca720fb67c0063d58ccb",
+        "manifest_mode": "live",
+        "git_commit": "4ef01a645ada5fb816c8e1a412fa6cd779723539"
+      },
+      "cpp_source": {
+        "run_directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+        "summary_path": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_pid_straight_01/summary.json",
+        "source_order": 1,
+        "created_unix_s": 1789060806.022348,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "f9a3b4b1577ebad2825b36ba94699f13983ace23a22d39f0a62c7f92166b1a3e",
+        "manifest_mode": "live",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 2,
+      "comparable": true,
+      "passed": false,
+      "reasons": [],
+      "metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.14266594642012756,
+          "cpp": 0.11352257254374161,
+          "ratio": 1.2567187584227504,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": false,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        },
+        "duration_sim_s": {
+          "python": 19.5,
+          "cpp": 23.6,
+          "ratio": 0.8262711864406779,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        }
+      },
+      "python_source": {
+        "run_directory": "/home/usv/usv_migration/results/python-final-matrix-001",
+        "summary_path": "/home/usv/usv_migration/results/python-final-matrix-001/python_pid_straight_02/summary.json",
+        "source_order": 0,
+        "created_unix_s": 1789091242.7442298,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "edc035c2b0d826bb23deba18e03a254da5c0ab3c4ca49f91dc1aa8a9c50fbc78",
+        "manifest_mode": "live",
+        "git_commit": "4ef01a645ada5fb816c8e1a412fa6cd779723539"
+      },
+      "cpp_source": {
+        "run_directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+        "summary_path": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_pid_straight_02/summary.json",
+        "source_order": 1,
+        "created_unix_s": 1789060806.022348,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "eeb68ffefb1fb99d1a3448a132b38e36922f58c291668e6b6afa1096a6d788f9",
+        "manifest_mode": "live",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 3,
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.1509959592799399,
+          "cpp": 0.18128446010683616,
+          "ratio": 0.8329227954285415,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        },
+        "duration_sim_s": {
+          "python": 19.4,
+          "cpp": 26.900000000000002,
+          "ratio": 0.7211895910780668,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        }
+      },
+      "python_source": {
+        "run_directory": "/home/usv/usv_migration/results/python-final-matrix-001",
+        "summary_path": "/home/usv/usv_migration/results/python-final-matrix-001/python_pid_straight_03/summary.json",
+        "source_order": 0,
+        "created_unix_s": 1789091242.7442298,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "ab9acfa596cd28478fd09a3225f048b94b52da7fed68dd79493a5d983fd90843",
+        "manifest_mode": "live",
+        "git_commit": "4ef01a645ada5fb816c8e1a412fa6cd779723539"
+      },
+      "cpp_source": {
+        "run_directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+        "summary_path": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_pid_straight_03/summary.json",
+        "source_order": 1,
+        "created_unix_s": 1789060806.022348,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "db50eccdae964ad7dfa2f621f2b9d369e601145be28c823438f1faab4c86ac1e",
+        "manifest_mode": "live",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "turn",
+      "repeat": 1,
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.10494428301265607,
+          "cpp": 0.1515135557525505,
+          "ratio": 0.692639562786378,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        },
+        "duration_sim_s": {
+          "python": 20.400000000000002,
+          "cpp": 22.6,
+          "ratio": 0.9026548672566372,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        }
+      },
+      "python_source": {
+        "run_directory": "/home/usv/usv_migration/results/python-final-matrix-001",
+        "summary_path": "/home/usv/usv_migration/results/python-final-matrix-001/python_pid_turn_01/summary.json",
+        "source_order": 0,
+        "created_unix_s": 1789091242.7442298,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "5b051fae209504eb07f11d6721d9c0fa33a48c4e80d49246e56e4b00e3fbfe59",
+        "manifest_mode": "live",
+        "git_commit": "4ef01a645ada5fb816c8e1a412fa6cd779723539"
+      },
+      "cpp_source": {
+        "run_directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+        "summary_path": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_pid_turn_01/summary.json",
+        "source_order": 1,
+        "created_unix_s": 1789060806.022348,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "1dd3dc2b58610c008fa73f09c565b91f0d46f071fba608d9a129b292d4bdee2b",
+        "manifest_mode": "live",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "turn",
+      "repeat": 2,
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.11863511673524496,
+          "cpp": 0.14156070460479053,
+          "ratio": 0.8380511884738828,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        },
+        "duration_sim_s": {
+          "python": 20.200000000000003,
+          "cpp": 22.4,
+          "ratio": 0.9017857142857145,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        }
+      },
+      "python_source": {
+        "run_directory": "/home/usv/usv_migration/results/python-final-matrix-001",
+        "summary_path": "/home/usv/usv_migration/results/python-final-matrix-001/python_pid_turn_02/summary.json",
+        "source_order": 0,
+        "created_unix_s": 1789091242.7442298,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "7837703ea24e76128cebc42c69c28a6dc92a0782f72d5c01af2351b035a0fd85",
+        "manifest_mode": "live",
+        "git_commit": "4ef01a645ada5fb816c8e1a412fa6cd779723539"
+      },
+      "cpp_source": {
+        "run_directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+        "summary_path": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_pid_turn_02/summary.json",
+        "source_order": 1,
+        "created_unix_s": 1789060806.022348,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "15b15bafa958a1e15a8ad6659bf4ed95c076a77019e7ade40f9e50a3fe96dc2c",
+        "manifest_mode": "live",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "turn",
+      "repeat": 3,
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.10756425327777547,
+          "cpp": 0.14472410296442342,
+          "ratio": 0.7432366210914936,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        },
+        "duration_sim_s": {
+          "python": 20.6,
+          "cpp": 22.7,
+          "ratio": 0.907488986784141,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp"
+        }
+      },
+      "python_source": {
+        "run_directory": "/home/usv/usv_migration/results/python-final-matrix-001",
+        "summary_path": "/home/usv/usv_migration/results/python-final-matrix-001/python_pid_turn_03/summary.json",
+        "source_order": 0,
+        "created_unix_s": 1789091242.7442298,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "86b3e40eb07c703cd83d0d083b95e3ca37c81275fafd55cb7291c54536130e28",
+        "manifest_mode": "live",
+        "git_commit": "4ef01a645ada5fb816c8e1a412fa6cd779723539"
+      },
+      "cpp_source": {
+        "run_directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+        "summary_path": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_pid_turn_03/summary.json",
+        "source_order": 1,
+        "created_unix_s": 1789060806.022348,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "866d9972e0503c6d754046b500cb164dfb1cf17cdade046c4c57dd6c645fb88b",
+        "manifest_mode": "live",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+      }
+    }
+  ],
+  "performance": [
+    {
+      "trial": "python_pid_straight_01",
+      "status": "pass",
+      "control": "pass",
+      "mapping": "pass",
+      "backlog": "pass",
+      "backlog_reason": "balanced_progress_no_overflow_and_bounded_observed_queue_latency",
+      "issue_windows": []
+    },
+    {
+      "trial": "python_pid_straight_02",
+      "status": "pass",
+      "control": "pass",
+      "mapping": "pass",
+      "backlog": "pass",
+      "backlog_reason": "balanced_progress_no_overflow_and_bounded_observed_queue_latency",
+      "issue_windows": []
+    },
+    {
+      "trial": "python_pid_straight_03",
+      "status": "pass",
+      "control": "pass",
+      "mapping": "pass",
+      "backlog": "pass",
+      "backlog_reason": "balanced_progress_no_overflow_and_bounded_observed_queue_latency",
+      "issue_windows": []
+    },
+    {
+      "trial": "python_pid_turn_01",
+      "status": "pass",
+      "control": "pass",
+      "mapping": "pass",
+      "backlog": "pass",
+      "backlog_reason": "balanced_progress_no_overflow_and_bounded_observed_queue_latency",
+      "issue_windows": []
+    },
+    {
+      "trial": "python_pid_turn_02",
+      "status": "pass",
+      "control": "pass",
+      "mapping": "pass",
+      "backlog": "pass",
+      "backlog_reason": "balanced_progress_no_overflow_and_bounded_observed_queue_latency",
+      "issue_windows": []
+    },
+    {
+      "trial": "python_pid_turn_03",
+      "status": "unknown",
+      "control": "pass",
+      "mapping": "pass",
+      "backlog": "unknown",
+      "backlog_reason": "post_drain_observations_do_not_establish_normal_tf_throughput",
+      "issue_windows": [
+        {
+          "source": "events.jsonl:167",
+          "issues": [
+            "observed_pending_age_exceeds_tf_deadline"
+          ]
+        }
+      ]
+    },
+    {
+      "trial": "python_pid_single_obstacle_01",
+      "status": "pass",
+      "control": "pass",
+      "mapping": "pass",
+      "backlog": "pass",
+      "backlog_reason": "balanced_progress_no_overflow_and_bounded_observed_queue_latency",
+      "issue_windows": []
+    },
+    {
+      "trial": "python_pid_single_obstacle_02",
+      "status": "pass",
+      "control": "pass",
+      "mapping": "pass",
+      "backlog": "pass",
+      "backlog_reason": "balanced_progress_no_overflow_and_bounded_observed_queue_latency",
+      "issue_windows": []
+    },
+    {
+      "trial": "python_pid_single_obstacle_03",
+      "status": "pass",
+      "control": "pass",
+      "mapping": "pass",
+      "backlog": "pass",
+      "backlog_reason": "balanced_progress_no_overflow_and_bounded_observed_queue_latency",
+      "issue_windows": []
+    },
+    {
+      "trial": "python_lqr_straight_01",
+      "status": "pass",
+      "control": "pass",
+      "mapping": "pass",
+      "backlog": "pass",
+      "backlog_reason": "balanced_progress_no_overflow_and_bounded_observed_queue_latency",
+      "issue_windows": []
+    },
+    {
+      "trial": "python_lqr_straight_02",
+      "status": "pass",
+      "control": "pass",
+      "mapping": "pass",
+      "backlog": "pass",
+      "backlog_reason": "balanced_progress_no_overflow_and_bounded_observed_queue_latency",
+      "issue_windows": []
+    },
+    {
+      "trial": "python_lqr_straight_03",
+      "status": "pass",
+      "control": "pass",
+      "mapping": "pass",
+      "backlog": "pass",
+      "backlog_reason": "balanced_progress_no_overflow_and_bounded_observed_queue_latency",
+      "issue_windows": []
+    },
+    {
+      "trial": "python_lqr_turn_01",
+      "status": "pass",
+      "control": "pass",
+      "mapping": "pass",
+      "backlog": "pass",
+      "backlog_reason": "balanced_progress_no_overflow_and_bounded_observed_queue_latency",
+      "issue_windows": []
+    },
+    {
+      "trial": "python_lqr_turn_02",
+      "status": "pass",
+      "control": "pass",
+      "mapping": "pass",
+      "backlog": "pass",
+      "backlog_reason": "balanced_progress_no_overflow_and_bounded_observed_queue_latency",
+      "issue_windows": []
+    },
+    {
+      "trial": "python_lqr_turn_03",
+      "status": "pass",
+      "control": "pass",
+      "mapping": "pass",
+      "backlog": "pass",
+      "backlog_reason": "balanced_progress_no_overflow_and_bounded_observed_queue_latency",
+      "issue_windows": []
+    },
+    {
+      "trial": "python_lqr_single_obstacle_01",
+      "status": "pass",
+      "control": "pass",
+      "mapping": "pass",
+      "backlog": "pass",
+      "backlog_reason": "balanced_progress_no_overflow_and_bounded_observed_queue_latency",
+      "issue_windows": []
+    },
+    {
+      "trial": "python_lqr_single_obstacle_02",
+      "status": "pass",
+      "control": "pass",
+      "mapping": "pass",
+      "backlog": "pass",
+      "backlog_reason": "balanced_progress_no_overflow_and_bounded_observed_queue_latency",
+      "issue_windows": []
+    },
+    {
+      "trial": "python_lqr_single_obstacle_03",
+      "status": "pass",
+      "control": "pass",
+      "mapping": "pass",
+      "backlog": "pass",
+      "backlog_reason": "balanced_progress_no_overflow_and_bounded_observed_queue_latency",
+      "issue_windows": []
+    }
+  ]
+}

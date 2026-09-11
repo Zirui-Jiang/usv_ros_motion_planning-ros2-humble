@@ -82,6 +82,62 @@ def test_deadline_is_rechecked_after_slow_processing():
     assert queue.counters.expired == 1
 
 
+def test_failed_tf_crossing_deadline_expires_without_another_poll():
+    queue = ScanQueue()
+    put(queue, 1)
+    clock = iter([0.19999, 0.20004235])
+    assert queue.drain(lambda: next(clock), lambda entry: False) == 0
+    assert len(queue) == 0
+    assert queue.counters.expired == 1
+    assert queue.counters.processed == 0
+
+
+def test_explicit_expiry_invalid_consumption_and_processing_are_distinct():
+    from perception.scan_queue import ScanResult
+
+    queue = ScanQueue()
+    for stamp in range(1, 4):
+        put(queue, stamp)
+    outcomes = {1: ScanResult.EXPIRED, 2: ScanResult.INVALID, 3: ScanResult.PROCESSED}
+    assert queue.drain(0.1, lambda entry: outcomes[entry.stamp_ns]) == 1
+    counts = queue.counters
+    assert (counts.processed, counts.expired, counts.invalid_consumed) == (1, 1, 1)
+    assert counts.invalid == 0  # Invalid admission is a different counter.
+    assert counts.accepted == len(queue) + counts.processed + counts.expired + counts.overflow + counts.invalid_consumed
+
+
+def test_final_expiry_checkpoint_keeps_observations_and_consumption_conserved():
+    queue = ScanQueue()
+    put(queue, 1, received=0.0)
+    put(queue, 2, received=0.1)
+    queue.drain(0.19999, lambda entry: False)
+    checkpoint = 0.20004235
+    assert queue.expire_pending(checkpoint) == 1
+    queue.observe_pending(checkpoint)
+    report = queue.observation_summary(checkpoint)
+    assert report['latest_oldest_pending']['stamp_ns'] == 2
+    assert report['latest_oldest_pending_age_ms'] == pytest.approx(100.04235)
+    assert report['observation_count'] == report['pending_observations'] + report['empty_observations'] == 1
+    assert queue.counters.accepted == len(queue) + queue.counters.expired == 2
+    assert queue.expire_pending(0.301) == 1
+    queue.observe_pending(0.301)
+    report = queue.observation_summary(0.301)
+    assert report['empty_observations'] == 1
+    assert report['oldest_pending_age_ms']['count'] == 1  # No fabricated zero age.
+    assert report['observation_count'] == report['pending_observations'] + report['empty_observations'] == 2
+
+
+def test_exact_deadline_never_invokes_processing():
+    queue = ScanQueue()
+    put(queue, 1)
+
+    def forbidden(entry):
+        pytest.fail('expired scan reached the processing callback')
+
+    assert queue.drain(0.2, forbidden) == 0
+    assert queue.counters.expired == 1
+
+
 def test_single_frame_pipeline_is_distinguished_from_one_stuck_scan():
     queue = ScanQueue()
     for stamp in range(1, 11):

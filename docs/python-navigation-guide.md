@@ -190,6 +190,10 @@ ros2 launch sim_env main.launch.py headless:=true \
 
 别名与规范键同时出现且数值相同，可以归一化；数值冲突直接报错，不采用文件顺序静默覆盖。重复 YAML 键、冲突的显式配置来源和未知参数也会被拒绝。控制、轨迹文件由加载器统一增加 `usv_simulation` 前缀，文件中不要再手动增加一层同名前缀。
 
+当前控制配置的 PID 预瞄为 2.6 s，LQR 预瞄为 2 s；ROS 导航的 `obstacle_factor`
+校准候选为 0.25。该因子越小，拒绝的软膨胀代价范围越大；它不是以米表示的安全距离。
+实际验收版本及候选状态以验收报告为准，不能把不同提交的参数混用到同一组结果中。
+
 以下兼容键目前不产生新的算法行为：`path_planner.convert_offset`、`default_tolerance`、`expand_zone`、`show_safety_corridor`。当前实现不会因此获得目标容差搜索、安全走廊算法或旧版搜索展开区可视化。调试统计通过结果中的展开节点数和 `navigation_status` 提供。
 
 costmap 仍单独读取原 `global_costmap_params_otter.yaml`；LiDAR mapping 单独读取 `config/costmap/mapping.yaml`，不属于上面的四条导航配置路径。当前 costmap YAML 的插件列表为 obstacle layer 和 inflation layer，mapping 发布的 `/otter/map` 尚未经 static layer 输入导航 costmap。Launch 保留 YAML 插件列表；若其中实际启用了 StaticLayer，则报配置冲突。
@@ -210,7 +214,7 @@ ros2 param get /otter/usv_simulation obstacle_factor
 ```bash
 ros2 param set /otter/usv_simulation usv_simulation.controller.pid_controller.k_p_speed 2.5
 ros2 param set /otter/usv_simulation usv_simulation.controller.pid_controller.k_i_speed 0.3
-ros2 param set /otter/usv_simulation usv_simulation.trajectory_planner.los.lookahead_distance 6.0
+ros2 param set /otter/usv_simulation usv_simulation.trajectory_planner.los.lookahead_distance 1.2
 ros2 param set /otter/usv_simulation usv_simulation.trajectory_planner.los.yaw_rate_max 0.25
 ```
 

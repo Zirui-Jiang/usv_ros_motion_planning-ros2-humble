@@ -22,7 +22,7 @@ from std_msgs.msg import String
 from tf2_ros import Buffer, TransformException, TransformListener
 
 from .mapping import GridConfig, GridMapper
-from .scan_queue import ClockGuard, ScanQueue
+from .scan_queue import ClockGuard, ScanQueue, ScanResult
 
 
 class MappingNode(Node):
@@ -113,7 +113,11 @@ class MappingNode(Node):
     def _drain(self):
         self._observe_clock()
         self.pending.drain(time.monotonic, self._try_process)
-        self.pending.observe_pending(time.monotonic())
+        # Expiry and the diagnostic snapshot describe the same real checkpoint.
+        # Keep observe_pending read-only; do not clamp or backdate pending ages.
+        checkpoint = time.monotonic()
+        self.pending.expire_pending(checkpoint)
+        self.pending.observe_pending(checkpoint)
 
     def _try_process(self, pending):
         scan = pending.payload
@@ -123,8 +127,12 @@ class MappingNode(Node):
                 Time.from_msg(scan.header.stamp, clock_type=ClockType.ROS_TIME),
                 timeout=Duration(seconds=0.0))
         except TransformException:
-            return False
+            return ScanResult.WAITING
         start = time.monotonic()
+        # The exact-time TF lookup can return after its waiting deadline even
+        # with timeout=0. Reject before any map mutation, using this admission time.
+        if start - pending.received_at >= self.pending.tf_wait_timeout:
+            return ScanResult.EXPIRED
         try:
             translation = transform.transform.translation
             q = transform.transform.rotation
@@ -138,7 +146,7 @@ class MappingNode(Node):
                 scan.range_min, scan.range_max, translation.x, translation.y, yaw)
         except (ValueError, TypeError, OverflowError):
             self.invalid_scans += 1
-            return True  # Consume malformed input once; never retry its map update.
+            return ScanResult.INVALID  # Consume once without counting an integration.
         self.processing_ms.append((time.monotonic() - start) * 1000.0)
         budget_ms = float(scan.scan_time) * 1000 if scan.scan_time > 0 else (
             float(np.median(self.scan_period_ms)) if self.scan_period_ms else None)
@@ -147,7 +155,7 @@ class MappingNode(Node):
         self.waiting_ms.append((start - pending.received_at) * 1000.0)
         self.integrated_scans += 1
         self.invalid_beams += stats.invalid_beams
-        return True
+        return ScanResult.PROCESSED
 
     def _publish_map(self):
         start = time.monotonic()

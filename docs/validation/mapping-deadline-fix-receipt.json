@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-09-11T02:26:06.205828+00:00",
+  "classification": "working-tree mapping deadline fix and actual source ROS regression; not a clean build or formal Gazebo rerun",
+  "source_head_before_uncommitted_fix": "1ee24de20fba0beceaa560b960d7c6b4ab8c6e6c",
+  "validated_files": [
+    {
+      "path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/src/core/perception/perception/scan_queue.py",
+      "bytes": 8824,
+      "sha256": "77cd6b567a5b4e56ac39a1a34359b00d2c1b571e75ed0d8731bbba4ade56aa3a"
+    },
+    {
+      "path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/src/core/perception/perception/mapping_node.py",
+      "bytes": 10650,
+      "sha256": "e395697ec60a44fb7d63129f4fe95fa8bd2f830c4308f93efa517886d2fa6fbb"
+    },
+    {
+      "path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/src/core/perception/test/test_scan_queue.py",
+      "bytes": 7721,
+      "sha256": "c1b893ed2286fbc4da305c7d1277e238904b93aa029b5698b0a7e02368de8268"
+    },
+    {
+      "path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/src/core/perception/test/test_mapping_deadline_ros.py",
+      "bytes": 4144,
+      "sha256": "6d5b3d84c140c26b111645c62f63861eebf13a430d717812e7c2a3bf86c90dc4"
+    },
+    {
+      "path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/src/core/perception/test/test_mapping_ros.py",
+      "bytes": 6411,
+      "sha256": "2898efed8fc6652c40a264adeace282d355c843bd3809f56c91331ab6a8936fd"
+    },
+    {
+      "path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/docs/validation/scan-queue-deadline-review.md",
+      "bytes": 9219,
+      "sha256": "57f89e981df02292cacc578c7b98381622c996ec8c9251ab9d8f99582efb8f7c"
+    }
+  ],
+  "implementation_owned_files": [
+    "src/core/perception/perception/scan_queue.py",
+    "src/core/perception/perception/mapping_node.py",
+    "src/core/perception/test/test_scan_queue.py",
+    "src/core/perception/test/test_mapping_deadline_ros.py"
+  ],
+  "existing_ros_regression_preserved": "src/core/perception/test/test_mapping_ros.py",
+  "new_counter_contract": {
+    "processed": "successful integrations only; equals integrated_scans",
+    "invalid_consumed": "consumed malformed scans; equals invalid_scans",
+    "invalid": "rejected before accepted",
+    "balance_without_reset_discard": "accepted = processed + invalid_consumed + expired + overflow + pending"
+  },
+  "environment": {
+    "ros": "/opt/ros/humble/setup.bash",
+    "ROS_DOMAIN_ID": 185,
+    "ROS_LOCALHOST_ONLY": 1,
+    "PYTHONDONTWRITEBYTECODE": 1,
+    "source_package_path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/src/core/perception",
+    "gazebo_started": false,
+    "existing_wsl_source_or_install_modified": false
+  },
+  "red_command": "python3 -m pytest -q -p no:cacheprovider src/core/perception/test/test_scan_queue.py src/core/perception/test/test_mapping_deadline_ros.py --junitxml=/home/usv/usv_migration/results/mapping-deadline-fix-001/red.xml",
+  "green_command": "python3 -m pytest -q -p no:cacheprovider src/core/perception/test --junitxml=/home/usv/usv_migration/results/mapping-deadline-fix-001/green.xml",
+  "checks": {
+    "red": {
+      "logs": [
+        {
+          "path": "/home/usv/usv_migration/results/mapping-deadline-fix-001/red.log",
+          "bytes": 8357,
+          "sha256": "bf0456deabe8a912d2b91a00b3ab82c0989bc7a5005594a9d68166ba6433bb14"
+        },
+        {
+          "path": "/home/usv/usv_migration/results/mapping-deadline-fix-001/red.xml",
+          "bytes": 13497,
+          "sha256": "c96f9285929894675707ec44235ad619b37c812423fdf7a4e9f6092e23493759"
+        }
+      ],
+      "tests": 21,
+      "failures": 7,
+      "errors": 0,
+      "skipped": 0
+    },
+    "green": {
+      "logs": [
+        {
+          "path": "/home/usv/usv_migration/results/mapping-deadline-fix-001/green.log",
+          "bytes": 190,
+          "sha256": "e40727f1a04060d1c5fd89b37783b6e3b0a2e9ad3e44350f3afb5f45b6dfcbd4"
+        },
+        {
+          "path": "/home/usv/usv_migration/results/mapping-deadline-fix-001/green.xml",
+          "bytes": 5208,
+          "sha256": "262588799e1358e2b1f703d1712e27b5dc23298ef2b57df4a0b91839a03771e6"
+        }
+      ],
+      "tests": 41,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "historical_unknown_preserved": true,
+  "threshold_s": 0.2,
+  "queue_capacity": 5,
+  "git_commit_performed": false,
+  "m5_deletion_performed": false
+}
