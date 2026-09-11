@@ -1,0 +1,243 @@
+{
+  "classification": "Fixed preview 2.4 s PID diagnostic; not production-default or full acceptance.",
+  "fixed_install": "e38183218fce7044e686a0f697ed13f456f49039",
+  "config": {
+    "absolute_path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/scripts/validation/config/pid_preview24.yaml",
+    "bytes": 692,
+    "sha256": "bd4828f65c1302bccecfb63ce0e83b2a58b92e738053e3dea871a74b9046cf59"
+  },
+  "status_sampling_limit": "1 Hz status observations do not prove absence of sub-second transitions.",
+  "trials": [
+    {
+      "trial": "python_pid_straight_01",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 20.000000000000004,
+      "fixed_cte_rms_m": 0.056624938584116116,
+      "fixed_cte_max_m": 0.17088463618964184,
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 75988.877853374,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 2.7
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 76008.842753972,
+        "sim_time_s": 22.700000000000003,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 16,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [],
+      "failure_snapshots": [],
+      "exit_health": {
+        "clean_process_count": 7,
+        "abnormal_exit_lines": [
+          {
+            "line": 97,
+            "text": "[ERROR] [gzserver-1]: process has died [pid 108819, exit code -6, cmd 'gzserver /home/usv/usv_migration/python/install/sim_env/share/sim_env/worlds/ocean.world -slibgazebo_ros_init.so -slibgazebo_ros_factory.so -slibgazebo_ros_force_system.so']."
+          }
+        ]
+      },
+      "diagnostic_fixed_repeat_ratios": {
+        "reference": {
+          "absolute_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_01/summary.json",
+          "bytes": 1405,
+          "sha256": "0dea73b97c1ffda8b249fa65356d866375f5637a762db836a7a2f908765b260f"
+        },
+        "reference_functional_pass": true,
+        "rmse_ratio": 1.0285471389843037,
+        "time_ratio": 0.8510638297872342,
+        "interpretation": "Candidate diagnostic only; raw fixed-repeat ratio preserved, no baseline replacement or threshold change."
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-preview24-straight-candidate-001/python_pid_straight_01/events.jsonl",
+        "bytes": 733170,
+        "sha256": "e391e125b1c9a95b738304f028e490cd2e90c2200354f7ecf6d0edd71f1018ae"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-preview24-straight-candidate-001/python_pid_straight_01/launch.log",
+        "bytes": 15445,
+        "sha256": "1bcbda01a8c609751060430eff3c23d18d94dc21263951891c949de1072ef0be"
+      }
+    },
+    {
+      "trial": "python_pid_straight_02",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 19.800000000000004,
+      "fixed_cte_rms_m": 0.057768016740536984,
+      "fixed_cte_max_m": 0.1763028604418173,
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 76021.384717593,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 2.9000000000000004
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 76041.158438229,
+        "sim_time_s": 22.700000000000003,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 16,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [],
+      "failure_snapshots": [],
+      "exit_health": {
+        "clean_process_count": 8,
+        "abnormal_exit_lines": []
+      },
+      "diagnostic_fixed_repeat_ratios": {
+        "reference": {
+          "absolute_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_02/summary.json",
+          "bytes": 1400,
+          "sha256": "60728577cc2c924b44c9a5269122a9b547f8ae6bac95fdce60e9aaa57ee53e9f"
+        },
+        "reference_functional_pass": true,
+        "rmse_ratio": 0.8962088308578091,
+        "time_ratio": 0.9519230769230771,
+        "interpretation": "Candidate diagnostic only; raw fixed-repeat ratio preserved, no baseline replacement or threshold change."
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-preview24-straight-candidate-001/python_pid_straight_02/events.jsonl",
+        "bytes": 706319,
+        "sha256": "d85760ffeb2f7a12d363297e3908c38f6e552c2f0a786ce5e7eafdec9056bb3c"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-preview24-straight-candidate-001/python_pid_straight_02/launch.log",
+        "bytes": 15064,
+        "sha256": "1ff2a105826dc52a36add65b3c6e0a2fc918d9606f43205b6a9af473020db169"
+      }
+    },
+    {
+      "trial": "python_pid_straight_03",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 19.9,
+      "fixed_cte_rms_m": 0.0568171586027552,
+      "fixed_cte_max_m": 0.1704991290531811,
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 76049.589055448,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 2.6
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 76069.43943856,
+        "sim_time_s": 22.5,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "WAITING_REFERENCE": 1,
+        "NAVIGATING": 16,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 76049.808914127,
+          "payload": {
+            "state": "WAITING_REFERENCE",
+            "reason": "",
+            "version": 1,
+            "stamp": 2.9000000000000004,
+            "controller": "pid",
+            "goal": [
+              35.125,
+              -10.125,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 61,
+                "p50": 0.036380995879881084,
+                "p95": 0.08389000140596181,
+                "p99": 0.10160479869227856,
+                "max": 0.1027129910653457
+              },
+              "costmap_conversion_ms": {
+                "count": 3,
+                "p50": 0.18302799435332417,
+                "p95": 0.21689861023332924,
+                "p99": 0.21990933164488524,
+                "max": 0.22066201199777424
+              }
+            },
+            "counters": {
+              "pending_replacements": 0
+            },
+            "process": {
+              "pid": 109256,
+              "cpu_seconds": 0.488955,
+              "peak_rss_kib": 68652,
+              "monotonic": 76049.808631857
+            }
+          }
+        }
+      ],
+      "failure_snapshots": [
+        {
+          "event": "navigation_failure_snapshot",
+          "wall_monotonic_s": 76049.82175561,
+          "costmap_path": "costmap_input_11293f4b.npz",
+          "state_path": "state_input_11293f4b.json",
+          "context_path": "navigation_context_11293f4b.json"
+        }
+      ],
+      "exit_health": {
+        "clean_process_count": 8,
+        "abnormal_exit_lines": []
+      },
+      "diagnostic_fixed_repeat_ratios": {
+        "reference": {
+          "absolute_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_straight_03/summary.json",
+          "bytes": 1417,
+          "sha256": "dd71fb33ab2787b1e5a4576dc511a5c0b2a0db4db81378b0f00c8740d90785a8"
+        },
+        "reference_functional_pass": true,
+        "rmse_ratio": 0.9461625185033292,
+        "time_ratio": 0.857758620689655,
+        "interpretation": "Candidate diagnostic only; raw fixed-repeat ratio preserved, no baseline replacement or threshold change."
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-preview24-straight-candidate-001/python_pid_straight_03/events.jsonl",
+        "bytes": 720869,
+        "sha256": "60e3986b1b2d872f7d9772bbda6d8588e6637cc933cd25f29b895387099262c1"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-preview24-straight-candidate-001/python_pid_straight_03/launch.log",
+        "bytes": 13764,
+        "sha256": "eeb84a44ed97a98848929916aefe4688243d0f993ea66c016cae7d2ccd4831c8"
+      }
+    }
+  ],
+  "residual_process_check": []
+}
