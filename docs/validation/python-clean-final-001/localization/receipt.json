@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "mode": "acceptance",
+  "domain_id": 188,
+  "namespace": "localization_smoke_69f38d3f651a",
+  "binary": "/home/usv/usv_migration/python-clean-final-001/install/sim_env/lib/sim_env/fake_localization_node",
+  "binary_sha256": "4c9c583ebbf9eeed0db5c05e41587ada7ce2443def653744be8afbda63a58378",
+  "script_sha256": "096e577a127bd2c463ea2b6145b411589cd612818556c44613d322bdc7f4785a",
+  "command": [
+    "/home/usv/usv_migration/python-clean-final-001/install/sim_env/lib/sim_env/fake_localization_node",
+    "--ros-args",
+    "-r",
+    "__ns:=/localization_smoke_69f38d3f651a",
+    "-p",
+    "use_sim_time:=true",
+    "-p",
+    "model_name:=otter"
+  ],
+  "started_monotonic_s": 84192.300067537,
+  "signals": [
+    {
+      "pid": 122923,
+      "starttime_ticks": 8419236,
+      "signal": "SIGINT",
+      "monotonic_s": 84193.632815284
+    }
+  ],
+  "checks": {
+    "malformed_parallel_arrays_rejected": true,
+    "world_to_body_velocity": [
+      4.0,
+      -3.0,
+      0.2
+    ],
+    "duplicate_clock_suppressed": true,
+    "clock_rewind_and_subsequent_progress": true,
+    "legal_stream_sigint_exit_zero": true
+  },
+  "gdb": false,
+  "scope": "Owned standalone node only; no Gazebo; input defect is not attribution of a prior shutdown crash.",
+  "owned_pid": 122923,
+  "owned_starttime_ticks": 8419236,
+  "completed": true,
+  "process_returncode": 0,
+  "finished_monotonic_s": 84193.764316472,
+  "log_sha256": "1a2263d60e17df4cd5801a5a912f17fd33e16dfc8800284aaf07e282e522a6c7",
+  "gdb_observed_sigsegv": false
+}

@@ -1,0 +1,307 @@
+{
+  "schema_version": 1,
+  "collected_utc": "2026-09-11T05:32:45.045743+00:00",
+  "classification": "Fresh local clone/build, install audit, source tests, C++ fixture parity and standalone localization acceptance; no Gazebo",
+  "workspace": "/home/usv/usv_migration/python-clean-final-001",
+  "commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537",
+  "detached_head": true,
+  "git_status_porcelain": "",
+  "preflight": {
+    "new_workspace_absent_before_clone": true,
+    "parity_output_absent_before_run": true,
+    "localization_output_absent_before_run": true,
+    "invoked_script_matches_fixed_commit_blob": true,
+    "script_sha256": "c0eec132b62b8b3918d41eeb681aa22587f0546e5f4d958344886b21414a9d76"
+  },
+  "build": {
+    "exit_code": 0,
+    "packages_finished": 13,
+    "colcon_reported_duration": "1min 29s",
+    "stderr_packages": [
+      "usv_gazebo_plugins",
+      "wave_gazebo",
+      "wave_gazebo_plugins"
+    ],
+    "policy": "local --no-hardlinks --no-checkout clone and detached commit; isolated non-symlink install; sequential packages; compile jobs<=2"
+  },
+  "install_audit": {
+    "exit_code": 0,
+    "all_passed": true,
+    "check_count": 33,
+    "module_origins": [
+      {
+        "check": "common:import",
+        "passed": true,
+        "origin": "/home/usv/usv_migration/python-clean-final-001/install/common/lib/python3.10/site-packages/common/models.py"
+      },
+      {
+        "check": "controller:import",
+        "passed": true,
+        "origin": "/home/usv/usv_migration/python-clean-final-001/install/controller/lib/python3.10/site-packages/controller/controller_factory.py"
+      },
+      {
+        "check": "path_planner:import",
+        "passed": true,
+        "origin": "/home/usv/usv_migration/python-clean-final-001/install/path_planner/lib/python3.10/site-packages/path_planner/path_planner_core.py"
+      },
+      {
+        "check": "path_processor:import",
+        "passed": true,
+        "origin": "/home/usv/usv_migration/python-clean-final-001/install/path_processor/lib/python3.10/site-packages/path_processor/path_processor.py"
+      },
+      {
+        "check": "perception:import",
+        "passed": true,
+        "origin": "/home/usv/usv_migration/python-clean-final-001/install/perception/lib/python3.10/site-packages/perception/mapping_node.py"
+      },
+      {
+        "check": "trajectory_planner:import",
+        "passed": true,
+        "origin": "/home/usv/usv_migration/python-clean-final-001/install/trajectory_planner/lib/python3.10/site-packages/trajectory_planner/los_trajectory_planner.py"
+      },
+      {
+        "check": "sim_env:import",
+        "passed": true,
+        "origin": "/home/usv/usv_migration/python-clean-final-001/install/sim_env/local/lib/python3.10/dist-packages/sim_env/simulation.py"
+      }
+    ],
+    "linkage_checks": [
+      {
+        "check": "fake_localization_node:linkage",
+        "passed": true,
+        "exit_code": 0,
+        "obsolete_libraries": []
+      },
+      {
+        "check": "costmap_support_node:linkage",
+        "passed": true,
+        "exit_code": 0,
+        "obsolete_libraries": []
+      }
+    ],
+    "environment": {
+      "AMENT_PREFIX_PATH": "/home/usv/usv_migration/python-clean-final-001/install/wave_gazebo:/home/usv/usv_migration/python-clean-final-001/install/sim_env:/home/usv/usv_migration/python-clean-final-001/install/usv_gazebo_plugins:/home/usv/usv_migration/python-clean-final-001/install/wave_gazebo_plugins:/home/usv/usv_migration/python-clean-final-001/install/controller:/home/usv/usv_migration/python-clean-final-001/install/trajectory_planner:/home/usv/usv_migration/python-clean-final-001/install/perception:/home/usv/usv_migration/python-clean-final-001/install/path_processor:/home/usv/usv_migration/python-clean-final-001/install/path_planner:/home/usv/usv_migration/python-clean-final-001/install/goal_set_plugin:/home/usv/usv_migration/python-clean-final-001/install/dynamic_xml_config:/home/usv/usv_migration/python-clean-final-001/install/dynamic_rviz_config:/home/usv/usv_migration/python-clean-final-001/install/common:/opt/ros/humble",
+      "PYTHONPATH": "/home/usv/usv_migration/python-clean-final-001/install/sim_env/local/lib/python3.10/dist-packages:/home/usv/usv_migration/python-clean-final-001/install/controller/lib/python3.10/site-packages:/home/usv/usv_migration/python-clean-final-001/install/trajectory_planner/lib/python3.10/site-packages:/home/usv/usv_migration/python-clean-final-001/install/perception/lib/python3.10/site-packages:/home/usv/usv_migration/python-clean-final-001/install/path_processor/lib/python3.10/site-packages:/home/usv/usv_migration/python-clean-final-001/install/path_planner/lib/python3.10/site-packages:/home/usv/usv_migration/python-clean-final-001/install/common/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages",
+      "LD_LIBRARY_PATH": "/home/usv/usv_migration/python-clean-final-001/install/usv_gazebo_plugins/lib:/home/usv/usv_migration/python-clean-final-001/install/wave_gazebo_plugins/lib:/home/usv/usv_migration/python-clean-final-001/install/goal_set_plugin/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib"
+    }
+  },
+  "source_pytest": {
+    "exit_code": 0,
+    "junit": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "439",
+      "time": "8.501",
+      "timestamp": "2026-09-11T13:23:00.254419",
+      "hostname": "DESKTOP-SFCU4PM"
+    },
+    "module_test_counts": {
+      "src.core.common.test.test_collision": 15,
+      "src.core.common.test.test_models": 5,
+      "src.core.path_planner.path_planner.test.test_grid_planning": 65,
+      "src.core.path_planner.path_processor.test.test_processing": 25,
+      "src.core.trajectory_planner.test.test_los": 13,
+      "src.core.trajectory_planner.test.test_trajectory": 8,
+      "src.core.controller.controller.test.test_controllers": 34,
+      "src.core.perception.test.test_mapping": 19,
+      "src.core.perception.test.test_mapping_deadline_ros": 5,
+      "src.core.perception.test.test_mapping_ros": 1,
+      "src.core.perception.test.test_scan_queue": 16,
+      "src.sim_env.test.test_configuration": 19,
+      "src.sim_env.test.test_navigation_ros": 3,
+      "src.sim_env.test.test_runtime": 23,
+      "scripts.validation.test_captured_footprint": 2,
+      "scripts.validation.test_compare_results": 149,
+      "scripts.validation.test_harness_options": 4,
+      "scripts.validation.test_metrics": 6,
+      "scripts.validation.test_plot_acceptance": 2,
+      "scripts.validation.test_tracking_metrics": 25
+    },
+    "scope": "Source package roots and ROS underlay in a separate shell; installed-import audit runs before this with no source roots"
+  },
+  "provenance": {
+    "before_after_source_identical": true,
+    "source_file_count": 435,
+    "validation_script_count": 90,
+    "after_post_source_and_install_identical": true,
+    "installed_file_count": 680,
+    "before_install": null,
+    "scope": "Compare full recorded path/bytes/SHA/mtime records; collector excludes bytecode and cache directories. Fresh install is created by build and is not asserted equal to absent pre-build install."
+  },
+  "cpp_parity": {
+    "exit_code": 0,
+    "output": "/home/usv/usv_migration/results/python-clean-final-001-parity",
+    "normal_passed": 9,
+    "normal_total": 9,
+    "semantic_probe_differences": 2,
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "baseline_commit": "632734ba31478bdb833e15949287b53ae9334cf3",
+    "python_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537",
+    "libraries": {
+      "/home/usv/usv_migration/baseline/install/common/lib/libcommon.so": "11f5c5970764427a501dca66e1a10932c7b11d0a98814bad236f5266e84f576a",
+      "/home/usv/usv_migration/baseline/install/controller/lib/libcontroller.so": "bd2188c94f9d97cd1d9128796cc8433636793d1b0cbc788adce37339201b381f",
+      "/home/usv/usv_migration/baseline/install/trajectory_planner/lib/libtrajectory_planner.so": "49959f2f4162914f13a5fb3d154468a4b524e356fb4cccb31bbe4462dfee9694",
+      "/home/usv/usv_migration/baseline/install/path_planner/lib/libpath_planner.so": "1c61139fe742c8b1837d6ac5d7d2a66db68c834e6c0322b3c1e65f59b184dc18",
+      "/home/usv/usv_migration/baseline/install/path_processor/lib/libpath_processor.so": "1be0c18995912afd3029b5c57fe4609a2020db84f631823cc012e7e1059de70a"
+    },
+    "not_covered": [
+      "A*/Dijkstra/GBFS require Costmap2DROS lifecycle initialization; bounded tool does not instantiate them",
+      "LQR A/B/K are private/local; only public control outputs executed, matrices not independently compared",
+      "LOS rollouts and LiDAR mapping not included",
+      "Trajectory nonlinear last interval is excluded because original upper bracket can access out of bounds",
+      "PID wrap discontinuity/reverse/lateral LQR feedback semantic repairs excluded from normal cases"
+    ],
+    "python_input_origin": "Fresh clone source APIs, not installed APIs; installed APIs separately audited"
+  },
+  "localization": {
+    "driver_exit_code": 0,
+    "output": "/home/usv/usv_migration/results/localization-green-python-clean-final-001",
+    "source_path": "/home/usv/usv_migration/python-clean-final-001/src/sim_env/src/fake_localization_node.cpp",
+    "source_sha256": "ec5f0d59cc35e6f76066add8cd0e3531d422ae3d7b6f5edfc6566bf800a36068",
+    "receipt": {
+      "schema_version": 1,
+      "mode": "acceptance",
+      "domain_id": 188,
+      "namespace": "localization_smoke_69f38d3f651a",
+      "binary": "/home/usv/usv_migration/python-clean-final-001/install/sim_env/lib/sim_env/fake_localization_node",
+      "binary_sha256": "4c9c583ebbf9eeed0db5c05e41587ada7ce2443def653744be8afbda63a58378",
+      "script_sha256": "096e577a127bd2c463ea2b6145b411589cd612818556c44613d322bdc7f4785a",
+      "command": [
+        "/home/usv/usv_migration/python-clean-final-001/install/sim_env/lib/sim_env/fake_localization_node",
+        "--ros-args",
+        "-r",
+        "__ns:=/localization_smoke_69f38d3f651a",
+        "-p",
+        "use_sim_time:=true",
+        "-p",
+        "model_name:=otter"
+      ],
+      "started_monotonic_s": 84192.300067537,
+      "signals": [
+        {
+          "pid": 122923,
+          "starttime_ticks": 8419236,
+          "signal": "SIGINT",
+          "monotonic_s": 84193.632815284
+        }
+      ],
+      "checks": {
+        "malformed_parallel_arrays_rejected": true,
+        "world_to_body_velocity": [
+          4.0,
+          -3.0,
+          0.2
+        ],
+        "duplicate_clock_suppressed": true,
+        "clock_rewind_and_subsequent_progress": true,
+        "legal_stream_sigint_exit_zero": true
+      },
+      "gdb": false,
+      "scope": "Owned standalone node only; no Gazebo; input defect is not attribution of a prior shutdown crash.",
+      "owned_pid": 122923,
+      "owned_starttime_ticks": 8419236,
+      "completed": true,
+      "process_returncode": 0,
+      "finished_monotonic_s": 84193.764316472,
+      "log_sha256": "1a2263d60e17df4cd5801a5a912f17fd33e16dfc8800284aaf07e282e522a6c7",
+      "gdb_observed_sigsegv": false
+    },
+    "frame_log_line": 1,
+    "owned_pid_absent_after_run": true
+  },
+  "raw_artifacts": {
+    "/home/usv/usv_migration/python-clean-final-001/validation/build-request.txt": {
+      "bytes": 911,
+      "sha256": "400394f537755fefe8d2c3f255a1bca9f5c5ced99e751807e930ad4a074c5641"
+    },
+    "/home/usv/usv_migration/python-clean-final-001/validation/build-result.txt": {
+      "bytes": 89,
+      "sha256": "21a2942b9cebb4c158385010b036e49be0cf26af320c9032181c3fe293b2a83e"
+    },
+    "/home/usv/usv_migration/python-clean-final-001/validation/build_clean.invoked.bash": {
+      "bytes": 6717,
+      "sha256": "c0eec132b62b8b3918d41eeb681aa22587f0546e5f4d958344886b21414a9d76"
+    },
+    "/home/usv/usv_migration/python-clean-final-001/validation/build.log": {
+      "bytes": 133635,
+      "sha256": "dedd92715cb5adc1d5af6940a059d6a1af3afa5fd8fba31e6d03858f33398f36"
+    },
+    "/home/usv/usv_migration/python-clean-final-001/validation/install-audit.log": {
+      "bytes": 132,
+      "sha256": "75f09c4943e0b185d18c95378f994739933901e51cd826b86ac63b50f3cea9f1"
+    },
+    "/home/usv/usv_migration/python-clean-final-001/validation/install-audit.json": {
+      "bytes": 19108,
+      "sha256": "6796b8d2939a69df39bce5ea063134aa9f73a05c951de00b840b3b5644d75432"
+    },
+    "/home/usv/usv_migration/python-clean-final-001/validation/source-tests.log": {
+      "bytes": 679,
+      "sha256": "17661049c34bf42fdbecf8191dd9741ee98b3a502329c7d7bda57b725d91aa74"
+    },
+    "/home/usv/usv_migration/python-clean-final-001/validation/source-tests.xml": {
+      "bytes": 68006,
+      "sha256": "c2a3e2854066257bbe7f0d194c4aa10246887f6e9801d946b020252e89bab6c8"
+    },
+    "/home/usv/usv_migration/python-clean-final-001/validation/provenance-before.json": {
+      "bytes": 220828,
+      "sha256": "8ef141b5f3470676bae941ee06ada566827b3a248f521bfe4890a54eaf3c020a"
+    },
+    "/home/usv/usv_migration/python-clean-final-001/validation/provenance-after.json": {
+      "bytes": 525394,
+      "sha256": "f01401869d13847c4dadf58b0683044016f9c05242036bfc3c7f04ee27fc5393"
+    },
+    "/home/usv/usv_migration/python-clean-final-001/validation/provenance-post-acceptance.json": {
+      "bytes": 525202,
+      "sha256": "2650198df3a2db108248632b68caa4759aeaf53a3a00b3887729c0d67b52ab12"
+    },
+    "/home/usv/usv_migration/results/python-clean-final-001-parity/configure.log": {
+      "bytes": 2183,
+      "sha256": "91decf0c553e4c8d8cdc69731df0464e6d795bf991aa1ce87d0801f6e169eeb6"
+    },
+    "/home/usv/usv_migration/results/python-clean-final-001-parity/build.log": {
+      "bytes": 138,
+      "sha256": "ca55763fce4476ff1b2d7d26cca0425f4c9ddead7d644cf6efac999513cb59e3"
+    },
+    "/home/usv/usv_migration/results/python-clean-final-001-parity/cpp_execution.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/usv/usv_migration/results/python-clean-final-001-parity/linked_libraries.txt": {
+      "bytes": 6459,
+      "sha256": "bfb1cd87e1a5eadf136595427dbc7da7932ef32274ec4e056cef68a9cc558851"
+    },
+    "/home/usv/usv_migration/results/python-clean-final-001-parity/fixtures.json": {
+      "bytes": 8600,
+      "sha256": "c460041c9dc785e5fcb9df2aa728e21b096aef88581ea81d0157a8db761538c4"
+    },
+    "/home/usv/usv_migration/results/python-clean-final-001-parity/cpp_golden.tsv": {
+      "bytes": 3055,
+      "sha256": "b072020fcc7e23ce0718f0345c2b1790b9f37de67906601807a7aa5bea726b84"
+    },
+    "/home/usv/usv_migration/results/python-clean-final-001-parity/report.json": {
+      "bytes": 17758,
+      "sha256": "03e7ec7ab0fe527c5fb5cb032f6515e4644bc645a13054835ee633598f7677e2"
+    },
+    "/home/usv/usv_migration/results/python-clean-final-001-parity/report.md": {
+      "bytes": 1768,
+      "sha256": "e3a4a0f2ae2d78a8560dbd7efac57a18e57f1dd47644741fd0df943c979ad2f6"
+    },
+    "/home/usv/usv_migration/results/localization-green-python-clean-final-001/receipt.json": {
+      "bytes": 1534,
+      "sha256": "d34f7d75a672e229acb7efeebdec080ec383db83dec3772e6fe5117dcb56dc1b"
+    },
+    "/home/usv/usv_migration/results/localization-green-python-clean-final-001/node.log": {
+      "bytes": 591,
+      "sha256": "1a2263d60e17df4cd5801a5a912f17fd33e16dfc8800284aaf07e282e522a6c7"
+    }
+  },
+  "limits": [
+    "No Gazebo or closed-loop scenario is executed by this acceptance batch.",
+    "9 normal parity fixtures are not equivalence proof for all algorithms; 2 semantic probes remain reported differences.",
+    "Standalone localization green does not attribute or eliminate prior unrelated shutdown failures.",
+    "Source JUnit tests and installed import audit are distinct checks."
+  ]
+}
