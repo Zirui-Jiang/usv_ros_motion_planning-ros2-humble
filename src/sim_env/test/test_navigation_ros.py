@@ -18,6 +18,40 @@ from sim_env.simulation import Simulator
 from sim_env.configuration import C, T
 
 
+def test_current_hull_blocks_control_even_when_reference_and_centre_are_clear(monkeypatch):
+    import numpy as np
+    from common.models import GridSnapshot, VesselState
+    from common.collision import footprint_path_is_clear
+    from trajectory_planner import Trajectory
+    rclpy.init(args=['--ros-args', '-r', '__ns:=/navigation_footprint_smoke'])
+    simulator = None
+    try:
+        simulator = Simulator()
+        now = simulator.now_seconds()
+        data = np.zeros((80, 80), np.uint8)
+        data[44, 44] = 254  # Square [1,1.25] x [1,1.25].
+        simulator.grid = GridSnapshot(data, .25, -10., -10., now, simulator.frame)
+        simulator.state = VesselState(0., .6, 0., stamp=now, frame_id=simulator.frame)
+        simulator.trajectory = Trajectory([[0., 0., 0., 0., 0., 0., 1., 0.],
+                                           [1., 1., 1., 0., 0., 0., 1., 0.]], now, simulator.frame, (5., 0.))
+        simulator.goal = (5., 0., 0.)
+        assert simulator.grid.data[42, 40] == 0
+        assert footprint_path_is_clear(simulator.grid, simulator.trajectory.points[:, [2, 3, 4]])
+        assert not simulator._trajectory_clear(simulator.trajectory)
+        commands = []
+        monkeypatch.setattr(simulator, '_publish_command', commands.append)
+        simulator.last_control = now - .1
+        simulator._control()
+        assert simulator.mode == 'CURRENT_FOOTPRINT_BLOCKED'
+        assert simulator.trajectory is None and simulator.goal is not None
+        assert commands and commands[-1].left == commands[-1].right == 0.
+    finally:
+        if simulator is not None:
+            simulator.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
+
+
 def test_process_planning_parameters_stale_inputs_cancel_and_clock_reset():
     rclpy.init(args=['--ros-args', '-r', '__ns:=/navigation_smoke', '-p', 'use_sim_time:=true'])
     simulator = driver = executor = None

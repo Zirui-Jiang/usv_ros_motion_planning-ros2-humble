@@ -174,8 +174,13 @@ class Simulator(Node):
         self.timings['costmap_conversion_ms'].append((time.perf_counter() - begun) * 1000)
 
     def _trajectory_clear(self, trajectory):
-        return self.grid is not None and footprint_path_is_clear(
+        return self._current_footprint_clear() and footprint_path_is_clear(
             self.grid, trajectory.points[:, [2, 3, 4]], self.config['navigation.footprint_length'],
+            self.config['navigation.footprint_width'])
+
+    def _current_footprint_clear(self):
+        return self.state is not None and self.grid is not None and footprint_path_is_clear(
+            self.grid, [self.state.pose], self.config['navigation.footprint_length'],
             self.config['navigation.footprint_width'])
 
     def _reset_task(self, mode, reason='', clear_inputs=False):
@@ -280,6 +285,15 @@ class Simulator(Node):
             self._consume_plan()
             if self.goal is not None:
                 ready = readiness(now, self.state, self.grid, self.trajectory, self.config)
+                # Tracking errors can put the actual hull outside the safe
+                # reference. Recheck it every control tick, even when planning
+                # has not returned another trajectory yet.
+                if ready in ('NAVIGATING', 'WAITING_REFERENCE') and not self._current_footprint_clear():
+                    self.trajectory = None
+                    self.route = np.empty((0, 3))
+                    ready = 'CURRENT_FOOTPRINT_BLOCKED'
+                    self.reason = 'Current vessel footprint intersects lethal or unknown map cells'
+                    self.counters['current_footprint_blocks'] += 1
                 if ready == 'NAVIGATING' and dt > 0:
                     self.mode = ready
                     command = self.controller.compute(self.state, self.trajectory, dt)

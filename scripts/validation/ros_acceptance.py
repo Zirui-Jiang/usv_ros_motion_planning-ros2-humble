@@ -479,6 +479,12 @@ def _verify_controller_once(probe, requested):
     listed = call_service(probe, list_kind, [probe.namespace + "/usv_simulation/list_parameters"], list_kind.Request())
     available = set(listed.result.names)
     request.names = [name for name in request.names if name in available]
+    # Capture newly declared numerical settings (for example LOS slowdown)
+    # without silently losing them when configuration evolves between runs.
+    algorithm_prefixes = ("usv_simulation.controller.", "usv_simulation.trajectory_planner.",
+                          "dynamics.", "navigation.", "path_planner.")
+    request.names += sorted(name for name in available - set(request.names)
+                            if name.startswith(algorithm_prefixes))
     if prefix + "controller_name" not in request.names:
         raise EmptyParameterResponse("parameter service reply omitted controller_name")
     response = call_service(probe, kind, [probe.namespace + "/usv_simulation/get_parameters"], request)
