@@ -13,6 +13,9 @@ provided-list selects the last directory in the recorded source order.
 run directories. Exit 0 means all requested observed/planned navigation pairs
 passed, Python navigation performance has sufficient passing evidence, sources
 are finished, and extra fault cases passed; 1 means otherwise.
+--acceptance-aggregation scenario_mean explicitly adds the fixed-three-repeat
+mean gate. Exit 0 still requires every group comparable and passing plus the
+independent performance/fault gates; eligible-only success is reported separately.
 Exit 2 denotes invalid inputs. No ROS or NumPy dependency is needed.
 """
 
@@ -762,13 +765,108 @@ def group_results(records, planned, rmse_metric="legacy_wall"):
     return output
 
 
-def build_report(sources, duplicate_policy="error", limit=1.10, atol=1e-6, *, rmse_metric="legacy_wall", frame_contract=None):
+def scenario_mean_acceptance(report):
+    """Optional three-repeat mean gate; preserve all original per-repeat verdicts.
+
+    Descriptive values include failed observed trials. Eligibility never selects
+    a subset: both modes require exactly repeats 1, 2, 3, completed/passed and
+    valid source-time evidence, even if legacy_wall is the selected RMSE.
+    """
+    required = [1, 2, 3]
+    method = report["method"]
+    metric, limit, atol = (method[key] for key in ("rmse_metric", "ratio_limit", "zero_baseline_atol"))
+    members = defaultdict(lambda: defaultdict(list))
+    pairs = defaultdict(list)
+    for record in report["trials"]:
+        row = record["result"]
+        if not row.get("fault"):
+            members[(row.get("controller"), row.get("scenario"))][row.get("mode")].append(record)
+    for pair in report["comparisons"]:
+        key = (pair["controller"], pair["scenario"])
+        pairs[key].append(pair)
+        members.setdefault(key, defaultdict(list))
+
+    def stats(values):
+        values = [value if number(value) and value >= 0 else None for value in values]
+        finite = [value for value in values if value is not None]
+        return {"values": values, "count": len(finite),
+                "mean": statistics.fmean(finite) if finite else None,
+                "std_ddof1": statistics.stdev(finite) if len(finite) >= 2 else None,
+                "worst": max(finite) if finite else None}
+
+    output = []
+    for (controller, scenario), modes in sorted(members.items(), key=lambda item: str(item[0])):
+        group = {"controller": controller, "scenario": scenario, "comparable": False,
+                 "passed": None, "reasons": [], "metrics": {}}
+        for mode in ("python", "cpp"):
+            rows = modes[mode]
+            repeats = [r["result"].get("repeat") for r in rows]
+            if len(repeats) != 3 or set(repeats) != set(required):
+                group["reasons"].append(mode + "_requires_exact_repeats_1_2_3")
+            fixed = [next((r for r in rows if r["result"].get("repeat") == repeat), None) for repeat in required]
+            observed = []
+            for repeat, record in zip(required, fixed):
+                prefix = f"{mode}_repeat_{repeat}"
+                source = nested(record or {}, "observations", "tracking", "source_time_trapezoid") or {}
+                observed.append({"repeat": repeat, "trial": nested(record or {}, "result", "trial"),
+                    "completed_and_passed": completed_pass(record), "source_time_status": source.get("status"),
+                    "source_time_reasons": source.get("reasons"), "source": (record or {}).get("source")})
+                if record is None:
+                    group["reasons"].append(prefix + "_missing")
+                    continue
+                if not completed_pass(record):
+                    group["reasons"].append(prefix + "_not_completed_and_passed")
+                if source.get("status") != "valid" or not number(source.get("rmse_m")) or source["rmse_m"] < 0:
+                    group["reasons"].append(prefix + "_source_time_not_valid")
+                for name, value in (("cross_track_rmse_m", selected_rmse(record, metric)),
+                                    ("duration_sim_s", record["result"].get("duration_sim_s"))):
+                    if not number(value) or value < 0:
+                        group["reasons"].append(prefix + "_invalid_" + name)
+            group[mode] = {"observed_trials": len(rows), "observed_repeats": repeats,
+                           "completed_and_passed": sum(completed_pass(r) for r in rows),
+                           "source_valid_trials": sum(nested(r, "observations", "tracking", "source_time_trapezoid", "status") == "valid" for r in rows),
+                           "fixed_repeats": observed,
+                           "metrics": {
+                               "cross_track_rmse_m": stats([selected_rmse(r, metric) if r else None for r in fixed]),
+                               "duration_sim_s": stats([r["result"].get("duration_sim_s") if r else None for r in fixed]),
+                               **{name + "_rmse_m": stats([selected_rmse(r, name) if r else None for r in fixed])
+                                  for name in _tracking.RMSE_METRICS}}}
+        if not group["reasons"]:
+            group["metrics"] = {name: ratio_comparison(group["python"]["metrics"][name]["mean"],
+                group["cpp"]["metrics"][name]["mean"], limit, atol)
+                for name in ("cross_track_rmse_m", "duration_sim_s")}
+            group["comparable"] = all(value["comparable"] for value in group["metrics"].values())
+            group["passed"] = all(value["passed"] for value in group["metrics"].values()) if group["comparable"] else None
+        group["individual_comparisons"] = pairs[(controller, scenario)]
+        group["worst_comparable_repeat_ratios"] = {
+            name: max((p["metrics"][name]["ratio"] for p in group["individual_comparisons"]
+                       if p["comparable"] and number(p["metrics"][name].get("ratio"))), default=None)
+            for name in ("cross_track_rmse_m", "duration_sim_s")}
+        output.append(group)
+    eligible = [group for group in output if group["comparable"]]
+    return {"aggregation": "scenario_mean", "rmse_metric": metric, "required_repeats": required,
+            "population": "same controller/scenario fixed repeats 1,2,3 on both modes; no replacement or best-subset selection",
+            "statistic": "arithmetic mean of per-trial RMSE and duration, sample standard deviation ddof=1, worst=max; not pooled RMSE or mean of ratios",
+            "eligibility": "all six trials completed and passed with valid source-time scores and nonnegative finite selected RMSE/duration",
+            "descriptive_scope": "fixed-repeat observed values, including failed trials; missing values remain null; means of incomplete/ineligible groups are descriptive only",
+            "groups": output, "summary": {"groups": len(output), "eligible_groups": len(eligible),
+                "passed_groups": sum(group["passed"] is True for group in output),
+                "failed_groups": sum(group["passed"] is False for group in output),
+                "incomparable_groups": len(output) - len(eligible),
+                "all_eligible_passed": bool(eligible) and all(group["passed"] is True for group in eligible),
+                "all_groups_comparable": bool(output) and len(eligible) == len(output)}}
+
+
+def build_report(sources, duplicate_policy="error", limit=1.10, atol=1e-6, *, rmse_metric="legacy_wall", frame_contract=None,
+                 acceptance_aggregation="per_repeat"):
     if duplicate_policy not in ("error", "latest", "provided-list"):
         raise ValueError("unknown duplicate policy")
     if not number(limit) or limit <= 0 or not number(atol) or atol < 0:
         raise ValueError("limit must be positive and atol nonnegative")
     if rmse_metric not in _tracking.RMSE_METRICS:
         raise ValueError("unknown RMSE metric")
+    if acceptance_aggregation not in ("per_repeat", "scenario_mean"):
+        raise ValueError("unknown acceptance aggregation")
     contract = _tracking.frame_contract_description(frame_contract)
     records, planned, metadata = [], [], []
     for index, (role, directory) in enumerate(sources):
@@ -795,7 +893,7 @@ def build_report(sources, duplicate_policy="error", limit=1.10, atol=1e-6, *, rm
     sources_finished = all(m["run_finished"] is True and m["manifest_mode"] != "dry_run" for m in metadata)
     performance_passed = bool(performance) and all(p["status"] == "pass" for p in performance)
     all_passed = bool(comparisons) and all(p["passed"] is True for p in comparisons) and all(completed_pass(f) for f in faults) and sources_finished and performance_passed
-    return {"schema_version": 2, "generated_utc": datetime.now(timezone.utc).isoformat(),
+    report = {"schema_version": 2, "generated_utc": datetime.now(timezone.utc).isoformat(),
             "selection": {"duplicate_policy": duplicate_policy, "source_order": "Python directories, baseline directories, extra directories; later source wins provided-list/timestamp ties", "decisions": decisions},
             "method": {"rmse_metric": rmse_metric,
                        "rmse_field": "cross_track_initial_m.rms" if rmse_metric == "legacy_wall" else "observations.tracking.source_time_trapezoid.rmse_m",
@@ -828,6 +926,14 @@ def build_report(sources, duplicate_policy="error", limit=1.10, atol=1e-6, *, rm
                         "performance_unknown": sum(p["status"] == "unknown" for p in performance),
                         "all_performance_passed": performance_passed,
                         "all_sources_finished": sources_finished, "all_passed": all_passed}}
+    if acceptance_aggregation == "scenario_mean":
+        report["method"]["acceptance_aggregation"] = acceptance_aggregation
+        report["scenario_acceptance"] = scenario_mean_acceptance(report)
+        aggregate = report["scenario_acceptance"]["summary"]
+        report["summary"]["per_repeat_all_passed"] = all_passed
+        report["summary"]["all_passed"] = (aggregate["all_groups_comparable"] and aggregate["all_eligible_passed"]
+            and all(completed_pass(f) for f in faults) and sources_finished and performance_passed)
+    return report
 
 
 def markdown(report):
@@ -841,6 +947,39 @@ def markdown(report):
              "", f"Python 正常导航性能：通过 {summary['performance_passed']}、失败 {summary['performance_failed']}、证据不足 {summary['performance_unknown']}；性能证据不足也不能总体通过。",
              "", f"仅双方 result=completed 且 passed=true 才计算比例。阈值 Python/C++ ≤ {report['method']['ratio_limit']:.2f}；零基线比例不定义，按绝对容差 {report['method']['zero_baseline_atol']:g} 判断。",
              "", "## 每次配对", "", "| 控制器 | 场景 | 重复 | RMSE 比例 | 时间比例 | 判定/原因 |", "| --- | --- | --- | --- | --- | --- |"]
+    if "scenario_acceptance" in report:
+        aggregation = report["scenario_acceptance"]
+        counts = aggregation["summary"]
+        lines[2] = (f"全证据总体判定：{'通过' if summary['all_passed'] else '未通过或证据不完整'}。"
+                    f"保留的逐次诊断：可比 {summary['comparable_pairs']}/{summary['pairs']} 对，通过 {summary['passed_pairs']} 对，"
+                    f"失败 {summary['failed_pairs']} 对，不可比 {summary['not_comparable_pairs']} 对；"
+                    f"故障用例通过 {summary['fault_passed']}/{summary['fault_trials']}。")
+        mean_lines = ["## 显式场景三次均值验收（scenario_mean）", "",
+            f"主度量 `{aggregation['rmse_metric']}`：适用的完整三次组通过 {counts['passed_groups']}/{counts['eligible_groups']}，"
+            f"失败 {counts['failed_groups']} 组，不可比 {counts['incomparable_groups']}/{counts['groups']} 组。"
+            "适用组通过不等于所有组通过，也不替代独立功能与性能验收。",
+            "双方必须各有固定编号1、2、3，全部 completed/passed 且 source-time valid；不以有效子集或最好几次替代。"
+            "分别取三次 RMSE 的算术均值和三次到达时间的算术均值，再比较均值之比；不是合并样本 RMSE，也不是三次比例的平均。"
+            "下列标准差采用 ddof=1，最差取最大值；不可比组的已有数值仅作描述，不用于通过判定。", "",
+            "| 控制器/场景 | 双方观测数 Python/CPP | 均值RMSE比例 | 均值时间比例 | 场景判定/原因 |",
+            "| --- | --- | --- | --- | --- |"]
+        for group in aggregation["groups"]:
+            ratios = []
+            for name in ("cross_track_rmse_m", "duration_sim_s"):
+                comparison = group["metrics"].get(name, {})
+                ratios.append("零基线绝对容差：" + ("通过" if comparison.get("passed") else "失败")
+                    if comparison.get("method") == "zero_baseline_absolute_tolerance" else fmt(comparison.get("ratio")))
+            result_text = "通过" if group["passed"] is True else "失败" if group["passed"] is False else "不可比：" + "; ".join(group["reasons"])
+            mean_lines.append(f"| {safe(group['controller'])}/{safe(group['scenario'])} | {group['python']['observed_trials']}/{group['cpp']['observed_trials']} | {ratios[0]} | {ratios[1]} | {safe(result_text)} |")
+        mean_lines += ["", "| 控制器/场景/模式 | 度量 | 固定重复1 / 2 / 3 | 有值数 | 算术均值 | 标准差 ddof=1 | 最差 |",
+                       "| --- | --- | --- | --- | --- | --- | --- |"]
+        for group in aggregation["groups"]:
+            for mode in ("python", "cpp"):
+                for name, label in (("cross_track_rmse_m", aggregation["rmse_metric"] + " RMSE m"),
+                                    ("legacy_wall_rmse_m", "legacy_wall RMSE m"), ("duration_sim_s", "到达时间 s")):
+                    values = group[mode]["metrics"][name]
+                    mean_lines.append(f"| {safe(group['controller'])}/{safe(group['scenario'])}/{mode} | {label} | {' / '.join(fmt(v) for v in values['values'])} | {values['count']} | {fmt(values['mean'])} | {fmt(values['std_ddof1'])} | {fmt(values['worst'])} |")
+        lines[8:8] = mean_lines + [""]
     for pair in report["comparisons"]:
         values = []
         for name in ("cross_track_rmse_m", "duration_sim_s"):
@@ -910,6 +1049,8 @@ def main(argv=None):
     parser.add_argument("--ratio-limit", type=float, default=1.10)
     parser.add_argument("--atol", type=float, default=1e-6)
     parser.add_argument("--rmse-metric", choices=_tracking.RMSE_METRICS, default="legacy_wall")
+    parser.add_argument("--acceptance-aggregation", choices=("per_repeat", "scenario_mean"), default="per_repeat",
+                        help="explicit optional fixed-three-repeat mean gate; default retains historical per-repeat reports")
     parser.add_argument("--frame-contract", choices=_tracking.FRAME_CONTRACTS, help="explicit assertion of the audited otter map/odom identity; required for usable source-time scores")
     parser.add_argument("--output", type=Path, required=True, help="new report directory outside all raw input runs")
     args = parser.parse_args(argv)
@@ -920,13 +1061,17 @@ def main(argv=None):
     try:
         if output.exists() or any(output == p.resolve() or p.resolve() in output.parents for _, p in sources):
             raise ValueError("output must be new and outside raw run directories")
-        report = build_report(sources, args.duplicates, args.ratio_limit, args.atol, rmse_metric=args.rmse_metric, frame_contract=args.frame_contract)
+        report = build_report(sources, args.duplicates, args.ratio_limit, args.atol, rmse_metric=args.rmse_metric,
+                              frame_contract=args.frame_contract, acceptance_aggregation=args.acceptance_aggregation)
         output.mkdir(parents=True, exist_ok=False)
         (output / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
         (output / "report.md").write_text(markdown(report), encoding="utf-8")
     except (ValueError, OSError) as error:
         parser.error(str(error))
-    print(json.dumps({"report": str(output / 'report.json'), **report['summary']}, ensure_ascii=False))
+    printed = {"report": str(output / 'report.json'), **report['summary']}
+    if "scenario_acceptance" in report:
+        printed["scenario_acceptance"] = report["scenario_acceptance"]["summary"]
+    print(json.dumps(printed, ensure_ascii=False))
     return 0 if report["summary"]["all_passed"] else 1
 
 

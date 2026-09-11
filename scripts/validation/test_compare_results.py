@@ -708,3 +708,172 @@ def test_safety_stopped_trial_is_not_a_completed_comparable_navigation_result(tm
     report = compare.build_report([("python", py), ("cpp", cpp)])
     assert not report["comparisons"][0]["comparable"]
     assert not report["summary"]["all_passed"]
+
+
+def scenario_fixture(python=(.12, .08, .10), cpp=(.10, .10, .10), durations=(12., 8., 10.)):
+    """Three fixed repetitions with independently valid source-time evidence."""
+    records = []
+    for mode, values in (("python", python), ("cpp", cpp)):
+        for repeat, value in enumerate(values, 1):
+            records.append({"result": result(mode, repeat, rmse=value,
+                duration=durations[repeat - 1] if mode == "python" else 10.),
+                "source": {"manifest_mode": "live", "run_directory": mode},
+                "observations": {"tracking": {"source_time_trapezoid": {
+                    "status": "valid", "rmse_m": value, "reasons": []}}}})
+    return refresh_scenario_fixture(records)
+
+
+def refresh_scenario_fixture(records):
+    keys = {compare.comparison_key(record["result"]) for record in records}
+    pairs = []
+    for key in sorted(keys):
+        modes = {r["result"]["mode"]: r for r in records if compare.comparison_key(r["result"]) == key}
+        pairs.append(compare.compare_pair(key, modes.get("python"), modes.get("cpp"), 1.1, 1e-6,
+                                          "source_time_trapezoid"))
+    return {"trials": records, "comparisons": pairs,
+            "method": {"rmse_metric": "source_time_trapezoid", "ratio_limit": 1.1, "zero_baseline_atol": 1e-6}}
+
+
+def test_scenario_mean_is_arithmetic_of_three_rmse_values_and_retains_worst_pair():
+    report = scenario_fixture()
+    before = json.dumps(report, sort_keys=True)
+    observed = compare.scenario_mean_acceptance(report)
+    group = observed["groups"][0]
+    assert group["comparable"] and group["passed"]
+    assert group["python"]["metrics"]["cross_track_rmse_m"] == {
+        "values": [.12, .08, .10], "count": 3, "mean": pytest.approx(.1),
+        "std_ddof1": pytest.approx(.02), "worst": .12}
+    assert group["metrics"]["cross_track_rmse_m"]["ratio"] == pytest.approx(1.)
+    assert group["metrics"]["duration_sim_s"]["ratio"] == 1.
+    assert group["individual_comparisons"][0]["passed"] is False
+    assert group["worst_comparable_repeat_ratios"]["cross_track_rmse_m"] == 1.2
+    assert observed["summary"]["all_eligible_passed"]
+    assert json.dumps(report, sort_keys=True) == before
+
+
+@pytest.mark.parametrize("mutation, reason", [
+    ("missing_repeat", "requires_exact_repeats_1_2_3"),
+    ("extra_repeat", "requires_exact_repeats_1_2_3"),
+    ("failed_baseline", "cpp_repeat_2_not_completed_and_passed"),
+    ("source_unknown", "cpp_repeat_2_source_time_not_valid"),
+    ("missing_duration", "cpp_repeat_2_invalid_duration_sim_s"),
+])
+def test_scenario_mean_never_selects_only_the_best_valid_repeats(mutation, reason):
+    report = scenario_fixture()
+    rows = report["trials"]
+    record = rows[4]
+    if mutation == "missing_repeat":
+        rows.remove(record)
+    elif mutation == "extra_repeat":
+        import copy
+        extra = copy.deepcopy(record)
+        extra["result"].update(repeat=4, trial="cpp_pid_straight_04")
+        rows.append(extra)
+    elif mutation == "failed_baseline":
+        record["result"]["passed"] = False
+    elif mutation == "source_unknown":
+        record["observations"]["tracking"]["source_time_trapezoid"]["status"] = "unknown"
+    else:
+        record["result"]["duration_sim_s"] = None
+    observed = compare.scenario_mean_acceptance(refresh_scenario_fixture(rows))
+    group = observed["groups"][0]
+    assert not group["comparable"] and group["passed"] is None
+    assert reason in str(group["reasons"])
+    assert observed["summary"]["incomparable_groups"] == 1
+    assert not observed["summary"]["all_eligible_passed"]
+
+
+def test_scenario_mean_duration_failure_and_zero_baseline_atol_are_independent():
+    failed_time = compare.scenario_mean_acceptance(scenario_fixture(durations=(12., 12., 12.)))["groups"][0]
+    assert failed_time["metrics"]["cross_track_rmse_m"]["passed"]
+    assert failed_time["passed"] is False
+    for value, expected in ((1e-6, True), (1.01e-6, False)):
+        group = compare.scenario_mean_acceptance(scenario_fixture((value,) * 3, (0.,) * 3))["groups"][0]
+        assert group["metrics"]["cross_track_rmse_m"]["ratio"] is None
+        assert group["passed"] is expected
+
+
+def test_scenario_mean_requires_source_valid_even_when_wall_selected():
+    report = scenario_fixture()
+    report["method"]["rmse_metric"] = "legacy_wall"
+    report["trials"][0]["observations"]["tracking"] = {}
+    assert not compare.scenario_mean_acceptance(report)["groups"][0]["comparable"]
+
+
+def test_default_and_explicit_per_repeat_reports_and_cli_stay_compatible(tmp_path):
+    py = write_run(tmp_path / "py", [result()], events=performance_events())
+    cpp = write_run(tmp_path / "cpp", [result("cpp")])
+    sources = [("python", py), ("cpp", cpp)]
+    default = compare.build_report(sources)
+    explicit = compare.build_report(sources, acceptance_aggregation="per_repeat")
+    for report in (default, explicit):
+        report.pop("generated_utc")
+        assert "scenario_acceptance" not in report
+        assert "acceptance_aggregation" not in report["method"]
+    assert default == explicit
+    for suffix, flag in (("default", []), ("explicit", ["--acceptance-aggregation", "per_repeat"])):
+        assert compare.main(["--python", str(py), "--baseline", str(cpp),
+                             "--output", str(tmp_path / suffix), *flag]) == 0
+    reports = [json.loads((tmp_path / suffix / "report.json").read_text()) for suffix in ("default", "explicit")]
+    for report in reports:
+        report.pop("generated_utc")
+    assert reports[0] == reports[1]
+    assert (tmp_path / "default" / "report.md").read_bytes() == (tmp_path / "explicit" / "report.md").read_bytes()
+
+
+def test_scenario_mean_report_labels_and_unknown_performance_remain_independent(tmp_path):
+    import runpy
+    events = runpy.run_path(str(Path(__file__).with_name("test_tracking_metrics.py")))["source_events"]()
+    py = write_run(tmp_path / "py", [result(repeat=i) for i in (1, 2, 3)], events=events)
+    cpp = write_run(tmp_path / "cpp", [result("cpp", repeat=i) for i in (1, 2, 3)], events=events)
+    report = compare.build_report([("python", py), ("cpp", cpp)], acceptance_aggregation="scenario_mean",
+        rmse_metric="source_time_trapezoid", frame_contract="otter_fake_localization")
+    assert report["scenario_acceptance"]["summary"]["all_eligible_passed"]
+    assert report["summary"]["performance_unknown"] == 3
+    assert report["summary"]["all_passed"] is False
+    output = compare.markdown(report)
+    for label in ("scenario_mean", "source_time_trapezoid", "算术均值", "ddof=1", "最差", "逐次"):
+        assert label in output
+    with pytest.raises(ValueError, match="aggregation"):
+        compare.build_report([("python", py)], acceptance_aggregation="best_two")
+    assert compare.main(["--python", str(py), "--baseline", str(cpp),
+        "--rmse-metric", "source_time_trapezoid", "--frame-contract", "otter_fake_localization",
+        "--acceptance-aggregation", "scenario_mean", "--output", str(tmp_path / "mean")]) == 1
+    written = json.loads((tmp_path / "mean" / "report.json").read_text())
+    assert written["scenario_acceptance"] == report["scenario_acceptance"]
+
+
+def test_scenario_mean_two_eligible_four_incomparable_preserves_all_individuals():
+    import copy
+    rows = []
+    for controller in ("pid", "lqr"):
+        for scenario in ("straight", "turn", "single_obstacle"):
+            group = copy.deepcopy(scenario_fixture()["trials"])
+            for record in group:
+                row = record["result"]
+                if controller == "lqr" and row["mode"] == "cpp":
+                    continue
+                row.update(controller=controller, scenario=scenario,
+                    trial=f"{row['mode']}_{controller}_{scenario}_{row['repeat']:02d}")
+                if scenario == "single_obstacle" and row["mode"] == "cpp" and row["repeat"] in (2, 3):
+                    row["passed"] = False
+                rows.append(record)
+    report = refresh_scenario_fixture(rows)
+    output = compare.scenario_mean_acceptance(report)
+    assert output["summary"] == {"groups": 6, "eligible_groups": 2, "passed_groups": 2,
+        "failed_groups": 0, "incomparable_groups": 4,
+        "all_eligible_passed": True, "all_groups_comparable": False}
+    circle = next(group for group in output["groups"] if group["controller"] == "pid" and group["scenario"] == "single_obstacle")
+    assert circle["cpp"]["metrics"]["cross_track_rmse_m"]["count"] == 3
+    assert circle["individual_comparisons"][0]["comparable"]
+    assert sum(len(group["individual_comparisons"]) for group in output["groups"]) == 18
+
+
+@pytest.mark.parametrize("invalid", [-1., float("nan"), float("inf"), True, None])
+def test_scenario_mean_invalid_values_remain_unknown(invalid):
+    report = scenario_fixture()
+    report["trials"][0]["observations"]["tracking"]["source_time_trapezoid"]["rmse_m"] = invalid
+    output = compare.scenario_mean_acceptance(report)
+    assert output["groups"][0]["passed"] is None
+    assert output["groups"][0]["python"]["metrics"]["cross_track_rmse_m"]["values"][0] is None
+    json.dumps(output, allow_nan=False)
