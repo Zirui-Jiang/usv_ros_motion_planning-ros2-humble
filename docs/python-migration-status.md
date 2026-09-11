@@ -59,6 +59,11 @@ Python 对应矩阵已暂停：九条 PID 已完成，其中两条圆柱安全�
 属于 [未控制因素](validation/ocean-repeatability-audit/README.md)，尚不能据此确定失败原因。
 当前继续诊断，尚未启动最终旧 C++ 源码清理。
 
+后续单参数 `k_d_course=0.10` 候选三次转弯均到达，但源时间配对仅 1/3 通过，
+按预先固定协议停止直航和圆柱后续阶段；该值未成为默认配置。
+见 [阻尼诊断](validation/pid-course-damping-diagnostic/README.md) 和
+[失败候选](validation/python-pid-course-d010-turn-candidate-001/README.md)。
+
 本轮控制与扫描计算耗时各 18/18 通过，PID/LQR 直航 03 因连续 TF 过期保留积压
 unknown。两次 LQR 求解达到 80 ms 预算后输出零推力并恢复；两次 gzserver 在收尾
 SIGINT 时退出 -6，分别统计，不影响原始采集是否完成的记录。独立进程采样完整覆盖

@@ -1,0 +1,16 @@
+{
+  "source": "/home/usv/usv_migration/python/install/sim_env/share/sim_env/config/robots/otter/controller_params_otter.yaml",
+  "source_sha256": "3e11175489dd7d32d06bd56c62e917a1285c47190f5d60276cebefa9deeb0e72",
+  "candidate": "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/scripts/validation/config/pid_course_d010.yaml",
+  "candidate_sha256": "ad00230c6e99bb14a3c811c33a48e7b928b8e2b17f445a4ade291023f2732f1e",
+  "resolved_parameter_diff": {
+    "usv_simulation.controller.pid_controller.k_d_course": {
+      "before": 0.0,
+      "after": 0.1
+    }
+  },
+  "resolved_parameter_count": 84,
+  "full_parameter_validation_passed": true,
+  "fixed_install": "3afb25f84232e560c62599a721dc0bfbe1a21657",
+  "text_diff": "--- installed_controller\n+++ pid_course_d010\n@@ -13,7 +13,7 @@\n     k_d_speed: 0.0\n     k_p_course: 2.0\n     k_i_course: 0.0\n-    k_d_course: 0.0\n+    k_d_course: 0.10\n   \n   lqr_controller:\n     goal_distance_tolerance: 1.0\n"
+}
