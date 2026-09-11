@@ -153,6 +153,30 @@ def load_trial(record, mappings, gap, issues):
     return trial
 
 
+def rmse_metric_name(report):
+    return report.get("method", {}).get("rmse_metric", "legacy_wall")
+
+
+def rmse_axis_label(report):
+    return "RMSE (m)\n" + rmse_metric_name(report)
+
+
+def rmse_export_values(trial, report):
+    metric = rmse_metric_name(report)
+    legacy = nested(trial["row"], "cross_track_initial_m", "rms")
+    source = nested(trial["record"], "observations", "tracking", "source_time_trapezoid") or {}
+    value = source.get("rmse_m") if source.get("status") == "valid" else None
+    return {"selected_rmse_metric": metric, "selected_rmse_m": legacy if metric == "legacy_wall" else value,
+            "legacy_wall_rmse_m": legacy, "source_time_trapezoid_rmse_m": value,
+            "source_time_status": source.get("status", "unknown"),
+            "source_time_reasons": "; ".join(source.get("reasons", [])),
+            "source_sample_count": source.get("sample_count"), "source_span_s": source.get("source_span_s"),
+            "source_max_gap_s": source.get("max_source_gap_s"),
+            "source_start_coverage_gap_s": source.get("start_coverage_gap_s"),
+            "source_end_coverage_gap_s": source.get("end_coverage_gap_s"),
+            "source_error_p95_m": source.get("error_p95_m"), "source_error_max_m": source.get("error_max_m")}
+
+
 def write_csv(path, rows, fields):
     with path.open("w", encoding="utf-8-sig", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=fields, extrasaction="ignore")
@@ -299,7 +323,7 @@ def figures(trials, timing, report, output, dpi):
              "C++ shown only when completed and passed; raw spawned cylinder geometry; no smoothing")
 
         fig, axes = plt.subplots(2, 3, figsize=(12, 6.2), constrained_layout=True)
-        for i, (field, ylabel) in enumerate((("rmse", "Fixed initial-path RMSE (m)"), ("arrival", "Arrival duration (simulation s)"))):
+        for i, (field, ylabel) in enumerate((("rmse", rmse_axis_label(report)), ("arrival", "Arrival duration (simulation s)"))):
             for j, scenario in enumerate(SCENARIOS):
                 ax = axes[i, j]
                 missing = 0
@@ -307,7 +331,7 @@ def figures(trials, timing, report, output, dpi):
                     row = trial["row"]
                     if row["scenario"] != scenario or row["mode"] == "cpp" and not successful(row):
                         continue
-                    value = nested(row, "cross_track_initial_m", "rms") if field == "rmse" else row.get("duration_sim_s")
+                    value = rmse_export_values(trial, report)["selected_rmse_m"] if field == "rmse" else row.get("duration_sim_s")
                     if field == "arrival" and not (row.get("arrived") is True and row.get("result") == "completed"):
                         value = None
                     if not finite(value):
@@ -341,7 +365,7 @@ def figures(trials, timing, report, output, dpi):
                         continue
                     value = pair.get("metrics", {}).get(metric, {})
                     ratio_rows.append({"controller": pair["controller"], "scenario": scenario, "repeat": pair["repeat"],
-                                       "metric": metric, "pair_comparable": pair.get("comparable"),
+                                       "metric": metric, "selected_rmse_metric": rmse_metric_name(report), "pair_comparable": pair.get("comparable"),
                                        "pair_passed": pair.get("passed"), **value,
                                        "reasons": "; ".join(pair.get("reasons", []))})
                     ratio = value.get("ratio")
@@ -354,7 +378,7 @@ def figures(trials, timing, report, output, dpi):
                 limit = report.get("method", {}).get("ratio_limit", 1.10)
                 ax.axhline(limit, color="black", linestyle="--", linewidth=1, label=f"Limit {limit:g}")
                 ax.axhline(1.0, color="#888888", linestyle=":", linewidth=.8)
-                ax.set(title=TITLES[scenario], ylabel=("RMSE" if i == 0 else "Duration") + " Python / C++",
+                ax.set(title=TITLES[scenario], ylabel=("RMSE " + rmse_metric_name(report) if i == 0 else "Duration") + "\nPython / C++",
                        xticks=range(6), xticklabels=[f"{c.upper()} {r}" for c in CONTROLLERS for r in (1, 2, 3)])
                 ax.tick_params(axis="x", rotation=40)
                 ax.set_ylim(bottom=0)
@@ -443,7 +467,7 @@ def main(argv=None):
         metrics = []
         for trial in trials:
             row = trial["row"]
-            metrics.append({**identity(row), "result": row.get("result"), "passed": row.get("passed"), "arrived": row.get("arrived"),
+            metrics.append({**identity(row), **rmse_export_values(trial, report), "result": row.get("result"), "passed": row.get("passed"), "arrived": row.get("arrived"),
                             "cross_track_initial_rmse_m": nested(row, "cross_track_initial_m", "rms"),
                             "cross_track_initial_count": nested(row, "cross_track_initial_m", "count"),
                             "observed_duration_sim_s": row.get("duration_sim_s"),
@@ -453,13 +477,18 @@ def main(argv=None):
                             "summary_path": trial["source"]["summary_path"], "summary_sha256": trial["source"]["summary_sha256"]})
         write_csv(output / "trial_metrics.csv", metrics, common + ["result", "passed", "arrived", "cross_track_initial_rmse_m",
                   "cross_track_initial_count", "observed_duration_sim_s", "arrival_duration_sim_s", "minimum_footprint_clearance_m",
-                  "baseline_eligible", "summary_path", "summary_sha256"])
+                  "baseline_eligible", "summary_path", "summary_sha256",
+                  "selected_rmse_metric", "selected_rmse_m", "legacy_wall_rmse_m", "source_time_trapezoid_rmse_m",
+                  "source_time_status", "source_time_reasons", "source_sample_count", "source_span_s", "source_max_gap_s",
+                  "source_start_coverage_gap_s", "source_end_coverage_gap_s", "source_error_p95_m", "source_error_max_m"])
         write_csv(output / "pairwise_ratios.csv", ratios, ["controller", "scenario", "repeat", "metric", "python", "cpp", "ratio", "limit",
-                  "zero_baseline_atol", "method", "comparable", "passed", "pair_comparable", "pair_passed", "reason", "reasons"])
+                  "zero_baseline_atol", "method", "comparable", "passed", "pair_comparable", "pair_passed", "reason", "reasons", "selected_rmse_metric"])
         manifest = {"generated_utc": datetime.now(timezone.utc).isoformat(), "script": str(Path(__file__).resolve()),
                     "script_sha256": sha256(Path(__file__)), "report": str(report_path), "report_sha256": sha256(report_path),
                     "matplotlib_version": version, "python_version": sys.version, "path_mappings": mappings,
                     "max_track_gap_sim_s": args.max_track_gap_s, "summary_verdict_unchanged": report.get("summary"),
+                    "rmse_metric": rmse_metric_name(report), "tracking_protocol": report.get("method", {}).get("tracking_protocol"),
+                    "frame_contract": report.get("method", {}).get("frame_contract"),
                     "sources": [t["source"] for t in trials], "excluded_scope": skipped, "issues": issues, "figures": exported,
                     "definitions": ["No raw samples, summaries, or acceptance verdicts are rewritten.",
                                     "Python observed trials are retained, including failed trials; valid C++ means completed and passed.",

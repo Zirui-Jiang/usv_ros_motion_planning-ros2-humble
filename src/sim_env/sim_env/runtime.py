@@ -91,14 +91,27 @@ def plan_navigation(request):
             route = found.path
             if not found.success:
                 return result(found.status, message=found.message)
-        # Grid search returns cell centres. LOS must converge to the requested
-        # position rather than stop in a neighbouring part of the goal cell.
-        route = route.copy()
-        route[-1] = request.goal
         model = USVModel.from_mapping(section(cfg, 'dynamics.'))
         los_config = section(cfg, T + 'los.')
         controller_tolerance = cfg[C + cfg[C + 'controller_name'] + '_controller.goal_distance_tolerance']
-        los_config['goal_tolerance'] = min(los_config['goal_tolerance'], controller_tolerance)
+        endpoint_offset = float(np.linalg.norm(route[-1, :2] - request.goal[:2]))
+        if endpoint_offset < controller_tolerance:
+            # Preserve the grid endpoint and its final approach direction.
+            # By the triangle inequality, this LOS stop disk lies entirely
+            # within the controller's disk around the actual requested goal.
+            los_config['goal_tolerance'] = min(
+                los_config['goal_tolerance'], controller_tolerance - endpoint_offset)
+        else:
+            # A centre outside/on the actual-goal disk cannot support a
+            # positive LOS stop radius. Keep it and validate a new connection.
+            connection = np.vstack((route[-1], request.goal))
+            if not path_is_clear_with_inflation_escape(
+                    request.grid, connection, threshold, planner.planner.unknown_is_obstacle,
+                    outline_map=planner.planner.outline_map,
+                    allow_corner_cutting=planner.planner.allow_corner_cutting):
+                return result(AlgorithmStatus.NO_PATH, message='goal connection failed grid collision validation')
+            route = np.vstack((route, request.goal))
+            los_config['goal_tolerance'] = min(los_config['goal_tolerance'], controller_tolerance)
         guidance = create_trajectory_planner(cfg[T + 'planner_name'], model, los_config)
         generated = guidance.plan(route, request.state)
         if generated.status not in (AlgorithmStatus.SUCCESS, AlgorithmStatus.GOAL_REACHED):

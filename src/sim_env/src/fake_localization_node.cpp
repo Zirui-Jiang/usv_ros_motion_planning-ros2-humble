@@ -66,6 +66,12 @@ private:
    */
   void modelStatesCallback(const gazebo_msgs::msg::ModelStates::SharedPtr msg)
   {
+    if (msg->name.size() != msg->pose.size() || msg->name.size() != msg->twist.size())
+    {
+      RCLCPP_WARN(get_logger(), "Ignoring malformed ModelStates: name=%zu pose=%zu twist=%zu",
+                  msg->name.size(), msg->pose.size(), msg->twist.size());
+      return;
+    }
     for (std::size_t i = 0; i < msg->name.size(); ++i)
     {
       if (msg->name[i] != model_name_)

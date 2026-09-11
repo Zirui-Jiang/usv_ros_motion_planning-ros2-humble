@@ -62,6 +62,47 @@ def paired_report(tmp_path, events):
     return compare.build_report([("python", py), ("cpp", cpp)])
 
 
+def test_source_selection_preserves_legacy_and_raw_summary(tmp_path):
+    import runpy
+    events = runpy.run_path(str(Path(__file__).with_name("test_tracking_metrics.py")))["source_events"]()
+    py_row, cpp_row = result(rmse=3.), result("cpp", rmse=1.)
+    py = write_run(tmp_path / "py", [py_row], events=events)
+    cpp = write_run(tmp_path / "cpp", [cpp_row], events=events)
+    legacy = compare.build_report([("python", py), ("cpp", cpp)])
+    source = compare.build_report([("python", py), ("cpp", cpp)], rmse_metric="source_time_trapezoid", frame_contract="otter_fake_localization")
+    assert legacy["comparisons"][0]["passed"] is False
+    assert legacy["comparisons"][0]["metrics"]["cross_track_rmse_m"]["ratio"] == 3.
+    assert source["comparisons"][0]["passed"] is True
+    assert source["comparisons"][0]["metrics"]["cross_track_rmse_m"]["ratio"] == 1.
+    assert source["comparisons"][0]["rmse_alternatives"]["legacy_wall"]["ratio"] == 3.
+    assert source["trials"][0]["result"] == py_row
+    assert source["method"]["rmse_metric"] == "source_time_trapezoid"
+    assert "source_time_trapezoid" in compare.markdown(source)
+
+
+def test_selected_source_without_contract_is_unknown_not_wall_fallback(tmp_path):
+    py = write_run(tmp_path / "py", [result()])
+    cpp = write_run(tmp_path / "cpp", [result("cpp")])
+    report = compare.build_report([("python", py), ("cpp", cpp)], rmse_metric="source_time_trapezoid")
+    pair = report["comparisons"][0]
+    assert pair["passed"] is None and not pair["comparable"]
+    assert "explicit_frame_contract_required" in str(pair["reasons"])
+    assert pair["rmse_alternatives"]["legacy_wall"]["passed"] is True
+
+
+def test_nonfinite_source_pose_yields_serializable_unknown(tmp_path):
+    import runpy
+    events = runpy.run_path(str(Path(__file__).with_name("test_tracking_metrics.py")))["source_events"]()
+    events[3]["pose"][0] = float("nan")
+    py = write_run(tmp_path / "py", [result()], events=events)
+    report = compare.build_report([("python", py)], rmse_metric="source_time_trapezoid", frame_contract="otter_fake_localization")
+    score = report["trials"][0]["observations"]["tracking"]["source_time_trapezoid"]
+    assert score["status"] == "unknown" and score["rmse_m"] is None
+    json.dumps(report, allow_nan=False)
+    with pytest.raises(ValueError, match="nonfinite JSON"):
+        compare.build_report([("python", py)])
+
+
 def test_completed_pairs_at_ten_percent_limit_and_group_counts(tmp_path):
     py = write_run(tmp_path / "py", [result(rmse=0.22, duration=11), result(repeat=2, rmse=0.1, duration=9)], events=performance_events())
     cpp = write_run(tmp_path / "cpp", [result("cpp"), result("cpp", repeat=2)])

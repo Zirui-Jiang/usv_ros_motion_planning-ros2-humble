@@ -77,7 +77,22 @@ def test_failure_is_explicit_and_has_no_reference():
     assert response.trajectory.empty()
 
 
-def test_los_reaches_requested_goal_instead_of_nearby_cell_centre():
+def test_default_pid_keeps_straight_grid_endpoint_without_a_goal_kink():
+    job = PlanningRequest(1, (18.125, 10.125, 0.), VesselState(14.125, 10.125, 0., stamp=10.),
+                          GridSnapshot(np.zeros((60, 60), np.uint8), .5, stamp=10.),
+                          np.empty((0, 3)), resolve_parameters({}))
+    response = plan_navigation(job)
+    assert response.status == AlgorithmStatus.SUCCESS
+    np.testing.assert_allclose(response.route[:, 1], 10.25)
+    np.testing.assert_array_equal(response.route[-1], [18.25, 10.25, 0.])
+    assert response.trajectory.goal == job.goal[:2]
+    # PID's 1.5 m actual-goal disk still contains the original 1 m LOS disk.
+    terminal = response.trajectory.points[-1, 2:4]
+    assert .9 < np.linalg.norm(terminal - [18.25, 10.25]) <= 1.
+    assert np.linalg.norm(terminal - job.goal[:2]) <= 1.5
+
+
+def test_los_stop_disk_does_not_stop_lqr_outside_the_requested_goal():
     cfg = resolve_parameters({C+'controller_name': 'lqr'})
     job = PlanningRequest(1, (10.49, 10.49, 0.), VesselState(9.3, 10.25, 0., stamp=10.),
                           GridSnapshot(np.zeros((40, 40), np.uint8), .5, stamp=10.),
@@ -85,7 +100,47 @@ def test_los_reaches_requested_goal_instead_of_nearby_cell_centre():
     response = plan_navigation(job)
     assert response.status == AlgorithmStatus.SUCCESS
     assert np.any(response.trajectory.points[:, 6] > 0.)
+    np.testing.assert_array_equal(response.route[-1], [10.25, 10.25, 0.])
+    assert response.trajectory.goal == job.goal[:2]
+    terminal = response.trajectory.points[-1, 2:4]
+    assert np.linalg.norm(terminal - job.goal[:2]) <= 1.
+    # Merely keeping the 1 m LOS disk would stop this state at distance .95
+    # from its centre even though the actual goal remains over 1.2 m away.
+    assert response.trajectory.points[-1, 6] == 0.
+
+
+@pytest.mark.parametrize('tolerance', [.1, .125])
+def test_small_or_equal_tolerance_appends_goal_without_losing_grid_endpoint(tolerance):
+    cfg = resolve_parameters({C+'pid_controller.goal_distance_tolerance': tolerance})
+    job = PlanningRequest(1, (10.375, 10.25, 0.), VesselState(8.25, 10.25, 0., stamp=10.),
+                          GridSnapshot(np.zeros((40, 40), np.uint8), .5, stamp=10.),
+                          np.empty((0, 3)), cfg)
+    response = plan_navigation(job)
+    assert response.status == AlgorithmStatus.SUCCESS
+    np.testing.assert_array_equal(response.route[-2], [10.25, 10.25, 0.])
     np.testing.assert_array_equal(response.route[-1], job.goal)
+    assert response.trajectory.goal == job.goal[:2]
+    assert np.linalg.norm(response.trajectory.points[-1, 2:4] - job.goal[:2]) <= tolerance
+    repeated = plan_navigation(replace(job, route=response.route))
+    assert repeated.status == AlgorithmStatus.SUCCESS and not repeated.searched
+    np.testing.assert_array_equal(repeated.route, response.route)
+
+
+@pytest.mark.parametrize('blocked_cost', [75, 254, 255])
+def test_required_goal_connection_checks_soft_hard_and_unknown_cells(blocked_cost):
+    job = request()
+    data = job.grid.data.copy()
+    data[10, 6] = blocked_cost
+    # A cached prefix itself is valid, but its required goal extension crosses
+    # another cell. Soft cost 75 is physically clear but exceeds factor .25.
+    job = replace(job, goal=(8.5, 10.5, 0.),
+                  route=np.array([[2.5, 10.5, 0.], [4.5, 10.5, 0.]]),
+                  grid=GridSnapshot(data, 1., stamp=10.))
+    response = plan_navigation(job)
+    assert response.status == AlgorithmStatus.NO_PATH
+    assert response.trajectory.empty()
+    assert 'goal connection' in response.message
+    np.testing.assert_array_equal(response.route, job.route)
 
 
 @pytest.mark.parametrize('stamp,now,timeout,expected', [(10.,10.4,.5,True), (10.,10.6,.5,False), (11.,10.,.5,False), (float('nan'),10.,1.,False)])

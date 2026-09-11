@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "mode": "malformed-probe",
+  "domain_id": 188,
+  "namespace": "localization_smoke_89ffb86a3b03",
+  "binary": "/home/usv/usv_migration/python/install/sim_env/lib/sim_env/fake_localization_node",
+  "binary_sha256": "08f5e13905283e17266230c0af97d5d4c6c00acab743500dcbf278db9b2359f3",
+  "script_sha256": "096e577a127bd2c463ea2b6145b411589cd612818556c44613d322bdc7f4785a",
+  "command": [
+    "gdb",
+    "--batch",
+    "-ex",
+    "set pagination off",
+    "-ex",
+    "set confirm off",
+    "-ex",
+    "run",
+    "-ex",
+    "thread apply all bt",
+    "--args",
+    "/home/usv/usv_migration/python/install/sim_env/lib/sim_env/fake_localization_node",
+    "--ros-args",
+    "-r",
+    "__ns:=/localization_smoke_89ffb86a3b03",
+    "-p",
+    "use_sim_time:=true",
+    "-p",
+    "model_name:=otter"
+  ],
+  "started_monotonic_s": 76146.079633971,
+  "signals": [],
+  "checks": {
+    "malformed_outcome": "process_or_debugger_ended"
+  },
+  "gdb": true,
+  "scope": "Owned standalone node only; no Gazebo; input defect is not attribution of a prior shutdown crash.",
+  "owned_pid": 109958,
+  "owned_starttime_ticks": 7614616,
+  "probe_input": {
+    "name": [
+      "otter"
+    ],
+    "pose_length": 0,
+    "twist_length": 0
+  },
+  "probe_published_monotonic_s": 76146.507384708,
+  "probe_process_returncode": 0,
+  "completed": true,
+  "process_returncode": 0,
+  "finished_monotonic_s": 76146.613469724,
+  "log_sha256": "1cf9675972cd5fc9df04612dd2cc831c4a76672d0cc135ce4e01f6d92fa9623b",
+  "gdb_observed_sigsegv": true
+}

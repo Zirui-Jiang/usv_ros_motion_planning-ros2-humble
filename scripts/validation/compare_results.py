@@ -20,11 +20,16 @@ import argparse
 from collections import defaultdict
 from datetime import datetime, timezone
 import hashlib
+import importlib.util
 import json
 import math
 from pathlib import Path
 import statistics
 import sys
+
+_tracking_spec = importlib.util.spec_from_file_location("acceptance_tracking", Path(__file__).with_name("tracking_metrics.py"))
+_tracking = importlib.util.module_from_spec(_tracking_spec)
+_tracking_spec.loader.exec_module(_tracking)
 
 
 AXES = ("left", "right", "lateral")
@@ -476,12 +481,13 @@ def process_metrics(samples):
             "valid_intervals": sum(p["valid_intervals"] for p in processes)}
 
 
-def event_metrics(path, summary):
+def event_metrics(path, summary, frame_contract=None, rmse_metric="legacy_wall"):
     commands = {axis: [] for axis in AXES}
     invalid_commands = defaultdict(int)
     statuses = {"navigation_status": [], "mapping_status": []}
     process_samples = {key: [] for key in statuses}
     event_count = 0
+    tracking_events = []
     issues = []
     performance = {"navigation_status": [], "mapping_status": [], "goal_wall": None, "finished_wall": None,
                    "acquisition_wall": None, "acquisition_seen": False}
@@ -491,13 +497,17 @@ def event_metrics(path, summary):
                 if not line.strip():
                     continue
                 try:
-                    event = json.loads(line, parse_constant=lambda token: (_ for _ in ()).throw(ValueError("nonfinite JSON token: " + token)))
+                    event = json.loads(line)
+                    if rmse_metric == "legacy_wall":
+                        # Preserve the legacy malformed-JSON rejection contract.
+                        json.loads(line, parse_constant=lambda token: (_ for _ in ()).throw(ValueError("nonfinite JSON token: " + token)))
                 except json.JSONDecodeError as error:
                     raise ValueError(f"invalid JSONL {path}:{line_number}: {error}") from error
                 if not isinstance(event, dict):
                     raise ValueError(f"event must be an object: {path}:{line_number}")
                 event_count += 1
                 kind = event.get("event")
+                tracking_events.append(event)
                 if kind == "goal_published" and performance["goal_wall"] is None:
                     performance["goal_wall"] = event.get("wall_monotonic_s")
                 elif kind == "trial_finished":
@@ -560,10 +570,12 @@ def event_metrics(path, summary):
             "issues": issues, "thrusters": {"axes": variation, "total_variation": total},
             "processes": cpu, "status": nav, "mapping_status": mapping,
             "status_sources": final_sources, "metrics": flat,
-            "performance_observations": performance}
+            "performance_observations": performance,
+            "events_sha256": hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None,
+            "tracking": _tracking.tracking_scores(tracking_events, summary, frame_contract=frame_contract)}
 
 
-def load_run(directory, role, order):
+def load_run(directory, role, order, frame_contract=None, rmse_metric="legacy_wall"):
     directory = Path(directory).resolve()
     if not directory.is_dir():
         raise ValueError(f"run directory does not exist: {directory}")
@@ -625,7 +637,7 @@ def load_run(directory, role, order):
                         "summary_sha256": hashlib.sha256(file.read_bytes()).hexdigest(),
                         "manifest_mode": manifest.get("mode"),
                         "git_commit": manifest.get(row["mode"] + "_git_commit")},
-                        "observations": event_metrics(events_path, row)})
+                        "observations": event_metrics(events_path, row, frame_contract, rmse_metric)})
     planned = [p for p in manifest.get("matrix", []) if isinstance(p, dict) and allowed(p) and not p.get("fault")]
     metadata = {"directory": str(directory), "role": role, "source_order": order,
                 "created_unix_s": created, "latest_basis": basis,
@@ -667,7 +679,14 @@ def completed_pass(record):
             and record["result"].get("passed") is True and record["source"].get("manifest_mode") != "dry_run")
 
 
-def compare_pair(key, python_record, cpp_record, limit, atol):
+def selected_rmse(record, metric):
+    if metric == "legacy_wall":
+        return nested(record["result"], "cross_track_initial_m", "rms")
+    observed = nested(record["observations"], "tracking", metric) or {}
+    return observed.get("rmse_m") if observed.get("status") == "valid" else None
+
+
+def compare_pair(key, python_record, cpp_record, limit, atol, rmse_metric="legacy_wall"):
     pair = {"controller": key[0], "scenario": key[1], "repeat": key[2],
             "comparable": False, "passed": None, "reasons": [], "metrics": {},
             "python_source": python_record["source"] if python_record else None,
@@ -681,18 +700,26 @@ def compare_pair(key, python_record, cpp_record, limit, atol):
     if pair["reasons"]:
         return pair
     py, cpp = python_record["result"], cpp_record["result"]
+    pair["rmse_metric"] = rmse_metric
+    pair["rmse_alternatives"] = {name: ratio_comparison(selected_rmse(python_record, name), selected_rmse(cpp_record, name), limit, atol)
+                                 for name in _tracking.RMSE_METRICS}
     pair["metrics"] = {
-        "cross_track_rmse_m": ratio_comparison(nested(py, "cross_track_initial_m", "rms"), nested(cpp, "cross_track_initial_m", "rms"), limit, atol),
+        "cross_track_rmse_m": dict(pair["rmse_alternatives"][rmse_metric]),
         "duration_sim_s": ratio_comparison(py.get("duration_sim_s"), cpp.get("duration_sim_s"), limit, atol)}
     pair["comparable"] = all(m["comparable"] for m in pair["metrics"].values())
     if pair["comparable"]:
         pair["passed"] = all(m["passed"] for m in pair["metrics"].values())
     else:
         pair["reasons"] = [name + ": " + value["reason"] for name, value in pair["metrics"].items() if not value["comparable"]]
+        if rmse_metric == "source_time_trapezoid":
+            for mode, record in (("python", python_record), ("cpp", cpp_record)):
+                observed = nested(record["observations"], "tracking", rmse_metric) or {}
+                if observed.get("status") != "valid":
+                    pair["reasons"].append(mode + "_source_time_unknown: " + "; ".join(observed.get("reasons", ["missing_source_score"])))
     return pair
 
 
-def group_results(records, planned):
+def group_results(records, planned, rmse_metric="legacy_wall"):
     groups = defaultdict(list)
     expected = defaultdict(set)
     for record in records:
@@ -709,7 +736,9 @@ def group_results(records, planned):
         counters = defaultdict(list)
         for record in completed:
             row, observed = record["result"], record["observations"]
-            metrics["cross_track_rmse_m"].append(nested(row, "cross_track_initial_m", "rms"))
+            metrics["cross_track_rmse_m"].append(selected_rmse(record, rmse_metric))
+            for metric_name in _tracking.RMSE_METRICS:
+                metrics[metric_name + "_rmse_m"].append(selected_rmse(record, metric_name))
             metrics["duration_sim_s"].append(row.get("duration_sim_s"))
             metrics["minimum_footprint_clearance_m"].append(row.get("minimum_footprint_clearance_m"))
             for name, value in observed["metrics"].items():
@@ -733,14 +762,17 @@ def group_results(records, planned):
     return output
 
 
-def build_report(sources, duplicate_policy="error", limit=1.10, atol=1e-6):
+def build_report(sources, duplicate_policy="error", limit=1.10, atol=1e-6, *, rmse_metric="legacy_wall", frame_contract=None):
     if duplicate_policy not in ("error", "latest", "provided-list"):
         raise ValueError("unknown duplicate policy")
     if not number(limit) or limit <= 0 or not number(atol) or atol < 0:
         raise ValueError("limit must be positive and atol nonnegative")
+    if rmse_metric not in _tracking.RMSE_METRICS:
+        raise ValueError("unknown RMSE metric")
+    contract = _tracking.frame_contract_description(frame_contract)
     records, planned, metadata = [], [], []
     for index, (role, directory) in enumerate(sources):
-        found, expected, info = load_run(directory, role, index)
+        found, expected, info = load_run(directory, role, index, frame_contract, rmse_metric)
         records.extend(found); planned.extend(expected); metadata.append(info)
     records, decisions = select_duplicates(records, duplicate_policy)
     navigation = [r for r in records if not r["result"].get("fault")]
@@ -749,7 +781,7 @@ def build_report(sources, duplicate_policy="error", limit=1.10, atol=1e-6):
         by_pair[comparison_key(record["result"])][record["result"]["mode"]] = record
     for row in planned:
         by_pair.setdefault(comparison_key(row), {})
-    comparisons = [compare_pair(key, modes.get("python"), modes.get("cpp"), limit, atol)
+    comparisons = [compare_pair(key, modes.get("python"), modes.get("cpp"), limit, atol, rmse_metric)
                    for key, modes in sorted(by_pair.items(), key=lambda x: str(x[0]))]
     faults = [r for r in records if r["result"].get("fault")]
     performance = []
@@ -765,7 +797,15 @@ def build_report(sources, duplicate_policy="error", limit=1.10, atol=1e-6):
     all_passed = bool(comparisons) and all(p["passed"] is True for p in comparisons) and all(completed_pass(f) for f in faults) and sources_finished and performance_passed
     return {"schema_version": 2, "generated_utc": datetime.now(timezone.utc).isoformat(),
             "selection": {"duplicate_policy": duplicate_policy, "source_order": "Python directories, baseline directories, extra directories; later source wins provided-list/timestamp ties", "decisions": decisions},
-            "method": {"rmse_field": "cross_track_initial_m.rms", "duration_field": "duration_sim_s",
+            "method": {"rmse_metric": rmse_metric,
+                       "rmse_field": "cross_track_initial_m.rms" if rmse_metric == "legacy_wall" else "observations.tracking.source_time_trapezoid.rmse_m",
+                       "tracking_protocol": {"source_max_gap_s": .5, "boundary_max_gap_s": .5,
+                           "window": "latest pre-goal odometry plus all odometry received through acquisition_finished; actual first/last source times, no extrapolation",
+                           "reference": "first nonempty path received after goal, frozen by receipt order, ignoring path header time",
+                           "integral": "sqrt(sum(dt*(error_i^2+error_i+1^2)/2)/sum(dt)); finite discrete trapezoid approximation, not continuous true-error guarantee",
+                           "unknown": "missing/invalid fields, conflicting same-stamp poses, source rollback, insufficient span or coverage, gaps>0.5s, missing explicit frame contract",
+                           "percentiles": "nearest-rank P95/max of unique observed source-pose errors, not time-weighted or continuous extrema"},
+                       "frame_contract": contract, "duration_field": "duration_sim_s",
                        "ratio_limit": limit, "zero_baseline_atol": atol,
                        "zero_baseline_rule": "exactly zero cpp: ratio=null; pass iff abs(python)<=atol",
                        "p99_aggregation": "mean/max of reported per-trial P99, not a pooled sample percentile",
@@ -774,7 +814,7 @@ def build_report(sources, duplicate_policy="error", limit=1.10, atol=1e-6):
                        "cpu": "100*sum(nonnegative same-PID cpu_seconds deltas)/sum(positive same-PID process.monotonic deltas); not machine CPU and excludes planner child/Gazebo",
                        "thruster_variation": "sum(abs(command[i]-command[i-1])) per axis in full recorded JSONL order; no initial/final zero appended; total requires all axes and >=2 valid samples each",
                        "counter_scope": "final reported cumulative counters per completed trial, not sums of status event counters"},
-            "sources": metadata, "trials": records, "groups": group_results(records, planned),
+            "sources": metadata, "trials": records, "groups": group_results(records, planned, rmse_metric),
             "comparisons": comparisons, "fault_trials": [f["result"]["trial"] for f in faults],
             "performance": performance,
             "summary": {"pairs": len(comparisons), "comparable_pairs": sum(p["comparable"] for p in comparisons),
@@ -808,6 +848,17 @@ def markdown(report):
             values.append("零基线绝对容差：" + ("通过" if metric.get('passed') else "失败") if metric.get("method") == "zero_baseline_absolute_tolerance" else fmt(metric.get("ratio")))
         verdict = "通过" if pair["passed"] is True else "失败" if pair["passed"] is False else "不可比：" + "; ".join(pair["reasons"])
         lines.append(f"| {safe(pair['controller'])} | {safe(pair['scenario'])} | {pair['repeat']} | {values[0]} | {values[1]} | {safe(verdict)} |")
+    lines += ["", "## 跟踪度量与覆盖证据", "",
+              f"本报告主度量：`{report['method'].get('rmse_metric', 'legacy_wall')}`。legacy_wall 保留原 summary 的墙钟循环采样值；source_time_trapezoid 对接收窗口内唯一源 odom 的 e² 作非均匀时间梯形近似。两者并列，旧结论不回写，比例阈值不变。",
+              "源时间窗口包含 goal 前最新 odom 和之后至 acquisition_finished 的全部 odom，以真实首尾源时刻积分；不删除启动、近终点或暂停前后状态，不外推边界。源间隔与首尾绝对时间偏移上限预先固定为0.5s。路径按接收顺序冻结首条非空结果，不按C++旧错误header排序。P95/最大值只描述唯一已观测状态，离散积分不保证连续真实误差。缺数据、时间回退或冲突均unknown，不回退墙钟值代替主判。", "",
+              "显式坐标系契约：`" + safe(report['method'].get('frame_contract')) + "`。仅限已核查的本项目 otter fake localization，不能推广为任意map/odom恒等。", "",
+              "| 试验 | source状态/原因 | 主RMSE m | legacy RMSE m | source RMSE m | 源样本/跨度s | 最大源间隔s | 首/尾覆盖缺口s | 源误差P95/最大m |",
+              "| --- | --- | --- | --- | --- | --- | --- | --- | --- |"]
+    for record in report["trials"]:
+        if record["result"].get("fault"):
+            continue
+        source_score = nested(record["observations"], "tracking", "source_time_trapezoid") or {}
+        lines.append(f"| {safe(record['result']['trial'])} | {safe(source_score.get('status'))}: {safe('; '.join(source_score.get('reasons', [])))} | {fmt(selected_rmse(record, report['method'].get('rmse_metric', 'legacy_wall')))} | {fmt(selected_rmse(record, 'legacy_wall'))} | {fmt(selected_rmse(record, 'source_time_trapezoid'))} | {source_score.get('sample_count')}/{fmt(source_score.get('source_span_s'))} | {fmt(source_score.get('max_source_gap_s'))} | {fmt(source_score.get('start_coverage_gap_s'))}/{fmt(source_score.get('end_coverage_gap_s'))} | {fmt(source_score.get('error_p95_m'))}/{fmt(source_score.get('error_max_m'))} |")
     labels = {"pass": "通过", "fail": "失败", "unknown": "待审/证据不足"}
     lines += ["", "## Python 正常导航性能验收", "",
               "窗口为第一次 goal_published 至 acquisition_finished；旧记录明确回退到 trial_finished，该末端可能包含统计落盘时间。状态中的耗时分位数来自节点计算历史，可能含启动样本，各窗口样本数不相加。控制 P99 必须小于100ms；有实际积分扫描的建图处理 P95 不得超过同一状态中扫描时间戳间隔的 P50。扫描周期仅作为预算，不充当算法耗时。C++ 无对应遥测不要求性能对等。", "",
@@ -858,6 +909,8 @@ def main(argv=None):
     parser.add_argument("--duplicates", choices=("error", "latest", "provided-list"), default="error")
     parser.add_argument("--ratio-limit", type=float, default=1.10)
     parser.add_argument("--atol", type=float, default=1e-6)
+    parser.add_argument("--rmse-metric", choices=_tracking.RMSE_METRICS, default="legacy_wall")
+    parser.add_argument("--frame-contract", choices=_tracking.FRAME_CONTRACTS, help="explicit assertion of the audited otter map/odom identity; required for usable source-time scores")
     parser.add_argument("--output", type=Path, required=True, help="new report directory outside all raw input runs")
     args = parser.parse_args(argv)
     sources = [("python", p) for p in args.python] + [("cpp", p) for p in args.baseline] + [("extra", p) for batch in args.extra for p in batch]
@@ -867,7 +920,7 @@ def main(argv=None):
     try:
         if output.exists() or any(output == p.resolve() or p.resolve() in output.parents for _, p in sources):
             raise ValueError("output must be new and outside raw run directories")
-        report = build_report(sources, args.duplicates, args.ratio_limit, args.atol)
+        report = build_report(sources, args.duplicates, args.ratio_limit, args.atol, rmse_metric=args.rmse_metric, frame_contract=args.frame_contract)
         output.mkdir(parents=True, exist_ok=False)
         (output / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
         (output / "report.md").write_text(markdown(report), encoding="utf-8")
