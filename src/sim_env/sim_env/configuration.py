@@ -5,6 +5,7 @@ import math
 from pathlib import Path
 import yaml
 from common.models import USVModel
+from controller.controller import validate_goal_distance_tolerance
 
 C = "usv_simulation.controller."
 T = "usv_simulation.trajectory_planner."
@@ -114,6 +115,9 @@ def validate_parameters(values):
             valid = isinstance(value, list) and all(type(v) in (int, float) and math.isfinite(v) for v in value)
         if not valid:
             raise ValueError(f"Invalid type or nonfinite parameter: {key}={value!r}")
+    for name in ("pid", "lqr"):
+        key = C + name + "_controller.goal_distance_tolerance"
+        validate_goal_distance_tolerance(values[key], key)
     if values["planner_name"] not in ("astar", "dijkstra", "gbfs"):
         raise ValueError("Only astar, dijkstra and gbfs are implemented")
     if values[C + "controller_name"] not in ("pid", "lqr") or values[T + "planner_name"] != "los":

@@ -182,3 +182,37 @@ def test_preview_stop_away_from_goal_is_not_overridden():
     command = controller.compute(VesselState(), intermediate_stop, 0.1)
     assert command.status == AlgorithmStatus.SUCCESS
     assert command.left == command.right == 0
+
+
+@pytest.mark.parametrize("kind", [PIDController, LQRController])
+@pytest.mark.parametrize("tolerance", [0., 1e-10, 1e-9])
+def test_goal_distance_tolerance_rejects_unresolvable_los_radius(kind, tolerance):
+    with pytest.raises(ValueError, match=r"goal_distance_tolerance.*greater than.*1e-9"):
+        kind(USVModel(), {"goal_distance_tolerance": tolerance})
+
+
+def test_rejected_goal_tolerance_update_preserves_pid_configuration_and_history():
+    controller = PIDController(USVModel(), {"k_i_speed": .2})
+    controller.compute(VesselState(), constant_reference(), .1)
+    previous_config = dict(controller.config)
+    previous_integral = controller.integral_speed
+    with pytest.raises(ValueError, match=r"goal_distance_tolerance.*greater than.*1e-9"):
+        controller.update_config({"goal_distance_tolerance": 1e-10, "k_p_speed": .3})
+    assert controller.config == previous_config
+    assert controller.integral_speed == previous_integral
+
+
+@pytest.mark.parametrize("kind", [PIDController, LQRController])
+def test_smallest_admitted_goal_radius_covers_los_duplicate_span(kind):
+    tolerance = np.nextafter(1e-9, np.inf)
+    model = USVModel()
+    state = VesselState(x=10.5, y=10.5, stamp=10.)
+    goal = (10.5000000005, 10.5)
+    trajectory = LosTrajectoryPlanner(model, {"goal_tolerance": tolerance}).plan(
+        [[10.5, 10.5, 0.], [*goal, 0.]], state).trajectory
+    trajectory.goal = goal
+    controller = kind(model, {"goal_distance_tolerance": tolerance})
+    assert controller.config["goal_distance_tolerance"] == tolerance
+    command = controller.compute(state, trajectory, .1)
+    assert command.status == AlgorithmStatus.GOAL_REACHED
+    assert command.left == command.right == 0.

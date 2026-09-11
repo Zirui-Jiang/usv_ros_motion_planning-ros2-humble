@@ -10,7 +10,7 @@ import math
 
 from common.math_helper import wrap_angle
 from common.models import AlgorithmStatus
-from .controller import Controller, select_config, stop
+from .controller import Controller, select_config, stop, validate_goal_distance_tolerance
 
 
 class PIDController(Controller):
@@ -34,6 +34,7 @@ class PIDController(Controller):
             if not math.isfinite(value) or value < 0:
                 raise ValueError(f"{key} must be finite and nonnegative")
             candidate[key] = value
+        validate_goal_distance_tolerance(candidate["goal_distance_tolerance"])
         self.config = candidate
 
     def reset(self):

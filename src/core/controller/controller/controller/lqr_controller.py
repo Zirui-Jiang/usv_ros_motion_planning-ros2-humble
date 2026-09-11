@@ -13,7 +13,7 @@ import numpy as np
 
 from common.math_helper import wrap_angle
 from common.models import AlgorithmStatus
-from .controller import Controller, select_config, stop
+from .controller import Controller, select_config, stop, validate_goal_distance_tolerance
 
 
 class LQRController(Controller):
@@ -30,6 +30,7 @@ class LQRController(Controller):
             if not math.isfinite(value) or value < 0 or (key in ["discrete_dt", "solve_eps"] and value == 0):
                 raise ValueError(f"invalid {key}")
             self.config[key] = value
+        validate_goal_distance_tolerance(self.config["goal_distance_tolerance"])
         count = self.config["max_iterations"]
         if isinstance(count, bool) or not isinstance(count, (int, np.integer)) or count <= 0:
             raise ValueError("max_iterations must be a positive integer")

@@ -1,0 +1,114 @@
+{
+  "recorded_utc": "2026-09-11T04:46:50.363551+00:00",
+  "classification": "Actual source-module reproduction before validation changes; no ROS/Gazebo started. Tiny tolerance accepted, all-zero centre trajectory, controllers do not report actual goal reached.",
+  "rows": [
+    {
+      "controller": "pid",
+      "tolerance_m": 1e-10,
+      "distance_to_requested_goal_m": 5.000000413701855e-10,
+      "route": [
+        [
+          10.5,
+          10.5,
+          0.0
+        ],
+        [
+          10.5000000005,
+          10.5,
+          0.0
+        ]
+      ],
+      "planner_status": "goal_reached",
+      "trajectory": [
+        [
+          0.0,
+          0.0,
+          10.5,
+          10.5,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.5,
+          0.0,
+          10.5,
+          10.5,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "trajectory_goal": [
+        10.5000000005,
+        10.5
+      ],
+      "command": {
+        "left": 0.0,
+        "right": 0.0,
+        "status": "success",
+        "message": ""
+      }
+    },
+    {
+      "controller": "lqr",
+      "tolerance_m": 1e-10,
+      "distance_to_requested_goal_m": 5.000000413701855e-10,
+      "route": [
+        [
+          10.5,
+          10.5,
+          0.0
+        ],
+        [
+          10.5000000005,
+          10.5,
+          0.0
+        ]
+      ],
+      "planner_status": "goal_reached",
+      "trajectory": [
+        [
+          0.0,
+          0.0,
+          10.5,
+          10.5,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.5,
+          0.0,
+          10.5,
+          10.5,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "trajectory_goal": [
+        10.5000000005,
+        10.5
+      ],
+      "command": {
+        "left": 0.0,
+        "right": 0.0,
+        "status": "timeout",
+        "message": "LQR did not converge after 5000 iterations (residual=5.4924)"
+      }
+    }
+  ],
+  "source_before_sha256": {
+    "src/sim_env/sim_env/runtime.py": "0725b4bb4bf8f2648c3c9e27eca6d6c13c69fbe3e4ef1b6942dea9e61ebab1a8",
+    "src/core/trajectory_planner/trajectory_planner/los_trajectory_planner.py": "cc309fc7eae86d458d846974d3719ee78790ae4a5222cd96c96dfc8619db3f58",
+    "src/sim_env/sim_env/configuration.py": "e75c9a61d83ab017a96940e085a67304bd27f3c0e45b2227d052965dbc587e15",
+    "src/core/controller/controller/controller/controller.py": "11c22a909a525cb69628afeae00eb87969cf011ab59d1961178337bb6d51a3c2",
+    "src/core/controller/controller/controller/pid_controller.py": "a686bc70008f92d6f57771798884e3dab49de6f3915b6d685ea1592502db1967",
+    "src/core/controller/controller/controller/lqr_controller.py": "f4229bebc612593971339122e90f65aa8d5828d27cbe81789da5d145950b12ca"
+  }
+}

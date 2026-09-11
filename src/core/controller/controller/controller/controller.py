@@ -7,6 +7,19 @@ import numpy as np
 from common.models import AlgorithmStatus, ControlCommand
 
 
+# LOS discards adjacent waypoints separated by at most 1e-9 m. A smaller
+# completion disk can demand motion that the reference cannot represent.
+MIN_GOAL_DISTANCE_TOLERANCE_M = 1e-9
+
+
+def validate_goal_distance_tolerance(value, name="goal_distance_tolerance"):
+    value = float(value)
+    if not math.isfinite(value) or value <= MIN_GOAL_DISTANCE_TOLERANCE_M:
+        raise ValueError(f"{name} must be finite and greater than 1e-9 m "
+                         "(LOS waypoint spatial precision)")
+    return value
+
+
 def select_config(config, name):
     values = dict(config or {})
     values = values.get("controller", values)

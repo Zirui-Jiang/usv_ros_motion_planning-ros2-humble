@@ -1,4 +1,5 @@
 from pathlib import Path
+import math
 import pytest
 from sim_env.configuration import C, T, DEFAULTS, load_project_parameters, normalize_parameters, resolve_parameters, validate_update
 
@@ -44,3 +45,31 @@ def test_current_time_lqr_reference_is_valid_but_not_hot_mutable():
         resolve_parameters({key: -.1})
     with pytest.raises(ValueError, match='Restart'):
         validate_update(values, {key: .5})
+
+
+@pytest.mark.parametrize("name", ["pid", "lqr"])
+@pytest.mark.parametrize("tolerance", [0., 1e-10, 1e-9])
+def test_startup_goal_distance_tolerance_rejects_unresolvable_los_radius(name, tolerance):
+    key = C + name + "_controller.goal_distance_tolerance"
+    with pytest.raises(ValueError, match=key + r".*greater than.*1e-9"):
+        resolve_parameters({key: tolerance})
+
+
+@pytest.mark.parametrize("name", ["pid", "lqr"])
+def test_startup_preserves_smallest_admitted_goal_radius(name):
+    key = C + name + "_controller.goal_distance_tolerance"
+    tolerance = math.nextafter(1e-9, math.inf)
+    assert resolve_parameters({key: tolerance})[key] == tolerance
+
+
+@pytest.mark.parametrize("name", ["pid", "lqr"])
+def test_project_yaml_rejects_goal_radius_below_los_precision(tmp_path, name):
+    controller = tmp_path / "tiny_goal_controller.yaml"
+    controller.write_text("controller:\n  " + name + "_controller:\n"
+                          "    goal_distance_tolerance: 1.0e-10\n", encoding="utf-8")
+    base = Path(__file__).resolve().parents[1] / "config"
+    key = C + name + "_controller.goal_distance_tolerance"
+    with pytest.raises(ValueError, match=key + r".*greater than.*1e-9"):
+        load_project_parameters(base/"robots/otter/dynamics_otter.yaml", controller,
+                                base/"trajectory_planner/trajectory_planner_params.yaml",
+                                base/"path_planner/common_planner_params.yaml")

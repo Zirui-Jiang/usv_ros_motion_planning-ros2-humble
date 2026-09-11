@@ -190,6 +190,11 @@ ros2 launch sim_env main.launch.py headless:=true \
 
 别名与规范键同时出现且数值相同，可以归一化；数值冲突直接报错，不采用文件顺序静默覆盖。重复 YAML 键、冲突的显式配置来源和未知参数也会被拒绝。控制、轨迹文件由加载器统一增加 `usv_simulation` 前缀，文件中不要再手动增加一层同名前缀。
 
+PID/LQR 的 `goal_distance_tolerance` 必须为有限数且严格大于 `1e-9 m`。
+这是 LOS 相邻航点去重的空间精度下限；更小或相等的值在启动及纯算法对象创建时
+明确拒绝，不会自动改成另一个容差。默认 PID 1.5 m、LQR 1.0 m 保持不变。
+可复现边界及配置检查见 [容差记录](validation/goal-tolerance-boundary/README.md)。
+
 当前控制配置的 PID 预瞄为 2.6 s，LQR 预瞄为 2 s；ROS 导航的 `obstacle_factor`
 校准候选为 0.25。该因子越小，拒绝的软膨胀代价范围越大；它不是以米表示的安全距离。
 实际验收版本及候选状态以验收报告为准，不能把不同提交的参数混用到同一组结果中。
