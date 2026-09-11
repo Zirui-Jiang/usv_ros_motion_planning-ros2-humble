@@ -267,6 +267,19 @@ def test_balanced_progress_with_nonempty_queue_does_not_mean_backlog_failure(tmp
     assert report["summary"]["all_passed"]
 
 
+@pytest.mark.parametrize("queues,status", [((1, 0, 2), "pass"), ((0, 1, 2), "unknown"),
+                                           ((0, 1, 0, 1, 2), "pass"), ((1, 0, 4), "unknown")])
+def test_recovered_small_endpoint_transient_is_not_sustained_backlog(tmp_path, queues, status):
+    count = len(queues)
+    events = performance_events(times=tuple(100 + 5*i for i in range(count)), queues=queues,
+                                overflow=(0,)*count, expired=(0,)*count,
+                                progress=tuple(10 + 50*i for i in range(count)))
+    performance = paired_report(tmp_path, events)["performance"][0]
+    assert performance["backlog"]["status"] == status
+    assert performance["status"] == status
+    assert performance["backlog"]["net_queue_growth"] == queues[-1] - queues[0]
+
+
 @pytest.mark.parametrize("overflow,status", [((0, 1, 2), "fail"), ((0, 1, 1), "unknown")])
 def test_backlog_needs_two_consecutive_growth_intervals_to_fail(tmp_path, overflow, status):
     performance = paired_report(tmp_path, performance_events(overflow=overflow))["performance"][0]
@@ -313,3 +326,38 @@ def test_missing_status_timestamp_is_not_silently_discarded(tmp_path):
     performance = paired_report(tmp_path, events)["performance"][0]
     assert performance["mapping_timing"]["status"] == "unknown"
     assert performance["backlog"]["status"] == "unknown"
+
+
+def test_acquisition_end_excludes_postprocessing_and_later_telemetry(tmp_path):
+    events = performance_events()
+    events[-1]["wall_monotonic_s"] = 125
+    events.insert(-1, {"event": "acquisition_finished", "wall_monotonic_s": 110})
+    events.insert(-1, {"event": "navigation_status", "wall_monotonic_s": 120,
+                       "payload": {"metrics": {"control_ms": {"count": 5, "p99": 250}}}})
+    report = paired_report(tmp_path, events)
+    performance = report["performance"][0]
+    assert performance["window"]["end"] == 110
+    assert performance["window"]["end_source"] == "acquisition_finished"
+    assert not performance["window"]["legacy_fallback"]
+    assert report["summary"]["all_passed"]
+
+
+def test_old_records_explicitly_keep_trial_finished_fallback(tmp_path):
+    events = performance_events()
+    events[-1]["wall_monotonic_s"] = 111.6
+    report = paired_report(tmp_path, events)
+    performance = report["performance"][0]
+    assert performance["window"]["end_source"] == "trial_finished"
+    assert performance["window"]["legacy_fallback"]
+    assert "postprocessing" in performance["window"]["fallback_reason"]
+    assert performance["control_timing"]["status"] == "unknown"
+    assert "旧末端回退" in compare.markdown(report)
+
+
+def test_present_but_invalid_acquisition_end_is_not_silently_replaced(tmp_path):
+    events = performance_events()
+    events.insert(-1, {"event": "acquisition_finished", "wall_monotonic_s": None})
+    performance = paired_report(tmp_path, events)["performance"][0]
+    assert not performance["window"]["complete"]
+    assert not performance["window"]["legacy_fallback"]
+    assert performance["status"] == "unknown"

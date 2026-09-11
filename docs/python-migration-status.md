@@ -12,7 +12,7 @@
 | 层次 | 当前状态 |
 |---|---|
 | 静态检查与构建 | 原 C++ 13 包构建通过；Python 13 包构建通过，独立对照工具通过 COLCON_IGNORE 隔离 |
-| 单元测试 | WSL 全仓库 196 项通过；包含真实 ROS 节点测试，JUnit 位于 docs/validation/source-tests-integration-expanded.xml |
+| 单元测试 | WSL 全仓库 228 项通过；包含真实 ROS 节点测试，JUnit 位于 docs/validation/source-tests-footprint-settling.xml |
 | ROS 集成 | 已验证地图/TF/时钟、重复扫描、在线调参、独立规划进程、地图失效停止、输入断流、取消和时间回退；完整安装区能够启动 Gazebo 导航 |
 | 闭环验收 | Python matrix002 已完成 PID 9 例，其中 8 例通过、圆柱第 3 例停车超时；后续矩阵已暂停，C++ 对照正在串行执行，暂未完成最终验收 |
 
@@ -24,6 +24,10 @@ matrix002 圆柱第 3 例最小全艇几何间隙约 0.442 m，但 LOS 预测被
 离线捕获输入表明航点切换距离 5 m 会跨越转角，1 m 是待闭环验证的候选值。
 只有初始地图与较晚状态可用于本轮重放，不能宣称精确复现停车末期的地图。
 详见 [失败数据说明](../scripts/validation/diagnostics/obstacle_stall_002/provenance.json)。
+
+后续 switch=1 m 候选也发生停车，即时 raw 快照证明原局部中心软代价硬门有误。
+现已接入全艇与 lethal/unknown 方格的扫掠检查，保留全局搜索阈值；捕获输入回归通过。
+同时修正 LQR 当前参考时刻、近目标减速重置与高速入圈过早完成，待新版本闭环验收。
 
 已完成的正常数值对照为 **9/9**，最大绝对差约 `3.05e-15`，直接链接原 C++ 库执行。
 覆盖和未覆盖范围见 [对照报告](../scripts/validation/parity/evidence/report.md)。这不等于

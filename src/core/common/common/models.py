@@ -15,6 +15,7 @@ class AlgorithmStatus(str, Enum):
     NO_PATH = "no_path"
     TIMEOUT = "timeout"
     GOAL_REACHED = "goal_reached"
+    SETTLING = "settling"
 
 
 @dataclass(frozen=True)

@@ -61,6 +61,25 @@ def test_stationary_near_goal_still_has_positive_initial_reference_speed():
     result = LosTrajectoryPlanner(USVModel(), {"goal_tolerance": 1.0}).plan(
         [[9.3, 10.25, 0], [10.49, 10.49, 0]], state)
     assert result.status == AlgorithmStatus.SUCCESS
-    assert len(result.trajectory) == 2
-    assert result.trajectory[0].velocity == pytest.approx(1.0)
+    distance = np.linalg.norm([10.49 - state.x, 10.49 - state.y])
+    assert result.trajectory[0].velocity == pytest.approx(distance / 3.0)
     assert result.trajectory[-1].velocity == 0
+
+
+def test_near_goal_replanning_reduces_initial_speed_without_reset_to_cruise():
+    planner = LosTrajectoryPlanner(USVModel(), {"slowdown_distance": 3.0})
+    speeds = []
+    for x in [0., 7., 8., 8.8]:
+        result = planner.plan([[x, 0., 0.], [10., 0., 0.]], VesselState(x=x))
+        assert result.status == AlgorithmStatus.SUCCESS
+        speeds.append(result.trajectory[0].velocity)
+        # The first integration step uses the same profile as the first row.
+        assert result.trajectory[1].x - x <= .5 * speeds[-1] + 1e-10
+    np.testing.assert_allclose(speeds, [1., 1., 2. / 3., .4])
+
+
+def test_slowdown_floor_preserves_far_field_legacy_ratio():
+    path, state = [[0., 0., 0.], [100., 0., 0.]], VesselState()
+    a = LosTrajectoryPlanner(USVModel(), {"slowdown_distance": 3.}).plan(path, state)
+    b = LosTrajectoryPlanner(USVModel(), {"slowdown_distance": 1e-9}).plan(path, state)
+    np.testing.assert_array_equal(a.trajectory.points, b.trajectory.points)

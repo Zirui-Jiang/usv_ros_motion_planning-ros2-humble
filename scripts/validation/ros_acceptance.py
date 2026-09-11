@@ -7,6 +7,7 @@ ROS imports are delayed so --dry-run and geometry tests work without ROS.
 """
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -468,9 +469,9 @@ def _verify_controller_once(probe, requested):
     request = kind.Request()
     prefix = "usv_simulation.controller."
     request.names = [prefix + "controller_name", prefix + "control_frequency", prefix + "controller_frequncy",
-                     prefix + "pid_controller." + "goal_distance_tolerance", prefix + "pid_controller.lookahead_time",
+                     prefix + "pid_controller." + "goal_distance_tolerance", prefix + "pid_controller.goal_speed_tolerance", prefix + "pid_controller.lookahead_time",
                      *[prefix + "pid_controller." + gain for gain in ("k_p_speed", "k_i_speed", "k_d_speed", "k_p_course", "k_i_course", "k_d_course")],
-                     *[prefix + "lqr_controller." + field for field in ("goal_distance_tolerance", "lookahead_time", "discrete_dt", "solve_eps", "max_iterations", "Q_matrix_diag", "R_matrix_diag")],
+                     *[prefix + "lqr_controller." + field for field in ("goal_distance_tolerance", "goal_speed_tolerance", "lookahead_time", "discrete_dt", "solve_eps", "max_iterations", "Q_matrix_diag", "R_matrix_diag")],
                      *["usv_simulation.trajectory_planner.los." + field for field in ("lookahead_distance", "switch_dist", "kp_yaw", "yaw_rate_max", "trajectory_time", "trajectory_time_interval", "goal_tolerance")],
                      "obstacle_factor", "path_planner.obstacle_factor",
                      "navigation.state_timeout", "navigation.trajectory_timeout", "dynamics.mass", "dynamics.max_force", "dynamics.D", "dynamics.cruising_speed"]
@@ -485,6 +486,8 @@ def _verify_controller_once(probe, requested):
     if not actual:
         raise EmptyParameterResponse("parameter service returned an empty controller_name")
     parameters = {name: parameter_value(value) for name, value in zip(request.names, response.values)}
+    for controller in ("pid", "lqr"):
+        parameters.setdefault(prefix + controller + "_controller.goal_speed_tolerance", None)
     probe.log.write("controller_verified", requested=requested, actual=actual, parameters=parameters)
     if actual != requested:
         raise TrialBlocked(f"requested controller {requested!r} but running node reports {actual!r}; the launch selector is not effective")
@@ -586,6 +589,7 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
     log.write("trial_started", mode=mode, controller=controller, scenario=scenario,
               repeat=repeat, thresholds=config["thresholds"], footprint=config["footprint"])
     probe, process = None, None
+    acquisition_closed = False
     outcome = {"trial": trial_id, "mode": mode, "controller": controller, "scenario": scenario["name"],
                "fault": fault, "repeat": repeat, "result": "not_run", "passed": False}
     try:
@@ -593,6 +597,12 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
         launch_file = args.baseline_launch_file if mode == "cpp" else args.launch_file
         command = ["ros2", "launch", "sim_env", launch_file, "world:=ocean", "gui:=false", "rviz:=false",
                    f"controller_name:={controller}", "robot_namespace:=otter", "robot_x:=23.0", "robot_y:=-10.0", "robot_yaw:=0.0"]
+        if args.controller_config is not None:
+            digest = hashlib.sha256(args.controller_config.read_bytes()).hexdigest()
+            if digest != args.controller_config_sha256:
+                raise TrialBlocked("controller configuration changed after the manifest was created")
+            command.append("controller_config:=" + str(args.controller_config))
+            log.write("controller_config_input", path=str(args.controller_config), sha256=digest)
         probe = make_probe("otter", log)
         wait_until(probe, lambda: False, 1.0)
         if probe.count_publishers("/otter/odom") > 0:
@@ -692,6 +702,10 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
                       arrived=arrived, status=probe.status)
             if arrived and fault != "cancel" and (fault != "goal_change" or changed):
                 break
+        # Close the acquisition interval before distribution calculations,
+        # JSON serialization and process teardown add wall-clock overhead.
+        log.write("acquisition_finished", sim_time_s=probe.sim_time(), cause="loop_finished")
+        acquisition_closed = True
         if outcome["result"] == "not_run":
             verdict = trial_verdict(arrived, cross_track, min_clearance, valid_commands, threshold, bool(scenario["obstacles"]))
             if not all(axis in probe.commands for axis in ("left", "right", "lateral")) or not probe.received_nonempty_trajectory:
@@ -715,9 +729,13 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
                        path_header_age_sim_ms=distribution(probe.path_latency), status=probe.status,
                        mapping_status=probe.mapping_status)
     except KeyboardInterrupt:
+        if not acquisition_closed and probe is not None and probe.goal_wall is not None:
+            log.write("acquisition_finished", sim_time_s=probe.sim_time(), cause="interrupted")
         outcome.update(result="interrupted", reason="user interrupted this live trial")
         raise
     except (TrialBlocked, RuntimeError, OSError) as error:
+        if not acquisition_closed and probe is not None and probe.goal_wall is not None:
+            log.write("acquisition_finished", sim_time_s=probe.sim_time(), cause="blocked")
         outcome.update(result="blocked", reason=str(error))
     finally:
         if process:
@@ -834,6 +852,8 @@ def arguments(argv=None):
     parser.add_argument("--scenarios-file", type=Path, default=Path(__file__).with_name("scenarios.json"))
     parser.add_argument("--launch-file", default="main.launch.py")
     parser.add_argument("--baseline-launch-file", default="main.launch.py")
+    parser.add_argument("--controller-config", type=Path,
+                        help="project controller YAML passed as an absolute controller_config launch argument, hashed before trials")
     parser.add_argument("--costmap-topic", help="optional absolute override; otherwise discover message type and topic")
     parser.add_argument("--parameter", action="append", default=[], metavar="NAME=JSON",
                         help="set and verify a parameter before each trial goal; repeat for multiple values")
@@ -869,6 +889,12 @@ def main(argv=None):
     args.workspace = args.workspace.resolve()
     if args.baseline_workspace:
         args.baseline_workspace = args.baseline_workspace.resolve()
+    args.controller_config_sha256 = None
+    if args.controller_config is not None:
+        args.controller_config = args.controller_config.resolve()
+        if not args.controller_config.is_file():
+            raise SystemExit(f"controller configuration does not exist: {args.controller_config}")
+        args.controller_config_sha256 = hashlib.sha256(args.controller_config.read_bytes()).hexdigest()
     args.output = args.output.resolve()
     args.output.mkdir(parents=True, exist_ok=False)
     config = json.loads(args.scenarios_file.read_text(encoding="utf-8"))
@@ -882,6 +908,8 @@ def main(argv=None):
                 "created_unix_s": time.time(), "domain_id": args.domain_id,
                 "pre_goal_parameter_overrides": args.parameter_overrides,
                 "diagnostic_stop_on_reference_failure": args.stop_on_reference_failure,
+                "controller_config": str(args.controller_config) if args.controller_config is not None else None,
+                "controller_config_sha256": args.controller_config_sha256,
                 "latency_definition": "Receive gaps and observed callback age are wall-clock diagnostics, not measured algorithm WCET or end-to-end source latency. Header ages use ROS simulation time."}
     for label, workspace in [("python", args.workspace), ("cpp", args.baseline_workspace)]:
         if workspace is not None:

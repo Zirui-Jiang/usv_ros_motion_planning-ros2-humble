@@ -19,14 +19,17 @@ DEFAULTS = {
     "navigation.map_timeout": 1.5, "navigation.trajectory_timeout": 1.0,
     "navigation.planning_timeout": 1.0, "navigation.max_expansions": 200000,
     "navigation.costmap_topic": "costmap_raw",
+    "navigation.footprint_length": 2.2, "navigation.footprint_width": 1.2,
     C + "control_frequency": 10.0, C + "controller_name": "pid",
     C + "pid_controller.goal_distance_tolerance": 1.5,
+    C + "pid_controller.goal_speed_tolerance": 0.25,
     C + "pid_controller.lookahead_time": 3.0,
     C + "pid_controller.k_p_speed": 2.0, C + "pid_controller.k_i_speed": 0.5,
     C + "pid_controller.k_d_speed": 0.0, C + "pid_controller.k_p_course": 2.0,
     C + "pid_controller.k_i_course": 0.0, C + "pid_controller.k_d_course": 0.0,
     C + "lqr_controller.goal_distance_tolerance": 1.0,
-    C + "lqr_controller.lookahead_time": 2.0,
+    C + "lqr_controller.goal_speed_tolerance": 0.25,
+    C + "lqr_controller.lookahead_time": 0.0,
     C + "lqr_controller.discrete_dt": 0.1,
     C + "lqr_controller.solve_eps": 0.1,
     C + "lqr_controller.max_iterations": 1000,
@@ -38,6 +41,7 @@ DEFAULTS = {
     T + "los.switch_dist": 5.0, T + "los.goal_tolerance": 1.0,
     T + "los.lookahead_distance": 1.0, T + "los.yaw_rate_max": 0.3,
     T + "los.kp_yaw": 1.0,
+    T + "los.slowdown_distance": 3.0,
 }
 DEFAULTS.update({"dynamics." + k: v for k, v in asdict(USVModel()).items()})
 HOT_PARAMETERS = frozenset(
@@ -118,9 +122,10 @@ def validate_parameters(values):
         raise ValueError("obstacle_factor must be in (0,1]")
     nonnegative = {k for k in HOT_PARAMETERS if ".k_" in k}
     positive = {k for k in DEFAULTS if k.startswith("navigation.") and isinstance(DEFAULTS[k], float)}
-    positive |= {k for k in DEFAULTS if k.endswith(("tolerance", "lookahead_time", "control_frequency", "resample_ratio"))}
+    positive |= {k for k in DEFAULTS if k.endswith(("tolerance", "control_frequency", "resample_ratio"))}
+    nonnegative |= {k for k in DEFAULTS if k.endswith("lookahead_time")}
     positive.discard("path_planner.default_tolerance")
-    positive |= {T + "los." + k for k in ("trajectory_time_interval", "trajectory_time", "switch_dist", "goal_tolerance", "lookahead_distance", "yaw_rate_max")}
+    positive |= {T + "los." + k for k in ("trajectory_time_interval", "trajectory_time", "switch_dist", "goal_tolerance", "lookahead_distance", "yaw_rate_max", "slowdown_distance")}
     positive |= {C + "lqr_controller." + k for k in ("discrete_dt", "solve_eps", "solve_timeout")}
     positive.add(T + "los.kp_yaw")
     if any(values[k] < 0 for k in nonnegative) or any(values[k] <= 0 for k in positive):

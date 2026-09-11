@@ -17,7 +17,7 @@ from .controller import Controller, select_config, stop
 
 
 class LQRController(Controller):
-    DEFAULTS = {"goal_distance_tolerance": 1.0, "lookahead_time": 1.5,
+    DEFAULTS = {"goal_distance_tolerance": 1.0, "goal_speed_tolerance": 0.25, "lookahead_time": 0.0,
                 "discrete_dt": 0.1, "solve_eps": 0.1, "max_iterations": 1000,
                 "Q_matrix_diag": [100, 100, 100, 10, 10, 0], "R_matrix_diag": [1, 1],
                 "solve_timeout": 0.0}
@@ -25,7 +25,7 @@ class LQRController(Controller):
     def __init__(self, model, config=None):
         super().__init__(model)
         self.config = {**self.DEFAULTS, **select_config(config, "lqr")}
-        for key in ["goal_distance_tolerance", "lookahead_time", "discrete_dt", "solve_eps", "solve_timeout"]:
+        for key in ["goal_distance_tolerance", "goal_speed_tolerance", "lookahead_time", "discrete_dt", "solve_eps", "solve_timeout"]:
             value = float(self.config[key])
             if not math.isfinite(value) or value < 0 or (key in ["discrete_dt", "solve_eps"] and value == 0):
                 raise ValueError(f"invalid {key}")

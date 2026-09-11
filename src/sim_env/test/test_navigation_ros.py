@@ -43,7 +43,7 @@ def test_process_planning_parameters_stale_inputs_cancel_and_clock_reset():
             while time.monotonic() < deadline:
                 executor.spin_once(timeout_sec=.002)
 
-        def inputs(odom=True, grid=True):
+        def inputs(odom=True, grid=True, speed=0.):
             nonlocal simulated_time
             simulated_time += .05
             clock = Clock()
@@ -57,6 +57,7 @@ def test_process_planning_parameters_stale_inputs_cancel_and_clock_reset():
                 message.child_frame_id = 'navigation_smoke/base_link'
                 message.pose.pose.position.x, message.pose.pose.position.y = 2.5, 10.5
                 message.pose.pose.orientation.w = 1.
+                message.twist.twist.linear.x = speed
                 odom_pub.publish(message)
             if grid:
                 message = Costmap()
@@ -147,6 +148,25 @@ def test_process_planning_parameters_stale_inputs_cancel_and_clock_reset():
         for _ in range(8):
             inputs()
         assert left and all(m.data == 0. for m in left)
+        goal_pub.publish(goal)
+        until(lambda: simulator.mode == 'NAVIGATING')
+
+        near_goal = PoseStamped()
+        near_goal.header.frame_id = 'navigation_smoke/map'
+        near_goal.pose.position.x, near_goal.pose.position.y = 2.6, 10.5
+        near_goal.pose.orientation.w = 1.
+        # Publish moving odometry before the close goal to avoid an earlier
+        # stationary sample legitimately completing the task.
+        inputs(speed=1.49)
+        goal_pub.publish(near_goal)
+        until(lambda: simulator.mode == 'SETTLING', speed=1.49)
+        assert simulator.goal is not None
+        left.clear()
+        for _ in range(8):
+            inputs(speed=1.49)
+        assert simulator.goal is not None and left and all(m.data == 0. for m in left)
+        until(lambda: simulator.mode == 'GOAL_REACHED', speed=.1)
+        assert simulator.goal is None
         goal_pub.publish(goal)
         until(lambda: simulator.mode == 'NAVIGATING')
 

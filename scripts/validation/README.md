@@ -103,6 +103,8 @@ python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
 
 `--parameter NAME=JSON` 可重复给出。值会在每次导航试验的任何目标发布前通过 ROS 原子参数服务设置并读回核对，分别记录 `pre_goal_parameter_configuration`、`pre_goal_parameter_readback` 和 manifest；任一拒绝或读回不一致均中止该例。应使用与节点声明匹配的 JSON 类型（例如 `1.0` 是浮点数）。这只支持节点本身允许在线设置的参数，不替代 `controller_name` 的 launch 选择。
 
+需要改变必须重启生效的控制参数时，使用 `--controller-config /absolute/path/to/controller_params.yaml`。harness 将绝对路径透传为 launch 的 `controller_config` 参数，在 manifest 保存文件 SHA-256，并在每次 launch 前重新核对与记录；配置文件在矩阵中途改变时，该例会中止。`controller_verified` 同时采集 PID/LQR 的 `goal_speed_tolerance`；旧 C++ 未声明此字段时记录 `null`，不推测其实现。
+
 加载 Python 工作区后，可用以下命令对真实 raw 快照比较不同 LOS 前视距离。脚本拒绝把 OccupancyGrid 当成无损 raw 数据，保留地图、自船状态和首条路径各自时刻，并记录完整八字段预测轨迹。预发布快照与规划线程稍后的私有输入时刻可能不同，因此输出属于捕获输入重放；输出中的几何间隙是预测轨迹指标，闭环实际间隙仍以原验收日志为准。
 
 ```bash
@@ -113,6 +115,8 @@ python3 "$PY_WS/scripts/validation/replay_los_snapshot.py" \
 ```
 
 延迟记录包括目标发布至首条有效路径/首条非零推力的 wall time、推力接收间隔，以及 ROS 仿真时间下消息 header age。`observed_odom_receipt_to_command_receipt_ms` 只是两个回调的接收时间差，不能当作算法运行耗时或源端到执行器端的端到端延迟。节点自行发布的实际计算 metrics 原样保存在 `navigation_status` 中。
+
+`acquisition_finished` 在导航采集循环结束、汇总分布计算和 JSON 落盘之前记录；中断或运行错误也保留对应结束标记。性能覆盖区间应以该事件为采集终点，不能把 `trial_finished` 前的汇总和进程清理耗时算作缺失状态数据。
 
 ## 本地检查
 

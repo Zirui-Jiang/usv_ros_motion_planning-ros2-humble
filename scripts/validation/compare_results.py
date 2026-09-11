@@ -107,27 +107,38 @@ def backlog_performance(records, window):
                     expected_metrics_period_s=MAPPING_REPORT_PERIOD_S,
                     boundary_covered=bool(boundary_covered), intervals=intervals,
                     expired_delta_observed=sum(i["counter_deltas"]["expired"] for i in intervals if i["valid"]))
+    net_growth = samples[-1]["queue_size"] - samples[0]["queue_size"] if samples else None
+    recovery = any(i["queue_delta"] < 0 for i in intervals if i["valid"] and i["accounting_balanced"])
+    evidence.update(net_queue_growth=net_growth, observed_queue_recovery=recovery,
+                    transient_net_growth_limit_scans=2,
+                    conclusion_scope="observed acquisition window only; not an indefinite stability guarantee")
     if sustained_overflow:
         return verdict("fail", "overflow_increased_in_at_least_two_consecutive_metrics_intervals", **evidence)
     if (not boundary_covered or missing or invalid or gaps or len(full) < 2):
         return verdict("unknown", "insufficient_contiguous_queue_counter_evidence", **evidence)
-    # Positive processing in each interval, balanced counters, no overflow,
-    # and no net queue growth support stability over this observed window.
+    # Positive processing, balanced counters and no overflow support stability
+    # over this window. A witnessed decline distinguishes a 1-2 scan endpoint
+    # transient from a queue that only grows throughout all observed samples.
     # Occasional TF expiry is recorded independently and is not a failure.
     if (any(i["counter_deltas"]["overflow"] for i in intervals)
             or any(i["integrated_delta"] <= 0 for i in full)
-            or samples[-1]["queue_size"] > samples[0]["queue_size"]):
+            or (net_growth > 0 and (not recovery or net_growth > 2))):
         return verdict("unknown", "observed_window_does_not_establish_stable_throughput", **evidence)
-    return verdict("pass", "processing_progress_balanced_counters_no_overflow_or_net_queue_growth_in_observed_window", **evidence)
+    return verdict("pass", "observed_progress_balanced_counters_no_overflow_and_recovery_or_no_net_growth", **evidence)
 
 
 def performance_verdict(observed):
     """Separate real computation percentiles from throughput evidence."""
     evidence = observed["performance_observations"]
-    start, end = evidence["goal_wall"], evidence["finished_wall"]
+    start = evidence["goal_wall"]
+    has_acquisition_end = evidence.get("acquisition_seen", False)
+    end = evidence.get("acquisition_wall") if has_acquisition_end else evidence["finished_wall"]
     window = {"start": start, "end": end,
               "complete": number(start) and number(end) and end >= start,
-              "definition": "first goal_published through trial_finished; reported rolling timing windows can include earlier samples"}
+              "end_source": "acquisition_finished" if has_acquisition_end else "trial_finished",
+              "legacy_fallback": not has_acquisition_end,
+              "fallback_reason": None if has_acquisition_end else "no acquisition_finished event; trial_finished can include postprocessing time",
+              "definition": "first goal_published through acquisition_finished; legacy records fall back explicitly to trial_finished; reported rolling timing windows can include earlier samples"}
 
     def active(name):
         rows = evidence[name]
@@ -299,7 +310,8 @@ def event_metrics(path, summary):
     process_samples = {key: [] for key in statuses}
     event_count = 0
     issues = []
-    performance = {"navigation_status": [], "mapping_status": [], "goal_wall": None, "finished_wall": None}
+    performance = {"navigation_status": [], "mapping_status": [], "goal_wall": None, "finished_wall": None,
+                   "acquisition_wall": None, "acquisition_seen": False}
     if path.is_file():
         with path.open(encoding="utf-8-sig") as stream:
             for line_number, line in enumerate(stream, 1):
@@ -317,6 +329,9 @@ def event_metrics(path, summary):
                     performance["goal_wall"] = event.get("wall_monotonic_s")
                 elif kind == "trial_finished":
                     performance["finished_wall"] = event.get("wall_monotonic_s")
+                elif kind == "acquisition_finished":
+                    performance["acquisition_wall"] = event.get("wall_monotonic_s")
+                    performance["acquisition_seen"] = True
                 if kind == "thruster_command" and event.get("axis") in AXES:
                     axis, value = event["axis"], event.get("normalized_command")
                     if number(value):
@@ -622,13 +637,14 @@ def markdown(report):
         lines.append(f"| {safe(pair['controller'])} | {safe(pair['scenario'])} | {pair['repeat']} | {values[0]} | {values[1]} | {safe(verdict)} |")
     labels = {"pass": "通过", "fail": "失败", "unknown": "待审/证据不足"}
     lines += ["", "## Python 正常导航性能验收", "",
-              "窗口为第一次 goal_published 至 trial_finished；状态中的耗时分位数来自节点计算历史，可能含启动样本，各窗口样本数不相加。控制 P99 必须小于100ms；有实际积分扫描的建图处理 P95 不得超过同一状态中扫描时间戳间隔的 P50。扫描周期仅作为预算，不充当算法耗时。C++ 无对应遥测不要求性能对等。", "",
-              "积压至少需要3次同一进程/时钟周期的有效快照、2个连续约5s间隔，并覆盖试验窗口首尾。连续两个间隔 overflow 增长判失败；单次溢出、采样缺口、停滞或计数不自洽标待审。处理持续进展、队列计数平衡、无溢出增长且窗口首尾无净积压增长才支持该观测窗口内通过。两次 queue>0 不能证明持续积压，偶发 TF 过期单列记录。", "",
+              "窗口为第一次 goal_published 至 acquisition_finished；旧记录明确回退到 trial_finished，该末端可能包含统计落盘时间。状态中的耗时分位数来自节点计算历史，可能含启动样本，各窗口样本数不相加。控制 P99 必须小于100ms；有实际积分扫描的建图处理 P95 不得超过同一状态中扫描时间戳间隔的 P50。扫描周期仅作为预算，不充当算法耗时。C++ 无对应遥测不要求性能对等。", "",
+              "积压至少需要3次同一进程/时钟周期的有效快照、2个连续约5s间隔，并覆盖试验窗口首尾。连续两个间隔 overflow 增长判失败；单次溢出、采样缺口、停滞或计数不自洽标待审。处理持续进展、队列计数平衡、无溢出增长时，有明确队列回落的末端1～2扫描瞬态净增不单独否决；持续非减且净增仍待审。两次 queue>0 不能证明持续积压，偶发 TF 过期单列记录。结论仅覆盖观测窗口，不保证无限时长稳定。", "",
               "| Python试验 | 总状态 | 控制耗时 | 建图耗时 | 积压 | 状态样本/完整间隔/跨度s |", "| --- | --- | --- | --- | --- | --- |"]
     for trial in report["performance"]:
         observed = trial.get("observed_performance", trial)
         control, mapping, backlog = (observed[key] for key in ("control_timing", "mapping_timing", "backlog"))
-        lines.append(f"| {safe(trial['trial'])} | {labels[trial['status']]} | {labels[control['status']]} | {labels[mapping['status']]} | {labels[backlog['status']]} | {backlog['status_samples']}/{backlog['full_intervals']}/{fmt(backlog['observation_span_s'])} |")
+        label = trial['trial'] + ("（旧末端回退）" if observed['window']['legacy_fallback'] else "")
+        lines.append(f"| {safe(label)} | {labels[trial['status']]} | {labels[control['status']]} | {labels[mapping['status']]} | {labels[backlog['status']]} | {backlog['status_samples']}/{backlog['full_intervals']}/{fmt(backlog['observation_span_s'])} |")
     lines += ["", "各子项的原因、每个窗口分位值/预算/样本数、逐间隔计数差及 TF 过期数保存在 report.json 的 performance 中。"]
     lines += ["", "## 重复试验汇总", "", "统计使用所有实际 completed 的试验，包括验收失败试验；passed 数量单列。均值/最大由有值记录计算，不用零补缺失。", "",
               "| 模式/控制器/场景 | 观测/完成/通过 | RMSE 均值/最大 m | 时间均值/最大 s | 最小间隙 m | 控制、规划P99均值/最大 ms | 推力总变差均值 |",

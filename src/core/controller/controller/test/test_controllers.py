@@ -63,6 +63,21 @@ def test_goal_checks_global_goal_instead_of_local_horizon_endpoint(kind):
     assert controller.compute(VesselState(x=8), reference, 0.1).status != AlgorithmStatus.GOAL_REACHED
 
 
+@pytest.mark.parametrize("kind", [PIDController, LQRController])
+def test_goal_is_not_latched_while_vessel_can_coast_outside_tolerance(kind):
+    controller = kind(USVModel(), {"goal_distance_tolerance": 1., "goal_speed_tolerance": .25})
+    trajectory = constant_reference(goal=(8., 0.))
+    # Reproduce the baseline failure's high-speed entry into the goal disk.
+    moving = controller.compute(VesselState(x=7.8, u=1.49), trajectory, .1)
+    assert moving.status == AlgorithmStatus.SETTLING
+    assert moving.left == moving.right == 0.
+    assert "settling" in moving.message
+    # Completion is allowed only while both position and speed meet the gates.
+    settled = controller.compute(VesselState(x=8.1, u=.1, v=.1), trajectory, .1)
+    assert settled.status == AlgorithmStatus.GOAL_REACHED
+    assert controller.compute(VesselState(x=10.7, u=.05), trajectory, .1).status != AlgorithmStatus.GOAL_REACHED
+
+
 def test_pid_outputs_are_bounded_and_body_speed_is_heading_invariant():
     controller = PIDController(USVModel(), {"k_p_speed": 100})
     a = controller.compute(VesselState(u=0.2, v=0.1), constant_reference(), 0.1)

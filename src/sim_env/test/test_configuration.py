@@ -34,3 +34,13 @@ def test_invalid_update_is_transactional():
 def test_invalid_startup(changes):
     with pytest.raises(ValueError):
         resolve_parameters(changes)
+
+
+def test_current_time_lqr_reference_is_valid_but_not_hot_mutable():
+    key = C + 'lqr_controller.lookahead_time'
+    values = resolve_parameters({key: 0.})
+    assert values[key] == 0.
+    with pytest.raises(ValueError):
+        resolve_parameters({key: -.1})
+    with pytest.raises(ValueError, match='Restart'):
+        validate_update(values, {key: .5})

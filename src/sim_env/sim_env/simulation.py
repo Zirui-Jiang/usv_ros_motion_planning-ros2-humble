@@ -24,7 +24,8 @@ from tf2_ros import Buffer, TransformListener, TransformException
 import yaml
 
 from common.models import AlgorithmStatus, ControlCommand, GridSnapshot, USVModel, VesselState
-from common.math_helper import quaternion_yaw, wrap_angle, path_is_clear
+from common.math_helper import quaternion_yaw, wrap_angle
+from common.collision import footprint_path_is_clear
 from common.visualizer import make_path
 from controller.controller_factory import create_controller
 from .configuration import DEFAULTS, HOT_PARAMETERS, C, T, resolve_parameters, section, validate_update
@@ -173,8 +174,9 @@ class Simulator(Node):
         self.timings['costmap_conversion_ms'].append((time.perf_counter() - begun) * 1000)
 
     def _trajectory_clear(self, trajectory):
-        return self.grid is not None and path_is_clear(
-            self.grid, trajectory.points[:, [2, 3, 4]], 254.0 * self.config['obstacle_factor'])
+        return self.grid is not None and footprint_path_is_clear(
+            self.grid, trajectory.points[:, [2, 3, 4]], self.config['navigation.footprint_length'],
+            self.config['navigation.footprint_width'])
 
     def _reset_task(self, mode, reason='', clear_inputs=False):
         self.version += 1
@@ -283,6 +285,8 @@ class Simulator(Node):
                     command = self.controller.compute(self.state, self.trajectory, dt)
                     if command.status == AlgorithmStatus.GOAL_REACHED:
                         self._reset_task('GOAL_REACHED')
+                    elif command.status == AlgorithmStatus.SETTLING:
+                        self.mode, self.reason = 'SETTLING', command.message
                     elif command.status != AlgorithmStatus.SUCCESS or not command.is_valid():
                         self.mode, self.reason = 'CONTROL_ERROR', command.message
                         command = ControlCommand()

@@ -21,6 +21,7 @@ class LosTrajectoryPlanner:
         "trajectory_time_interval": 0.5, "trajectory_time": 20.0,
         "switch_dist": 5.0, "goal_tolerance": 1.0,
         "lookahead_distance": 5.0, "yaw_rate_max": 0.3, "kp_yaw": 1.0,
+        "slowdown_distance": 3.0,
     }
 
     def __init__(self, model: USVModel, config=None):
@@ -80,14 +81,18 @@ class LosTrajectoryPlanner:
         # reference profile, not inherit the measured (possibly zero) speed.
         # A stationary vessel near its goal otherwise receives an all-zero
         # trajectory when the first rollout sample enters the goal tolerance.
-        speed = self.model.cruising_speed
-        rows = [[0.0, 0.0, *xy, yaw, 0.0, speed, 0.0]]
         if len(waypoints) == 1:
             initial_distance = np.linalg.norm(waypoints[0, :2] - xy)
         else:
             initial_distance = np.linalg.norm(waypoints[1, :2] - xy) + np.linalg.norm(
                 np.diff(waypoints[1:, :2], axis=0), axis=1).sum()
         initial_distance = max(float(initial_distance), goal_tolerance)
+        # A new near-goal rollout must not reset its initial speed to cruise.
+        # The lower denominator bound preserves the original far-field ratio
+        # while making repeated short approach plans consistently decelerate.
+        speed_denominator = max(initial_distance, cfg["slowdown_distance"])
+        speed = self.model.cruising_speed * min(1.0, initial_distance / speed_denominator)
+        rows = [[0.0, 0.0, *xy, yaw, 0.0, speed, 0.0]]
         reached = False
         steps = int(math.ceil(horizon / dt))
         for output_index in range(1, steps + 1):
@@ -121,7 +126,7 @@ class LosTrajectoryPlanner:
                         np.diff(waypoints[index + 1:, :2], axis=0), axis=1).sum()
                 heading_error = wrap_angle(desired_yaw - yaw)
                 yaw_rate = float(np.clip(cfg["kp_yaw"] * heading_error, -cfg["yaw_rate_max"], cfg["yaw_rate_max"]))
-                speed = self.model.cruising_speed * float(np.clip(remaining / initial_distance, 0.0, 1.0))
+                speed = self.model.cruising_speed * float(np.clip(remaining / speed_denominator, 0.0, 1.0))
                 yaw = wrap_angle(yaw + yaw_rate * inner_dt)
                 motion = speed * inner_dt
                 xy += motion * np.array([math.cos(yaw), math.sin(yaw)])

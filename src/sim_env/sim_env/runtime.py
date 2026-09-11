@@ -6,6 +6,7 @@ import numpy as np
 
 from common.models import AlgorithmStatus, GridSnapshot, USVModel, VesselState
 from common.math_helper import path_is_clear
+from common.collision import footprint_path_is_clear
 from path_planner.path_planner_core import PathPlannerCore
 from trajectory_planner.trajectory import Trajectory
 from trajectory_planner.trajectory_planner_factory import create_trajectory_planner
@@ -100,9 +101,13 @@ def plan_navigation(request):
         trajectory = generated.trajectory
         # The exact requested goal, not a grid-cell centre, defines completion.
         trajectory.goal = tuple(request.goal[:2])
-        # LOS can cut a sharp corner. Never hand a colliding rollout to control.
-        if not path_is_clear(request.grid, trajectory.points[:, [2, 3, 4]], threshold):
-            return result(AlgorithmStatus.NO_PATH, message='LOS rollout intersects costmap obstacle')
+        # A* retains its original soft-cost threshold. Local collision safety
+        # checks the complete hull against lethal/unknown cell areas instead:
+        # rejecting the centre at every soft inflated cost can deadlock a
+        # physically clear turn, while centre-only checks miss bow collisions.
+        if not footprint_path_is_clear(request.grid, trajectory.points[:, [2, 3, 4]],
+                                       cfg['navigation.footprint_length'], cfg['navigation.footprint_width']):
+            return result(AlgorithmStatus.NO_PATH, message='LOS swept footprint intersects lethal or unknown map cells')
         return result(generated.status, trajectory)
     except (ValueError, TypeError, ArithmeticError) as error:
         return result(AlgorithmStatus.INVALID_INPUT, message=str(error))

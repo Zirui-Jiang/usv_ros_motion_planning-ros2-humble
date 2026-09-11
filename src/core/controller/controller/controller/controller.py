@@ -36,6 +36,13 @@ class Controller:
                 return None, stop(AlgorithmStatus.INVALID_INPUT, "state and trajectory frames differ")
             # A horizon endpoint is not necessarily the final navigation goal.
             if trajectory.goal is not None and math.hypot(state.x - trajectory.goal[0], state.y - trajectory.goal[1]) <= self.config["goal_distance_tolerance"]:
+                # Entering the goal disk at speed is not a completed task.
+                # The original LQR latched completion while still moving and
+                # could coast outside the disk without ever resuming control.
+                # Keep the task active during settling so a later drift outside
+                # the tolerance can still receive a newly planned reference.
+                if math.hypot(state.u, state.v) > self.config["goal_speed_tolerance"]:
+                    return None, stop(AlgorithmStatus.SETTLING, "settling within goal tolerance")
                 self.reset()
                 return None, stop(AlgorithmStatus.GOAL_REACHED)
             age = max(0.0, state.stamp - trajectory.stamp)

@@ -30,6 +30,10 @@ EXECUTABLES = {
     "perception": ["perception_mapping_node"],
     "sim_env": ["sim_env_node", "fake_localization_node", "costmap_support_node"],
 }
+REQUIRED_PACKAGES = set(MODULES) | {
+    "dynamic_rviz_config", "dynamic_xml_config", "goal_set_plugin",
+    "wave_gazebo", "wave_gazebo_plugins", "usv_gazebo_plugins",
+}
 
 
 def within(path, parent):
@@ -48,11 +52,16 @@ def audit(source, install):
     def record(name, passed, **evidence):
         rows.append(dict(check=name, passed=bool(passed), **evidence))
 
-    expected = {}
+    expected, duplicates = {}, []
     for manifest in sorted((source / "src").rglob("package.xml")):
         tree = ET.parse(manifest).getroot()
-        expected[tree.findtext("name")] = tree.findtext("export/build_type")
-    record("source_package_inventory", bool(expected), packages=expected)
+        name = tree.findtext("name")
+        if name in expected:
+            duplicates.append(name)
+        expected[name] = tree.findtext("export/build_type")
+    missing = sorted(REQUIRED_PACKAGES - expected.keys())
+    record("source_package_inventory", not missing and not duplicates,
+           packages=expected, missing_packages=missing, duplicate_packages=duplicates)
     for package, build_type in expected.items():
         try:
             prefix = Path(get_package_prefix(package)).resolve()
