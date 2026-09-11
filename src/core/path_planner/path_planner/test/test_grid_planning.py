@@ -1,12 +1,16 @@
 """Numerical and edge-case contracts for migration from the C++ planners."""
 
+import hashlib
+import json
 import math
+from pathlib import Path
 import numpy as np
 import pytest
 
 from common.models import AlgorithmStatus, GridSnapshot, VesselState
 from path_planner import PathPlannerCore, create_planner, prune, resample
 from path_planner.path_planner import grid_to_index, index_to_grid
+from path_planner.path_planner_core import path_is_clear_with_inflation_escape
 
 
 def grid(data=None, resolution=1.0, origin_x=0.0, origin_y=0.0):
@@ -185,3 +189,122 @@ def test_coarse_resampling_cannot_cut_across_an_obstacle():
     assert len(result.path) > 2
     assert path_is_clear(scene, result.path, threshold=127)
     assert "retained" in result.message
+
+
+@pytest.mark.parametrize("name", ["astar", "dijkstra", "gbfs"])
+@pytest.mark.parametrize("resampling", [False, True])
+def test_soft_start_restores_original_strictly_descending_escape(name, resampling):
+    scene = grid([[120, 100, 75, 50, 0]])
+    config = {"planner_name": name, "obstacle_factor": .25,
+              "enable_resample": resampling, "resample_spacing": .2}
+    result = PathPlannerCore(config).make_plan((.5, .5, .2), (4.5, .5, -.3), scene)
+    assert result.success
+    assert path_is_clear_with_inflation_escape(scene, result.path, 63.5)
+    from common.math_helper import path_is_clear
+    assert not path_is_clear(scene, result.path, 63.5)  # Existing strict helper is unchanged.
+    np.testing.assert_allclose(result.path[[0, -1]], [[.5, .5, .2], [4.5, .5, -.3]])
+
+
+@pytest.mark.parametrize("costs", [[120, 120, 0], [120, 121, 0], [120, 75, 75, 0],
+                                   [120, 50, 75, 0], [120, 75, 90, 0]])
+def test_soft_escape_cannot_plateau_climb_or_reenter_after_reaching_free_space(costs):
+    scene = grid([costs])
+    path = np.array([[i+.5, .5, 0] for i in range(len(costs))])
+    result = PathPlannerCore({"obstacle_factor": .25}).make_plan(path[0], path[-1], scene)
+    assert result.status == AlgorithmStatus.NO_PATH
+    assert not path_is_clear_with_inflation_escape(scene, path, 63.5)
+
+
+@pytest.mark.parametrize("costs", [[254, 120, 0], [255, 120, 0], [253, 254, 0], [253, 255, 0]])
+def test_escape_never_admits_hard_or_default_unknown_cells(costs):
+    scene = grid([costs])
+    path = np.array([[i+.5, .5, 0] for i in range(len(costs))])
+    assert PathPlannerCore({"obstacle_factor": .25}).make_plan(path[0], path[-1], scene).status == AlgorithmStatus.NO_PATH
+    assert not path_is_clear_with_inflation_escape(scene, path, 63.5)
+
+
+@pytest.mark.parametrize("costs", [[120], [120, 100, 75], [0, 75]])
+def test_soft_goal_is_still_blocked_even_when_start_can_escape(costs):
+    scene = grid([costs])
+    path = np.array([[i+.5, .5, 0] for i in range(len(costs))])
+    result = PathPlannerCore({"obstacle_factor": .25}).make_plan(path[0], path[-1], scene)
+    assert result.status == AlgorithmStatus.NO_PATH and "blocked" in result.message
+    assert not path_is_clear_with_inflation_escape(scene, path, 63.5)
+
+
+def test_unknown_explicitly_free_does_not_restart_inflation_escape():
+    scene = grid([[120, 255, 75, 0]])
+    path = np.array([[i+.5, .5, 0] for i in range(4)])
+    result = PathPlannerCore({"obstacle_factor": .25, "unknown_is_obstacle": False}).make_plan(path[0], path[-1], scene)
+    assert result.status == AlgorithmStatus.NO_PATH
+    assert not path_is_clear_with_inflation_escape(scene, path, 63.5, False)
+
+
+def test_soft_escape_cannot_alias_linear_indices_across_row_boundary():
+    data = np.full((3, 3), 254, dtype=np.uint8)
+    data[0, 2], data[1, 0] = 120, 75
+    data[2, 0] = 0
+    result = PathPlannerCore({"obstacle_factor": .25}).make_plan((2.5, .5, 0), (.5, 2.5, 0), grid(data))
+    assert result.status == AlgorithmStatus.NO_PATH
+
+
+def test_outline_soft_start_remains_a_hard_boundary():
+    scene = grid([[120, 0, 0], [0, 0, 0], [0, 0, 0]])
+    path = np.array([[.5, .5, 0], [1.5, 1.5, 0]])
+    result = PathPlannerCore({"obstacle_factor": .25, "outline_map": True}).make_plan(path[0], path[-1], scene)
+    assert result.status == AlgorithmStatus.NO_PATH
+    assert not path_is_clear_with_inflation_escape(scene, path, 63.5, outline_map=True)
+
+
+def test_escape_preserves_diagonal_corner_cutting_option():
+    scene = grid([[120, 254], [254, 0]])
+    path = np.array([[.5, .5, 0], [1.5, 1.5, 0]])
+    assert PathPlannerCore({"obstacle_factor": .25}).make_plan(path[0], path[-1], scene).success
+    assert PathPlannerCore({"obstacle_factor": .25, "allow_corner_cutting": False}).make_plan(path[0], path[-1], scene).status == AlgorithmStatus.NO_PATH
+    assert path_is_clear_with_inflation_escape(scene, path, 63.5)
+    assert not path_is_clear_with_inflation_escape(scene, path, 63.5, allow_corner_cutting=False)
+
+
+def test_coarse_resampling_cannot_shortcut_the_descending_escape_prefix():
+    data = np.full((3, 4), 253, dtype=np.uint8)
+    data[0, :3], data[1, 2], data[2, 2:] = [120, 110, 100], 80, [0, 0]
+    scene = grid(data)
+    source, target = (.5, .5, 0), (3.5, 2.5, 0)
+    assert not path_is_clear_with_inflation_escape(scene, [source, target], 63.5)
+    result = PathPlannerCore({"obstacle_factor": .25, "allow_corner_cutting": False,
+                              "enable_resample": True, "resample_spacing": 100}).make_plan(source, target, scene)
+    assert result.success and len(result.path) > 2
+    assert "retained" in result.message
+    assert path_is_clear_with_inflation_escape(scene, result.path, 63.5, allow_corner_cutting=False)
+
+
+def test_segment_validator_detects_short_cell_visits_and_map_exit():
+    # A segment can clip a high cell for less than half a cell's travel.
+    scene = grid([[0, 127], [0, 0]])
+    assert not path_is_clear_with_inflation_escape(scene, [[.9, .9], [1.2, 1.1]], 127)
+    assert not path_is_clear_with_inflation_escape(scene, [[.5, .5], [-.01, .5]], 127)
+
+
+@pytest.mark.parametrize("suffix", ["c0a7f065", "78bb0382"])
+@pytest.mark.parametrize("resampling", [False, True])
+def test_real_factor025_soft_start_snapshots_recover_a_valid_grid_route(suffix, resampling):
+    directory = Path(__file__).parent / "fixtures" / "factor025_soft_start"
+    manifest = json.loads((directory / "manifest.json").read_text())
+    for name in (f"state_input_{suffix}.json", f"costmap_input_{suffix}.npz"):
+        assert hashlib.sha256((directory / name).read_bytes()).hexdigest() == manifest["files"][name]["sha256"]
+    state = json.loads((directory / f"state_input_{suffix}.json").read_text())
+    with np.load(directory / f"costmap_input_{suffix}.npz") as captured:
+        assert str(captured["cost_kind"]) == "raw"
+        scene = GridSnapshot(captured["data"], float(captured["resolution"]),
+                             float(captured["origin_x"]), float(captured["origin_y"]),
+                             float(captured["stamp"]), str(captured["frame_id"]))
+    source, target = scene.world_to_map(*state["pose"][:2]), scene.world_to_map(*state["goal"][:2])
+    assert scene.data[source[1], source[0]] == 75
+    assert scene.data[target[1], target[0]] == 0
+    result = PathPlannerCore({"obstacle_factor": .25, "enable_resample": resampling,
+                              "resample_spacing": .5}).make_plan(state["pose"], state["goal"], scene)
+    assert result.success
+    assert path_is_clear_with_inflation_escape(scene, result.path, 63.5)
+    from common.math_helper import path_is_clear
+    assert path_is_clear(scene, result.path, 254)  # No hard/unknown exemption.
+    assert not path_is_clear(scene, result.path, 63.5)  # The old strict-start check rejected these inputs.

@@ -30,12 +30,13 @@ Python 算法通过导入和对象调用连接；导航节点使用独立工作�
 | 层次 | 已有证据 | 当前边界 |
 | --- | --- | --- |
 | 静态检查与构建 | C++ 和 Python 各 13 包构建通过；纯包导入及节点入口检查已有通过记录 | 删除替换源码后的全新普通安装构建待最后执行 |
-| 单元测试 | 原正式版本 264 项；当前修复与 factor=0.25 候选 334 项通过，包含真实 ROS 测试 | 候选尚待闭环；清理后将再核对安装和源码 |
+| 单元测试 | 原正式版本 264 项；当前恢复软区驶出后的候选 362 项通过，包含真实 ROS 测试 | 候选尚待闭环；清理后将再核对安装和源码 |
 | ROS 集成 | goal、odom、TF、clock、scan、raw costmap、路径及推力链路；在线参数、取消、过期输入、时间回退 | GUI 初始化证据与可视画面确认分别记录 |
 | 闭环验收 | 原场景 PID/LQR 各三场景、各三次共 18 条导航，以及 3 条故障检查通过 | 9 对有效 PID 基线中 8 对通过相对门槛；1 对 RMSE 超限；LQR 基线不可比；格内追加矩阵另列 |
 
 全仓库测试记录：[JUnit](validation/source-tests-calibrated-candidate.xml)。
-当前候选：[334 项 JUnit](validation/source-tests-factor025-candidate.xml)。新计数比较器
+`79a109f` 候选：[334 项 JUnit](validation/source-tests-factor025-candidate.xml)；
+恢复软区驶出后：[362 项 JUnit](validation/source-tests-soft-inflation-escape.xml)。新计数比较器
 与旧 synthetic fixtures 的同步中间轮曾有 22 项失败，已保存为
 [中间轮记录](validation/source-tests-counter-schema-in-progress.xml)；完成新旧 schema
 兼容后再跑全仓通过，未把中间轮视为有效发布版本。
@@ -152,6 +153,12 @@ PID 完成后暂停（七条通过、两条圆柱裕度失败），LQR 首例中
 该轮也暴露了外部监看不能及时停止矩阵的问题。后续验收脚本在消费 odom 时直接检测
 负扫掠下界，在采样时检测固定横偏超过 4 m，自动结束当前采集并停止整个矩阵；
 正间隙不足 0.2 m 的情况仍保留例末失败判定。旧轮监督延迟及已多运行的记录不删除。
+
+`79a109f` 的 factor=0.25 候选仅运行第一例后中断：观察最小间隙为 0.721369 m，
+但持续报 `start or goal is blocked` 而未到达。两份捕获输入均为起点 raw75、
+目标 raw0、全艇 hard 检查通过；63.5 阈值下的严格起点拒绝导致死锁。
+见 [候选归档](validation/python-factor025-candidate-001/README.md)。当前正在恢复原 C++
+已有的软代价下降驶出行为，原中断候选不追改为成功。
 
 ## 6. 环境和已知限制
 

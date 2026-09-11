@@ -15,6 +15,9 @@ class AStarPathPlanner:
     """Pure grid search. Costs use Nav2's uint8 scale (lethal=254, unknown=255).
 
     ``obstacle_factor`` preserves the old threshold ``254 * factor``.
+    A soft inflated start may escape through strictly descending costs, as
+    in C++; after reaching free space no above-threshold cell is reachable.
+    Lethal cells, blocked goals and outlined boundaries cannot be escaped.
     Unknown cells are blocked unless explicitly allowed. Diagonal corner
     cutting defaults to the original behaviour and can be disabled.
     """
@@ -63,15 +66,20 @@ class AStarPathPlanner:
             costs = np.asarray(grid.data)
             if costs.shape != (height, width) or width < 1 or height < 1:
                 return result(AlgorithmStatus.INVALID_INPUT, "invalid grid shape")
+            hard_blocked = costs == 254
+            if self.unknown_is_obstacle:
+                hard_blocked = hard_blocked | (costs == 255)
             blocked = costs >= (254.0 * self.factor)
             if not self.unknown_is_obstacle:
                 blocked[costs == 255] = False
             if self.outline_map:
                 blocked[[0, -1], :] = True
                 blocked[:, [0, -1]] = True
+                hard_blocked[[0, -1], :] = True
+                hard_blocked[:, [0, -1]] = True
         except (ValueError, TypeError, AttributeError, OverflowError) as error:
             return result(AlgorithmStatus.INVALID_INPUT, str(error))
-        if blocked[source[1], source[0]] or blocked[target[1], target[0]]:
+        if hard_blocked[source[1], source[0]] or blocked[target[1], target[0]]:
             return result(AlgorithmStatus.NO_PATH, "start or goal is blocked")
         if source == target:
             x, y = grid.map_to_world(*source)
@@ -104,7 +112,13 @@ class AStarPathPlanner:
             for dx, dy, distance in self.MOTIONS:
                 nx, ny = x + dx, y + dy
                 # Check both coordinates before indexing: no cross-row aliases.
-                if not (0 <= nx < width and 0 <= ny < height) or blocked[ny, nx]:
+                if not (0 <= nx < width and 0 <= ny < height) or hard_blocked[ny, nx]:
+                    continue
+                # Preserve the C++ inflation escape condition. The current
+                # cell must also be blocked: an explicitly permitted unknown
+                # cell has raw cost 255 but is free under that policy, and
+                # must not become a new source of soft-obstacle exemptions.
+                if blocked[ny, nx] and (not blocked[y, x] or costs[ny, nx] >= costs[y, x]):
                     continue
                 if dx and dy and not self.allow_corner_cutting and (blocked[y, nx] or blocked[ny, x]):
                     continue

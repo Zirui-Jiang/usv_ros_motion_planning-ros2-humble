@@ -1,0 +1,143 @@
+{
+  "installed_commit": "79a109fc9e483fe01c7b1682d170443b3e794859",
+  "classification": "First candidate interrupted after persistent soft-start refusal; repeats 2 and 3 not run",
+  "trial_result": "interrupted",
+  "planned_trials": 3,
+  "completed_trials": 0,
+  "unrun_repeats": [
+    2,
+    3
+  ],
+  "observation": {
+    "interpretation": "Observed interrupted interval only; not completed-trial performance and not a successful candidate.",
+    "minimum_footprint_clearance_m": 0.7213693956319641,
+    "fixed_cte_rms_m": 0.17413451664167226,
+    "fixed_cte_samples": 827,
+    "arrived_observed": false,
+    "first_sample_sim_s": 6.0,
+    "last_sample_sim_s": 83.5,
+    "last_sample": {
+      "event": "sample",
+      "wall_monotonic_s": 73212.855353333,
+      "sim_time_s": 83.5,
+      "pose": [
+        30.290498230766545,
+        -12.482101277750006,
+        0.5282458146590426
+      ],
+      "body_velocity": [
+        0.008425074910144565,
+        -0.0015076732655360777,
+        -0.00010391471451257783
+      ],
+      "command": {
+        "left": 0.0,
+        "right": 0.0,
+        "lateral": 0.0
+      },
+      "goal_distance_m": 5.378506650576172,
+      "cross_track_initial_m": 0.16079642957310045,
+      "cross_track_live_m": null,
+      "minimum_footprint_clearance_m": 0.7213693956319641,
+      "arrived": false,
+      "status": {
+        "state": "NO_PATH",
+        "reason": "start or goal is blocked",
+        "version": 1,
+        "stamp": 82.9,
+        "controller": "pid",
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "metrics": {
+          "control_ms": {
+            "count": 891,
+            "p50": 0.20360801136121154,
+            "p95": 0.5233104966464452,
+            "p99": 3.7671508063795063,
+            "max": 10.853297004359774
+          },
+          "costmap_conversion_ms": {
+            "count": 83,
+            "p50": 0.15065300976857543,
+            "p95": 2.73629279108718,
+            "p99": 3.207061662105838,
+            "max": 3.7976970052113757
+          },
+          "planning_ms": {
+            "count": 385,
+            "p50": 0.2106520114466548,
+            "p95": 8.750012001837595,
+            "p99": 10.14621755224652,
+            "max": 12.951570999575779
+          }
+        },
+        "counters": {
+          "pending_replacements": 0,
+          "global_searches": 347
+        },
+        "process": {
+          "pid": 101159,
+          "cpu_seconds": 3.343224,
+          "peak_rss_kib": 70780,
+          "monotonic": 73212.324401798
+        }
+      }
+    },
+    "no_path_status_count": 65,
+    "no_path_reasons": [
+      "start or goal is blocked"
+    ],
+    "failure_snapshots": [
+      {
+        "event": "navigation_failure_snapshot",
+        "wall_monotonic_s": 73136.743961229,
+        "costmap_path": "costmap_input_c0a7f065.npz",
+        "state_path": "state_input_c0a7f065.json",
+        "context_path": "navigation_context_c0a7f065.json"
+      },
+      {
+        "event": "navigation_failure_snapshot",
+        "wall_monotonic_s": 73148.281158362,
+        "costmap_path": "costmap_input_78bb0382.npz",
+        "state_path": "state_input_78bb0382.json",
+        "context_path": "navigation_context_78bb0382.json"
+      }
+    ]
+  },
+  "source_launch_log": {
+    "absolute_path": "/home/usv/usv_migration/results/python-factor025-candidate-001/python_pid_single_obstacle_01/launch.log",
+    "bytes": 17197,
+    "sha256": "17587aba034ee3549444e9d803d344c2f093f842f07a5bf616a97c7ff1cb1f8b"
+  },
+  "clean_exit_markers": 7,
+  "abnormal_exit_lines": [
+    {
+      "line": 101,
+      "text": "[ERROR] [gzserver-1]: process has died [pid 101145, exit code -9, cmd 'gzserver /home/usv/usv_migration/python/install/sim_env/share/sim_env/worlds/ocean.world -slibgazebo_ros_init.so -slibgazebo_ros_factory.so -slibgazebo_ros_force_system.so']."
+    }
+  ],
+  "captured_input_findings": [
+    {
+      "suffix": "c0a7f065",
+      "map_stamp": 14.9,
+      "state_stamp": 15.3,
+      "raw_start": 75,
+      "raw_goal": 0,
+      "threshold": 63.5,
+      "hard_footprint_clear": true
+    },
+    {
+      "suffix": "78bb0382",
+      "map_stamp": 22.8,
+      "state_stamp": 23.7,
+      "raw_start": 75,
+      "raw_goal": 0,
+      "threshold": 63.5,
+      "hard_footprint_clear": true
+    }
+  ],
+  "snapshot_limitation": "Latest independent callbacks, not atomic worker snapshots; no final stopped-state costmap was captured."
+}

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "world": "ocean",
+  "start": [23.125, -10.125, 0.0],
+  "footprint": {"length_m": 2.2, "width_m": 1.2},
+  "thresholds": {
+    "arrival_distance_m": 1.75,
+    "arrival_speed_mps": 0.25,
+    "arrival_dwell_wall_s": 1.0,
+    "max_duration_sim_s": 180.0,
+    "max_duration_wall_s": 300.0,
+    "minimum_clearance_m": 0.2,
+    "maximum_cross_track_m": 4.0,
+    "cancel_zero_deadline_wall_s": 0.5,
+    "odom_timeout_s": 0.4,
+    "odom_zero_deadline_wall_s": 0.7,
+    "zero_command_epsilon": 0.000001,
+    "preflight_corridor_half_width_m": 3.0
+  },
+  "scenarios": [
+    {"name": "straight", "goal": [35.125, -10.125, 0.0], "obstacles": []},
+    {"name": "turn", "goal": [23.125, -22.125, -1.5707963267948966], "obstacles": []},
+    {"name": "single_obstacle", "goal": [35.125, -10.125, 0.0],
+     "obstacles": [{"name": "cylinder", "x": 29.125, "y": -10.125, "radius": 1.0, "height": 4.0}]}
+  ],
+  "world_audit": {
+    "source": "src/sim_env/worlds/ocean.world",
+    "existing_boxes": [
+      {"name": "BOX_0", "center_xy": [5.0, -2.0], "size_xy": [10.0, 20.0]},
+      {"name": "BOX_1", "center_xy": [-35.0, -20.0], "size_xy": [10.0, 20.0]},
+      {"name": "BOX_2", "center_xy": [105.0, -9.0], "size_xy": [5.0, 50.0]},
+      {"name": "BOX_3", "center_xy": [55.0, -9.0], "size_xy": [5.0, 30.0]}
+    ],
+    "sandisland_model_pose_xy": [45.7512, 3.07833],
+    "sandisland_raw_mesh_bounds_xy": [[-574.062134, 553.830017], [-582.980042, 557.219971]],
+    "limitation": "The island mesh extent alone cannot establish local free water. Each live trial must pass a raw-costmap corridor preflight before spawning its obstacle. Existing world obstacles are not deleted."
+  },
+  "design_revision": {
+    "name": "grid_interior_translation_v1",
+    "original_file": "scenarios.json",
+    "translation_xy_m": [0.125, -0.125],
+    "reason": "The original start lies on 0.5 m grid boundaries. Approximately 0.558 mm of observed initial lateral position difference selected adjacent start cells and different first reference paths in the paired straight trials. Translate all controlled geometry together into cell interiors before running both implementations; retain every original result separately.",
+    "unchanged": ["relative goal geometry", "relative cylinder geometry", "footprint", "all acceptance thresholds", "world and retained obstacles", "controller and planner configuration"]
+  }
+}
