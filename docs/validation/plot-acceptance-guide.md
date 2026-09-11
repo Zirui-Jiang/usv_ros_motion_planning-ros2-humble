@@ -21,6 +21,15 @@ python3 scripts/validation/plot_acceptance.py \
 
 比较器可能因为缺少有效 C++ LQR 基线等原因返回非零；保留其判定，仍可单独执行第二条命令展示真实数据。不要通过 shell 的 `&&` 将“未全部通过”变成无法导出失败证据，也不要改报告中的 `all_passed`。
 
+上述命令保留旧 `legacy_wall` 度量。新格心终点复验需在比较命令中显式加入
+`--rmse-metric source_time_trapezoid --frame-contract otter_fake_localization`，
+并使用对应的格内矩阵及格内 C++ 基线；不能混用原起点矩阵。
+该契约只适用于核查过的本项目 map/odom 恒等 TF，完整规则和证据见
+[源时间协议](grid-endpoint-source-time-protocol.md)。绘图继承报告的度量选择，
+不自行换指标。坐标轴、表格及 manifest 标明主判名称；trial CSV 同时保留两种
+RMSE、源观测数量、跨度、最大间隔、首尾覆盖缺口及有效状态。unknown 保持缺失，
+不会自动用 legacy 值绘成有效 source-time 分数。
+
 渲染依赖 Matplotlib，使用无显示器的 Agg 后端，不需要 ROS 导入或 GUI。使用环境已经安装的版本并由 `figure_manifest.json` 记录实际版本；正式测量期间不安装依赖。`--help` 和源码语法检查只需要 Python 标准库。
 
 原始目录迁移后可使用可重复的 `--path-map OLD=NEW`，例如：

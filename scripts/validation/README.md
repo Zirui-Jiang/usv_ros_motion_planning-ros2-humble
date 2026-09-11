@@ -118,6 +118,57 @@ python3 "$PY_WS/scripts/validation/replay_los_snapshot.py" \
 
 `acquisition_finished` 在导航采集循环结束、汇总分布计算和 JSON 落盘之前记录；中断或运行错误也保留对应结束标记。性能覆盖区间应以该事件为采集终点，不能把 `trial_finished` 前的汇总和进程清理耗时算作缺失状态数据。
 
+## 源时间对照与图表
+
+旧比较默认采用 `legacy_wall`，即 summary 中按墙钟循环采样的 RMSE。仿真暂停时
+同一源状态会被重复计入。新格心终点复验在采集前固定选择 `source_time_trapezoid`，
+按实际 odom 源时间对误差平方作梯形积分；原墙钟指标同时保留，不回写旧报告。
+只有有证据的本项目 map/odom 恒等变换才能选择以下 frame 契约。
+
+```bash
+python3 "$PY_WS/scripts/validation/compare_results.py" \
+  --python /home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001 \
+  --baseline /home/usv/usv_migration/results/baseline-grid-interior-001 \
+  --rmse-metric source_time_trapezoid \
+  --frame-contract otter_fake_localization \
+  --output /tmp/usv_source_time_comparison_001
+
+python3 "$PY_WS/scripts/validation/plot_acceptance.py" \
+  --report /tmp/usv_source_time_comparison_001/report.json \
+  --output /tmp/usv_source_time_figures_001
+```
+
+这两个命令应在全部采集结束后分别执行。比较器缺少有效配对或发现失败时返回非零，
+仍可运行图表导出以保留失败证据，不能修改 `all_passed` 来获取图表。
+源间隔和首尾覆盖差固定不超过 0.5 s；缺少 frame 证据、同时间戳矛盾位姿、时间回退
+或覆盖不足均为 unknown，不用墙钟值顶替所选主判。所有输出目录必须是新目录。
+图和 CSV 标明所选度量，并列两种 RMSE、源样本数、实际跨度、间隔和边界缺口。
+规则、历史失败和适用范围见
+[固定协议](../../docs/validation/grid-endpoint-source-time-protocol.md) 和
+[图表说明](../../docs/validation/plot-acceptance-guide.md)。
+
+## 独立定位与建图检查
+
+定位检查启动本脚本自有节点，验证畸形输入拒绝、速度坐标转换、重复/回退 clock
+及 SIGINT 退出。建图吞吐脚本用单调时钟产生仿真 /clock，发送 450 帧、2000 束的
+15 Hz 扫描，并先确认各扫描的 TF 已可查；它运行真实 Python mapper，不运行 Gazebo。
+两者都使用专用 ROS domain，应与正式性能采集分时执行。
+
+```bash
+python3 "$PY_WS/scripts/validation/localization_smoke.py" \
+  --workspace "$PY_WS" --domain-id 188 --mode acceptance \
+  --output /tmp/usv_localization_green_001
+
+python3 "$PY_WS/scripts/validation/mapping_throughput.py" \
+  --source-repo "$PY_WS" --domain-id 189 \
+  --output /tmp/usv_normal_tf_throughput_001
+```
+
+吞吐脚本的 CPU/RSS 包括同进程的驱动和观测，不能解释为 mapper 独占消耗。
+正常 TF 条件下通过也不能回写 Gazebo live TF 缺失、过期或观察不足的 unknown。
+实测证据见 [定位边界记录](../../docs/validation/localization-boundary-001/README.md) 与
+[建图吞吐记录](../../docs/validation/normal-tf-throughput-001/README.md)。
+
 ## 本地检查
 
 ```bash
