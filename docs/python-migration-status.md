@@ -3,6 +3,11 @@
 当前源码位于 `refactor/python-navigation`，原始 C++ 基线保存在 `main` 与不可变标签
 `cpp-baseline`（`ed4ed18`）。Git 作者身份仅在本仓库配置为 Zirui。
 
+用户已明确最终按同场景三次均值验收，同时报告逐次及最差值。旧逐次失败保持原样，
+新安装矩阵按 [提前固定的收尾协议](validation/scenario-mean-release-protocol.md)执行。
+M5已精确移除78个被替换C++文件，[删除记录](validation/m5-cleanup/README.md)
+完整保留；全新普通安装及闭环复验正在准备。
+
 原来的七个 ROS 功能包继续保留：六个算法/建图包使用 `ament_python`；`sim_env`
 使用 `ament_cmake_python`，保留真值定位和 C++ 代价地图支撑。Gazebo、水动力、
 推进器、传感器、RViz 插件及模型资源沿用原工程。
@@ -57,7 +62,9 @@ Python 对应矩阵已暂停：九条 PID 已完成，其中两条圆柱安全�
 不能替补正式失败；[分段诊断](validation/python-grid-endpoint-final-comparison/turn01-diagnostic/README.md)
 保留了启动延迟和暂停相位差。原 world 的 PMS 波浪仍生效、起航绝对仿真时刻未锁定，
 属于 [未控制因素](validation/ocean-repeatability-audit/README.md)，尚不能据此确定失败原因。
-当前继续诊断，尚未启动最终旧 C++ 源码清理。
+当时按逐次口径继续诊断，尚未执行M5。随后用户明确采用场景均值口径；原完整矩阵
+的PID直航/转弯RMSE均值比分别为1.053058和0.928758，到达时间均值比为0.921481
+和0.887120。完整三重复圆柱基线不足、LQR缺少有效基线，保持不可比范围。
 
 后续单参数 `k_d_course=0.10` 候选三次转弯均到达，但源时间配对仅 1/3 通过，
 按预先固定协议停止直航和圆柱后续阶段；该值未成为默认配置。

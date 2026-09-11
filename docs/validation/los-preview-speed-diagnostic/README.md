@@ -42,7 +42,12 @@ Kd.10 三次在更接近初始朝向时便出现正合推，支持“微分抑�
 
 ## CPP 与 Python 的速度生成差异
 
-保留的 [C++ LOS 源码](../../../src/core/trajectory_planner/src/los_trajectory_planner.cpp) 先以恒定 cruise 积分 x/y（第 130/131 行），再对输出位置间距离累计 `s`，以初始到末点的欧氏距离 `R` 生成 `v=v0(1-s/R)`（第 143/148/150 行）。它并未以该标注速度重新积分位置。
+原 `cpp-baseline` 中的 `src/core/trajectory_planner/src/los_trajectory_planner.cpp`
+先以恒定 cruise 积分 x/y（第 130/131 行），再对输出位置间距离累计 `s`，以初始到
+末点的欧氏距离 `R` 生成 `v=v0(1-s/R)`（第 143/148/150 行）。它并未以该标注速度
+重新积分位置。来源 SHA 保存在 [诊断数据](diagnostic.json)；Python 分支清理后可用
+`git show cpp-baseline:src/core/trajectory_planner/src/los_trajectory_planner.cpp`
+查看原文，独立 C++ 基线工作区也保留该文件。
 
 当前 [Python LOS](../../../src/core/trajectory_planner/trajectory_planner/los_trajectory_planner.py) 以 `remaining / max(initial_distance,slowdown_distance)` 生成速度，并以该速度积分位置（约第 135–139 行），保留剩余弧长、非负限幅和 3 m 近目标分母修正。
 

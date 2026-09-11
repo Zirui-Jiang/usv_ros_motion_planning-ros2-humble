@@ -40,7 +40,7 @@ flowchart LR
 `path_processor` 保留 RDP/SG 的独立可调用实现。上图没有把建图输出连接到 Nav2 static layer，
 与当前实际插件配置一致。
 
-Gazebo、波浪/水动力/浮力/推进器插件、Otter URDF、RViz 目标设置插件、动态 XML/RViz 配置工具保持在原工程中。原 C++ 算法源码及部分 CMake 文件暂留作迁移核对；对于已切换为 `ament_python` 的包，这些 CMake 文件不代表仍在构建 C++ 算法库。Dubins、Reeds–Shepp、Bezier、B 样条、三次样条和五次多项式等非活跃通用曲线库尚未提供对应 Python 全量实现。
+Gazebo、波浪/水动力/浮力/推进器插件、Otter URDF、RViz 目标设置插件、动态 XML/RViz 配置工具保持在原工程中。被替换的78个C++算法、头文件和旧CMake已从Python分支移除，见 [清理记录](validation/m5-cleanup/README.md)；原实现仍保存在`main/cpp-baseline`。Dubins、Reeds–Shepp、Bezier、B 样条、三次样条和五次多项式等非活跃通用曲线库尚未提供对应 Python 全量实现。
 
 本次实现使用已有 LiDAR 和仿真真值定位，未新增 SLAM、AIS/Radar 融合、目标跟踪或 COLREGs 动态避碰算法。它为后续算法研究提供可单独测试的接口。
 
