@@ -1,0 +1,86 @@
+{
+  "clarification_date": "2026-09-11",
+  "clarification_timezone": "Asia/Shanghai",
+  "clarification_timing": "after formal data collection; user explicitly requested same-scenario three-repeat mean RMSE and mean arrival time while retaining individual and worst results",
+  "python_tested_commit": "3afb25f84232e560c62599a721dc0bfbe1a21657",
+  "cpp_tested_commit": "632734ba31478bdb833e15949287b53ae9334cf3",
+  "report_generator_commit": "dfb1fb7fcb77feb868ee87ac986c70d7c4cab537",
+  "report_generated_utc": "2026-09-11T05:20:37.662794+00:00",
+  "command": [
+    "python3",
+    "scripts/validation/compare_results.py",
+    "--python",
+    "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001",
+    "--baseline",
+    "/home/usv/usv_migration/results/baseline-grid-interior-001",
+    "--rmse-metric",
+    "source_time_trapezoid",
+    "--frame-contract",
+    "otter_fake_localization",
+    "--acceptance-aggregation",
+    "scenario_mean",
+    "--output",
+    "/home/usv/usv_migration/results/scenario-mean-acceptance-001"
+  ],
+  "report_exit_code": 1,
+  "exit_code_reason": "incomparable groups and independent performance unknown remain; eligible-group success is separate",
+  "checks": {
+    "original_report_sha256": "c7257f7b756978dcfe6d2e0f2627b05908528bfd0a0bd48c80d6f11a9321539e",
+    "original_comparisons_unchanged": true,
+    "original_performance_unchanged": true,
+    "original_trials_unchanged": true
+  },
+  "source_files": [
+    {
+      "path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/manifest.json",
+      "sha256": "999022e4bb21082a2ec60543126bb4308385e26dece50c98727986d369933fa1"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/summary.json",
+      "sha256": "58e3c76d9dbbfddb87bc64bfd132bdf5d718f64f953500d200fee433d71d9e30"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/manifest.json",
+      "sha256": "b5975f965df44fa61db88206dba2288d5374322384b92463d345901a94dacaba"
+    },
+    {
+      "path": "/home/usv/usv_migration/results/baseline-grid-interior-001/summary.json",
+      "sha256": "3b2dece37509b4a2e9934425fef8641de37187ce7f8394a7247448553305f326"
+    },
+    {
+      "path": "scripts/validation/compare_results.py",
+      "sha256": "e5f76263bb218f032735e89fb64c6b77323b669ffa7c129fa942246ea2859984"
+    },
+    {
+      "path": "scripts/validation/tracking_metrics.py",
+      "sha256": "43a0c27db9ad40f886dfe25469371ee7efd265f410dc439adb69e64011254ad7"
+    },
+    {
+      "path": "scripts/validation/test_compare_results.py",
+      "sha256": "da57cc68a401210f542c16cc5d655e4ae70449c6a6eda2eb04038c1657d2901d"
+    },
+    {
+      "path": "docs/validation/normal-tf-throughput-001/002-summary.json",
+      "sha256": "3a80286afb3410d8dd874279fcfedb552d6f723430e2c699543d7d2420182e5a"
+    },
+    {
+      "path": "docs/validation/localization-boundary-001/normal-grid-endpoint-launch-frame-receipt.json",
+      "sha256": "313fbd8036941f18ebdbc82b929bc3501591427016fe6e60adbe1a1241f27c02"
+    }
+  ],
+  "outputs": {
+    "report.json": "6160aa47ee2900b16217d8f714aa8b2936060ed88cbfe60082cf499a9600a2f7",
+    "report.md": "62cf64e94591a892db5a6a17d920c16687b191f5fa5647612c11c562f45aebb1",
+    "scenario_statistics.csv": "4afe2c7dd81d99ee3a5666935422a7ab75d3f47a71327acb849172bda0918054",
+    "per_repeat_diagnostics.csv": "8df3549568cfa56a19153753325d4c6ba3fd1ecd6d03c68a9c89bd6b2e93142a",
+    "README.md": "8d54d8517a4bb697201494bfc67684c58bd5a09bfaf13a4ff325163abef7e057",
+    "plot_scenario_means.py": "8d9de86a7b4b92d8846e95d9413fd92d568006389610308e749a4e5ff7fbfe9b"
+  },
+  "verification": {
+    "targeted_tests": "176 passed",
+    "scope": "compare_results, tracking_metrics, plot_acceptance tests",
+    "new_feature_red_phase": "10 failures, absent scenario_mean/build_report aggregation interface",
+    "arithmetic_independent_review": "same_package_migration_check confirmed both eligible ratios and 2 eligible/4 incomparable scope",
+    "plot_script": "syntax checked; not rendered during concurrent clean build"
+  }
+}

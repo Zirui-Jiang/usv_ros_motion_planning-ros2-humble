@@ -147,6 +147,29 @@ python3 "$PY_WS/scripts/validation/plot_acceptance.py" \
 [固定协议](../../docs/validation/grid-endpoint-source-time-protocol.md) 和
 [图表说明](../../docs/validation/plot-acceptance-guide.md)。
 
+## 场景三次均值验收
+
+用户最终确认按同一场景三次RMSE的算术均值和三次到达时间的算术均值验收，
+同时报告逐次值、样本标准差（ddof=1）与最差值。该功能必须显式选择，旧默认
+`per_repeat`及旧报告不改变。
+
+```bash
+python3 "$PY_WS/scripts/validation/compare_results.py" \
+  --python /home/usv/usv_migration/results/python-clean-release-matrix-001 \
+  --baseline /home/usv/usv_migration/results/baseline-grid-interior-001 \
+  --acceptance-aggregation scenario_mean \
+  --rmse-metric source_time_trapezoid \
+  --frame-contract otter_fake_localization \
+  --output /tmp/usv_clean_scenario_mean_001
+```
+
+双方都必须有固定重复01/02/03且全部完成、通过各自功能和安全条件、源时间有效，
+该场景才可比较均值。缺少合格基线时整组标为不可比，仍展示已有逐次记录；
+不选最好子集、不填零，也不把三次比例的平均当成均值比。适用组全部通过的字段
+为`scenario_acceptance.summary.all_eligible_passed`，它不等于所有组、性能或
+退出健康全部通过。CLI返回非零仍可能是基线不可比或性能证据不完整，须阅读分项。
+详见 [用户确认后的预固定协议](../../docs/validation/scenario-mean-release-protocol.md)。
+
 ## 独立定位与建图检查
 
 定位检查启动本脚本自有节点，验证畸形输入拒绝、速度坐标转换、重复/回退 clock
