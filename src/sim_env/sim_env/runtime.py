@@ -5,9 +5,8 @@ import time
 import numpy as np
 
 from common.models import AlgorithmStatus, GridSnapshot, USVModel, VesselState
-from common.math_helper import path_is_clear
 from common.collision import footprint_path_is_clear
-from path_planner.path_planner_core import PathPlannerCore
+from path_planner.path_planner_core import PathPlannerCore, path_is_clear_with_inflation_escape
 from trajectory_planner.trajectory import Trajectory
 from trajectory_planner.trajectory_planner_factory import create_trajectory_planner
 from .configuration import C, T, section
@@ -77,9 +76,15 @@ def plan_navigation(request):
         planner = PathPlannerCore(planner_cfg)
         route = planner.prune(request.route, request.state)
         threshold = 254.0 * cfg['obstacle_factor']
-        # Check the vessel-to-route connection as well as all remaining segments.
+        # Check the vessel-to-route connection and remaining segments on the
+        # latest map with the same policy that accepted the global route.
+        # A legal soft descent must not become a false invalidation merely
+        # because the vessel is still in its original inflated start region.
         connected = np.vstack((request.state.pose, route)) if len(route) else route
-        if not len(route) or not path_is_clear(request.grid, connected, threshold):
+        if not len(route) or not path_is_clear_with_inflation_escape(
+                request.grid, connected, threshold, planner.planner.unknown_is_obstacle,
+                outline_map=planner.planner.outline_map,
+                allow_corner_cutting=planner.planner.allow_corner_cutting):
             searched = True
             found = planner.make_plan(request.state.pose, request.goal, request.grid)
             expanded = found.expanded

@@ -26,6 +26,47 @@ def test_complete_offline_chain_and_route_reuse():
     assert not repeated.searched
 
 
+def soft_escape_request():
+    job = request()
+    data = job.grid.data.copy()
+    data[:, 2:6] = [120, 100, 75, 50]
+    return replace(job, grid=GridSnapshot(data, 1., stamp=10.))
+
+
+def test_legal_soft_escape_route_is_reused_without_a_second_global_search():
+    job = soft_escape_request()
+    first = plan_navigation(job)
+    assert first.status == AlgorithmStatus.SUCCESS and first.searched
+    second = plan_navigation(replace(job, route=first.route))
+    assert second.status == AlgorithmStatus.SUCCESS
+    assert not second.searched and second.expanded == 0
+    np.testing.assert_array_equal(second.route, first.route)
+
+
+@pytest.mark.parametrize('new_cost', [120, 121, 254, 255])
+def test_reused_escape_route_rechecks_latest_map_plateau_uphill_hard_and_unknown(new_cost):
+    job = soft_escape_request()
+    first = plan_navigation(job)
+    assert first.status == AlgorithmStatus.SUCCESS
+    changed = job.grid.data.copy()
+    changed[:, 3] = new_cost
+    latest = replace(job, route=first.route, grid=GridSnapshot(changed, 1., stamp=10.2))
+    repeated = plan_navigation(latest)
+    assert repeated.searched
+    assert repeated.status == AlgorithmStatus.NO_PATH
+    assert repeated.trajectory.empty()
+
+
+def test_reused_escape_route_checks_connection_from_the_latest_vessel_position():
+    job = soft_escape_request()
+    first = plan_navigation(job)
+    # The map and route are unchanged, but moving to the free cell west of
+    # the inflated band would require re-entering high cost to reuse it.
+    latest = replace(job, route=first.route, state=replace(job.state, x=1.5, stamp=10.2))
+    repeated = plan_navigation(latest)
+    assert repeated.searched and repeated.status == AlgorithmStatus.NO_PATH
+
+
 def test_failure_is_explicit_and_has_no_reference():
     job = request()
     grid = job.grid.data.copy()
