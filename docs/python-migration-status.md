@@ -12,7 +12,7 @@
 | 层次 | 当前状态 |
 |---|---|
 | 静态检查与构建 | 原 C++ 13 包构建通过；Python 13 包构建通过，独立对照工具通过 COLCON_IGNORE 隔离 |
-| 单元测试 | 当前候选在 WSL 全仓库 237 项通过，包含真实 ROS 节点测试；JUnit 位于 docs/validation/source-tests-single-step-candidate.xml |
+| 单元测试 | 已校准候选在 WSL 全仓库 264 项通过，包含真实 ROS 节点测试；JUnit 位于 docs/validation/source-tests-calibrated-candidate.xml |
 | ROS 集成 | 已验证地图/TF/时钟、重复扫描、在线调参、独立规划进程、地图失效停止、输入断流、取消和时间回退；完整安装区能够启动 Gazebo 导航 |
 | 闭环验收 | Python `python-pid-final-001` 的 PID 9 个导航与 3 个故障检查通过；部分相对 C++ 的固定路径 RMSE 超过 10%，仍在修复和复验；LQR 配置正在独立验证，暂未完成最终验收 |
 
@@ -22,6 +22,13 @@
 C++ 对照采用 `baseline-validation`：
 `d9a6023` 仅修复库安装、控制器启动选择与等值数组类型；`632734b` 单独记录
 LOS 前视距离 1 m 和模型生成等待 120 s 的校准配置。原 `cpp-baseline` 保持不变。
+
+`273a1fb` 单步 LOS 候选完成 PID 三场景、LQR 直航/转弯，共五条导航通过；
+LQR 圆柱在矩阵暂停时标记为 interrupted，未计通过。PID 转弯相对基线 RMSE
+仍增加 28.26%；独立将 PID 预瞄校准至 2.6 s 后，单次转弯 RMSE 降至
+0.136225 m、耗时 20.5 s，两项对照通过。当前已将这一参数纳入待正式复验配置。
+候选与中断证据见 [单步 LOS 归档](validation/python-single-step-candidate-001/README.md)
+及 [PID 预瞄归档](validation/python-pid-preview26-turn-candidate-001/README.md)。
 
 matrix002 圆柱第 3 例最小全艇几何间隙约 0.442 m，但 LOS 预测被代价地图拒绝后未到达。
 离线捕获输入表明航点切换距离 5 m 会跨越转角，1 m 是待闭环验证的候选值。

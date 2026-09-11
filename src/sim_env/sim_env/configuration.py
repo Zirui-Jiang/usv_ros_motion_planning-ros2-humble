@@ -23,7 +23,7 @@ DEFAULTS = {
     C + "control_frequency": 10.0, C + "controller_name": "pid",
     C + "pid_controller.goal_distance_tolerance": 1.5,
     C + "pid_controller.goal_speed_tolerance": 0.25,
-    C + "pid_controller.lookahead_time": 3.0,
+    C + "pid_controller.lookahead_time": 2.6,
     C + "pid_controller.k_p_speed": 2.0, C + "pid_controller.k_i_speed": 0.5,
     C + "pid_controller.k_d_speed": 0.0, C + "pid_controller.k_p_course": 2.0,
     C + "pid_controller.k_i_course": 0.0, C + "pid_controller.k_d_course": 0.0,

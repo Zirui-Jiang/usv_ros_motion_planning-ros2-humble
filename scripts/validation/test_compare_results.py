@@ -361,3 +361,170 @@ def test_present_but_invalid_acquisition_end_is_not_silently_replaced(tmp_path):
     assert not performance["window"]["complete"]
     assert not performance["window"]["legacy_fallback"]
     assert performance["status"] == "unknown"
+
+
+def post_drain_events(**kwargs):
+    """New actual-schema observations; legacy fixtures intentionally stay old."""
+    events = performance_events(**kwargs)
+    for event in events:
+        if event["event"] != "mapping_status":
+            continue
+        payload, stamp = event["payload"], event["wall_monotonic_s"]
+        queue = payload["queue_size"]
+        payload["queue_ms"] = {"count": payload["integrated_scans"], "p50": 50., "p95": 90.,
+                               "p99": 100., "max": 110.}
+        ages = {"count": 501 if queue else 0}
+        if queue:
+            ages.update(p50=30., p95=60., p99=65., max=70.)
+        payload["queue_observation_window"] = {
+            "window_s": 5., "sampling_phase": "after_drain", "capacity": 5, "tf_wait_timeout_s": .2,
+            "observation_count": 501, "pending_observations": 501 if queue else 0,
+            "empty_observations": 0 if queue else 501, "max_queue_size": queue, "latest_queue_size": queue,
+            "latest_oldest_pending_age_ms": 50. if queue else None, "oldest_pending_age_ms": ages,
+            "oldest_pending_distinct_count": 75 if queue else 0,
+            "latest_oldest_pending": {"frame_id": "lidar", "stamp_ns": int(stamp * 1e9),
+                                      "received_at_monotonic_s": stamp - .05} if queue else None,
+            "max_observation_gap_ms": 10., "observed_span_s": 5.,
+            "first_observed_monotonic_s": stamp - 5., "last_observed_monotonic_s": stamp,
+        }
+    return events
+
+
+def test_new_dense_latency_evidence_accepts_stable_one_frame_pipeline(tmp_path):
+    report = paired_report(tmp_path, post_drain_events(queues=(0, 1, 1)))
+    backlog = report["performance"][0]["backlog"]
+    assert backlog["status"] == "pass" and report["summary"]["all_passed"]
+    assert backlog["observation_policy"] == "post_drain_latency_v1"
+    assert backlog["net_queue_growth"] == 1 and not backlog["observed_queue_recovery"]
+    assert backlog["queue_observations"]["reported_windows"] == 3
+    assert "后drain" in compare.markdown(report)
+
+
+def test_old_one_frame_growth_still_unknown_without_new_measurements(tmp_path):
+    backlog = paired_report(tmp_path, performance_events(queues=(0, 1, 1)))["performance"][0]["backlog"]
+    assert backlog["status"] == "unknown"
+    assert backlog["observation_policy"] == "legacy_sparse_gauges"
+
+
+def test_new_observed_empty_queue_needs_no_invented_age_samples(tmp_path):
+    backlog = paired_report(tmp_path, post_drain_events())["performance"][0]["backlog"]
+    assert backlog["status"] == "pass"
+    for window in backlog["queue_observations"]["windows"]:
+        assert window["observation"]["oldest_pending_age_ms"] == {"count": 0}
+        assert window["observation"]["empty_observations"] > 0
+
+
+def test_new_window_allows_bounded_producer_summary_computation_delay(tmp_path):
+    events = post_drain_events(queues=(0, 1, 1))
+    for event in events:
+        if event["event"] == "mapping_status":
+            event["payload"]["process"]["monotonic"] += .01
+    assert paired_report(tmp_path, events)["performance"][0]["backlog"]["status"] == "pass"
+
+
+@pytest.mark.parametrize("change", ["missing_window", "missing_waiting", "waiting_empty", "missing_age",
+                                    "phase", "short_span", "large_gap", "stale", "count_mismatch",
+                                    "one_identity", "deadline_age", "deadline_waiting", "capacity",
+                                    "changed_config", "short_window", "bad_latest_identity"])
+def test_new_missing_inconsistent_or_unbounded_queue_evidence_is_unknown(tmp_path, change):
+    events = post_drain_events(queues=(1, 1, 1))
+    payload = [e["payload"] for e in events if e["event"] == "mapping_status"][1]
+    window = payload["queue_observation_window"]
+    if change == "missing_window":
+        payload.pop("queue_observation_window")
+    elif change == "missing_waiting":
+        payload.pop("queue_ms")
+    elif change == "waiting_empty":
+        payload["queue_ms"] = {"count": 0}
+    elif change == "missing_age":
+        window.pop("oldest_pending_age_ms")
+    elif change == "phase":
+        window["sampling_phase"] = "before_drain"
+    elif change == "short_span":
+        window["observed_span_s"] = 1.
+        window["first_observed_monotonic_s"] = window["last_observed_monotonic_s"] - 1.
+    elif change == "large_gap":
+        window["max_observation_gap_ms"] = 250.
+    elif change == "stale":
+        payload["process"]["monotonic"] += .25
+    elif change == "count_mismatch":
+        window["empty_observations"] = 1
+    elif change == "one_identity":
+        window["oldest_pending_distinct_count"] = 1
+    elif change == "deadline_age":
+        window["oldest_pending_age_ms"]["max"] = 201.
+    elif change == "deadline_waiting":
+        payload["queue_ms"]["max"] = 201.
+    elif change == "capacity":
+        window["max_queue_size"] = 6
+    elif change == "changed_config":
+        window["capacity"] = 6
+    elif change == "short_window":
+        window["window_s"] = 1.
+    elif change == "bad_latest_identity":
+        window["latest_oldest_pending"]["received_at_monotonic_s"] -= .1
+    performance = paired_report(tmp_path, events)["performance"][0]
+    assert performance["backlog"]["status"] == "unknown"
+    assert performance["status"] == "unknown"
+
+
+def test_new_fine_observations_do_not_replace_three_counter_snapshots(tmp_path):
+    events = post_drain_events(times=(100, 105), queues=(1, 1))
+    assert paired_report(tmp_path, events)["performance"][0]["backlog"]["status"] == "unknown"
+
+
+@pytest.mark.parametrize("overflow,status", [((0, 1, 2), "fail"), ((0, 1, 1), "unknown")])
+def test_new_small_survivor_ages_do_not_hide_overflow(tmp_path, overflow, status):
+    backlog = paired_report(tmp_path, post_drain_events(overflow=overflow))["performance"][0]["backlog"]
+    assert backlog["status"] == status
+
+
+@pytest.mark.parametrize("expired,status", [((0, 1, 1), "pass"), ((0, 1, 2), "unknown")])
+def test_new_survivor_measurements_keep_isolated_and_repeated_tf_expiry_distinct(tmp_path, expired, status):
+    backlog = paired_report(tmp_path, post_drain_events(expired=expired))["performance"][0]["backlog"]
+    assert backlog["status"] == status
+    assert backlog["expired_delta_observed"] == expired[-1]
+
+
+def test_new_latency_branch_never_relaxes_computation_limits(tmp_path):
+    events = post_drain_events(control=250., processing=500., period=40.)
+    report = paired_report(tmp_path, events)
+    performance = report["performance"][0]
+    assert performance["backlog"]["status"] == "pass"
+    assert performance["control_timing"]["status"] == performance["mapping_timing"]["status"] == "fail"
+    assert not report["summary"]["all_passed"]
+
+
+def test_new_contract_accepts_observations_produced_by_real_scan_queue(tmp_path):
+    from dataclasses import asdict
+    import numpy as np
+    from perception.scan_queue import ScanQueue
+
+    queue = ScanQueue()
+    events = performance_events()
+    mappings = [e for e in events if e["event"] == "mapping_status"]
+    waits, sample = [], 0
+    for tick in range(1501):
+        now = 95. + .01 * tick
+        if tick % 7 == 0:
+            queue.enqueue(tick, frame_id="lidar", stamp_ns=tick + 1, received_at=now)
+
+        def process(pending):
+            if now - pending.received_at < .055:
+                return False
+            waits.append(1000 * (now - pending.received_at))
+            return True
+
+        queue.drain(now, process)
+        queue.observe_pending(now)
+        if tick in (500, 1000, 1500):
+            payload = mappings[sample]["payload"]
+            payload.update(queue_size=len(queue), integrated_scans=queue.counters.processed,
+                           queue_counters=asdict(queue.counters), queue_observation_window=queue.observation_summary(now),
+                           queue_ms={"count": len(waits), "p50": float(np.percentile(waits, 50)),
+                                     "p95": float(np.percentile(waits, 95)), "p99": float(np.percentile(waits, 99)),
+                                     "max": max(waits)})
+            sample += 1
+    report = paired_report(tmp_path, events)
+    assert report["performance"][0]["backlog"]["status"] == "pass"
+    assert report["summary"]["all_passed"]

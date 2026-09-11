@@ -42,6 +42,123 @@ def combined_status(items):
     return "fail" if "fail" in states else "pass" if states and all(s == "pass" for s in states) else "unknown"
 
 
+def post_drain_queue_evidence(records):
+    """Validate the new producer contract without treating survivor ages as proof alone.
+
+    These are sampled post-drain windows, not continuous queue maxima. The
+    caller separately requires processing progress and balanced/drop counters.
+    Missing or mixed old/new telemetry must not fall back to a permissive rule.
+    """
+    windows, seen, configurations = [], set(), set()
+    for record in records:
+        payload = record["payload"]
+        mono = nested(payload, "process", "monotonic")
+        identity = (nested(payload, "process", "pid"), mono)
+        if number(mono) and identity in seen:
+            continue
+        if number(mono):
+            seen.add(identity)
+        observed = payload.get("queue_observation_window")
+        waiting = payload.get("queue_ms")
+        issues = []
+        detail = {"source": record["source"], "process_monotonic_s": mono,
+                  "observation": observed, "completed_scan_waiting_ms": waiting, "issues": issues}
+        windows.append(detail)
+        if not isinstance(observed, dict):
+            issues.append("missing_queue_observation_window")
+            continue
+
+        def integer(value):
+            return type(value) is int and value >= 0
+
+        def distribution(value, count=None):
+            if not isinstance(value, dict) or not integer(value.get("count")):
+                return False
+            if count is not None and value["count"] != count:
+                return False
+            if value["count"] == 0:
+                return count == 0
+            values = [value.get(k) for k in ("p50", "p95", "p99", "max")]
+            return all(number(v) and v >= 0 for v in values) and values == sorted(values)
+
+        capacity, deadline = observed.get("capacity"), observed.get("tf_wait_timeout_s")
+        duration = observed.get("window_s")
+        if (not integer(capacity) or capacity < 1 or not number(deadline) or deadline <= 0
+                or not number(duration) or duration <= 0):
+            issues.append("invalid_queue_configuration")
+            continue
+        configurations.add((capacity, deadline, duration))
+        if not math.isclose(duration, MAPPING_REPORT_PERIOD_S, rel_tol=0, abs_tol=1e-6):
+            issues.append("unsupported_queue_observation_window_duration")
+        if observed.get("sampling_phase") != "after_drain":
+            issues.append("unsupported_queue_observation_phase")
+        count, pending, empty = (observed.get(k) for k in
+                                 ("observation_count", "pending_observations", "empty_observations"))
+        if (not all(integer(v) for v in (count, pending, empty)) or count < 2
+                or pending + empty != count):
+            issues.append("invalid_or_insufficient_observation_counts")
+            continue
+        first, last, span, gap = (observed.get(k) for k in
+                                  ("first_observed_monotonic_s", "last_observed_monotonic_s",
+                                   "observed_span_s", "max_observation_gap_ms"))
+        if (not all(number(v) for v in (mono, first, last, span, gap)) or first > last
+                or gap < 0 or not math.isclose(span, last - first, rel_tol=1e-9, abs_tol=1e-6)
+                or span > duration + 1e-6
+                # The producer records process.monotonic after computing its
+                # summary. Permit only the same bounded publication age used
+                # for the last observation, not an exact timestamp equality.
+                or first < mono - duration - deadline - 1e-6 or last > mono + 1e-6
+                or span > (count - 1) * gap / 1000 + 1e-6):
+            issues.append("invalid_observation_time_bounds")
+        elif (span < 0.8 * duration or gap > 1000 * deadline
+              or mono - last > deadline or count < math.ceil(0.8 * duration / deadline) + 1):
+            issues.append("insufficient_dense_observation_coverage")
+        maximum, latest = observed.get("max_queue_size"), observed.get("latest_queue_size")
+        if (not integer(maximum) or not integer(latest) or latest > maximum or maximum > capacity
+                or (pending == 0 and maximum != 0) or (pending > 0 and maximum == 0)):
+            issues.append("invalid_observed_queue_sizes")
+        ages = observed.get("oldest_pending_age_ms")
+        if not distribution(ages, pending):
+            issues.append("missing_or_invalid_pending_age_distribution")
+        elif pending and ages["max"] > 1000 * deadline:
+            issues.append("observed_pending_age_exceeds_tf_deadline")
+        distinct = observed.get("oldest_pending_distinct_count")
+        if not integer(distinct) or distinct > pending or (pending > 0 and distinct < 1):
+            issues.append("invalid_pending_identity_count")
+        elif empty == 0 and distinct < 2:
+            issues.append("nonempty_window_without_observed_identity_turnover")
+        oldest, latest_age = observed.get("latest_oldest_pending"), observed.get("latest_oldest_pending_age_ms")
+        if latest == 0:
+            if oldest is not None or latest_age is not None:
+                issues.append("empty_latest_queue_has_pending_identity")
+        elif integer(latest) and latest > 0:
+            received = nested(oldest, "received_at_monotonic_s")
+            if (not isinstance(oldest, dict) or not isinstance(oldest.get("frame_id"), str)
+                    or not oldest["frame_id"] or type(oldest.get("stamp_ns")) is not int
+                    or oldest["stamp_ns"] <= 0 or not number(received) or not number(last)
+                    or received > last or not number(latest_age) or latest_age < 0
+                    or not math.isclose(latest_age, 1000 * (last - received), rel_tol=1e-9, abs_tol=1e-6)):
+                issues.append("invalid_latest_pending_identity_or_age")
+            elif (latest_age > 1000 * deadline or not distribution(ages, pending)
+                  or latest_age > ages.get("max", -1) + 1e-6):
+                issues.append("latest_pending_age_conflicts_with_window_distribution")
+        # Waiting samples include completed scans only. Require their latency
+        # too, but never use it to erase overflow/expiry or a missing live gauge.
+        if not distribution(waiting) or not waiting.get("count"):
+            issues.append("missing_completed_scan_waiting_distribution")
+        elif waiting["max"] > 1000 * deadline:
+            issues.append("completed_scan_waiting_exceeds_tf_deadline")
+    details = {"reported_windows": len(windows), "windows": windows,
+               "minimum_window_coverage_fraction": 0.8,
+               "maximum_observation_gap": "configured TF waiting deadline",
+               "latency_budget": "configured TF waiting deadline; wall time, not scan period",
+               "sampling_scope": "post-drain observations only; maxima omit pre-drain peaks and scans already expired",
+               "configuration_consistent": len(configurations) == 1}
+    if not windows or len(configurations) != 1 or any(w["issues"] for w in windows):
+        return verdict("unknown", "insufficient_post_drain_latency_or_turnover_evidence", **details)
+    return verdict("pass", "dense_post_drain_windows_with_bounded_waiting_and_identity_turnover", **details)
+
+
 def backlog_performance(records, window):
     """Finite observation-window evidence, never infer continuous fullness from two gauges."""
     samples, missing, seen = [], 0, set()
@@ -112,6 +229,8 @@ def backlog_performance(records, window):
     evidence.update(net_queue_growth=net_growth, observed_queue_recovery=recovery,
                     transient_net_growth_limit_scans=2,
                     conclusion_scope="observed acquisition window only; not an indefinite stability guarantee")
+    post_drain = any("queue_observation_window" in record["payload"] for record in records)
+    evidence["observation_policy"] = "post_drain_latency_v1" if post_drain else "legacy_sparse_gauges"
     if sustained_overflow:
         return verdict("fail", "overflow_increased_in_at_least_two_consecutive_metrics_intervals", **evidence)
     if (not boundary_covered or missing or invalid or gaps or len(full) < 2):
@@ -121,8 +240,22 @@ def backlog_performance(records, window):
     # transient from a queue that only grows throughout all observed samples.
     # Occasional TF expiry is recorded independently and is not a failure.
     if (any(i["counter_deltas"]["overflow"] for i in intervals)
-            or any(i["integrated_delta"] <= 0 for i in full)
-            or (net_growth > 0 and (not recovery or net_growth > 2))):
+            or any(i["integrated_delta"] <= 0 for i in full)):
+        return verdict("unknown", "observed_window_does_not_establish_stable_throughput", **evidence)
+    if post_drain:
+        observations = post_drain_queue_evidence(records)
+        evidence["queue_observations"] = observations
+        # A single TF miss is not a performance failure. Repeated expiry across
+        # consecutive full windows cannot establish normal-TF throughput from
+        # survivor-only post-drain ages, even if those ages look small.
+        repeated_expiry = any(a["counter_deltas"]["expired"] > 0 and b["counter_deltas"]["expired"] > 0
+                              for a, b in zip(intervals[:-1], intervals[1:])
+                              if a["full_metrics_interval"] and b["full_metrics_interval"])
+        evidence["repeated_tf_expiry"] = repeated_expiry
+        if repeated_expiry or observations["status"] != "pass":
+            return verdict("unknown", "post_drain_observations_do_not_establish_normal_tf_throughput", **evidence)
+        return verdict("pass", "balanced_progress_no_overflow_and_bounded_observed_queue_latency", **evidence)
+    if net_growth > 0 and (not recovery or net_growth > 2):
         return verdict("unknown", "observed_window_does_not_establish_stable_throughput", **evidence)
     return verdict("pass", "observed_progress_balanced_counters_no_overflow_and_recovery_or_no_net_growth", **evidence)
 
@@ -597,7 +730,7 @@ def build_report(sources, duplicate_policy="error", limit=1.10, atol=1e-6):
                        "zero_baseline_rule": "exactly zero cpp: ratio=null; pass iff abs(python)<=atol",
                        "p99_aggregation": "mean/max of reported per-trial P99, not a pooled sample percentile",
                        "performance_scope": "Python non-fault navigation trials only; control P99<100ms, mapping P95<=observed scan-period P50, independently evidenced stable backlog; unknown is not passed",
-                       "backlog_rule": "at least 3 same-epoch snapshots and 2 consecutive approximately-5s intervals, boundary coverage, balanced accepted/processed/expired/overflow/queue counters and integration progress; sustained overflow growth fails; isolated TF expiry only recorded",
+                       "backlog_rule": "at least 3 same-epoch snapshots and 2 consecutive approximately-5s intervals, boundary coverage, balanced counters and integration progress; sustained overflow fails; legacy sparse gauges retain recovery rule; new post_drain_latency_v1 additionally requires dense 80%-covered 5s windows, bounded wall-time waiting and identity turnover, without requiring an empty queue; recurrent TF expiry is unknown and isolated expiry only recorded",
                        "cpu": "100*sum(nonnegative same-PID cpu_seconds deltas)/sum(positive same-PID process.monotonic deltas); not machine CPU and excludes planner child/Gazebo",
                        "thruster_variation": "sum(abs(command[i]-command[i-1])) per axis in full recorded JSONL order; no initial/final zero appended; total requires all axes and >=2 valid samples each",
                        "counter_scope": "final reported cumulative counters per completed trial, not sums of status event counters"},
@@ -639,6 +772,7 @@ def markdown(report):
     lines += ["", "## Python 正常导航性能验收", "",
               "窗口为第一次 goal_published 至 acquisition_finished；旧记录明确回退到 trial_finished，该末端可能包含统计落盘时间。状态中的耗时分位数来自节点计算历史，可能含启动样本，各窗口样本数不相加。控制 P99 必须小于100ms；有实际积分扫描的建图处理 P95 不得超过同一状态中扫描时间戳间隔的 P50。扫描周期仅作为预算，不充当算法耗时。C++ 无对应遥测不要求性能对等。", "",
               "积压至少需要3次同一进程/时钟周期的有效快照、2个连续约5s间隔，并覆盖试验窗口首尾。连续两个间隔 overflow 增长判失败；单次溢出、采样缺口、停滞或计数不自洽标待审。处理持续进展、队列计数平衡、无溢出增长时，有明确队列回落的末端1～2扫描瞬态净增不单独否决；持续非减且净增仍待审。两次 queue>0 不能证明持续积压，偶发 TF 过期单列记录。结论仅覆盖观测窗口，不保证无限时长稳定。", "",
+              "新增 queue_observation_window 使用独立 post_drain_latency_v1 规则：每个5s后drain观测窗至少覆盖80%，最大观测间隔和末端新鲜度不超过配置的TF墙钟截止；已有积分进展和计数守恒之外，还要求完成扫描等待时间及有效pending年龄分布有界、持续非空时有最老身份轮换。实测空队列以empty_observations表示，不伪造年龄零样本。满足时允许固定单帧流水等待，无需一定看到队列清空；连续区间TF过期增长仅能待审，不能由剩余扫描年龄推断没有过期。旧记录仍沿用上述稀疏观测规则，缺失/混合新字段不退回宽松判定。后drain最大值不代表剔除过期项前或连续时域的峰值。", "",
               "| Python试验 | 总状态 | 控制耗时 | 建图耗时 | 积压 | 状态样本/完整间隔/跨度s |", "| --- | --- | --- | --- | --- | --- |"]
     for trial in report["performance"]:
         observed = trial.get("observed_performance", trial)

@@ -1,0 +1,27 @@
+# Independent PID preview calibration candidate; production YAML is unchanged.
+# Full controller hierarchy copied from current production configuration.
+controller:
+  controller_name: pid
+  control_frequncy: 10.0
+
+  pid_controller:
+    goal_distance_tolerance: 1.5
+    goal_speed_tolerance: 0.25
+    lookahead_time: 2.6
+    k_p_speed: 2.0
+    k_i_speed: 0.5
+    k_d_speed: 0.0
+    k_p_course: 2.0
+    k_i_course: 0.0
+    k_d_course: 0.0
+
+  lqr_controller:
+    goal_distance_tolerance: 1.0
+    goal_speed_tolerance: 0.25
+    lookahead_time: 2.0
+    discrete_dt: 0.1
+    solve_eps: 0.1
+    max_iterations: 5000
+    solve_timeout: 0.08
+    Q_matrix_diag: [1, 1, 100, 10, 10, 10]
+    R_matrix_diag: [20, 20]

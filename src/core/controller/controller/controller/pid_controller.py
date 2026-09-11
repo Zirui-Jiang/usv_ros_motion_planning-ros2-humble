@@ -14,7 +14,7 @@ from .controller import Controller, select_config, stop
 
 
 class PIDController(Controller):
-    DEFAULTS = {"goal_distance_tolerance": 1.0, "goal_speed_tolerance": 0.25, "lookahead_time": 3.0,
+    DEFAULTS = {"goal_distance_tolerance": 1.0, "goal_speed_tolerance": 0.25, "lookahead_time": 2.6,
                 "k_p_speed": 0.0, "k_i_speed": 0.0, "k_d_speed": 0.0,
                 "k_p_course": 0.0, "k_i_course": 0.0, "k_d_course": 0.0}
 

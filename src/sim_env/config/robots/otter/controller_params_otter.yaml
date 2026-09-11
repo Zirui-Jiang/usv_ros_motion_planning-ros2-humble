@@ -5,7 +5,9 @@ controller:
   pid_controller:
     goal_distance_tolerance: 1.5
     goal_speed_tolerance: 0.25
-    lookahead_time: 3.0
+    # The old LOS point labelled 3.0 s represented 2.6 s of rollout.
+    # Calibrated with the corrected time axis; trajectory age is still applied.
+    lookahead_time: 2.6
     k_p_speed: 2.0
     k_i_speed: 0.5
     k_d_speed: 0.0

@@ -95,6 +95,15 @@ python3 -c "import common, path_planner, trajectory_planner, controller, percept
 该安装区的新终端执行下列检查。审计会核对 13 个原包的位置、Python 模块真实文件路径、
 节点可执行入口以及 C++ 支撑节点的动态链接；从源码路径意外导入会判为失败。
 
+也可以通过 `build_clean.bash` 一次完成固定提交复制、干净普通安装、安装审计和源码测试。
+目标目录必须不存在，其父目录必须已存在并位于现有 Git 工作区之外；脚本遇到已有目录
+会拒绝执行。构建、测试和前后指纹保存在新工作区的 `validation` 目录：
+
+```bash
+bash "$PROJECT_SRC/scripts/validation/build_clean.bash" \
+  "$PROJECT_SRC" "$PY_REV" "$HOME/usv_migration/python-clean-${PY_REV:0:12}"
+```
+
 ```bash
 python3 scripts/validation/verify_install.py \
   --source "$PY_WS" --install "$PY_WS/install" \
@@ -308,10 +317,13 @@ python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
 
 ## 8. 回退与 C++ 对照
 
-原基线由标签 `cpp-baseline` 保存，Python 在 `refactor/python-navigation` 分支开发。回退优先使用另一个工作区，不在正在验收的 Python 工作区复用旧 `build/install`：
+原始源码由标签 `cpp-baseline` 保存，Python 在 `refactor/python-navigation` 分支开发。
+可执行的 C++ 对照使用单独的 `baseline-validation` 分支；它包含原项目运行所需的
+最小安装/启动修复及已记录的校准参数。原 tag 本身不包含这些修复。
+回退运行时使用另一个工作区，不在 Python 工作区复用旧 `build/install`：
 
 ```bash
-CPP_REV="$(git -C "$PROJECT_SRC" rev-parse cpp-baseline)"
+CPP_REV="$(git -C "$PROJECT_SRC" rev-parse baseline-validation)"
 CPP_WS="$HOME/usv_migration/cpp-${CPP_REV:0:12}"
 test ! -e "$CPP_WS" || { echo "基线工作区已存在，请核对其版本"; exit 1; }
 git clone --no-hardlinks --no-checkout "$PROJECT_SRC" "$CPP_WS"
@@ -320,6 +332,11 @@ git -C "$CPP_WS" checkout --detach "$CPP_REV"
 
 在新的 WSL 终端按第 2 节方式为 `CPP_WS` 建立自己的 `build/install/log`，只 source 基线安装目录。这样保留 Python 副本、结果和未完成的修改。
 
-用于可执行对照的 `baseline-validation` 分支与原 tag 要区分。当前基线验收副本位于 `/home/usv/usv_migration/baseline`，其 validation 补丁范围限定为补齐 `libsim_env` 安装，并增加 `baseline_validation.launch.py` 来支持 GUI/headless/RViz 及 `controller_name` 注入原控制器工厂。该启动/安装修复不应改动数值算法；具体补丁提交和构建结果由状态文档记录，不能把它当作未经改动的 tag 直接运行结果。
+当前基线验收副本位于 `/home/usv/usv_migration/baseline`。`d9a6023` 补齐 `libsim_env`
+安装、LQR 等值数组类型，并增加 `baseline_validation.launch.py` 支持 GUI/headless/RViz
+及 `controller_name` 注入原控制器工厂；`632734b` 将 LOS 前视设为 1 m、spawn 等待设为
+120 s。未改变 C++ 数值算法公式。基线存在 LQR 闭环和退出问题，详见验证报告，不能
+把本分支试验当作未经修改的原 tag 直接运行结果。若仅需恢复原始源码，单独 clone 后
+checkout `cpp-baseline`，保留上述可执行对照工作区。
 
 对照脚本通过 `--baseline-workspace` 和 `--baseline-launch-file baseline_validation.launch.py` 选择该副本，并查询实际控制器参数核实 PID/LQR 选择。旧版本不具备的取消服务应标记为不支持，不伪造与 Python 相同的能力。
