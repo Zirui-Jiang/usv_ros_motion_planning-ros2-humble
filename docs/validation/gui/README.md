@@ -1,5 +1,9 @@
 # WSLg / RViz 验证范围
 
+本目录是早期初始化检查的历史记录。2026-09-11 的白模/生成失败修复已经增加
+Gazebo 与 RViz 实际画面验证，见 [后续 GUI 修复记录](../otter-gui-fix-001/README.md)。
+以下历史检查结果保持原样。
+
 已实测通过：DISPLAY=:0，X11 与 Wayland socket 可用，D3D12 RTX 5060
 硬件加速 OpenGL 4.2，项目原 RViz 配置加载，goal_set_plugin 与默认显示
 插件实际载入，目标发布和地图/扫描/路径订阅注册，独立 RViz 正常退出 0。

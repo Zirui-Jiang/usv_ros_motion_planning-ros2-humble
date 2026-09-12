@@ -139,6 +139,12 @@ python3 scripts/validation/capture_provenance.py \
 
 ## 3. 启动与选择配置
 
+2026-09-11 已修复本机 Conda 自动启用时的 Otter 生成失败和 RViz 白模问题。
+`sim_env` 的安装环境现在补齐 Gazebo 默认媒体路径，生成节点和 Python 导航节点
+使用启动 ROS 的解释器；无需修改全局 Conda 配置。模型贴图、实际画面及两版本
+的脚本/直接入口验证见 [GUI 修复记录](validation/otter-gui-fix-001/README.md)。
+应用本次源码修复后需要重新构建 `sim_env`，并在新终端重新 source 安装环境。
+
 默认节点名为 `/otter/usv_simulation`，算法为 A* / LOS / PID：
 
 ```bash

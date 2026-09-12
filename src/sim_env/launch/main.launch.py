@@ -2,6 +2,7 @@
 """Gazebo, LiDAR mapping, C++ ROS support and Python navigation launch."""
 
 import os
+import sys
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -86,6 +87,8 @@ def _launch_setup(context):
         }.items())
     spawn = Node(
         package="gazebo_ros", executable="spawn_entity.py",
+        # The upstream env-python shebang may select Conda, unlike ros2 itself.
+        prefix=[sys.executable],
         arguments=["-entity", namespace, "-topic", "robot_description",
                    "-timeout", "120.0",
                    "-x", str(pose["x"]), "-y", str(pose["y"]),
@@ -131,6 +134,7 @@ def _launch_setup(context):
 
     navigation = Node(
         package="sim_env", executable="sim_env_node", name="usv_simulation",
+        prefix=[sys.executable],
         namespace=namespace, output="screen",
         parameters=[navigation_params, {"use_sim_time": use_sim_time}])
     actions = [*configuration_logs, gazebo, robot_state_publisher, joint_state_publisher, spawn,

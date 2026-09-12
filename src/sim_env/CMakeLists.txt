@@ -12,6 +12,7 @@ find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(gazebo_msgs REQUIRED)
+find_package(gazebo_dev REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
@@ -37,5 +38,10 @@ install(TARGETS fake_localization_node costmap_support_node
   DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY launch config rviz urdf worlds meshes models
   DESTINATION share/${PROJECT_NAME})
+
+# gazebo_ros replaces the resource search path even when the user did not
+# source Gazebo's setup.sh. Keep the installed RTShaderSystem library visible.
+get_filename_component(GAZEBO_RESOURCE_ROOT "${GAZEBO_MEDIA_PATH}" DIRECTORY)
+ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/gazebo.sh.in")
 
 ament_package()

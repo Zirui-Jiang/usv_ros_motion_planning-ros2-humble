@@ -27,7 +27,7 @@ cd "${PROJECT_ROOT}"
 
 # Generate gazebo world obstacles from the user config.
 if [ -f "src/user_config/user_config.yaml" ]; then
-    (cd src/plugins/dynamic_xml_config && python3 main_generate.py user_config.yaml) || true
+    (cd src/plugins/dynamic_xml_config && /usr/bin/python3 main_generate.py user_config.yaml) || true
 fi
 
 # Launch the simulation.
