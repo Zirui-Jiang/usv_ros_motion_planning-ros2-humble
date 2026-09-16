@@ -15,6 +15,7 @@
  *
 */
 
+// 独立 GoogleTest 示例覆盖一维、二维及多波分量的牛顿反解，用已知参数位置验证逆映射。
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 #include <iostream>
@@ -45,6 +46,7 @@ std::ostream& operator<<(std::ostream& os,
 // Define tests
 
 // One dimension, one wave component
+// 单分量一维情形：先由参数位置正向求波面位置，再用残差和导数反求原位置。
 TEST(Wavefield, WaveSolver1D)
 {
   struct WaveParams
@@ -84,6 +86,7 @@ TEST(Wavefield, WaveSolver1D)
     return df;
   };
 
+  // 迭代按残差容差或最大次数终止，逆映射结果由下方断言与已知位置核对。
   auto solver = [=](const auto& func, const auto& dfunc, auto x0, auto p,
                     auto t, auto& wp, auto tol, auto nmax)
   {
@@ -141,6 +144,7 @@ TEST(Wavefield, WaveSolver1D)
 }
 
 // Two dimensions, one wave component
+// 单分量二维情形：使用二维残差及 2×2 雅可比，检查反解的位置分量。
 TEST(Wavefield, WaveSolver2D)
 {
   struct WaveParams
@@ -202,6 +206,7 @@ TEST(Wavefield, WaveSolver2D)
     return J;
   };
 
+  // 迭代按残差容差或最大次数终止，逆映射结果由下方断言与已知位置核对。
   auto solver = [=](const auto& func, const auto& dfunc, auto x0, auto p,
                     auto t, auto& wp, auto tol, auto nmax)
   {
@@ -263,6 +268,7 @@ TEST(Wavefield, WaveSolver2D)
 }
 
 // Two dimensions, many wave components
+// 多分量二维情形：残差和雅可比逐波叠加，再比较反解与已知初始位置。
 TEST(Wavefield, NWaveSolver2D)
 {
   struct WaveParams
@@ -344,6 +350,7 @@ TEST(Wavefield, NWaveSolver2D)
     return J;
   };
 
+  // 迭代按残差容差或最大次数终止，逆映射结果由下方断言与已知位置核对。
   auto solver = [=](const auto& func, const auto& dfunc, auto x0, auto p,
                     auto t, auto& wp, auto tol, auto nmax)
   {
@@ -406,6 +413,7 @@ TEST(Wavefield, NWaveSolver2D)
 
 // Two dimensions, many wave components, combined function
 // and jacobian calculation
+// 把残差和雅可比合并求值，验证复用计算后的反解仍得到预设二维位置。
 TEST(Wavefield, NWaveFdFSolver2D)
 {
   struct WaveParams
@@ -475,6 +483,7 @@ TEST(Wavefield, NWaveFdFSolver2D)
   };
 
   // cppcheck-suppress constParameter
+  // 迭代按残差容差或最大次数终止，逆映射结果由下方断言与已知位置核对。
   auto solver = [=](auto& fdfunc, auto x0, auto p, auto t, auto& wp,
                     auto tol, auto nmax)
   {
@@ -527,6 +536,7 @@ TEST(Wavefield, NWaveFdFSolver2D)
 ///////////////////////////////////////////////////////////////////////////////
 // Run tests
 
+// 初始化 GoogleTest 并返回测试退出码；是否编译该文件取决于实际构建配置。
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);

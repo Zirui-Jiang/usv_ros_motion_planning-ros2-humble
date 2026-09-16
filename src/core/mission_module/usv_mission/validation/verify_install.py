@@ -1,0 +1,162 @@
+#!/usr/bin/env python3
+# 安装区审计：核对 ament 包发现、Python 模块来源、执行入口、接口类型支持及共享库依赖。
+"""Audit the sourced installation, without adding source paths to sys.path.
+
+Run in a new ROS shell after sourcing only the selected install/setup.bash.
+This audit requires colcon's default isolated installation layout.
+The JSON describes installation checks, not ROS graph or closed-loop success.
+"""
+import argparse
+from datetime import datetime, timezone
+import importlib
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+import xml.etree.ElementTree as ET
+
+
+MODULES = {
+    "common": "common.models",
+    "path_planner": "path_planner.path_planner_core",
+    "path_processor": "path_processor.path_processor",
+    "trajectory_planner": "trajectory_planner.los_trajectory_planner",
+    "controller": "controller.controller_factory",
+    "perception": "perception.mapping",
+    "usv_perception": "usv_perception.mapping_node",
+    "usv_navigation": "usv_navigation.configuration",
+    "usv_decision": "usv_decision.decision",
+    "usv_control": "usv_control.control",
+    "sim_env": "sim_env.simulation",
+    "usv_mission": "usv_mission.runtime",
+    "usv_mission_interfaces": "usv_mission_interfaces.srv",
+}
+EXECUTABLES = {
+    "usv_perception": ["perception_mapping_node", "perception_monitor", "costmap_support_node", "usv_tf_expander.py"],
+    "usv_decision": ["decision_node"],
+    "usv_control": ["control_node"],
+    "sim_env": ["sim_env_node", "fake_localization_node"],
+    "usv_mission": ["mission_node", "mission_cli"],
+}
+REQUIRED_PACKAGES = set(MODULES) | {
+    "dynamic_rviz_config", "dynamic_xml_config", "goal_set_plugin",
+    "wave_gazebo", "wave_gazebo_plugins", "usv_gazebo_plugins",
+}
+
+
+# 解析真实路径后检查包含关系，防止导入落到选定安装区之外。
+def within(path, parent):
+    try:
+        path.resolve().relative_to(parent.resolve())
+        return True
+    except ValueError:
+        return False
+
+
+# 使用已 source 的隔离安装环境读取真实模块和可执行文件，不通过追加源码路径掩盖安装问题。
+def audit(source, install):
+    from ament_index_python.packages import get_package_prefix
+
+    rows = []
+
+    def record(name, passed, **evidence):
+        rows.append(dict(check=name, passed=bool(passed), **evidence))
+
+    expected, duplicates = {}, []
+    for manifest in sorted((source / "src").rglob("package.xml")):
+        tree = ET.parse(manifest).getroot()
+        name = tree.findtext("name")
+        if name in expected:
+            duplicates.append(name)
+        expected[name] = tree.findtext("export/build_type")
+    missing = sorted(REQUIRED_PACKAGES - expected.keys())
+    record("source_package_inventory", not missing and not duplicates,
+           packages=expected, missing_packages=missing, duplicate_packages=duplicates)
+    for package, build_type in expected.items():
+        try:
+            prefix = Path(get_package_prefix(package)).resolve()
+            installed_manifest = prefix / "share" / package / "package.xml"
+            actual_type = ET.parse(installed_manifest).getroot().findtext("export/build_type")
+            expected_prefix = (install / package).resolve()
+            record(package + ":discovery", prefix == expected_prefix and actual_type == build_type,
+                   prefix=str(prefix), expected_build_type=build_type, actual_build_type=actual_type)
+        except Exception as error:
+            record(package + ":discovery", False, error=str(error))
+            continue
+        if package in MODULES:
+            try:
+                module = importlib.import_module(MODULES[package])
+                origin = Path(module.__file__).resolve()
+                record(package + ":import", within(origin, install), origin=str(origin))
+                if package == "usv_mission_interfaces":
+                    service = module.SetMission
+                    service.__class__.__import_type_support__()
+                    request = service.Request(mode="standby", latitude=0.0, longitude=0.0)
+                    record(package + ":service_type_support",
+                           service.__class__._TYPE_SUPPORT is not None and request.speed == 0.5,
+                           request_fields=request.get_fields_and_field_types())
+                if package == "usv_mission":
+                    for name in ("usv_mission.node", "usv_mission.configuration", "usv_mission.mission_cli"):
+                        task_module = importlib.import_module(name)
+                        location = Path(task_module.__file__).resolve()
+                        record(name + ":import", within(location, install), origin=str(location))
+            except Exception as error:
+                record(package + ":import", False, error=str(error))
+        for name in EXECUTABLES.get(package, []):
+            executable = prefix / "lib" / package / name
+            record(package + ":" + name, executable.is_file() and os.access(executable, os.X_OK),
+                   path=str(executable))
+            if name in ("fake_localization_node", "costmap_support_node") and executable.is_file():
+                links = subprocess.run(["ldd", str(executable)], capture_output=True, text=True, timeout=15)
+                legacy = re.findall(r"\blib(?:common|path_planner|path_processor|trajectory_planner|controller|sim_env)\.so\b",
+                                    links.stdout)
+                record(name + ":linkage", links.returncode == 0 and "not found" not in links.stdout and not legacy,
+                       exit_code=links.returncode, obsolete_libraries=legacy,
+                       stdout=links.stdout, stderr=links.stderr)
+        if package == "usv_mission":
+            launch_file = prefix / "share" / package / "launch" / "mission_sim.launch.py"
+            record(package + ":mission_sim_launch", launch_file.is_file(), path=str(launch_file))
+        if package == "sim_env":
+            old_cli = prefix / "lib" / package / "mission_cli"
+            old_adapter = list(prefix.rglob("mission_adapter.py"))
+            old_models = list(prefix.rglob("missions/models.py"))
+            record(package + ":no_task_runtime", not old_cli.exists() and not old_adapter and not old_models,
+                   old_cli=str(old_cli) if old_cli.exists() else None,
+                   obsolete_task_files=[str(path) for path in old_adapter + old_models])
+    for package in MODULES:
+        if package in ("sim_env", "usv_mission_interfaces"):
+            continue
+        prefix = install / package
+        legacy = [str(p) for p in prefix.rglob("*.so*")]
+        record(package + ":no_cpp_algorithm_libraries", prefix.is_dir() and not legacy,
+               prefix_exists=prefix.is_dir(), libraries=legacy)
+    return {"classification": "installed package/import/executable/linkage audit",
+            "collected_utc": datetime.now(timezone.utc).isoformat(),
+            "python_executable": sys.executable, "python_version": sys.version,
+            "source": str(source), "install": str(install),
+            "environment": {name: os.environ.get(name) for name in ("AMENT_PREFIX_PATH", "PYTHONPATH", "LD_LIBRARY_PATH")},
+            "checks": rows, "all_passed": bool(rows) and all(row["passed"] for row in rows)}
+
+
+# 只写新的审计 JSON 文件，并以全部检查是否通过决定退出码。
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source", required=True, type=Path)
+    parser.add_argument("--install", required=True, type=Path)
+    parser.add_argument("--output", required=True, type=Path, help="new JSON evidence file")
+    args = parser.parse_args(argv)
+    if args.output.exists():
+        parser.error("output already exists")
+    report = audit(args.source.resolve(), args.install.resolve())
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    with args.output.open("x", encoding="utf-8") as stream:
+        json.dump(report, stream, ensure_ascii=False, indent=2)
+    print(json.dumps({"output": str(args.output), "all_passed": report["all_passed"],
+                      "failed_checks": [row for row in report["checks"] if not row["passed"]]}, ensure_ascii=False))
+    return 0 if report["all_passed"] else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

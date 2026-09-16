@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 每帧扫描前确认对应 TF 可查，再测源码建图节点吞吐；统计包含同进程驱动与观测开销。
 """Thirty-second source-node benchmark with exact TF verified before every scan.
 
 No Gazebo or installed-tree writes. This conditions on TF availability and does
@@ -18,6 +19,7 @@ import time
 import uuid
 
 
+# 命令行入口：解析本脚本选项并执行上述流程，运行结果由退出码及输出记录共同说明。
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source-repo', required=True, type=Path)
@@ -27,13 +29,15 @@ def main():
     if not 1 <= args.domain_id <= 232:
         parser.error('Use a dedicated nonzero ROS domain in [1, 232]')
     repo = args.source_repo.resolve()
-    module_path = repo / 'src/core/perception/perception/mapping_node.py'
+    module_path = repo / 'src/core/perception_module/usv_perception/usv_perception/mapping_node.py'
     if not module_path.is_file():
         parser.error('source-repo does not contain the mapping node')
     args.output.mkdir(parents=True, exist_ok=False)
     sys.dont_write_bytecode = True
     os.environ.update(ROS_DOMAIN_ID=str(args.domain_id), ROS_LOCALHOST_ONLY='1')
-    sys.path.insert(0, str(repo / 'src/core/perception'))
+    sys.path.insert(0, str(repo / 'src/core/perception_module/perception'))
+    sys.path.insert(0, str(repo / 'src/core/perception_module/usv_perception'))
+    sys.path.insert(0, str(repo / 'src/core/shared/usv_navigation'))
     import numpy as np
     import rclpy
     from geometry_msgs.msg import TransformStamped
@@ -44,7 +48,7 @@ def main():
     from rosgraph_msgs.msg import Clock
     from sensor_msgs.msg import LaserScan
     from tf2_ros import TransformBroadcaster
-    from perception.mapping_node import MappingNode
+    from usv_perception.mapping_node import MappingNode
     from perception.scan_queue import ScanResult
 
     events = []
@@ -54,6 +58,7 @@ def main():
         events.append(row)
         return row
 
+    # 继承生产节点只增加观测；逐次复制耗时，避免长度为 256 的生产统计队列丢掉 450 帧中的早期样本。
     class ObservedMapper(MappingNode):
         # Keep the production deques and algorithms intact. Copy each produced
         # timing immediately so all 450 integrations survive the 256-entry cap.
@@ -92,10 +97,12 @@ def main():
                  zip(('p50', 'p95', 'p99'), np.percentile(values, [50, 95, 99]))}
                 | {'max': float(max(values))} if values else {})}
 
+    # 计算当前文件哈希，用于对应基线快照或 C++ 动态库的精确来源。
     def sha(path):
         return hashlib.sha256(path.read_bytes()).hexdigest()
 
-    sources = [module_path, module_path.with_name('mapping.py'), module_path.with_name('scan_queue.py'),
+    algorithm_path = repo / 'src/core/perception_module/perception/perception'
+    sources = [module_path, algorithm_path / 'mapping.py', algorithm_path / 'scan_queue.py',
                repo / 'scripts/validation/compare_results.py', Path(__file__).resolve()]
     before = {str(p): sha(p) for p in sources}
     report = dict(schema_version=1, source_repo=str(repo), source_sha256_before=before,
@@ -133,6 +140,7 @@ def main():
 
         spin_until(lambda: scans.get_subscription_count() >= 1, time.monotonic() + 10, 'scan discovery')
         assert scans.get_subscription_count() == 1, 'Dedicated domain has another scan subscriber'
+        # 读回真实节点参数及实际队列容量，确认执行的地图尺寸、发布频率与等待策略符合预定负载。
         assert mapper.get_parameter('width').value == 1024
         assert mapper.get_parameter('resolution').value == 0.5
         assert mapper.get_parameter('map_publish_frequency').value == 2.0
@@ -146,6 +154,7 @@ def main():
         report['backend'] = mapper.mapper.backend
         report['node_module'] = str(Path(sys.modules[MappingNode.__module__].__file__).resolve())
         frame = namespace + '/lidar'
+        # 用单调墙钟连续派生 /clock；设半秒准备期，再以固定起点调度扫描，隔离系统时间校正影响。
         clock_anchor = time.monotonic()
         next_clock = clock_anchor
         t0 = clock_anchor + 0.5
@@ -166,6 +175,7 @@ def main():
                 record('clock_published', clock_ns=clock_ns)
                 next_clock = now + 0.02
             phase[0] = 'steady' if now >= t0 else 'setup'
+            # 稳态窗口从预定 t0 起算三十秒，CPU 另记录实际采样起止时间，指标包含同进程驱动和观测开销。
             if steady_start is None and now >= t0:
                 steady_start = t0
                 usage_start = resource.getrusage(resource.RUSAGE_SELF)
@@ -181,6 +191,7 @@ def main():
             if next_index < 450:
                 due = t0 + next_index * period
                 stamp_ns = stamp0 + round(next_index * 10**9 / 15)
+                # 提前四十毫秒发布与该扫描时间戳完全相同的 TF，提供传播准备时间。
                 if now >= due - 0.04 and next_index not in prepared:
                     transform = TransformStamped()
                     transform.header.frame_id, transform.child_frame_id = mapper.map_frame, frame
@@ -192,6 +203,7 @@ def main():
                 if now >= due:
                     query = Time(nanoseconds=stamp_ns)
                     # Check the actual mapper buffer immediately before publishing.
+                    # 发布扫描前查询建图节点自身缓冲区的精确时刻 TF；两百毫秒仍不可用则本次负载无效。
                     if mapper.tf_buffer.can_transform(mapper.map_frame, frame, query):
                         tf_ready = time.monotonic()
                         value = LaserScan()
@@ -201,6 +213,7 @@ def main():
                         value.angle_increment = 2 * math.pi / 1999
                         value.range_min, value.range_max = 0.1, 25.0
                         value.scan_time, value.time_increment = period, period / 2000
+                        # 每帧为两千束确定性二十四米命中，构成长射线压力负载；这不是录制场景。
                         value.ranges = [24.0] * 2000
                         scans.publish(value)
                         record('scan_published', index=next_index, stamp_ns=stamp_ns,
@@ -216,6 +229,7 @@ def main():
         steady_end = t0 + 30.0
         usage_end = resource.getrusage(resource.RUSAGE_SELF)
         cpu_ended = time.monotonic()
+        # 稳态结束后最多额外等三百毫秒排空队列；排空阶段与固定稳态测量窗口分别标记。
         phase[0] = 'settle'
         spin_until(lambda: mapper.integrated_scans == 450 and len(mapper.pending) == 0,
                    time.monotonic() + 0.3, 'all 450 unique scans integrated')
@@ -228,6 +242,7 @@ def main():
         report['steady_cpu_mean_one_core_percent_including_driver'] = (report['steady_cpu_seconds_including_driver']
                                                                      / (cpu_ended-cpu_started) * 100)
         report['process_cpu_elapsed_s_including_setup'] = time.process_time() - cpu_start
+        # 所有独立扫描完成后才重发三帧，并把距离改为近障碍；地图哈希不变可证明重复帧没有再次融合。
         phase[0] = 'duplicate_check'
         before_map = hashlib.sha256(mapper.mapper.data.tobytes()).hexdigest()
         duplicates_before = mapper.pending.counters.duplicate
@@ -245,6 +260,7 @@ def main():
         report['final_counters'] = vars(mapper.pending.counters).copy()
         report['final_integrated_scans'] = mapper.integrated_scans
         report['final_queue_size'] = len(mapper.pending)
+        # 从全量事件汇总处理/排队耗时与唯一时间戳，避免只用节点内最近一段滚动统计。
         integrations = [e for e in events if e['event'] == 'scan_attempt' and e['result'] == 'processed']
         unique_stamps = {e['stamp_ns'] for e in integrations}
         timings = [e['processing_ms'] for e in integrations]
@@ -265,6 +281,7 @@ def main():
                           for i,e in enumerate(events) if e['event']=='metrics' and e['phase'] in ('steady','settle')]
         report['frozen_backlog_check'] = comparison.backlog_performance(metric_records, dict(start=t0,end=steady_end,complete=True))
         counters = report['final_counters']
+        # 联合判定唯一融合、TF 预备、零丢弃、66.7毫秒处理分位门限、输入节拍、队列清空和地图发布次数。
         report['checks'] = dict(all_450_unique_integrated_once=len(integrations)==len(unique_stamps)==450,
                                all_tf_ready_before_publish=len(pubs)==450 and all(e['tf_preverified_monotonic_s']<=e['monotonic_s'] for e in pubs),
                                no_tf_wait_attempts=all(e['result']=='processed' for e in events if e['event']=='scan_attempt'),
@@ -294,6 +311,7 @@ def main():
             driver.destroy_node()
         if rclpy.ok():
             rclpy.shutdown()
+        # 清理 executor 和节点后复核源码哈希，保存完整事件及摘要；中途失败也保留已采集证据。
         report['source_sha256_after'] = {str(p):sha(p) for p in sources}
         report['source_unchanged'] = before == report['source_sha256_after']
         report['passed'] = report.get('passed',False) and report['source_unchanged']

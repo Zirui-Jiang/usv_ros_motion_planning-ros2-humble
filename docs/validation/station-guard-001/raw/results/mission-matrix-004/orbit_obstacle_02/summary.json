@@ -1,0 +1,2739 @@
+{
+  "results": [
+    {
+      "trial": "orbit_obstacle_01",
+      "scenario": "orbit_obstacle",
+      "repeat": 1,
+      "domain_id": 171,
+      "result": "failed",
+      "passed": false,
+      "config": {
+        "mode": "orbit",
+        "target": [
+          23.0,
+          -10.0,
+          0.0
+        ],
+        "heading_deg": 90.0,
+        "speed": 0.5,
+        "position_tolerance": 0.5,
+        "watch_radius": 4.0,
+        "orbit_radius": 8.0,
+        "clockwise": true,
+        "laps": 1,
+        "duration": 0.0
+      },
+      "thresholds": {
+        "position_m": 0.5,
+        "heading_deg": 5.0,
+        "joint_fraction": 0.95,
+        "settle_position_m": 0.25,
+        "settle_heading_deg": 3.0,
+        "settle_speed_mps": 0.04,
+        "settle_dwell_s": 5.0,
+        "settle_timeout_s": 180.0,
+        "window_s": 60.0,
+        "radial_p95_m": 0.5,
+        "clearance_m": 0.2,
+        "max_odom_gap_s": 0.5,
+        "max_phase_boundary_interval_s": 1.5,
+        "max_lap_angle_tolerance_rad": 0.15,
+        "centre_dwell_s": 1.0,
+        "centre_speed_mps": 0.1,
+        "impulse_service_delay_max_s": 2.0,
+        "impulse_post_response_window_s": 0.5
+      },
+      "windows": {},
+      "gazebo_master_uri": "http://127.0.0.1:60601",
+      "observed_model_max_speed_mps": 1.0,
+      "mission_id": 1,
+      "reason": "obstacle_kept_until_measured_orbit_rejoin: independent odometry dwell not observed within 180 simulation seconds",
+      "final_status": {
+        "state": "AVOIDANCE_BLOCKED",
+        "reason": "circle swept footprint intersects lethal or unknown map cells",
+        "version": 23,
+        "stamp": 254.50000000000003,
+        "controller": "pid",
+        "goal": null,
+        "mission": {
+          "mission_id": "1",
+          "mode": "orbit",
+          "phase": "AVOIDANCE_BLOCKED",
+          "revision": 22,
+          "original_target": {
+            "latitude": -33.72429015691839,
+            "longitude": 150.6802481598667,
+            "heading_deg": 90.0,
+            "local_pose": [
+              23.000000000026613,
+              -10.000000000105835,
+              0.0
+            ]
+          },
+          "temporary_goal": null,
+          "position_error": 7.88136406080549,
+          "departure_heading": null,
+          "departure_pose": null,
+          "backoff_distance": 0.0,
+          "backoff_pose": null,
+          "heading_error_deg": 95.37974126746708,
+          "radial_error": -0.11863593919450999,
+          "completed_laps": 0.4080609550509043,
+          "elapsed_time": 251.90000000000003,
+          "inside_watch_region": false,
+          "blocked_reason": "NO_SAFE_EXIT",
+          "orbit_completed": false,
+          "control_phase": null,
+          "safety_reason": ""
+        },
+        "metrics": {
+          "control_ms": {
+            "count": 2781,
+            "p50": 0.7178090163506567,
+            "p95": 8.317889994941652,
+            "p99": 12.261652224697137,
+            "max": 19.34510498540476
+          },
+          "costmap_conversion_ms": {
+            "count": 270,
+            "p50": 0.6283899856498465,
+            "p95": 4.833647553459739,
+            "p99": 8.01041882368736,
+            "max": 10.75141501496546
+          },
+          "planning_ms": {
+            "count": 667,
+            "p50": 13.185818999772891,
+            "p95": 25.84211450011931,
+            "p99": 38.796049789525625,
+            "max": 541.1783389863558
+          }
+        },
+        "counters": {
+          "pending_replacements": 3,
+          "odom_tf_waits": 61,
+          "global_searches": 6,
+          "stale_results": 1,
+          "map_invalidations": 1
+        },
+        "process": {
+          "pid": 167404,
+          "cpu_seconds": 18.046073,
+          "peak_rss_kib": 75008,
+          "monotonic": 191403.938184464
+        }
+      },
+      "phase_transitions": [
+        {
+          "phase": "ENTERING_ORBIT",
+          "sim_time_s": 3.3,
+          "wall_monotonic_s": 191115.240052983
+        },
+        {
+          "phase": "ALIGN_ENTRY",
+          "sim_time_s": 41.1,
+          "wall_monotonic_s": 191163.993752555
+        },
+        {
+          "phase": "ORBITING",
+          "sim_time_s": 51.8,
+          "wall_monotonic_s": 191176.944968482
+        },
+        {
+          "phase": "BRAKING_ESCAPE",
+          "sim_time_s": 63.8,
+          "wall_monotonic_s": 191191.764725006
+        },
+        {
+          "phase": "ALIGN_ESCAPE",
+          "sim_time_s": 64.8,
+          "wall_monotonic_s": 191192.808467967
+        },
+        {
+          "phase": "AVOIDING",
+          "sim_time_s": 74.3,
+          "wall_monotonic_s": 191202.374417065
+        },
+        {
+          "phase": "WAITING_CLEARANCE",
+          "sim_time_s": 123.6,
+          "wall_monotonic_s": 191259.807054708
+        },
+        {
+          "phase": "ALIGN_ENTRY",
+          "sim_time_s": 126.8,
+          "wall_monotonic_s": 191262.943334698
+        },
+        {
+          "phase": "ORBITING",
+          "sim_time_s": 136.3,
+          "wall_monotonic_s": 191272.589562232
+        },
+        {
+          "phase": "AVOIDANCE_BLOCKED",
+          "sim_time_s": 169.3,
+          "wall_monotonic_s": 191309.840192257
+        }
+      ],
+      "invalid_command_observed": false,
+      "sample_count": 2520,
+      "independent_orbit_progress": {
+        "net_angle_rad": 2.597469494956729,
+        "net_laps": 0.41340010965277235,
+        "forward_angle_rad": 2.597469494956729,
+        "reverse_angle_rad": 0.0,
+        "required_angle_rad": 6.283185307179586,
+        "accepted_segments": 448,
+        "boundary_angle_tolerance_rad": 0.15,
+        "boundary_intervals": [
+          {
+            "from": "ALIGN_ENTRY",
+            "to": "ORBITING",
+            "interval_s": 0.9000000000000057,
+            "source_stamp_s": 51.900000000000006
+          },
+          {
+            "from": "ORBITING",
+            "to": "BRAKING_ESCAPE",
+            "interval_s": 1.1000000000000014,
+            "source_stamp_s": 63.800000000000004
+          },
+          {
+            "from": "ALIGN_ENTRY",
+            "to": "ORBITING",
+            "interval_s": 1.0999999999999943,
+            "source_stamp_s": 136.3
+          },
+          {
+            "from": "ORBITING",
+            "to": "AVOIDANCE_BLOCKED",
+            "interval_s": 1.0,
+            "source_stamp_s": 169.20000000000002
+          }
+        ],
+        "phase_label_semantics": "latest received status; transition timing uncertain within logged source-stamp interval",
+        "maximum_boundary_interval_s": 1.1000000000000014,
+        "max_speed_mps": 1.0,
+        "invalid_odom_segments": [],
+        "invalid_status_intervals": [],
+        "duplicate_status_count": 12,
+        "status_observation_count": 266,
+        "net_progress_samples": [
+          {
+            "sim_time_s": 52.0,
+            "signed_delta_rad": 0.0031757611452083445,
+            "independent_net_angle_rad": 0.0031757611452083445
+          },
+          {
+            "sim_time_s": 52.1,
+            "signed_delta_rad": 0.003994744785146054,
+            "independent_net_angle_rad": 0.007170505930354398
+          },
+          {
+            "sim_time_s": 52.2,
+            "signed_delta_rad": 0.004072162869403595,
+            "independent_net_angle_rad": 0.011242668799757993
+          },
+          {
+            "sim_time_s": 52.3,
+            "signed_delta_rad": 0.004673145923438149,
+            "independent_net_angle_rad": 0.015915814723196142
+          },
+          {
+            "sim_time_s": 52.4,
+            "signed_delta_rad": 0.005176899778355004,
+            "independent_net_angle_rad": 0.021092714501551146
+          },
+          {
+            "sim_time_s": 52.5,
+            "signed_delta_rad": 0.00531257016879616,
+            "independent_net_angle_rad": 0.026405284670347307
+          },
+          {
+            "sim_time_s": 52.6,
+            "signed_delta_rad": 0.0051968657315164535,
+            "independent_net_angle_rad": 0.03160215040186376
+          },
+          {
+            "sim_time_s": 52.7,
+            "signed_delta_rad": 0.0050881356777003894,
+            "independent_net_angle_rad": 0.03669028607956415
+          },
+          {
+            "sim_time_s": 52.8,
+            "signed_delta_rad": 0.005138272177780401,
+            "independent_net_angle_rad": 0.04182855825734455
+          },
+          {
+            "sim_time_s": 52.9,
+            "signed_delta_rad": 0.0052979153444008276,
+            "independent_net_angle_rad": 0.04712647360174538
+          },
+          {
+            "sim_time_s": 53.0,
+            "signed_delta_rad": 0.005453406118751225,
+            "independent_net_angle_rad": 0.0525798797204966
+          },
+          {
+            "sim_time_s": 53.1,
+            "signed_delta_rad": 0.0055308855145992375,
+            "independent_net_angle_rad": 0.05811076523509584
+          },
+          {
+            "sim_time_s": 53.2,
+            "signed_delta_rad": 0.005530781573210852,
+            "independent_net_angle_rad": 0.06364154680830669
+          },
+          {
+            "sim_time_s": 53.3,
+            "signed_delta_rad": 0.006314011730959912,
+            "independent_net_angle_rad": 0.0699555585392666
+          },
+          {
+            "sim_time_s": 53.4,
+            "signed_delta_rad": 0.004072036200534868,
+            "independent_net_angle_rad": 0.07402759473980147
+          },
+          {
+            "sim_time_s": 53.5,
+            "signed_delta_rad": 0.005186550319514538,
+            "independent_net_angle_rad": 0.07921414505931601
+          },
+          {
+            "sim_time_s": 53.6,
+            "signed_delta_rad": 0.005348183622996494,
+            "independent_net_angle_rad": 0.0845623286823125
+          },
+          {
+            "sim_time_s": 53.7,
+            "signed_delta_rad": 0.0054238512375563985,
+            "independent_net_angle_rad": 0.0899861799198689
+          },
+          {
+            "sim_time_s": 53.8,
+            "signed_delta_rad": 0.005399091223420083,
+            "independent_net_angle_rad": 0.09538527114328899
+          },
+          {
+            "sim_time_s": 53.9,
+            "signed_delta_rad": 0.00640619695165956,
+            "independent_net_angle_rad": 0.10179146809494855
+          },
+          {
+            "sim_time_s": 54.0,
+            "signed_delta_rad": 0.0042499501474875245,
+            "independent_net_angle_rad": 0.10604141824243607
+          },
+          {
+            "sim_time_s": 54.1,
+            "signed_delta_rad": 0.005329594824730499,
+            "independent_net_angle_rad": 0.11137101306716657
+          },
+          {
+            "sim_time_s": 54.2,
+            "signed_delta_rad": 0.005365015809980278,
+            "independent_net_angle_rad": 0.11673602887714685
+          },
+          {
+            "sim_time_s": 54.3,
+            "signed_delta_rad": 0.005189105690516449,
+            "independent_net_angle_rad": 0.1219251345676633
+          },
+          {
+            "sim_time_s": 54.4,
+            "signed_delta_rad": 0.0060239265699530975,
+            "independent_net_angle_rad": 0.1279490611376164
+          },
+          {
+            "sim_time_s": 54.5,
+            "signed_delta_rad": 0.0040747141389898545,
+            "independent_net_angle_rad": 0.13202377527660625
+          },
+          {
+            "sim_time_s": 54.6,
+            "signed_delta_rad": 0.005155741560987082,
+            "independent_net_angle_rad": 0.13717951683759333
+          },
+          {
+            "sim_time_s": 54.7,
+            "signed_delta_rad": 0.004944232953388195,
+            "independent_net_angle_rad": 0.14212374979098152
+          },
+          {
+            "sim_time_s": 54.8,
+            "signed_delta_rad": 0.004836960154771752,
+            "independent_net_angle_rad": 0.14696070994575328
+          },
+          {
+            "sim_time_s": 54.9,
+            "signed_delta_rad": 0.005002169052748862,
+            "independent_net_angle_rad": 0.15196287899850214
+          },
+          {
+            "sim_time_s": 55.0,
+            "signed_delta_rad": 0.005200915250885174,
+            "independent_net_angle_rad": 0.1571637942493873
+          },
+          {
+            "sim_time_s": 55.1,
+            "signed_delta_rad": 0.005323864374362053,
+            "independent_net_angle_rad": 0.16248765862374936
+          },
+          {
+            "sim_time_s": 55.2,
+            "signed_delta_rad": 0.0053708459687644705,
+            "independent_net_angle_rad": 0.16785850459251384
+          },
+          {
+            "sim_time_s": 55.3,
+            "signed_delta_rad": 0.005387697530578883,
+            "independent_net_angle_rad": 0.17324620212309272
+          },
+          {
+            "sim_time_s": 55.4,
+            "signed_delta_rad": 0.005425082113267532,
+            "independent_net_angle_rad": 0.17867128423636025
+          },
+          {
+            "sim_time_s": 55.5,
+            "signed_delta_rad": 0.005486808189463677,
+            "independent_net_angle_rad": 0.18415809242582393
+          },
+          {
+            "sim_time_s": 55.6,
+            "signed_delta_rad": 0.005542580652874829,
+            "independent_net_angle_rad": 0.18970067307869876
+          },
+          {
+            "sim_time_s": 55.7,
+            "signed_delta_rad": 0.00555722525229374,
+            "independent_net_angle_rad": 0.1952578983309925
+          },
+          {
+            "sim_time_s": 55.8,
+            "signed_delta_rad": 0.005533447715855733,
+            "independent_net_angle_rad": 0.20079134604684823
+          },
+          {
+            "sim_time_s": 55.9,
+            "signed_delta_rad": 0.00549680051065371,
+            "independent_net_angle_rad": 0.20628814655750194
+          },
+          {
+            "sim_time_s": 56.0,
+            "signed_delta_rad": 0.00546911611190648,
+            "independent_net_angle_rad": 0.21175726266940842
+          },
+          {
+            "sim_time_s": 56.1,
+            "signed_delta_rad": 0.005460574308614241,
+            "independent_net_angle_rad": 0.21721783697802266
+          },
+          {
+            "sim_time_s": 56.2,
+            "signed_delta_rad": 0.005468348652300392,
+            "independent_net_angle_rad": 0.22268618563032305
+          },
+          {
+            "sim_time_s": 56.3,
+            "signed_delta_rad": 0.005484535124404388,
+            "independent_net_angle_rad": 0.22817072075472744
+          },
+          {
+            "sim_time_s": 56.4,
+            "signed_delta_rad": 0.005501337792289007,
+            "independent_net_angle_rad": 0.23367205854701645
+          },
+          {
+            "sim_time_s": 56.5,
+            "signed_delta_rad": 0.005519381601327922,
+            "independent_net_angle_rad": 0.23919144014834437
+          },
+          {
+            "sim_time_s": 56.6,
+            "signed_delta_rad": 0.005544286507956464,
+            "independent_net_angle_rad": 0.24473572665630083
+          },
+          {
+            "sim_time_s": 56.7,
+            "signed_delta_rad": 0.005580329711984966,
+            "independent_net_angle_rad": 0.2503160563682858
+          },
+          {
+            "sim_time_s": 56.8,
+            "signed_delta_rad": 0.005630190510347077,
+            "independent_net_angle_rad": 0.2559462468786329
+          },
+          {
+            "sim_time_s": 56.9,
+            "signed_delta_rad": 0.005688305899564483,
+            "independent_net_angle_rad": 0.26163455277819736
+          },
+          {
+            "sim_time_s": 57.0,
+            "signed_delta_rad": 0.005741687254302796,
+            "independent_net_angle_rad": 0.26737624003250016
+          },
+          {
+            "sim_time_s": 57.1,
+            "signed_delta_rad": 0.005780771036769217,
+            "independent_net_angle_rad": 0.2731570110692694
+          },
+          {
+            "sim_time_s": 57.2,
+            "signed_delta_rad": 0.005803330399256623,
+            "independent_net_angle_rad": 0.278960341468526
+          },
+          {
+            "sim_time_s": 57.3,
+            "signed_delta_rad": 0.005812372556504908,
+            "independent_net_angle_rad": 0.2847727140250309
+          },
+          {
+            "sim_time_s": 57.4,
+            "signed_delta_rad": 0.005811617779254874,
+            "independent_net_angle_rad": 0.2905843318042858
+          },
+          {
+            "sim_time_s": 57.5,
+            "signed_delta_rad": 0.00580143607270589,
+            "independent_net_angle_rad": 0.29638576787699167
+          },
+          {
+            "sim_time_s": 57.6,
+            "signed_delta_rad": 0.005785110122505266,
+            "independent_net_angle_rad": 0.30217087799949693
+          },
+          {
+            "sim_time_s": 57.7,
+            "signed_delta_rad": 0.005765813165737654,
+            "independent_net_angle_rad": 0.3079366911652346
+          },
+          {
+            "sim_time_s": 57.8,
+            "signed_delta_rad": 0.005747031867476604,
+            "independent_net_angle_rad": 0.3136837230327112
+          },
+          {
+            "sim_time_s": 57.9,
+            "signed_delta_rad": 0.005733805484482879,
+            "independent_net_angle_rad": 0.31941752851719407
+          },
+          {
+            "sim_time_s": 58.0,
+            "signed_delta_rad": 0.005728522235490363,
+            "independent_net_angle_rad": 0.32514605075268443
+          },
+          {
+            "sim_time_s": 58.1,
+            "signed_delta_rad": 0.005733501667887442,
+            "independent_net_angle_rad": 0.3308795524205719
+          },
+          {
+            "sim_time_s": 58.2,
+            "signed_delta_rad": 0.005749516690665146,
+            "independent_net_angle_rad": 0.336629069111237
+          },
+          {
+            "sim_time_s": 58.3,
+            "signed_delta_rad": 0.005776422491657662,
+            "independent_net_angle_rad": 0.3424054916028947
+          },
+          {
+            "sim_time_s": 58.4,
+            "signed_delta_rad": 0.0069804504568664605,
+            "independent_net_angle_rad": 0.34938594205976115
+          },
+          {
+            "sim_time_s": 58.5,
+            "signed_delta_rad": 0.004692511091625828,
+            "independent_net_angle_rad": 0.354078453151387
+          },
+          {
+            "sim_time_s": 58.6,
+            "signed_delta_rad": 0.005910382380315049,
+            "independent_net_angle_rad": 0.359988835531702
+          },
+          {
+            "sim_time_s": 58.7,
+            "signed_delta_rad": 0.005947977052932707,
+            "independent_net_angle_rad": 0.36593681258463473
+          },
+          {
+            "sim_time_s": 58.8,
+            "signed_delta_rad": 0.00594079236019196,
+            "independent_net_angle_rad": 0.3718776049448267
+          },
+          {
+            "sim_time_s": 58.9,
+            "signed_delta_rad": 0.005695855382643611,
+            "independent_net_angle_rad": 0.3775734603274703
+          },
+          {
+            "sim_time_s": 59.0,
+            "signed_delta_rad": 0.005597364157582163,
+            "independent_net_angle_rad": 0.38317082448505246
+          },
+          {
+            "sim_time_s": 59.1,
+            "signed_delta_rad": 0.005580906805256802,
+            "independent_net_angle_rad": 0.38875173129030927
+          },
+          {
+            "sim_time_s": 59.2,
+            "signed_delta_rad": 0.00665173040677125,
+            "independent_net_angle_rad": 0.3954034616970805
+          },
+          {
+            "sim_time_s": 59.3,
+            "signed_delta_rad": 0.004377022542430886,
+            "independent_net_angle_rad": 0.3997804842395114
+          },
+          {
+            "sim_time_s": 59.4,
+            "signed_delta_rad": 0.00539458766386236,
+            "independent_net_angle_rad": 0.40517507190337376
+          },
+          {
+            "sim_time_s": 59.5,
+            "signed_delta_rad": 0.005323003145317529,
+            "independent_net_angle_rad": 0.4104980750486913
+          },
+          {
+            "sim_time_s": 59.6,
+            "signed_delta_rad": 0.005296218545332909,
+            "independent_net_angle_rad": 0.4157942935940242
+          },
+          {
+            "sim_time_s": 59.7,
+            "signed_delta_rad": 0.00637864684770495,
+            "independent_net_angle_rad": 0.42217294044172915
+          },
+          {
+            "sim_time_s": 59.8,
+            "signed_delta_rad": 0.004279101909821392,
+            "independent_net_angle_rad": 0.42645204235155054
+          },
+          {
+            "sim_time_s": 59.9,
+            "signed_delta_rad": 0.005373092688014225,
+            "independent_net_angle_rad": 0.43182513503956477
+          },
+          {
+            "sim_time_s": 60.0,
+            "signed_delta_rad": 0.005393243967369621,
+            "independent_net_angle_rad": 0.4372183790069344
+          },
+          {
+            "sim_time_s": 60.1,
+            "signed_delta_rad": 0.005414224885490704,
+            "independent_net_angle_rad": 0.4426326038924251
+          },
+          {
+            "sim_time_s": 60.2,
+            "signed_delta_rad": 0.005437006812710976,
+            "independent_net_angle_rad": 0.44806961070513607
+          },
+          {
+            "sim_time_s": 60.3,
+            "signed_delta_rad": 0.005195953367858497,
+            "independent_net_angle_rad": 0.45326556407299456
+          },
+          {
+            "sim_time_s": 60.4,
+            "signed_delta_rad": 0.00510845078570954,
+            "independent_net_angle_rad": 0.4583740148587041
+          },
+          {
+            "sim_time_s": 60.5,
+            "signed_delta_rad": 0.005322573539014108,
+            "independent_net_angle_rad": 0.4636965883977182
+          },
+          {
+            "sim_time_s": 60.6,
+            "signed_delta_rad": 0.005441962307831449,
+            "independent_net_angle_rad": 0.46913855070554966
+          },
+          {
+            "sim_time_s": 60.7,
+            "signed_delta_rad": 0.005449385814780605,
+            "independent_net_angle_rad": 0.47458793652033027
+          },
+          {
+            "sim_time_s": 60.8,
+            "signed_delta_rad": 0.005407944626615091,
+            "independent_net_angle_rad": 0.47999588114694536
+          },
+          {
+            "sim_time_s": 60.9,
+            "signed_delta_rad": 0.005386143161142165,
+            "independent_net_angle_rad": 0.4853820243080875
+          },
+          {
+            "sim_time_s": 61.0,
+            "signed_delta_rad": 0.0054114902237039075,
+            "independent_net_angle_rad": 0.49079351453179143
+          },
+          {
+            "sim_time_s": 61.1,
+            "signed_delta_rad": 0.005462446756781869,
+            "independent_net_angle_rad": 0.4962559612885733
+          },
+          {
+            "sim_time_s": 61.2,
+            "signed_delta_rad": 0.005496186831647432,
+            "independent_net_angle_rad": 0.5017521481202207
+          },
+          {
+            "sim_time_s": 61.3,
+            "signed_delta_rad": 0.005486685691717952,
+            "independent_net_angle_rad": 0.5072388338119387
+          },
+          {
+            "sim_time_s": 61.4,
+            "signed_delta_rad": 0.0054439920360205285,
+            "independent_net_angle_rad": 0.5126828258479592
+          },
+          {
+            "sim_time_s": 61.5,
+            "signed_delta_rad": 0.005402773227752622,
+            "independent_net_angle_rad": 0.5180855990757118
+          },
+          {
+            "sim_time_s": 61.6,
+            "signed_delta_rad": 0.005393043413260301,
+            "independent_net_angle_rad": 0.5234786424889721
+          },
+          {
+            "sim_time_s": 61.7,
+            "signed_delta_rad": 0.005424375720044061,
+            "independent_net_angle_rad": 0.5289030182090162
+          },
+          {
+            "sim_time_s": 61.8,
+            "signed_delta_rad": 0.0054833034656676105,
+            "independent_net_angle_rad": 0.5343863216746838
+          },
+          {
+            "sim_time_s": 61.9,
+            "signed_delta_rad": 0.005549209000327515,
+            "independent_net_angle_rad": 0.5399355306750113
+          },
+          {
+            "sim_time_s": 62.0,
+            "signed_delta_rad": 0.005606793900287954,
+            "independent_net_angle_rad": 0.5455423245752993
+          },
+          {
+            "sim_time_s": 62.1,
+            "signed_delta_rad": 0.005650281383323907,
+            "independent_net_angle_rad": 0.5511926059586232
+          },
+          {
+            "sim_time_s": 62.2,
+            "signed_delta_rad": 0.005687156927347559,
+            "independent_net_angle_rad": 0.5568797628859707
+          },
+          {
+            "sim_time_s": 62.3,
+            "signed_delta_rad": 0.005728445853895092,
+            "independent_net_angle_rad": 0.5626082087398658
+          },
+          {
+            "sim_time_s": 62.4,
+            "signed_delta_rad": 0.005772672219850783,
+            "independent_net_angle_rad": 0.5683808809597166
+          },
+          {
+            "sim_time_s": 62.5,
+            "signed_delta_rad": 0.005807357740640118,
+            "independent_net_angle_rad": 0.5741882387003567
+          },
+          {
+            "sim_time_s": 62.6,
+            "signed_delta_rad": 0.005821270802607081,
+            "independent_net_angle_rad": 0.5800095095029638
+          },
+          {
+            "sim_time_s": 62.7,
+            "signed_delta_rad": 0.005810803281758314,
+            "independent_net_angle_rad": 0.5858203127847221
+          },
+          {
+            "sim_time_s": 62.8,
+            "signed_delta_rad": 0.005782764876252067,
+            "independent_net_angle_rad": 0.5916030776609742
+          },
+          {
+            "sim_time_s": 62.9,
+            "signed_delta_rad": 0.0057488320901120105,
+            "independent_net_angle_rad": 0.5973519097510862
+          },
+          {
+            "sim_time_s": 63.0,
+            "signed_delta_rad": 0.00559050688361129,
+            "independent_net_angle_rad": 0.6029424166346975
+          },
+          {
+            "sim_time_s": 63.1,
+            "signed_delta_rad": 0.004985780428198083,
+            "independent_net_angle_rad": 0.6079281970628956
+          },
+          {
+            "sim_time_s": 63.2,
+            "signed_delta_rad": 0.004193075660170464,
+            "independent_net_angle_rad": 0.612121272723066
+          },
+          {
+            "sim_time_s": 63.3,
+            "signed_delta_rad": 0.0036454858484318287,
+            "independent_net_angle_rad": 0.6157667585714979
+          },
+          {
+            "sim_time_s": 63.4,
+            "signed_delta_rad": 0.0032400239865215674,
+            "independent_net_angle_rad": 0.6190067825580194
+          },
+          {
+            "sim_time_s": 63.5,
+            "signed_delta_rad": 0.002852626158018623,
+            "independent_net_angle_rad": 0.6218594087160381
+          },
+          {
+            "sim_time_s": 63.6,
+            "signed_delta_rad": 0.002427099111797393,
+            "independent_net_angle_rad": 0.6242865078278355
+          },
+          {
+            "sim_time_s": 63.7,
+            "signed_delta_rad": 0.001995638875605721,
+            "independent_net_angle_rad": 0.6262821467034412
+          },
+          {
+            "sim_time_s": 63.8,
+            "signed_delta_rad": 0.001631690026008048,
+            "independent_net_angle_rad": 0.6279138367294492
+          },
+          {
+            "sim_time_s": 136.5,
+            "signed_delta_rad": 0.004590136341445561,
+            "independent_net_angle_rad": 0.6325039730708948
+          },
+          {
+            "sim_time_s": 136.6,
+            "signed_delta_rad": 0.006214941554289588,
+            "independent_net_angle_rad": 0.6387189146251844
+          },
+          {
+            "sim_time_s": 136.7,
+            "signed_delta_rad": 0.004413980208762158,
+            "independent_net_angle_rad": 0.6431328948339465
+          },
+          {
+            "sim_time_s": 136.8,
+            "signed_delta_rad": 0.0057184223145130275,
+            "independent_net_angle_rad": 0.6488513171484596
+          },
+          {
+            "sim_time_s": 136.9,
+            "signed_delta_rad": 0.0058672122096270485,
+            "independent_net_angle_rad": 0.6547185293580866
+          },
+          {
+            "sim_time_s": 137.0,
+            "signed_delta_rad": 0.005955264199087651,
+            "independent_net_angle_rad": 0.6606737935571743
+          },
+          {
+            "sim_time_s": 137.1,
+            "signed_delta_rad": 0.005997786759429857,
+            "independent_net_angle_rad": 0.6666715803166041
+          },
+          {
+            "sim_time_s": 137.2,
+            "signed_delta_rad": 0.005991559033037941,
+            "independent_net_angle_rad": 0.6726631393496421
+          },
+          {
+            "sim_time_s": 137.3,
+            "signed_delta_rad": 0.005965941026381039,
+            "independent_net_angle_rad": 0.6786290803760231
+          },
+          {
+            "sim_time_s": 137.4,
+            "signed_delta_rad": 0.005951020789957795,
+            "independent_net_angle_rad": 0.6845801011659809
+          },
+          {
+            "sim_time_s": 137.5,
+            "signed_delta_rad": 0.005956943832136297,
+            "independent_net_angle_rad": 0.6905370449981172
+          },
+          {
+            "sim_time_s": 137.6,
+            "signed_delta_rad": 0.005975485577770279,
+            "independent_net_angle_rad": 0.6965125305758875
+          },
+          {
+            "sim_time_s": 137.7,
+            "signed_delta_rad": 0.00599609398334966,
+            "independent_net_angle_rad": 0.7025086245592371
+          },
+          {
+            "sim_time_s": 137.8,
+            "signed_delta_rad": 0.006003651438476254,
+            "independent_net_angle_rad": 0.7085122759977134
+          },
+          {
+            "sim_time_s": 137.9,
+            "signed_delta_rad": 0.005988971345238792,
+            "independent_net_angle_rad": 0.7145012473429522
+          },
+          {
+            "sim_time_s": 138.0,
+            "signed_delta_rad": 0.005965677750468412,
+            "independent_net_angle_rad": 0.7204669250934206
+          },
+          {
+            "sim_time_s": 138.1,
+            "signed_delta_rad": 0.00595313296176414,
+            "independent_net_angle_rad": 0.7264200580551847
+          },
+          {
+            "sim_time_s": 138.2,
+            "signed_delta_rad": 0.00595389112581568,
+            "independent_net_angle_rad": 0.7323739491810004
+          },
+          {
+            "sim_time_s": 138.3,
+            "signed_delta_rad": 0.0059592317287275876,
+            "independent_net_angle_rad": 0.738333180909728
+          },
+          {
+            "sim_time_s": 138.4,
+            "signed_delta_rad": 0.00595910654768339,
+            "independent_net_angle_rad": 0.7442922874574114
+          },
+          {
+            "sim_time_s": 138.5,
+            "signed_delta_rad": 0.005951716656592332,
+            "independent_net_angle_rad": 0.7502440041140037
+          },
+          {
+            "sim_time_s": 138.6,
+            "signed_delta_rad": 0.00594367463611567,
+            "independent_net_angle_rad": 0.7561876787501194
+          },
+          {
+            "sim_time_s": 138.7,
+            "signed_delta_rad": 0.005940274189427441,
+            "independent_net_angle_rad": 0.7621279529395468
+          },
+          {
+            "sim_time_s": 138.8,
+            "signed_delta_rad": 0.005951527069569362,
+            "independent_net_angle_rad": 0.7680794800091162
+          },
+          {
+            "sim_time_s": 138.9,
+            "signed_delta_rad": 0.005973115025043718,
+            "independent_net_angle_rad": 0.7740525950341599
+          },
+          {
+            "sim_time_s": 139.0,
+            "signed_delta_rad": 0.006003599243971092,
+            "independent_net_angle_rad": 0.780056194278131
+          },
+          {
+            "sim_time_s": 139.1,
+            "signed_delta_rad": 0.006036869834271208,
+            "independent_net_angle_rad": 0.7860930641124022
+          },
+          {
+            "sim_time_s": 139.2,
+            "signed_delta_rad": 0.00606824971612685,
+            "independent_net_angle_rad": 0.7921613138285291
+          },
+          {
+            "sim_time_s": 139.3,
+            "signed_delta_rad": 0.006093413342020071,
+            "independent_net_angle_rad": 0.7982547271705491
+          },
+          {
+            "sim_time_s": 139.4,
+            "signed_delta_rad": 0.00611184623985217,
+            "independent_net_angle_rad": 0.8043665734104013
+          },
+          {
+            "sim_time_s": 139.5,
+            "signed_delta_rad": 0.006126318579640078,
+            "independent_net_angle_rad": 0.8104928919900414
+          },
+          {
+            "sim_time_s": 139.6,
+            "signed_delta_rad": 0.0061396099082768885,
+            "independent_net_angle_rad": 0.8166325018983183
+          },
+          {
+            "sim_time_s": 139.7,
+            "signed_delta_rad": 0.006152102744375831,
+            "independent_net_angle_rad": 0.8227846046426941
+          },
+          {
+            "sim_time_s": 139.8,
+            "signed_delta_rad": 0.006161405250512786,
+            "independent_net_angle_rad": 0.8289460098932069
+          },
+          {
+            "sim_time_s": 139.9,
+            "signed_delta_rad": 0.0061648310239035276,
+            "independent_net_angle_rad": 0.8351108409171104
+          },
+          {
+            "sim_time_s": 140.0,
+            "signed_delta_rad": 0.006163934167809693,
+            "independent_net_angle_rad": 0.8412747750849201
+          },
+          {
+            "sim_time_s": 140.1,
+            "signed_delta_rad": 0.006156389392651729,
+            "independent_net_angle_rad": 0.8474311644775718
+          },
+          {
+            "sim_time_s": 140.2,
+            "signed_delta_rad": 0.006149111307283128,
+            "independent_net_angle_rad": 0.853580275784855
+          },
+          {
+            "sim_time_s": 140.3,
+            "signed_delta_rad": 0.006143503022768115,
+            "independent_net_angle_rad": 0.8597237788076231
+          },
+          {
+            "sim_time_s": 140.4,
+            "signed_delta_rad": 0.006135301119668313,
+            "independent_net_angle_rad": 0.8658590799272914
+          },
+          {
+            "sim_time_s": 140.5,
+            "signed_delta_rad": 0.006124383166554281,
+            "independent_net_angle_rad": 0.8719834630938457
+          },
+          {
+            "sim_time_s": 140.6,
+            "signed_delta_rad": 0.006111935590406681,
+            "independent_net_angle_rad": 0.8780953986842523
+          },
+          {
+            "sim_time_s": 140.7,
+            "signed_delta_rad": 0.006102413514543326,
+            "independent_net_angle_rad": 0.8841978121987957
+          },
+          {
+            "sim_time_s": 140.8,
+            "signed_delta_rad": 0.00609716699033136,
+            "independent_net_angle_rad": 0.890294979189127
+          },
+          {
+            "sim_time_s": 140.9,
+            "signed_delta_rad": 0.006097538447631834,
+            "independent_net_angle_rad": 0.8963925176367589
+          },
+          {
+            "sim_time_s": 141.0,
+            "signed_delta_rad": 0.006105007993311595,
+            "independent_net_angle_rad": 0.9024975256300705
+          },
+          {
+            "sim_time_s": 141.1,
+            "signed_delta_rad": 0.006117343183900115,
+            "independent_net_angle_rad": 0.9086148688139706
+          },
+          {
+            "sim_time_s": 141.2,
+            "signed_delta_rad": 0.006134853500533666,
+            "independent_net_angle_rad": 0.9147497223145042
+          },
+          {
+            "sim_time_s": 141.3,
+            "signed_delta_rad": 0.006156805241057661,
+            "independent_net_angle_rad": 0.9209065275555619
+          },
+          {
+            "sim_time_s": 141.4,
+            "signed_delta_rad": 0.006179981904840481,
+            "independent_net_angle_rad": 0.9270865094604024
+          },
+          {
+            "sim_time_s": 141.5,
+            "signed_delta_rad": 0.006200211512561449,
+            "independent_net_angle_rad": 0.9332867209729638
+          },
+          {
+            "sim_time_s": 141.6,
+            "signed_delta_rad": 0.006218817168868185,
+            "independent_net_angle_rad": 0.939505538141832
+          },
+          {
+            "sim_time_s": 141.7,
+            "signed_delta_rad": 0.006236597585833614,
+            "independent_net_angle_rad": 0.9457421357276656
+          },
+          {
+            "sim_time_s": 141.8,
+            "signed_delta_rad": 0.006254184482212377,
+            "independent_net_angle_rad": 0.951996320209878
+          },
+          {
+            "sim_time_s": 141.9,
+            "signed_delta_rad": 0.006266606720334522,
+            "independent_net_angle_rad": 0.9582629269302125
+          },
+          {
+            "sim_time_s": 142.0,
+            "signed_delta_rad": 0.006273431553955433,
+            "independent_net_angle_rad": 0.964536358484168
+          },
+          {
+            "sim_time_s": 142.1,
+            "signed_delta_rad": 0.006278113257987439,
+            "independent_net_angle_rad": 0.9708144717421554
+          },
+          {
+            "sim_time_s": 142.2,
+            "signed_delta_rad": 0.006278504909368543,
+            "independent_net_angle_rad": 0.977092976651524
+          },
+          {
+            "sim_time_s": 142.3,
+            "signed_delta_rad": 0.006275380378466533,
+            "independent_net_angle_rad": 0.9833683570299905
+          },
+          {
+            "sim_time_s": 142.4,
+            "signed_delta_rad": 0.006268304769452282,
+            "independent_net_angle_rad": 0.9896366617994428
+          },
+          {
+            "sim_time_s": 142.5,
+            "signed_delta_rad": 0.006257450809009857,
+            "independent_net_angle_rad": 0.9958941126084526
+          },
+          {
+            "sim_time_s": 142.6,
+            "signed_delta_rad": 0.006243315860631871,
+            "independent_net_angle_rad": 1.0021374284690845
+          },
+          {
+            "sim_time_s": 142.7,
+            "signed_delta_rad": 0.006227425583302804,
+            "independent_net_angle_rad": 1.0083648540523873
+          },
+          {
+            "sim_time_s": 142.8,
+            "signed_delta_rad": 0.006212167752030595,
+            "independent_net_angle_rad": 1.0145770218044179
+          },
+          {
+            "sim_time_s": 142.9,
+            "signed_delta_rad": 0.006197605665158701,
+            "independent_net_angle_rad": 1.0207746274695766
+          },
+          {
+            "sim_time_s": 143.0,
+            "signed_delta_rad": 0.006185375462191001,
+            "independent_net_angle_rad": 1.0269600029317676
+          },
+          {
+            "sim_time_s": 143.1,
+            "signed_delta_rad": 0.006177046283974086,
+            "independent_net_angle_rad": 1.0331370492157417
+          },
+          {
+            "sim_time_s": 143.2,
+            "signed_delta_rad": 0.006173569756666275,
+            "independent_net_angle_rad": 1.039310618972408
+          },
+          {
+            "sim_time_s": 143.3,
+            "signed_delta_rad": 0.006175879759465985,
+            "independent_net_angle_rad": 1.045486498731874
+          },
+          {
+            "sim_time_s": 143.4,
+            "signed_delta_rad": 0.006181712873835288,
+            "independent_net_angle_rad": 1.0516682116057092
+          },
+          {
+            "sim_time_s": 143.5,
+            "signed_delta_rad": 0.006192350354947251,
+            "independent_net_angle_rad": 1.0578605619606565
+          },
+          {
+            "sim_time_s": 143.6,
+            "signed_delta_rad": 0.006206653450329114,
+            "independent_net_angle_rad": 1.0640672154109856
+          },
+          {
+            "sim_time_s": 143.7,
+            "signed_delta_rad": 0.006223894801909324,
+            "independent_net_angle_rad": 1.070291110212895
+          },
+          {
+            "sim_time_s": 143.8,
+            "signed_delta_rad": 0.006242598055392179,
+            "independent_net_angle_rad": 1.076533708268287
+          },
+          {
+            "sim_time_s": 143.9,
+            "signed_delta_rad": 0.006257954778881469,
+            "independent_net_angle_rad": 1.0827916630471686
+          },
+          {
+            "sim_time_s": 144.0,
+            "signed_delta_rad": 0.006270671037956976,
+            "independent_net_angle_rad": 1.0890623340851255
+          },
+          {
+            "sim_time_s": 144.1,
+            "signed_delta_rad": 0.006285205437277064,
+            "independent_net_angle_rad": 1.0953475395224026
+          },
+          {
+            "sim_time_s": 144.2,
+            "signed_delta_rad": 0.0062987612411751215,
+            "independent_net_angle_rad": 1.1016463007635777
+          },
+          {
+            "sim_time_s": 144.3,
+            "signed_delta_rad": 0.006308334778514002,
+            "independent_net_angle_rad": 1.1079546355420917
+          },
+          {
+            "sim_time_s": 144.4,
+            "signed_delta_rad": 0.006313623366180465,
+            "independent_net_angle_rad": 1.1142682589082722
+          },
+          {
+            "sim_time_s": 144.5,
+            "signed_delta_rad": 0.006314820111078312,
+            "independent_net_angle_rad": 1.1205830790193505
+          },
+          {
+            "sim_time_s": 144.6,
+            "signed_delta_rad": 0.0063120758016612655,
+            "independent_net_angle_rad": 1.1268951548210118
+          },
+          {
+            "sim_time_s": 144.7,
+            "signed_delta_rad": 0.006305505472416151,
+            "independent_net_angle_rad": 1.133200660293428
+          },
+          {
+            "sim_time_s": 144.8,
+            "signed_delta_rad": 0.006295406332124109,
+            "independent_net_angle_rad": 1.139496066625552
+          },
+          {
+            "sim_time_s": 144.9,
+            "signed_delta_rad": 0.0062828400995940115,
+            "independent_net_angle_rad": 1.145778906725146
+          },
+          {
+            "sim_time_s": 145.0,
+            "signed_delta_rad": 0.006269184153294027,
+            "independent_net_angle_rad": 1.15204809087844
+          },
+          {
+            "sim_time_s": 145.1,
+            "signed_delta_rad": 0.006255065035528418,
+            "independent_net_angle_rad": 1.1583031559139685
+          },
+          {
+            "sim_time_s": 145.2,
+            "signed_delta_rad": 0.006241689097581382,
+            "independent_net_angle_rad": 1.1645448450115499
+          },
+          {
+            "sim_time_s": 145.3,
+            "signed_delta_rad": 0.006231322438984055,
+            "independent_net_angle_rad": 1.170776167450534
+          },
+          {
+            "sim_time_s": 145.4,
+            "signed_delta_rad": 0.006224585545674621,
+            "independent_net_angle_rad": 1.1770007529962085
+          },
+          {
+            "sim_time_s": 145.5,
+            "signed_delta_rad": 0.0062234343124947245,
+            "independent_net_angle_rad": 1.1832241873087033
+          },
+          {
+            "sim_time_s": 145.6,
+            "signed_delta_rad": 0.006226732295417925,
+            "independent_net_angle_rad": 1.1894509196041212
+          },
+          {
+            "sim_time_s": 145.7,
+            "signed_delta_rad": 0.006234156389644863,
+            "independent_net_angle_rad": 1.195685075993766
+          },
+          {
+            "sim_time_s": 145.8,
+            "signed_delta_rad": 0.006244687643622182,
+            "independent_net_angle_rad": 1.2019297636373882
+          },
+          {
+            "sim_time_s": 145.9,
+            "signed_delta_rad": 0.0062578599564968584,
+            "independent_net_angle_rad": 1.208187623593885
+          },
+          {
+            "sim_time_s": 146.0,
+            "signed_delta_rad": 0.006273467516725084,
+            "independent_net_angle_rad": 1.2144610911106102
+          },
+          {
+            "sim_time_s": 146.1,
+            "signed_delta_rad": 0.0062909327808444715,
+            "independent_net_angle_rad": 1.2207520238914547
+          },
+          {
+            "sim_time_s": 146.2,
+            "signed_delta_rad": 0.006308922763568869,
+            "independent_net_angle_rad": 1.2270609466550235
+          },
+          {
+            "sim_time_s": 146.3,
+            "signed_delta_rad": 0.006325998420418699,
+            "independent_net_angle_rad": 1.2333869450754422
+          },
+          {
+            "sim_time_s": 146.4,
+            "signed_delta_rad": 0.006340801400912088,
+            "independent_net_angle_rad": 1.2397277464763543
+          },
+          {
+            "sim_time_s": 146.5,
+            "signed_delta_rad": 0.006352988963919337,
+            "independent_net_angle_rad": 1.2460807354402736
+          },
+          {
+            "sim_time_s": 146.6,
+            "signed_delta_rad": 0.006362200006144292,
+            "independent_net_angle_rad": 1.252442935446418
+          },
+          {
+            "sim_time_s": 146.7,
+            "signed_delta_rad": 0.006367574032700496,
+            "independent_net_angle_rad": 1.2588105094791184
+          },
+          {
+            "sim_time_s": 146.8,
+            "signed_delta_rad": 0.0063685468306537985,
+            "independent_net_angle_rad": 1.2651790563097722
+          },
+          {
+            "sim_time_s": 146.9,
+            "signed_delta_rad": 0.006364973883114189,
+            "independent_net_angle_rad": 1.2715440301928864
+          },
+          {
+            "sim_time_s": 147.0,
+            "signed_delta_rad": 0.006328781351699675,
+            "independent_net_angle_rad": 1.277872811544586
+          },
+          {
+            "sim_time_s": 147.1,
+            "signed_delta_rad": 0.00599775693458815,
+            "independent_net_angle_rad": 1.2838705684791742
+          },
+          {
+            "sim_time_s": 147.2,
+            "signed_delta_rad": 0.005679308992168508,
+            "independent_net_angle_rad": 1.2895498774713428
+          },
+          {
+            "sim_time_s": 147.3,
+            "signed_delta_rad": 0.005492382175960486,
+            "independent_net_angle_rad": 1.2950422596473032
+          },
+          {
+            "sim_time_s": 147.4,
+            "signed_delta_rad": 0.0053851985047677076,
+            "independent_net_angle_rad": 1.300427458152071
+          },
+          {
+            "sim_time_s": 147.5,
+            "signed_delta_rad": 0.005206476323361464,
+            "independent_net_angle_rad": 1.3056339344754324
+          },
+          {
+            "sim_time_s": 147.6,
+            "signed_delta_rad": 0.005063455875288447,
+            "independent_net_angle_rad": 1.3106973903507209
+          },
+          {
+            "sim_time_s": 147.7,
+            "signed_delta_rad": 0.00508647356733638,
+            "independent_net_angle_rad": 1.3157838639180572
+          },
+          {
+            "sim_time_s": 147.8,
+            "signed_delta_rad": 0.005131101466423704,
+            "independent_net_angle_rad": 1.320914965384481
+          },
+          {
+            "sim_time_s": 147.9,
+            "signed_delta_rad": 0.005175398776476214,
+            "independent_net_angle_rad": 1.3260903641609572
+          },
+          {
+            "sim_time_s": 148.0,
+            "signed_delta_rad": 0.005234432619036777,
+            "independent_net_angle_rad": 1.331324796779994
+          },
+          {
+            "sim_time_s": 148.1,
+            "signed_delta_rad": 0.005306629510063665,
+            "independent_net_angle_rad": 1.3366314262900576
+          },
+          {
+            "sim_time_s": 148.2,
+            "signed_delta_rad": 0.005377311814316776,
+            "independent_net_angle_rad": 1.3420087381043744
+          },
+          {
+            "sim_time_s": 148.3,
+            "signed_delta_rad": 0.005433841912228843,
+            "independent_net_angle_rad": 1.3474425800166032
+          },
+          {
+            "sim_time_s": 148.4,
+            "signed_delta_rad": 0.005468219488197867,
+            "independent_net_angle_rad": 1.352910799504801
+          },
+          {
+            "sim_time_s": 148.5,
+            "signed_delta_rad": 0.005485804331470945,
+            "independent_net_angle_rad": 1.358396603836272
+          },
+          {
+            "sim_time_s": 148.6,
+            "signed_delta_rad": 0.005501252797953882,
+            "independent_net_angle_rad": 1.363897856634226
+          },
+          {
+            "sim_time_s": 148.7,
+            "signed_delta_rad": 0.005527235236498562,
+            "independent_net_angle_rad": 1.3694250918707245
+          },
+          {
+            "sim_time_s": 148.8,
+            "signed_delta_rad": 0.005563015208488231,
+            "independent_net_angle_rad": 1.3749881070792127
+          },
+          {
+            "sim_time_s": 148.9,
+            "signed_delta_rad": 0.005599042915089836,
+            "independent_net_angle_rad": 1.3805871499943025
+          },
+          {
+            "sim_time_s": 149.0,
+            "signed_delta_rad": 0.005625058637653169,
+            "independent_net_angle_rad": 1.3862122086319557
+          },
+          {
+            "sim_time_s": 149.1,
+            "signed_delta_rad": 0.005637551167378518,
+            "independent_net_angle_rad": 1.3918497597993342
+          },
+          {
+            "sim_time_s": 149.2,
+            "signed_delta_rad": 0.005640075649933962,
+            "independent_net_angle_rad": 1.3974898354492682
+          },
+          {
+            "sim_time_s": 149.3,
+            "signed_delta_rad": 0.005638923444430954,
+            "independent_net_angle_rad": 1.4031287588936991
+          },
+          {
+            "sim_time_s": 149.4,
+            "signed_delta_rad": 0.005639870927854673,
+            "independent_net_angle_rad": 1.4087686298215538
+          },
+          {
+            "sim_time_s": 149.5,
+            "signed_delta_rad": 0.005644459936491764,
+            "independent_net_angle_rad": 1.4144130897580456
+          },
+          {
+            "sim_time_s": 149.6,
+            "signed_delta_rad": 0.005650137099435071,
+            "independent_net_angle_rad": 1.4200632268574807
+          },
+          {
+            "sim_time_s": 149.7,
+            "signed_delta_rad": 0.005653836657797839,
+            "independent_net_angle_rad": 1.4257170635152785
+          },
+          {
+            "sim_time_s": 149.8,
+            "signed_delta_rad": 0.005654742561873594,
+            "independent_net_angle_rad": 1.431371806077152
+          },
+          {
+            "sim_time_s": 149.9,
+            "signed_delta_rad": 0.0056558707023959265,
+            "independent_net_angle_rad": 1.437027676779548
+          },
+          {
+            "sim_time_s": 150.0,
+            "signed_delta_rad": 0.00679781133737567,
+            "independent_net_angle_rad": 1.4438254881169237
+          },
+          {
+            "sim_time_s": 150.1,
+            "signed_delta_rad": 0.004546294915908966,
+            "independent_net_angle_rad": 1.4483717830328326
+          },
+          {
+            "sim_time_s": 150.2,
+            "signed_delta_rad": 0.005701068209265969,
+            "independent_net_angle_rad": 1.4540728512420986
+          },
+          {
+            "sim_time_s": 150.3,
+            "signed_delta_rad": 0.005720186312283548,
+            "independent_net_angle_rad": 1.4597930375543822
+          },
+          {
+            "sim_time_s": 150.4,
+            "signed_delta_rad": 0.005742601021358595,
+            "independent_net_angle_rad": 1.4655356385757408
+          },
+          {
+            "sim_time_s": 150.5,
+            "signed_delta_rad": 0.005768241013861974,
+            "independent_net_angle_rad": 1.4713038795896027
+          },
+          {
+            "sim_time_s": 150.6,
+            "signed_delta_rad": 0.005795427244374984,
+            "independent_net_angle_rad": 1.4770993068339777
+          },
+          {
+            "sim_time_s": 150.7,
+            "signed_delta_rad": 0.005822227266292224,
+            "independent_net_angle_rad": 1.48292153410027
+          },
+          {
+            "sim_time_s": 150.8,
+            "signed_delta_rad": 0.005848452815304217,
+            "independent_net_angle_rad": 1.4887699869155742
+          },
+          {
+            "sim_time_s": 150.9,
+            "signed_delta_rad": 0.005872448442365119,
+            "independent_net_angle_rad": 1.4946424353579393
+          },
+          {
+            "sim_time_s": 151.0,
+            "signed_delta_rad": 0.0058942240306425475,
+            "independent_net_angle_rad": 1.5005366593885818
+          },
+          {
+            "sim_time_s": 151.1,
+            "signed_delta_rad": 0.005912198163714688,
+            "independent_net_angle_rad": 1.5064488575522965
+          },
+          {
+            "sim_time_s": 151.2,
+            "signed_delta_rad": 0.005926909952842951,
+            "independent_net_angle_rad": 1.5123757675051395
+          },
+          {
+            "sim_time_s": 151.3,
+            "signed_delta_rad": 0.005937770450374025,
+            "independent_net_angle_rad": 1.5183135379555135
+          },
+          {
+            "sim_time_s": 151.4,
+            "signed_delta_rad": 0.005944499870190079,
+            "independent_net_angle_rad": 1.5242580378257036
+          },
+          {
+            "sim_time_s": 151.5,
+            "signed_delta_rad": 0.005947268041459175,
+            "independent_net_angle_rad": 1.5302053058671627
+          },
+          {
+            "sim_time_s": 151.6,
+            "signed_delta_rad": 0.005946924514392826,
+            "independent_net_angle_rad": 1.5361522303815556
+          },
+          {
+            "sim_time_s": 151.7,
+            "signed_delta_rad": 0.0059450378023711,
+            "independent_net_angle_rad": 1.5420972681839267
+          },
+          {
+            "sim_time_s": 151.8,
+            "signed_delta_rad": 0.0059425392227048235,
+            "independent_net_angle_rad": 1.5480398074066315
+          },
+          {
+            "sim_time_s": 151.9,
+            "signed_delta_rad": 0.005940427060036946,
+            "independent_net_angle_rad": 1.5539802344666684
+          },
+          {
+            "sim_time_s": 152.0,
+            "signed_delta_rad": 0.0059393076338110085,
+            "independent_net_angle_rad": 1.5599195421004795
+          },
+          {
+            "sim_time_s": 152.1,
+            "signed_delta_rad": 0.005940478448337672,
+            "independent_net_angle_rad": 1.5658600205488171
+          },
+          {
+            "sim_time_s": 152.2,
+            "signed_delta_rad": 0.005945589712220922,
+            "independent_net_angle_rad": 1.571805610261038
+          },
+          {
+            "sim_time_s": 152.3,
+            "signed_delta_rad": 0.005954503704526104,
+            "independent_net_angle_rad": 1.5777601139655641
+          },
+          {
+            "sim_time_s": 152.4,
+            "signed_delta_rad": 0.005964874010176757,
+            "independent_net_angle_rad": 1.583724987975741
+          },
+          {
+            "sim_time_s": 152.5,
+            "signed_delta_rad": 0.005977863585647558,
+            "independent_net_angle_rad": 1.5897028515613885
+          },
+          {
+            "sim_time_s": 152.6,
+            "signed_delta_rad": 0.005993637135415675,
+            "independent_net_angle_rad": 1.5956964886968041
+          },
+          {
+            "sim_time_s": 152.7,
+            "signed_delta_rad": 0.006011314577595961,
+            "independent_net_angle_rad": 1.6017078032744
+          },
+          {
+            "sim_time_s": 152.8,
+            "signed_delta_rad": 0.0060298856944047685,
+            "independent_net_angle_rad": 1.6077376889688049
+          },
+          {
+            "sim_time_s": 152.9,
+            "signed_delta_rad": 0.006048083369847745,
+            "independent_net_angle_rad": 1.6137857723386526
+          },
+          {
+            "sim_time_s": 153.0,
+            "signed_delta_rad": 0.006065046730936441,
+            "independent_net_angle_rad": 1.619850819069589
+          },
+          {
+            "sim_time_s": 153.1,
+            "signed_delta_rad": 0.006080180496250254,
+            "independent_net_angle_rad": 1.6259309995658393
+          },
+          {
+            "sim_time_s": 153.2,
+            "signed_delta_rad": 0.006093409166879837,
+            "independent_net_angle_rad": 1.6320244087327191
+          },
+          {
+            "sim_time_s": 153.3,
+            "signed_delta_rad": 0.006103904968077778,
+            "independent_net_angle_rad": 1.638128313700797
+          },
+          {
+            "sim_time_s": 153.4,
+            "signed_delta_rad": 0.006111092243857197,
+            "independent_net_angle_rad": 1.6442394059446541
+          },
+          {
+            "sim_time_s": 153.5,
+            "signed_delta_rad": 0.006114867907337729,
+            "independent_net_angle_rad": 1.6503542738519918
+          },
+          {
+            "sim_time_s": 153.6,
+            "signed_delta_rad": 0.006115389169734087,
+            "independent_net_angle_rad": 1.656469663021726
+          },
+          {
+            "sim_time_s": 153.7,
+            "signed_delta_rad": 0.006112820299243538,
+            "independent_net_angle_rad": 1.6625824833209695
+          },
+          {
+            "sim_time_s": 153.8,
+            "signed_delta_rad": 0.006107886239798521,
+            "independent_net_angle_rad": 1.668690369560768
+          },
+          {
+            "sim_time_s": 153.9,
+            "signed_delta_rad": 0.006101600303857424,
+            "independent_net_angle_rad": 1.6747919698646254
+          },
+          {
+            "sim_time_s": 154.0,
+            "signed_delta_rad": 0.006094881402157082,
+            "independent_net_angle_rad": 1.6808868512667825
+          },
+          {
+            "sim_time_s": 154.1,
+            "signed_delta_rad": 0.006088885054727822,
+            "independent_net_angle_rad": 1.6869757363215103
+          },
+          {
+            "sim_time_s": 154.2,
+            "signed_delta_rad": 0.006084022290152813,
+            "independent_net_angle_rad": 1.6930597586116631
+          },
+          {
+            "sim_time_s": 154.3,
+            "signed_delta_rad": 0.0072978492995385835,
+            "independent_net_angle_rad": 1.7003576079112017
+          },
+          {
+            "sim_time_s": 154.4,
+            "signed_delta_rad": 0.00486546002800381,
+            "independent_net_angle_rad": 1.7052230679392055
+          },
+          {
+            "sim_time_s": 154.5,
+            "signed_delta_rad": 0.0060851853084864516,
+            "independent_net_angle_rad": 1.711308253247692
+          },
+          {
+            "sim_time_s": 154.6,
+            "signed_delta_rad": 0.006092999766679874,
+            "independent_net_angle_rad": 1.7174012530143719
+          },
+          {
+            "sim_time_s": 154.7,
+            "signed_delta_rad": 0.00610381979220076,
+            "independent_net_angle_rad": 1.7235050728065726
+          },
+          {
+            "sim_time_s": 154.8,
+            "signed_delta_rad": 0.006115313348509233,
+            "independent_net_angle_rad": 1.7296203861550818
+          },
+          {
+            "sim_time_s": 154.9,
+            "signed_delta_rad": 0.006128833167963421,
+            "independent_net_angle_rad": 1.7357492193230453
+          },
+          {
+            "sim_time_s": 155.0,
+            "signed_delta_rad": 0.006143705756976647,
+            "independent_net_angle_rad": 1.741892925080022
+          },
+          {
+            "sim_time_s": 155.1,
+            "signed_delta_rad": 0.006158869416084123,
+            "independent_net_angle_rad": 1.748051794496106
+          },
+          {
+            "sim_time_s": 155.2,
+            "signed_delta_rad": 0.006173075729601685,
+            "independent_net_angle_rad": 1.7542248702257077
+          },
+          {
+            "sim_time_s": 155.3,
+            "signed_delta_rad": 0.006185529641473231,
+            "independent_net_angle_rad": 1.760410399867181
+          },
+          {
+            "sim_time_s": 155.4,
+            "signed_delta_rad": 0.0061958009652793855,
+            "independent_net_angle_rad": 1.7666062008324603
+          },
+          {
+            "sim_time_s": 155.5,
+            "signed_delta_rad": 0.006203783942110519,
+            "independent_net_angle_rad": 1.7728099847745709
+          },
+          {
+            "sim_time_s": 155.6,
+            "signed_delta_rad": 0.0062091644340780405,
+            "independent_net_angle_rad": 1.779019149208649
+          },
+          {
+            "sim_time_s": 155.7,
+            "signed_delta_rad": 0.006211688656957204,
+            "independent_net_angle_rad": 1.785230837865606
+          },
+          {
+            "sim_time_s": 155.8,
+            "signed_delta_rad": 0.006211788840871257,
+            "independent_net_angle_rad": 1.7914426267064774
+          },
+          {
+            "sim_time_s": 155.9,
+            "signed_delta_rad": 0.006209830133806715,
+            "independent_net_angle_rad": 1.797652456840284
+          },
+          {
+            "sim_time_s": 156.0,
+            "signed_delta_rad": 0.006206356308522398,
+            "independent_net_angle_rad": 1.8038588131488065
+          },
+          {
+            "sim_time_s": 156.1,
+            "signed_delta_rad": 0.0062018431578900746,
+            "independent_net_angle_rad": 1.8100606563066965
+          },
+          {
+            "sim_time_s": 156.2,
+            "signed_delta_rad": 0.006197215542054657,
+            "independent_net_angle_rad": 1.8162578718487512
+          },
+          {
+            "sim_time_s": 156.3,
+            "signed_delta_rad": 0.006193587984314242,
+            "independent_net_angle_rad": 1.8224514598330654
+          },
+          {
+            "sim_time_s": 156.4,
+            "signed_delta_rad": 0.0061918046911397795,
+            "independent_net_angle_rad": 1.8286432645242052
+          },
+          {
+            "sim_time_s": 156.5,
+            "signed_delta_rad": 0.006192390561602146,
+            "independent_net_angle_rad": 1.8348356550858074
+          },
+          {
+            "sim_time_s": 156.6,
+            "signed_delta_rad": 0.0061954067608720464,
+            "independent_net_angle_rad": 1.8410310618466794
+          },
+          {
+            "sim_time_s": 156.7,
+            "signed_delta_rad": 0.006200797902659261,
+            "independent_net_angle_rad": 1.8472318597493387
+          },
+          {
+            "sim_time_s": 156.8,
+            "signed_delta_rad": 0.006208245868287943,
+            "independent_net_angle_rad": 1.8534401056176266
+          },
+          {
+            "sim_time_s": 156.9,
+            "signed_delta_rad": 0.006218014297016072,
+            "independent_net_angle_rad": 1.8596581199146427
+          },
+          {
+            "sim_time_s": 157.0,
+            "signed_delta_rad": 0.0062293669527409,
+            "independent_net_angle_rad": 1.8658874868673836
+          },
+          {
+            "sim_time_s": 157.1,
+            "signed_delta_rad": 0.006241374116064957,
+            "independent_net_angle_rad": 1.8721288609834486
+          },
+          {
+            "sim_time_s": 157.2,
+            "signed_delta_rad": 0.006251951067617334,
+            "independent_net_angle_rad": 1.8783808120510659
+          },
+          {
+            "sim_time_s": 157.3,
+            "signed_delta_rad": 0.006260513330393458,
+            "independent_net_angle_rad": 1.8846413253814593
+          },
+          {
+            "sim_time_s": 157.4,
+            "signed_delta_rad": 0.006268757206369102,
+            "independent_net_angle_rad": 1.8909100825878284
+          },
+          {
+            "sim_time_s": 157.5,
+            "signed_delta_rad": 0.006275592282976472,
+            "independent_net_angle_rad": 1.897185674870805
+          },
+          {
+            "sim_time_s": 157.6,
+            "signed_delta_rad": 0.006280183933092154,
+            "independent_net_angle_rad": 1.903465858803897
+          },
+          {
+            "sim_time_s": 157.7,
+            "signed_delta_rad": 0.006282355568395737,
+            "independent_net_angle_rad": 1.9097482143722928
+          },
+          {
+            "sim_time_s": 157.8,
+            "signed_delta_rad": 0.0062822447478447785,
+            "independent_net_angle_rad": 1.9160304591201376
+          },
+          {
+            "sim_time_s": 157.9,
+            "signed_delta_rad": 0.006280332728610727,
+            "independent_net_angle_rad": 1.9223107918487483
+          },
+          {
+            "sim_time_s": 158.0,
+            "signed_delta_rad": 0.0062771615280441395,
+            "independent_net_angle_rad": 1.9285879533767925
+          },
+          {
+            "sim_time_s": 158.1,
+            "signed_delta_rad": 0.006272979716089644,
+            "independent_net_angle_rad": 1.934860933092882
+          },
+          {
+            "sim_time_s": 158.2,
+            "signed_delta_rad": 0.00626824848410612,
+            "independent_net_angle_rad": 1.9411291815769882
+          },
+          {
+            "sim_time_s": 158.3,
+            "signed_delta_rad": 0.006263259852008041,
+            "independent_net_angle_rad": 1.9473924414289963
+          },
+          {
+            "sim_time_s": 158.4,
+            "signed_delta_rad": 0.00625860138954204,
+            "independent_net_angle_rad": 1.9536510428185383
+          },
+          {
+            "sim_time_s": 158.5,
+            "signed_delta_rad": 0.006254921197724528,
+            "independent_net_angle_rad": 1.9599059640162628
+          },
+          {
+            "sim_time_s": 158.6,
+            "signed_delta_rad": 0.006252863812467702,
+            "independent_net_angle_rad": 1.9661588278287305
+          },
+          {
+            "sim_time_s": 158.7,
+            "signed_delta_rad": 0.006252916464135616,
+            "independent_net_angle_rad": 1.9724117442928661
+          },
+          {
+            "sim_time_s": 158.8,
+            "signed_delta_rad": 0.006255040954894486,
+            "independent_net_angle_rad": 1.9786667852477606
+          },
+          {
+            "sim_time_s": 158.9,
+            "signed_delta_rad": 0.006258769777187201,
+            "independent_net_angle_rad": 1.9849255550249478
+          },
+          {
+            "sim_time_s": 159.0,
+            "signed_delta_rad": 0.0062637111439363125,
+            "independent_net_angle_rad": 1.9911892661688841
+          },
+          {
+            "sim_time_s": 159.1,
+            "signed_delta_rad": 0.006269390714940037,
+            "independent_net_angle_rad": 1.9974586568838242
+          },
+          {
+            "sim_time_s": 159.2,
+            "signed_delta_rad": 0.0062756051430787885,
+            "independent_net_angle_rad": 2.003734262026903
+          },
+          {
+            "sim_time_s": 159.3,
+            "signed_delta_rad": 0.006282207934168227,
+            "independent_net_angle_rad": 2.010016469961071
+          },
+          {
+            "sim_time_s": 159.4,
+            "signed_delta_rad": 0.00628852552781245,
+            "independent_net_angle_rad": 2.0163049954888836
+          },
+          {
+            "sim_time_s": 159.5,
+            "signed_delta_rad": 0.006293640025114122,
+            "independent_net_angle_rad": 2.0225986355139978
+          },
+          {
+            "sim_time_s": 159.6,
+            "signed_delta_rad": 0.0062972082925436546,
+            "independent_net_angle_rad": 2.0288958438065414
+          },
+          {
+            "sim_time_s": 159.7,
+            "signed_delta_rad": 0.006298960109254015,
+            "independent_net_angle_rad": 2.0351948039157954
+          },
+          {
+            "sim_time_s": 159.8,
+            "signed_delta_rad": 0.006299049736946394,
+            "independent_net_angle_rad": 2.041493853652742
+          },
+          {
+            "sim_time_s": 159.9,
+            "signed_delta_rad": 0.006297865404486291,
+            "independent_net_angle_rad": 2.047791719057228
+          },
+          {
+            "sim_time_s": 160.0,
+            "signed_delta_rad": 0.006295891409875853,
+            "independent_net_angle_rad": 2.054087610467104
+          },
+          {
+            "sim_time_s": 160.1,
+            "signed_delta_rad": 0.006293322144978131,
+            "independent_net_angle_rad": 2.060380932612082
+          },
+          {
+            "sim_time_s": 160.2,
+            "signed_delta_rad": 0.006290219556542631,
+            "independent_net_angle_rad": 2.0666711521686247
+          },
+          {
+            "sim_time_s": 160.3,
+            "signed_delta_rad": 0.0062871161505557716,
+            "independent_net_angle_rad": 2.0729582683191805
+          },
+          {
+            "sim_time_s": 160.4,
+            "signed_delta_rad": 0.006283595398653752,
+            "independent_net_angle_rad": 2.0792418637178343
+          },
+          {
+            "sim_time_s": 160.5,
+            "signed_delta_rad": 0.006039261210402103,
+            "independent_net_angle_rad": 2.0852811249282364
+          },
+          {
+            "sim_time_s": 160.6,
+            "signed_delta_rad": 0.005684475781257081,
+            "independent_net_angle_rad": 2.0909656007094934
+          },
+          {
+            "sim_time_s": 160.7,
+            "signed_delta_rad": 0.005547668449112031,
+            "independent_net_angle_rad": 2.0965132691586055
+          },
+          {
+            "sim_time_s": 160.8,
+            "signed_delta_rad": 0.0055418997840082085,
+            "independent_net_angle_rad": 2.1020551689426137
+          },
+          {
+            "sim_time_s": 160.9,
+            "signed_delta_rad": 0.005513353269076315,
+            "independent_net_angle_rad": 2.10756852221169
+          },
+          {
+            "sim_time_s": 161.0,
+            "signed_delta_rad": 0.005270886539403996,
+            "independent_net_angle_rad": 2.112839408751094
+          },
+          {
+            "sim_time_s": 161.1,
+            "signed_delta_rad": 0.005100978066011397,
+            "independent_net_angle_rad": 2.1179403868171054
+          },
+          {
+            "sim_time_s": 161.2,
+            "signed_delta_rad": 0.005195004844839701,
+            "independent_net_angle_rad": 2.123135391661945
+          },
+          {
+            "sim_time_s": 161.3,
+            "signed_delta_rad": 0.005274144333388353,
+            "independent_net_angle_rad": 2.1284095359953334
+          },
+          {
+            "sim_time_s": 161.4,
+            "signed_delta_rad": 0.005329651303535687,
+            "independent_net_angle_rad": 2.133739187298869
+          },
+          {
+            "sim_time_s": 161.5,
+            "signed_delta_rad": 0.005364096051986067,
+            "independent_net_angle_rad": 2.139103283350855
+          },
+          {
+            "sim_time_s": 161.6,
+            "signed_delta_rad": 0.005388281890156943,
+            "independent_net_angle_rad": 2.144491565241012
+          },
+          {
+            "sim_time_s": 161.7,
+            "signed_delta_rad": 0.0054125310889863165,
+            "independent_net_angle_rad": 2.1499040963299985
+          },
+          {
+            "sim_time_s": 161.8,
+            "signed_delta_rad": 0.005440422580626603,
+            "independent_net_angle_rad": 2.155344518910625
+          },
+          {
+            "sim_time_s": 161.9,
+            "signed_delta_rad": 0.005469854111811223,
+            "independent_net_angle_rad": 2.1608143730224363
+          },
+          {
+            "sim_time_s": 162.0,
+            "signed_delta_rad": 0.0054952581999581085,
+            "independent_net_angle_rad": 2.1663096312223944
+          },
+          {
+            "sim_time_s": 162.1,
+            "signed_delta_rad": 0.005514549462482421,
+            "independent_net_angle_rad": 2.171824180684877
+          },
+          {
+            "sim_time_s": 162.2,
+            "signed_delta_rad": 0.005530005455599785,
+            "independent_net_angle_rad": 2.1773541861404766
+          },
+          {
+            "sim_time_s": 162.3,
+            "signed_delta_rad": 0.005544242268416433,
+            "independent_net_angle_rad": 2.182898428408893
+          },
+          {
+            "sim_time_s": 162.4,
+            "signed_delta_rad": 0.005559251351238359,
+            "independent_net_angle_rad": 2.1884576797601314
+          },
+          {
+            "sim_time_s": 162.5,
+            "signed_delta_rad": 0.0055761790875368256,
+            "independent_net_angle_rad": 2.194033858847668
+          },
+          {
+            "sim_time_s": 162.6,
+            "signed_delta_rad": 0.005595160112418451,
+            "independent_net_angle_rad": 2.1996290189600867
+          },
+          {
+            "sim_time_s": 162.7,
+            "signed_delta_rad": 0.005614486413147102,
+            "independent_net_angle_rad": 2.2052435053732338
+          },
+          {
+            "sim_time_s": 162.8,
+            "signed_delta_rad": 0.005632243676479298,
+            "independent_net_angle_rad": 2.210875749049713
+          },
+          {
+            "sim_time_s": 162.9,
+            "signed_delta_rad": 0.00564778677911093,
+            "independent_net_angle_rad": 2.216523535828824
+          },
+          {
+            "sim_time_s": 163.0,
+            "signed_delta_rad": 0.005662415037417823,
+            "independent_net_angle_rad": 2.222185950866242
+          },
+          {
+            "sim_time_s": 163.1,
+            "signed_delta_rad": 0.005677547859854748,
+            "independent_net_angle_rad": 2.2278634987260966
+          },
+          {
+            "sim_time_s": 163.2,
+            "signed_delta_rad": 0.005693556146160628,
+            "independent_net_angle_rad": 2.233557054872257
+          },
+          {
+            "sim_time_s": 163.3,
+            "signed_delta_rad": 0.005709692800819344,
+            "independent_net_angle_rad": 2.2392667476730765
+          },
+          {
+            "sim_time_s": 163.4,
+            "signed_delta_rad": 0.005724791496056092,
+            "independent_net_angle_rad": 2.2449915391691326
+          },
+          {
+            "sim_time_s": 163.5,
+            "signed_delta_rad": 0.0057383973113775966,
+            "independent_net_angle_rad": 2.2507299364805102
+          },
+          {
+            "sim_time_s": 163.6,
+            "signed_delta_rad": 0.005750548280065271,
+            "independent_net_angle_rad": 2.2564804847605755
+          },
+          {
+            "sim_time_s": 163.7,
+            "signed_delta_rad": 0.0057623267708013515,
+            "independent_net_angle_rad": 2.262242811531377
+          },
+          {
+            "sim_time_s": 163.8,
+            "signed_delta_rad": 0.005774206610177579,
+            "independent_net_angle_rad": 2.2680170181415544
+          },
+          {
+            "sim_time_s": 163.9,
+            "signed_delta_rad": 0.005785899878897549,
+            "independent_net_angle_rad": 2.273802918020452
+          },
+          {
+            "sim_time_s": 164.0,
+            "signed_delta_rad": 0.005797579873133785,
+            "independent_net_angle_rad": 2.2796004978935858
+          },
+          {
+            "sim_time_s": 164.1,
+            "signed_delta_rad": 0.0058093119313209485,
+            "independent_net_angle_rad": 2.2854098098249067
+          },
+          {
+            "sim_time_s": 164.2,
+            "signed_delta_rad": 0.005821118377808077,
+            "independent_net_angle_rad": 2.291230928202715
+          },
+          {
+            "sim_time_s": 164.3,
+            "signed_delta_rad": 0.0058327224814478384,
+            "independent_net_angle_rad": 2.2970636506841626
+          },
+          {
+            "sim_time_s": 164.4,
+            "signed_delta_rad": 0.005844229286174674,
+            "independent_net_angle_rad": 2.3029078799703373
+          },
+          {
+            "sim_time_s": 164.5,
+            "signed_delta_rad": 0.0058561987542256055,
+            "independent_net_angle_rad": 2.308764078724563
+          },
+          {
+            "sim_time_s": 164.6,
+            "signed_delta_rad": 0.005868684754914977,
+            "independent_net_angle_rad": 2.314632763479478
+          },
+          {
+            "sim_time_s": 164.7,
+            "signed_delta_rad": 0.005881088355721875,
+            "independent_net_angle_rad": 2.3205138518351998
+          },
+          {
+            "sim_time_s": 164.8,
+            "signed_delta_rad": 0.005892679782181887,
+            "independent_net_angle_rad": 2.3264065316173816
+          },
+          {
+            "sim_time_s": 164.9,
+            "signed_delta_rad": 0.005903263488525656,
+            "independent_net_angle_rad": 2.3323097951059073
+          },
+          {
+            "sim_time_s": 165.0,
+            "signed_delta_rad": 0.005913024450329818,
+            "independent_net_angle_rad": 2.338222819556237
+          },
+          {
+            "sim_time_s": 165.1,
+            "signed_delta_rad": 0.005921956280397822,
+            "independent_net_angle_rad": 2.344144775836635
+          },
+          {
+            "sim_time_s": 165.2,
+            "signed_delta_rad": 0.0059299416923810355,
+            "independent_net_angle_rad": 2.350074717529016
+          },
+          {
+            "sim_time_s": 165.3,
+            "signed_delta_rad": 0.0059370492096992855,
+            "independent_net_angle_rad": 2.3560117667387153
+          },
+          {
+            "sim_time_s": 165.4,
+            "signed_delta_rad": 0.0059439204092393005,
+            "independent_net_angle_rad": 2.3619556871479546
+          },
+          {
+            "sim_time_s": 165.5,
+            "signed_delta_rad": 0.005950479318501234,
+            "independent_net_angle_rad": 2.367906166466456
+          },
+          {
+            "sim_time_s": 165.6,
+            "signed_delta_rad": 0.005957059300469858,
+            "independent_net_angle_rad": 2.3738632257669257
+          },
+          {
+            "sim_time_s": 165.7,
+            "signed_delta_rad": 0.005964066578217242,
+            "independent_net_angle_rad": 2.379827292345143
+          },
+          {
+            "sim_time_s": 165.8,
+            "signed_delta_rad": 0.005971696032352369,
+            "independent_net_angle_rad": 2.3857989883774953
+          },
+          {
+            "sim_time_s": 165.9,
+            "signed_delta_rad": 0.0059804145660842245,
+            "independent_net_angle_rad": 2.3917794029435795
+          },
+          {
+            "sim_time_s": 166.0,
+            "signed_delta_rad": 0.005990439005463255,
+            "independent_net_angle_rad": 2.3977698419490427
+          },
+          {
+            "sim_time_s": 166.1,
+            "signed_delta_rad": 0.006001666506721293,
+            "independent_net_angle_rad": 2.403771508455764
+          },
+          {
+            "sim_time_s": 166.2,
+            "signed_delta_rad": 0.006013947599027514,
+            "independent_net_angle_rad": 2.4097854560547916
+          },
+          {
+            "sim_time_s": 166.3,
+            "signed_delta_rad": 0.006026152485033798,
+            "independent_net_angle_rad": 2.4158116085398254
+          },
+          {
+            "sim_time_s": 166.4,
+            "signed_delta_rad": 0.006038131429590976,
+            "independent_net_angle_rad": 2.4218497399694163
+          },
+          {
+            "sim_time_s": 166.5,
+            "signed_delta_rad": 0.006050530324586578,
+            "independent_net_angle_rad": 2.427900270294003
+          },
+          {
+            "sim_time_s": 166.6,
+            "signed_delta_rad": 0.006062319859218679,
+            "independent_net_angle_rad": 2.4339625901532216
+          },
+          {
+            "sim_time_s": 166.7,
+            "signed_delta_rad": 0.006072727165701508,
+            "independent_net_angle_rad": 2.440035317318923
+          },
+          {
+            "sim_time_s": 166.8,
+            "signed_delta_rad": 0.006081380447202633,
+            "independent_net_angle_rad": 2.4461166977661257
+          },
+          {
+            "sim_time_s": 166.9,
+            "signed_delta_rad": 0.0060879516186873595,
+            "independent_net_angle_rad": 2.452204649384813
+          },
+          {
+            "sim_time_s": 167.0,
+            "signed_delta_rad": 0.006092614766044058,
+            "independent_net_angle_rad": 2.458297264150857
+          },
+          {
+            "sim_time_s": 167.1,
+            "signed_delta_rad": 0.006095404672432192,
+            "independent_net_angle_rad": 2.4643926688232893
+          },
+          {
+            "sim_time_s": 167.2,
+            "signed_delta_rad": 0.006096741285532836,
+            "independent_net_angle_rad": 2.470489410108822
+          },
+          {
+            "sim_time_s": 167.3,
+            "signed_delta_rad": 0.00609702315742755,
+            "independent_net_angle_rad": 2.4765864332662497
+          },
+          {
+            "sim_time_s": 167.4,
+            "signed_delta_rad": 0.006096810336043923,
+            "independent_net_angle_rad": 2.4826832436022936
+          },
+          {
+            "sim_time_s": 167.5,
+            "signed_delta_rad": 0.006096942506733427,
+            "independent_net_angle_rad": 2.488780186109027
+          },
+          {
+            "sim_time_s": 167.6,
+            "signed_delta_rad": 0.006098112361629493,
+            "independent_net_angle_rad": 2.4948782984706566
+          },
+          {
+            "sim_time_s": 167.7,
+            "signed_delta_rad": 0.006101924569948292,
+            "independent_net_angle_rad": 2.500980223040605
+          },
+          {
+            "sim_time_s": 167.8,
+            "signed_delta_rad": 0.006108050970439205,
+            "independent_net_angle_rad": 2.507088274011044
+          },
+          {
+            "sim_time_s": 167.9,
+            "signed_delta_rad": 0.006115430568057967,
+            "independent_net_angle_rad": 2.513203704579102
+          },
+          {
+            "sim_time_s": 168.0,
+            "signed_delta_rad": 0.006124075899150316,
+            "independent_net_angle_rad": 2.5193277804782523
+          },
+          {
+            "sim_time_s": 168.1,
+            "signed_delta_rad": 0.006134440495106919,
+            "independent_net_angle_rad": 2.5254622209733593
+          },
+          {
+            "sim_time_s": 168.2,
+            "signed_delta_rad": 0.006146212760731906,
+            "independent_net_angle_rad": 2.531608433734091
+          },
+          {
+            "sim_time_s": 168.3,
+            "signed_delta_rad": 0.00615860490194331,
+            "independent_net_angle_rad": 2.5377670386360345
+          },
+          {
+            "sim_time_s": 168.4,
+            "signed_delta_rad": 0.006170627617576585,
+            "independent_net_angle_rad": 2.543937666253611
+          },
+          {
+            "sim_time_s": 168.5,
+            "signed_delta_rad": 0.0061813088555364715,
+            "independent_net_angle_rad": 2.5501189751091475
+          },
+          {
+            "sim_time_s": 168.6,
+            "signed_delta_rad": 0.006190050838063232,
+            "independent_net_angle_rad": 2.5563090259472108
+          },
+          {
+            "sim_time_s": 168.7,
+            "signed_delta_rad": 0.006196169207330016,
+            "independent_net_angle_rad": 2.562505195154541
+          },
+          {
+            "sim_time_s": 168.8,
+            "signed_delta_rad": 0.006199383556165117,
+            "independent_net_angle_rad": 2.568704578710706
+          },
+          {
+            "sim_time_s": 168.9,
+            "signed_delta_rad": 0.0061992915757009825,
+            "independent_net_angle_rad": 2.574903870286407
+          },
+          {
+            "sim_time_s": 169.0,
+            "signed_delta_rad": 0.006196084240793542,
+            "independent_net_angle_rad": 2.5810999545272004
+          },
+          {
+            "sim_time_s": 169.1,
+            "signed_delta_rad": 0.0061853423959816745,
+            "independent_net_angle_rad": 2.587285296923182
+          },
+          {
+            "sim_time_s": 169.2,
+            "signed_delta_rad": 0.005551697122782695,
+            "independent_net_angle_rad": 2.592836994045965
+          },
+          {
+            "sim_time_s": 169.3,
+            "signed_delta_rad": 0.004632500910764392,
+            "independent_net_angle_rad": 2.597469494956729
+          }
+        ],
+        "passed": false
+      }
+    }
+  ],
+  "interrupted": false,
+  "source_after": {
+    "git_commit": "81ab8ed1a228a23f8c1f0a1c071ef4acdfbe34dd",
+    "source_sha256": "7a0be0c9b0f10b59350e34b140d22bb79f90aa6185b9831fe1c86c960a800783",
+    "files": {
+      "src/core/common/common/__init__.py": "d4700df005c935ef6cceaadbcdba1b7d0a3047c41169049d4ae09820bf517316",
+      "src/core/common/common/collision.py": "0a5d9bb20ef06b7c2d623f76110e7466bae13945af4fecdc056e8c6b63b694e0",
+      "src/core/common/common/dynamics.py": "5a003f2ee1f7eef583c7f268002dd3fcbca4b2f5fcc647538fdb9884387e7319",
+      "src/core/common/common/geodesy.py": "e54850c3d3227fb90bd379b05fa314fe1fc230bd2ed54a30efb7d3eca2d916a3",
+      "src/core/common/common/math_helper.py": "9d68927cb51ee686a03cbd5d4f7f7e3bf9ea50755ed537b8ea65ea38af223cc0",
+      "src/core/common/common/models.py": "46f0b0196090347751223516df139920b4cee7317c1c27c394d63e5304058b74",
+      "src/core/common/common/visualizer.py": "0947a9d79a84d4413a9c7246a252c635e0a978bf2090dcef27c301f2af25294b",
+      "src/core/common/package.xml": "36cc289e2141601504fee99bafcded88036d12522b6515ec355c34bde6258a00",
+      "src/core/common/setup.py": "6a7da9832a25e98e7b3d16fdda83155d34d296ec2b233c1db1d8336db0a59469",
+      "src/core/common/test/test_collision.py": "efac7dfdb75257b8c4b9e7a7c6f7bb87b58b03763c7fecdc8fcec0773c45bc9a",
+      "src/core/common/test/test_dynamics.py": "6950ee8b35246a0dbe435f1c78952cbf38f82c083f6806e5756e7e1a28b93917",
+      "src/core/common/test/test_geodesy.py": "7fab0338374d390d92c083b8a07c1418a4b58ada272fea4c142cd22e59aa55e1",
+      "src/core/common/test/test_models.py": "7445581eb762609791c27ae9889f3f65d94956dab26bcbb1a0af5e681845f853",
+      "src/core/controller/controller/controller/__init__.py": "a4c2fb34298b496fa3be302396cd3f61248c4437538e1828c1432dfeed00e197",
+      "src/core/controller/controller/controller/controller.py": "b25e305f9375902a7b2b822e946fe714a727d963103071817e972e572db0e865",
+      "src/core/controller/controller/controller/controller_factory.py": "5abb3753dae62f35be00ef05502fb8400e25212c6be0e4cc037e310513c0b937",
+      "src/core/controller/controller/controller/lqr_controller.py": "d33d877dedd63653112f42937d0566202c223b20a29f7e0e51b703067dcca40a",
+      "src/core/controller/controller/controller/pid_controller.py": "d34540b42cd68ec9fc2b89e002c6ef2b6619a2014440ee84a90e8f0ae54705ba",
+      "src/core/controller/controller/controller/station_keeping_controller.py": "82c9a5225bf0f8834c22717edaeca1c7cc6239b09ab45c136e75ccd0312918d8",
+      "src/core/controller/controller/package.xml": "e35b1004ec014848057d24a22c9443ce4db6617e499878503c806c74f29d3f5a",
+      "src/core/controller/controller/setup.py": "c7fb74db8cf39c0642f3e62409464f28ed62f803fbb0f91648a0205d3eda7529",
+      "src/core/controller/controller/test/test_controllers.py": "7ec9655a3e47032c75c12cec21db0d109efb58477fe66c1970de95ff2ff43d17",
+      "src/core/controller/controller/test/test_station_keeping.py": "180a5d4f48715881cfb41e1b76ec0577192a77c35b3c4834dbd7e7201f83fa02",
+      "src/core/path_planner/path_planner/package.xml": "81e3c53d5f5d77de099fb8dc674c79ddcd38821279253c6e4e7d3f49f49bf488",
+      "src/core/path_planner/path_planner/path_planner/__init__.py": "977e85766c2ff91ad639aec954b82e61c1404e816ec5fb4e2730c1951007f68f",
+      "src/core/path_planner/path_planner/path_planner/graph_planner/__init__.py": "f6185290b0adc72fec056468b235aa1158feddb41b3918643028c6cfb91e5cbd",
+      "src/core/path_planner/path_planner/path_planner/graph_planner/astar_planner.py": "e59cf8174a18488323057463ea31c06c8e993a2818319931dfa644c29f1bc659",
+      "src/core/path_planner/path_planner/path_planner/path_planner.py": "62f70edb52a2a8fa687dbe054a2df1acf4102aa4debdf2ad1ea2d89090b4a2c3",
+      "src/core/path_planner/path_planner/path_planner/path_planner_core.py": "ba28ca32373067906d7cd0163be5708bc7f85336b3a268ebb149febcf4b63980",
+      "src/core/path_planner/path_planner/path_planner/utils/__init__.py": "14896622e4edc7a82651ffdfc60da4c3a0f18ea8e9a1de64bfeb72d547ad3447",
+      "src/core/path_planner/path_planner/path_planner/utils/path_planner_factory.py": "76a5121ca5cfc4d971384d44fe052b59c1837595be858a11fc644a7fd3033a8c",
+      "src/core/path_planner/path_planner/setup.py": "01964b6c88b78b5dbaa0099e67d69cabd1fc2570f07d2b869541c357ce268eb4",
+      "src/core/path_planner/path_planner/test/test_grid_planning.py": "0e064deeaecd2c5afaec5d0f4e899fa59b9637c029ad46eaee64f088f7c4d2a5",
+      "src/core/path_planner/path_processor/package.xml": "14ccd31272bfadabe736937da7b94eae5d2275b64355631a7b1ef8e42530500b",
+      "src/core/path_planner/path_processor/path_processor/__init__.py": "1a2c25c234aff489bf449056cac2a737765081a6269c0033a50437cee17c4d5f",
+      "src/core/path_planner/path_processor/path_processor/path_processor.py": "e1659dbaa4dbdf8e878150b8c5daf4c75b1b6c4355f1b08d6cc0a96fa321284c",
+      "src/core/path_planner/path_processor/path_processor/ramer_douglas_peucker.py": "28111b70e19bcfe9c655ac7e87c6cfb600528f5a3784a27aa78ea0b05ea8a982",
+      "src/core/path_planner/path_processor/path_processor/savitzky_golay.py": "089e3963d012301373b0ea4558f7bbace81ef7d1323a4eb2d6e687a17824b536",
+      "src/core/path_planner/path_processor/setup.py": "10d5e304fef8747d8c2bc162eab86b2b980abbab826ad20657d472294271e6e6",
+      "src/core/path_planner/path_processor/test/test_processing.py": "1df322bbc9870ab28a162a3160ace426d97df55386b252a0f50b402057f9ff40",
+      "src/core/perception/package.xml": "c479f9aba867b3e4c16a590d1c4e20fa5f89fcffee9dd3be225dc6bd45158457",
+      "src/core/perception/perception/__init__.py": "c1ed2a4671bb3e2dad0156d6f53f4bebe1e68cef639abef3126fb59c72bf9639",
+      "src/core/perception/perception/mapping.py": "17bd0b71d8a564b691337e514333c662839d97a574dc7057e88e75c0bccd17e0",
+      "src/core/perception/perception/mapping_node.py": "e395697ec60a44fb7d63129f4fe95fa8bd2f830c4308f93efa517886d2fa6fbb",
+      "src/core/perception/perception/scan_queue.py": "77cd6b567a5b4e56ac39a1a34359b00d2c1b571e75ed0d8731bbba4ade56aa3a",
+      "src/core/perception/scripts/tf_process/usv_tf_expander.py": "c2ecb969d7276834a3e70d9fbdc00875a39fcb6d69c7663f8ad81d6a77557ef5",
+      "src/core/perception/setup.py": "7fe3466e5b6cebebecb21733b1c5cb2a8a55584075c26d7a5ab8ac9013360608",
+      "src/core/perception/test/benchmark_mapping.py": "a8394129d56b5f3c6220767df42faa449eaf369184d93a4c206ab79b322ce7e4",
+      "src/core/perception/test/run_ros_tests.bash": "e4279375a037ba0c7da2eafe6e53b22701448ee9a210a1f54790792c37e14565",
+      "src/core/perception/test/test_mapping.py": "1f267ee8e6899eb792cecb05c7916fc0a373b770b6f43bddf75e5add68dba466",
+      "src/core/perception/test/test_mapping_deadline_ros.py": "6d5b3d84c140c26b111645c62f63861eebf13a430d717812e7c2a3bf86c90dc4",
+      "src/core/perception/test/test_mapping_ros.py": "2898efed8fc6652c40a264adeace282d355c843bd3809f56c91331ab6a8936fd",
+      "src/core/perception/test/test_scan_queue.py": "c1b893ed2286fbc4da305c7d1277e238904b93aa029b5698b0a7e02368de8268",
+      "src/core/trajectory_planner/package.xml": "6301018f4fa60c2d6c29bcfbf91b37a848f71988a2a452f7b2b5e0cc23423f67",
+      "src/core/trajectory_planner/setup.py": "9252d0a4ca00dce88abf45a9c3d34ff6269e67da2824b6eee2671aaf02f116fa",
+      "src/core/trajectory_planner/test/test_circle.py": "8120f38252fac7c48ccddd95a97946402f17d738762180faa834539f34cb18bf",
+      "src/core/trajectory_planner/test/test_los.py": "c752d9cf596381be67e1d00718f53958004f6eb6627fdff7a191fc8679c188b0",
+      "src/core/trajectory_planner/test/test_trajectory.py": "ffc0d062b2dd0a47f4deeda255b1a392564aa09d627d757a12d4f714ffeab4a3",
+      "src/core/trajectory_planner/trajectory_planner/__init__.py": "6bc14a352f9e344993400271edfd80259a705846bc8be7e4ad10cae427a83f7f",
+      "src/core/trajectory_planner/trajectory_planner/circle.py": "46d9f4ea8c591c5f040980af8afb53f7232605b2dc2e6253bfe6de408d92ed6e",
+      "src/core/trajectory_planner/trajectory_planner/los_trajectory_planner.py": "401bf5a30a76850b2ff0042a3b1e7aee81957af15e86c49afd1cdea6c129bfca",
+      "src/core/trajectory_planner/trajectory_planner/trajectory.py": "cc5b2f0e3ba35397f6a37572c3f96c235a79f60a34b02f6ac5b29dc1ff8a86f7",
+      "src/core/trajectory_planner/trajectory_planner/trajectory_planner_factory.py": "a4901296628492a8979f1b8b8c172a4f8607a68146e470c05500244247bb6609",
+      "src/core/usv_mission_interfaces/CMakeLists.txt": "749055a67368e325c3678c520ec5a68b1b46970acba17b6cffe1a02fb23892bc",
+      "src/core/usv_mission_interfaces/package.xml": "d5f950028b559281775e53f45f2c1c7da048663c48af1cf59a3eaaa740cc24a9",
+      "src/core/usv_mission_interfaces/srv/SetMission.srv": "d78781a1b931b8b674369d97d0db99c4dd6e829ebc002fe9062deea8be0234ab",
+      "src/plugins/dynamic_rviz_config/CMakeLists.txt": "8d10a1c85ac0ed655605f7ae7d14c82cf84f8f3a45bcc65f0a685347a6fb4ae6",
+      "src/plugins/dynamic_rviz_config/package.xml": "d2e6179b540645ebb15ec0e41e218ec93e528cb1543ab591355ad66f29a84f02",
+      "src/plugins/dynamic_rviz_config/scripts/config.py": "3c8a1fc8f5422872f759a81bb5d5f5549cb546c2d1437a0080800fbe92c33c3d",
+      "src/plugins/dynamic_rviz_config/scripts/displays.py": "5b91daed274e35850031e9b712b7258273b5341b52b9dac047a5c5d846a48fbf",
+      "src/plugins/dynamic_rviz_config/scripts/rviz_generate.py": "c95c8cb3222677ef3ebeb3319144220c323c91abf55e7714f6bba5c5c1ffed8f",
+      "src/plugins/dynamic_xml_config/CMakeLists.txt": "34e296b013e1e094198196e019a83ead530c94c6c27d7a42c251fe6dc1e4a684",
+      "src/plugins/dynamic_xml_config/main_generate.py": "0472feb1a5901206b576e081fa4287f53f4c74b41db8f73a70ed4fb55b4ade83",
+      "src/plugins/dynamic_xml_config/package.xml": "7b60fab3bf24b22b6c73079ce5b2712a6bf7596fe1cb6ba6a609c25e41599dc1",
+      "src/plugins/dynamic_xml_config/plugins/__init__.py": "faae7e3d01e0cbc49b670825033a7029876955c763d7d96e43d6d472fb6b5099",
+      "src/plugins/dynamic_xml_config/plugins/obstacles_generate.py": "99f7e8200918f0d7b49599e6095df6ee9f773a23c000afd9a717a8aae3c63a47",
+      "src/plugins/dynamic_xml_config/plugins/xml_generate.py": "469eed719412c8713c5c8334e71de20f1090cc8351590ff2382c719acbbfc388",
+      "src/plugins/gazebo_plugins/usv_gazebo_plugins/CMakeLists.txt": "3ff7306bd34c0be270d7bf24bc3a154fec43b7db637a281ab1def3f044d8b485",
+      "src/plugins/gazebo_plugins/usv_gazebo_plugins/package.xml": "48ea7fafbd04ee2e18661bbfcd8d0312481c69ca47edfb2ca768e0540597e0b8",
+      "src/plugins/gazebo_plugins/wave_gazebo/CMakeLists.txt": "2ad46bb6fb145e986cae6249494c87d946f8758e18b74f31d84fe2530557bcb0",
+      "src/plugins/gazebo_plugins/wave_gazebo/package.xml": "fc814af89b8bc8b12fb3eb9e3a846d2ab221f460a5ca017dab4ff7c0bc5603c0",
+      "src/plugins/gazebo_plugins/wave_gazebo/worlds/ocean_docks.world": "6bcaf7eebf55d515c50a6929f8a379ff3595f5dbe0620dca97f786133e7e4ee3",
+      "src/plugins/gazebo_plugins/wave_gazebo_plugins/CMakeLists.txt": "ce8256c7eee76875bfed05c46e24eac85b4c8f1d0e308f39d653072bea4ddfd2",
+      "src/plugins/gazebo_plugins/wave_gazebo_plugins/package.xml": "ae76edf0f841e0f16a6c185cadffcd2829858cbd00d73a5f2eec396bcb3bfa92",
+      "src/plugins/rviz_plugins/goal_set_plugin/CMakeLists.txt": "e579ef441a79196f52c774c88e303f36e779b6af241cd9c8fff0e2477c1e9738",
+      "src/plugins/rviz_plugins/goal_set_plugin/goal_set_plugin.xml": "bfc70bcd1560ff4bef91e0238f07e879ceefd348bd4218da4838d843157c1b32",
+      "src/plugins/rviz_plugins/goal_set_plugin/include/rviz_plugins/goal_set_plugin/goal_set_plugin.h": "e36e7c2352449b6ba526c8c04f9738b6f1d02a0807c8b6adef0aefe2b7a1c32a",
+      "src/plugins/rviz_plugins/goal_set_plugin/package.xml": "11c0b694a0edd866c3dd59f82288973a7e7593a394b3bbb69612a801dbb818fd",
+      "src/plugins/rviz_plugins/goal_set_plugin/src/goal_set_plugin.cpp": "3a83000b82dd2952c16e05625ca15f3229c79e9bf0312ab5b70c56d9d9b897cf",
+      "src/sim_env/CMakeLists.txt": "473848278ef0450906f567aeb81ef5ab72f3445421f44381c9ac4faca549af66",
+      "src/sim_env/config/controller/apf_controller_params.yaml": "43fbca1edf0db49f3ba91f27ea4ec9110d968787afd3568a9847c34794df3f3d",
+      "src/sim_env/config/controller/dwa_controller_params.yaml": "7055bf8d11cc6f87ccca47ba359f4d8f76c563a1182384a67810eb50ea84f4a5",
+      "src/sim_env/config/controller/lqr_controller_params.yaml": "d588077479d659f0a22534770c9bf769fd74e18012c86d5157d0b65151203ba8",
+      "src/sim_env/config/controller/mpc_controller_params.yaml": "885f7111e11cb6b69fd15321bdc385cbbd114bf58d7b17470c9cfad07696fd7c",
+      "src/sim_env/config/controller/orca_controller_params.yaml": "d6f72ed20e490954696721cb3eea994fafc65bbf75cbd7a908355bed8cc4ea22",
+      "src/sim_env/config/controller/pid_controller_params.yaml": "553d037cd8d9e80d30cd6606f7d4901040417ee37466e81799a818013c54ee02",
+      "src/sim_env/config/controller/rpp_controller_params.yaml": "7fd5783e80f18e081b63f9275323c3cecc2e29e0276fe4e1e959d14ed25c1e87",
+      "src/sim_env/config/costmap/mapping.yaml": "60a85e38dccd899b38ec5dc6e5e20e9ac876fc5698325ccc70956cd29139bb3a",
+      "src/sim_env/config/mission/examples/orbit.yaml": "a5f23276bab2ca5b7788e4563332be510b21df0592de32f0d60f6b3027468d39",
+      "src/sim_env/config/mission/examples/standby.yaml": "6b3df63bd9819bdaa31c4eb18390d8cb954a65512d8cc3c73ff509304316742a",
+      "src/sim_env/config/mission/examples/station_keep.yaml": "87eb4f325f15233deba2a6058507951a1be129b3904890356b865b632d3a1a0d",
+      "src/sim_env/config/mission/mission_params.yaml": "e071ed889d9ca96a849c28f144a531ebb333403e2757d4dd7b3fbb80e0dd3dd5",
+      "src/sim_env/config/path_planner/common_planner_params.yaml": "2abb02489f7e2ddf75cd68047ec1f0752e8b513db4e4ade7ed95cd8252819984",
+      "src/sim_env/config/path_planner/evolutionary_planner_params.yaml": "bae36b8e140c2fc2080e97310749a28c28920abb78e67bbe6b4fa2b48da623c1",
+      "src/sim_env/config/path_planner/graph_planner_params.yaml": "e587c1de6a29d16f88b56e70a8608beb039800387db7cded744fc7ac8f6318f4",
+      "src/sim_env/config/path_planner/sample_planner_params.yaml": "075156fe0667bcfcef823e6537c3187efac2ddbc6630beffa372f7aa7c766b38",
+      "src/sim_env/config/robots/otter/controller_params_otter.yaml": "3e11175489dd7d32d06bd56c62e917a1285c47190f5d60276cebefa9deeb0e72",
+      "src/sim_env/config/robots/otter/dynamics_otter.yaml": "4208159ef7769e30719a3c787deb77ab503be473f0774e5bcfe9cb7014d83565",
+      "src/sim_env/config/robots/otter/ekf_params_otter.yaml": "099e5552b0b5c27a9ff538fa4c2d5cb2e8a28632622a2f7b4f42b122ca81b65c",
+      "src/sim_env/config/robots/otter/global_costmap_params_otter.yaml": "1c06feb159a0571f42326c2b901676969801ee14611286ef76fa5a249adcc949",
+      "src/sim_env/config/robots/otter/gps_params_otter.yaml": "338a76cafda3052b968f8ebace36472bd3d6923eb5612e04799f679d6b699db6",
+      "src/sim_env/config/robots/otter/trajectory_params_otter.yaml": "8a7c53dacc1ab5965fcc4c33bb50c5e0bdde945fc5fcafae8e4955eca754d5e7",
+      "src/sim_env/config/trajectory_planner/trajectory_planner_params.yaml": "f19e56ad2228fd0f7145fd6a6ae97f60aa7789ecc43b0b9c76bbafd98b15446e",
+      "src/sim_env/config/velocity_planner/velocity_planner_params.yaml": "77005c14a824989663444d9d6bb7a638f1188895a8e2e3a3ba8c9d8d3b0e6f82",
+      "src/sim_env/launch/main.launch.py": "86b504af886820b92bc270bddc59e43b2fe6600b2716ed85e7aacb778217d37b",
+      "src/sim_env/package.xml": "3361d58b8ea3f5ef8a80064e250acfcc04aeff093a1f65089675b6579065b1c8",
+      "src/sim_env/sim_env/__init__.py": "b04acfa67821a88f5e84cf35564d67c2dd8d2831cb37b579f1d10830a5493126",
+      "src/sim_env/sim_env/configuration.py": "7e628ba4ac89596af46b87e4013562b48d1c73e3e2bfc2ab2b631943bafb931f",
+      "src/sim_env/sim_env/mission_adapter.py": "c29b739512bed86e25b8f5d814da8cdb4d7a7c2e5b0a99c6075a121f67f9fe67",
+      "src/sim_env/sim_env/mission_cli.py": "1c7717e65184a12f4cfa8b8bf057aee1741643bd498ec5a80e41cb14380a18ea",
+      "src/sim_env/sim_env/missions/__init__.py": "d75dbdfe1d81cb1ad0ffab45310cebb7ec42c243ad7b30854be94237963ad159",
+      "src/sim_env/sim_env/missions/geometry.py": "263e542c6d67f749b20195137397a569d83f4930bbfeb7ac792ec734b38ee8a9",
+      "src/sim_env/sim_env/missions/manager.py": "53ff3a062f4d9468efd748d0417c396bf597f160a29e25f086cd535da28d015e",
+      "src/sim_env/sim_env/missions/models.py": "6f805d27233851e3939912a7a016c7d8d5791004005b45d3e291b5fc9086defe",
+      "src/sim_env/sim_env/missions/planning.py": "53fd90ebd2501dcb3f702db56213165db9fa1988521e3bd6a54a222da836f2db",
+      "src/sim_env/sim_env/runtime.py": "447b0ceb6023c9e0f8aa66e6bf3a30214dc9cf16020c14550a92218de305af0b",
+      "src/sim_env/sim_env/simulation.py": "160e349398f1899b7240a03a072afa5510dcdc5b1506a408b5b0ffe3e1b6fea5",
+      "src/sim_env/src/costmap_support_node.cpp": "8f5511f287a3a29d0f7980d9b44dad91c3ffdc8eadb38d00d38f5342f906e1fd",
+      "src/sim_env/src/fake_localization_node.cpp": "ec5f0d59cc35e6f76066add8cd0e3531d422ae3d7b6f5edfc6566bf800a36068",
+      "src/sim_env/test/costmap_shutdown_regression.py": "7a25a4e6ddd77bb019988a5528cc0ed90c103e3a7f9e470d1f07b2531d5c02b1",
+      "src/sim_env/test/test_configuration.py": "996ceb7c213058f43f2e61eb2ab83df33adf2e0ae20325bcd4dbee335fe967d6",
+      "src/sim_env/test/test_mission_adapter.py": "5f2129bd143d3c69b2f049ed8923393187ca4da51436e855e0292d7ed580bf8f",
+      "src/sim_env/test/test_mission_cli.py": "6039a1bfc03e0284b95e5dbbacb5055b318416bae21e3aa74e1c9f30525c7327",
+      "src/sim_env/test/test_mission_planning.py": "cc499e1046cc73304a522b323adb0ed93bd7067764f98feee46af1a517b184b8",
+      "src/sim_env/test/test_mission_ros.py": "f91b1bbe94fb13b4a8835d7a611276147d20de8c5a6941b1a43b1d300e7518a8",
+      "src/sim_env/test/test_missions.py": "396ce609a4c8aafc73e8ef356bc2bb059fc0352557ed57a383a382fa5c115601",
+      "src/sim_env/test/test_navigation_ros.py": "29fd4b4f90ba37f296bf91f0689014351dae710532378cdfe4f8cc5dc1ad157b",
+      "src/sim_env/test/test_runtime.py": "eba24d4cbf166c5e1679a13cd39722d39ae7b73e38ac932c9d86536660dbcf7f",
+      "src/sim_env/test/test_visual_assets.py": "2512f9d0b986ad4f8baf18cb7736c6bd4ed0a34b92318acb00d01d32ace466c4",
+      "src/sim_env/worlds/example_course.world": "d1fa5a0a062e3c98429ddbb8fc11ee9f7b81244c7c2f27d3547308921520499b",
+      "src/sim_env/worlds/ocean.world": "43322bb3981ddde53fec8909095b7cee36025508e8bfed475bc6465f07108f0b",
+      "src/user_config/obstacles_config.yaml": "54171ef98f93f8b81ff3a0a2b1dbb9a13d7663bd19c162cc28e363b0265fea05",
+      "src/user_config/user_config.yaml": "d15fb6da54fd55d0c85157efe78503647cf9271b14405ff36b92cf5256ed4ee2",
+      "scripts/validation/build_clean.bash": "c0eec132b62b8b3918d41eeb681aa22587f0546e5f4d958344886b21414a9d76",
+      "scripts/validation/build_missions.bash": "7c4bf188d73c0b894433ebf8b474d36ff17f524972f5e9c5bba026897ac2f22f",
+      "scripts/validation/capture_provenance.py": "ac8bc5dc359d0c4629552c28c73826648d6b5d7b9774d335c16cdf56a6316b13",
+      "scripts/validation/compare_results.py": "e5f76263bb218f032735e89fb64c6b77323b669ffa7c129fa942246ea2859984",
+      "scripts/validation/config/lqr_preview2_q1_r20.yaml": "61a02460cc2a8375449866e26adca97ac62aa580763683a90c16d03b7a7193a5",
+      "scripts/validation/config/pid_course_d010.yaml": "ad00230c6e99bb14a3c811c33a48e7b928b8e2b17f445a4ade291023f2732f1e",
+      "scripts/validation/config/pid_preview24.yaml": "bd4828f65c1302bccecfb63ce0e83b2a58b92e738053e3dea871a74b9046cf59",
+      "scripts/validation/config/pid_preview25.yaml": "b9f4e2431f367a24313a2e90eb3b1984da80cbb9edb0824a9f29b06e86445eda",
+      "scripts/validation/config/pid_preview26.yaml": "9b0e3a72767e551ed7dc30fb91cd8786fa2ae797be023f4159a63909900fa19b",
+      "scripts/validation/config/pid_preview30.yaml": "98f941e18bd683fcf2d1cb58f19d1ec8dd1c1523507dd876494915ed7a4f3b13",
+      "scripts/validation/diagnostics/render_footprint_comparison.py": "0e25e6527ea610ec0a05c7829834c1bca1c854e6cc656dd2c317b02ef46358cf",
+      "scripts/validation/gui_smoke.py": "98631e4b4b8beca3219454c306a96df519007f6e7afa8cf6dc5661741a7cf2ef",
+      "scripts/validation/localization_smoke.py": "096e577a127bd2c463ea2b6145b411589cd612818556c44613d322bdc7f4785a",
+      "scripts/validation/mapping_throughput.py": "012609063f7ee3a5128dada9c4e4293750f0ea85db1d9f5c9b7bf89cfbe3f1fd",
+      "scripts/validation/metrics.py": "8667fd76511f750e023451bf5ff5c7e51b844448531b9aa38c0d74637ebc74d7",
+      "scripts/validation/mission_acceptance.py": "33d436ca634bd713add5c24e35530e6182bda4145e217970ea60ec21fdda9f0a",
+      "scripts/validation/mission_matrix.py": "b28d79da8640c55be736a51a35d0016703f03941b76645757e58521ea951bae3",
+      "scripts/validation/parity/CMakeLists.txt": "c7ae0414ba8452aa3090341113ed62c8732bcf892820914620874718424bf335",
+      "scripts/validation/parity/golden.cpp": "d5fc0c230a9817d3d7df52feae8b3797f4c32e9183cbb516c2fff89222ab3262",
+      "scripts/validation/parity/run.py": "23a0bb6e1fe7347bee631029f077b8b4856c85bb27556e372c39781e94b3c553",
+      "scripts/validation/plot_acceptance.py": "969be7da2a6d54f4ce8d87977f57c8f9fe3df8f9bbfd5f0304d60fbefb25df5c",
+      "scripts/validation/plot_missions.py": "81c60de337976a53b7f19bd5fdfda3801016dd30d5e7b9dfa54a320747e39023",
+      "scripts/validation/process_sampler.py": "ac6a30158f2e51d4b54f9f030a543418b3d3a1d45c2e0187c0077b3fc59657dc",
+      "scripts/validation/refresh_missions.bash": "0d3c0f80dbb3da96f34cacbbe46271ba88a57523b36cb27106c6233a0ae33b81",
+      "scripts/validation/replay_los_snapshot.py": "d2b451303b64b079c5bdbaa97418f15f91da5b42b3c35187bd2b13b060b09253",
+      "scripts/validation/ros_acceptance.py": "ea6cc881c617902ab53ce03049c820d5b3e096373296815cf752b4be1bcd9412",
+      "scripts/validation/run_mission_matrix.bash": "a82f361f21dc7c4ffc26ce7ec9c1f3a860b7efacbc492b0d6c7770a58f24607a",
+      "scripts/validation/run_mission_validation.bash": "d91857297b575c95ca53144d64420f493fabb8b020adbb9887778bacc6d3abc1",
+      "scripts/validation/run_navigation_regression.bash": "f655f16078a22455cb9b62811fd7acf3d7ee8ed993b3be52a3aca7d80405d781",
+      "scripts/validation/run_source_tests.bash": "f21da639cca945d3a5f5377a24507822b12c8ada95d8cfd49fa9972240fd95c5",
+      "scripts/validation/test_captured_footprint.py": "946aa9cb21cdf154f8856feca6ef93e8c8b4bf3e8f66e5a77e4d2d2bf034619f",
+      "scripts/validation/test_compare_results.py": "da57cc68a401210f542c16cc5d655e4ae70449c6a6eda2eb04038c1657d2901d",
+      "scripts/validation/test_harness_options.py": "44298ae24a568e97e80d297343a3216d8c91aa9a18f1b6f3da0521e7b77bbe0f",
+      "scripts/validation/test_metrics.py": "8e55aaae0041e0b09a1286c56fc25016244e70adbcec28d6858ec28c87d71722",
+      "scripts/validation/test_mission_acceptance.py": "bac19adf12f1e7c4657d4d82d09ea3a55d58b24b9e7883de483ab048082b1187",
+      "scripts/validation/test_mission_matrix.py": "60fcbc941002b07e6ed2b609e2a59df0ab4f43cf97a20731f89700229f05ffe4",
+      "scripts/validation/test_plot_acceptance.py": "b5085b7d69243025448d9053ca7c2ad333d88deb4fee844365bb45e8b3cff1b4",
+      "scripts/validation/test_tracking_metrics.py": "45eea8441e4a7a0e38e07b5f02478b167ee492e5d963b3a4d160f7dc7b8e0822",
+      "scripts/validation/tracking_metrics.py": "43a0c27db9ad40f886dfe25469371ee7efd265f410dc439adb69e64011254ad7",
+      "scripts/validation/verify_install.py": "6c51389c6adab031798a29d07173a55f8bc55a4d2df8f38d846b5a293cc2fef8"
+    },
+    "install_sha256": "74bdab2df160a3d88b83e0ea0c542223ff7c7bc50fc1751d953f176c5ab0eb71",
+    "installed_files": {
+      "install/common/lib/python3.10/site-packages/common/__init__.py": "d4700df005c935ef6cceaadbcdba1b7d0a3047c41169049d4ae09820bf517316",
+      "install/common/lib/python3.10/site-packages/common/collision.py": "0a5d9bb20ef06b7c2d623f76110e7466bae13945af4fecdc056e8c6b63b694e0",
+      "install/common/lib/python3.10/site-packages/common/dynamics.py": "5a003f2ee1f7eef583c7f268002dd3fcbca4b2f5fcc647538fdb9884387e7319",
+      "install/common/lib/python3.10/site-packages/common/geodesy.py": "e54850c3d3227fb90bd379b05fa314fe1fc230bd2ed54a30efb7d3eca2d916a3",
+      "install/common/lib/python3.10/site-packages/common/math_helper.py": "9d68927cb51ee686a03cbd5d4f7f7e3bf9ea50755ed537b8ea65ea38af223cc0",
+      "install/common/lib/python3.10/site-packages/common/models.py": "46f0b0196090347751223516df139920b4cee7317c1c27c394d63e5304058b74",
+      "install/common/lib/python3.10/site-packages/common/visualizer.py": "0947a9d79a84d4413a9c7246a252c635e0a978bf2090dcef27c301f2af25294b",
+      "install/controller/lib/python3.10/site-packages/controller/__init__.py": "a4c2fb34298b496fa3be302396cd3f61248c4437538e1828c1432dfeed00e197",
+      "install/controller/lib/python3.10/site-packages/controller/controller.py": "b25e305f9375902a7b2b822e946fe714a727d963103071817e972e572db0e865",
+      "install/controller/lib/python3.10/site-packages/controller/controller_factory.py": "5abb3753dae62f35be00ef05502fb8400e25212c6be0e4cc037e310513c0b937",
+      "install/controller/lib/python3.10/site-packages/controller/lqr_controller.py": "d33d877dedd63653112f42937d0566202c223b20a29f7e0e51b703067dcca40a",
+      "install/controller/lib/python3.10/site-packages/controller/pid_controller.py": "d34540b42cd68ec9fc2b89e002c6ef2b6619a2014440ee84a90e8f0ae54705ba",
+      "install/controller/lib/python3.10/site-packages/controller/station_keeping_controller.py": "82c9a5225bf0f8834c22717edaeca1c7cc6239b09ab45c136e75ccd0312918d8",
+      "install/trajectory_planner/lib/python3.10/site-packages/trajectory_planner/__init__.py": "6bc14a352f9e344993400271edfd80259a705846bc8be7e4ad10cae427a83f7f",
+      "install/trajectory_planner/lib/python3.10/site-packages/trajectory_planner/circle.py": "46d9f4ea8c591c5f040980af8afb53f7232605b2dc2e6253bfe6de408d92ed6e",
+      "install/trajectory_planner/lib/python3.10/site-packages/trajectory_planner/los_trajectory_planner.py": "401bf5a30a76850b2ff0042a3b1e7aee81957af15e86c49afd1cdea6c129bfca",
+      "install/trajectory_planner/lib/python3.10/site-packages/trajectory_planner/trajectory.py": "cc5b2f0e3ba35397f6a37572c3f96c235a79f60a34b02f6ac5b29dc1ff8a86f7",
+      "install/trajectory_planner/lib/python3.10/site-packages/trajectory_planner/trajectory_planner_factory.py": "a4901296628492a8979f1b8b8c172a4f8607a68146e470c05500244247bb6609",
+      "install/sim_env/lib/sim_env/mission_cli": "e2ec48546f6c8233bf4729cabe60bd2a753ce987b74c09ef36cdfc31c67c0563",
+      "install/sim_env/lib/sim_env/sim_env_node": "7bff2f7af5f9862bfdaa6f98deafe0feb403ceefecd93a5b556100e02a31fb9c",
+      "install/sim_env/local/lib/python3.10/dist-packages/sim_env/__init__.py": "b04acfa67821a88f5e84cf35564d67c2dd8d2831cb37b579f1d10830a5493126",
+      "install/sim_env/local/lib/python3.10/dist-packages/sim_env/configuration.py": "7e628ba4ac89596af46b87e4013562b48d1c73e3e2bfc2ab2b631943bafb931f",
+      "install/sim_env/local/lib/python3.10/dist-packages/sim_env/mission_adapter.py": "c29b739512bed86e25b8f5d814da8cdb4d7a7c2e5b0a99c6075a121f67f9fe67",
+      "install/sim_env/local/lib/python3.10/dist-packages/sim_env/mission_cli.py": "1c7717e65184a12f4cfa8b8bf057aee1741643bd498ec5a80e41cb14380a18ea",
+      "install/sim_env/local/lib/python3.10/dist-packages/sim_env/missions/__init__.py": "d75dbdfe1d81cb1ad0ffab45310cebb7ec42c243ad7b30854be94237963ad159",
+      "install/sim_env/local/lib/python3.10/dist-packages/sim_env/missions/geometry.py": "263e542c6d67f749b20195137397a569d83f4930bbfeb7ac792ec734b38ee8a9",
+      "install/sim_env/local/lib/python3.10/dist-packages/sim_env/missions/manager.py": "53ff3a062f4d9468efd748d0417c396bf597f160a29e25f086cd535da28d015e",
+      "install/sim_env/local/lib/python3.10/dist-packages/sim_env/missions/models.py": "6f805d27233851e3939912a7a016c7d8d5791004005b45d3e291b5fc9086defe",
+      "install/sim_env/local/lib/python3.10/dist-packages/sim_env/missions/planning.py": "53fd90ebd2501dcb3f702db56213165db9fa1988521e3bd6a54a222da836f2db",
+      "install/sim_env/local/lib/python3.10/dist-packages/sim_env/runtime.py": "447b0ceb6023c9e0f8aa66e6bf3a30214dc9cf16020c14550a92218de305af0b",
+      "install/sim_env/local/lib/python3.10/dist-packages/sim_env/simulation.py": "160e349398f1899b7240a03a072afa5510dcdc5b1506a408b5b0ffe3e1b6fea5",
+      "install/sim_env/share/sim_env/config/controller/apf_controller_params.yaml": "43fbca1edf0db49f3ba91f27ea4ec9110d968787afd3568a9847c34794df3f3d",
+      "install/sim_env/share/sim_env/config/controller/dwa_controller_params.yaml": "7055bf8d11cc6f87ccca47ba359f4d8f76c563a1182384a67810eb50ea84f4a5",
+      "install/sim_env/share/sim_env/config/controller/lqr_controller_params.yaml": "d588077479d659f0a22534770c9bf769fd74e18012c86d5157d0b65151203ba8",
+      "install/sim_env/share/sim_env/config/controller/mpc_controller_params.yaml": "885f7111e11cb6b69fd15321bdc385cbbd114bf58d7b17470c9cfad07696fd7c",
+      "install/sim_env/share/sim_env/config/controller/orca_controller_params.yaml": "d6f72ed20e490954696721cb3eea994fafc65bbf75cbd7a908355bed8cc4ea22",
+      "install/sim_env/share/sim_env/config/controller/pid_controller_params.yaml": "553d037cd8d9e80d30cd6606f7d4901040417ee37466e81799a818013c54ee02",
+      "install/sim_env/share/sim_env/config/controller/rpp_controller_params.yaml": "7fd5783e80f18e081b63f9275323c3cecc2e29e0276fe4e1e959d14ed25c1e87",
+      "install/sim_env/share/sim_env/config/costmap/mapping.yaml": "60a85e38dccd899b38ec5dc6e5e20e9ac876fc5698325ccc70956cd29139bb3a",
+      "install/sim_env/share/sim_env/config/mission/examples/orbit.yaml": "a5f23276bab2ca5b7788e4563332be510b21df0592de32f0d60f6b3027468d39",
+      "install/sim_env/share/sim_env/config/mission/examples/standby.yaml": "6b3df63bd9819bdaa31c4eb18390d8cb954a65512d8cc3c73ff509304316742a",
+      "install/sim_env/share/sim_env/config/mission/examples/station_keep.yaml": "87eb4f325f15233deba2a6058507951a1be129b3904890356b865b632d3a1a0d",
+      "install/sim_env/share/sim_env/config/mission/mission_params.yaml": "e071ed889d9ca96a849c28f144a531ebb333403e2757d4dd7b3fbb80e0dd3dd5",
+      "install/sim_env/share/sim_env/config/path_planner/common_planner_params.yaml": "2abb02489f7e2ddf75cd68047ec1f0752e8b513db4e4ade7ed95cd8252819984",
+      "install/sim_env/share/sim_env/config/path_planner/evolutionary_planner_params.yaml": "bae36b8e140c2fc2080e97310749a28c28920abb78e67bbe6b4fa2b48da623c1",
+      "install/sim_env/share/sim_env/config/path_planner/graph_planner_params.yaml": "e587c1de6a29d16f88b56e70a8608beb039800387db7cded744fc7ac8f6318f4",
+      "install/sim_env/share/sim_env/config/path_planner/sample_planner_params.yaml": "075156fe0667bcfcef823e6537c3187efac2ddbc6630beffa372f7aa7c766b38",
+      "install/sim_env/share/sim_env/config/robots/otter/controller_params_otter.yaml": "3e11175489dd7d32d06bd56c62e917a1285c47190f5d60276cebefa9deeb0e72",
+      "install/sim_env/share/sim_env/config/robots/otter/dynamics_otter.yaml": "4208159ef7769e30719a3c787deb77ab503be473f0774e5bcfe9cb7014d83565",
+      "install/sim_env/share/sim_env/config/robots/otter/ekf_params_otter.yaml": "099e5552b0b5c27a9ff538fa4c2d5cb2e8a28632622a2f7b4f42b122ca81b65c",
+      "install/sim_env/share/sim_env/config/robots/otter/global_costmap_params_otter.yaml": "1c06feb159a0571f42326c2b901676969801ee14611286ef76fa5a249adcc949",
+      "install/sim_env/share/sim_env/config/robots/otter/gps_params_otter.yaml": "338a76cafda3052b968f8ebace36472bd3d6923eb5612e04799f679d6b699db6",
+      "install/sim_env/share/sim_env/config/robots/otter/trajectory_params_otter.yaml": "8a7c53dacc1ab5965fcc4c33bb50c5e0bdde945fc5fcafae8e4955eca754d5e7",
+      "install/sim_env/share/sim_env/config/trajectory_planner/trajectory_planner_params.yaml": "f19e56ad2228fd0f7145fd6a6ae97f60aa7789ecc43b0b9c76bbafd98b15446e",
+      "install/sim_env/share/sim_env/config/velocity_planner/velocity_planner_params.yaml": "77005c14a824989663444d9d6bb7a638f1188895a8e2e3a3ba8c9d8d3b0e6f82",
+      "install/sim_env/share/sim_env/launch/main.launch.py": "86b504af886820b92bc270bddc59e43b2fe6600b2716ed85e7aacb778217d37b",
+      "install/sim_env/share/sim_env/worlds/example_course.world": "d1fa5a0a062e3c98429ddbb8fc11ee9f7b81244c7c2f27d3547308921520499b",
+      "install/sim_env/share/sim_env/worlds/ocean.world": "43322bb3981ddde53fec8909095b7cee36025508e8bfed475bc6465f07108f0b",
+      "install/usv_mission_interfaces/lib/libusv_mission_interfaces__rosidl_generator_c.so": "bf29eda6953d4fd9a8f6ddd09026eea6ecddb4fa27f1f4bf947e8103ddb3020d",
+      "install/usv_mission_interfaces/lib/libusv_mission_interfaces__rosidl_generator_py.so": "1bb7fcc82244f816fab0fefa4d216e7350e2b90e51908e96dfafd925ee12aa9f",
+      "install/usv_mission_interfaces/lib/libusv_mission_interfaces__rosidl_typesupport_c.so": "cadb478e9f8c248f06e7bb94c4e310d7a7679d637f800484900268c3137b44ba",
+      "install/usv_mission_interfaces/lib/libusv_mission_interfaces__rosidl_typesupport_cpp.so": "2ce3274015d27e84187e6eff7e6d959e538a7601b107ca80e0a32f002fb80b24",
+      "install/usv_mission_interfaces/lib/libusv_mission_interfaces__rosidl_typesupport_fastrtps_c.so": "d4318b7c37b8c5fde2179616ca21cb076deb1836e31de4a07a324dc4a339be5f",
+      "install/usv_mission_interfaces/lib/libusv_mission_interfaces__rosidl_typesupport_fastrtps_cpp.so": "5ded5ca5f2926bdd70776e03952e46e1c39adc410c93cf752aaa431a01087f2e",
+      "install/usv_mission_interfaces/lib/libusv_mission_interfaces__rosidl_typesupport_introspection_c.so": "aff2d5cc5b0e7cb7e6a9e5297558d6b1dc08419731f0a386800cac92d78a6741",
+      "install/usv_mission_interfaces/lib/libusv_mission_interfaces__rosidl_typesupport_introspection_cpp.so": "7e741ed0cb2c4e904ed3731083d29f2fe48f7b92894978a4f8bf3dcb0dfa987b",
+      "install/usv_mission_interfaces/local/lib/python3.10/dist-packages/usv_mission_interfaces/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "install/usv_mission_interfaces/local/lib/python3.10/dist-packages/usv_mission_interfaces/libusv_mission_interfaces__rosidl_generator_py.so": "7189368a79b08c8008eeb6641ae5906d5bf0ec213adc92351ec64663d45c0aee",
+      "install/usv_mission_interfaces/local/lib/python3.10/dist-packages/usv_mission_interfaces/srv/__init__.py": "f13c2c7b54c704e9c6fa8bc2804ecbab4ba5278ba25c75f6d92951dc046a63a9",
+      "install/usv_mission_interfaces/local/lib/python3.10/dist-packages/usv_mission_interfaces/srv/_set_mission.py": "1a24358c5f670c3b63cee544d50038cceb94b08aaff4b22b69f846de971b966b",
+      "install/usv_mission_interfaces/local/lib/python3.10/dist-packages/usv_mission_interfaces/usv_mission_interfaces_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so": "002da18813ba8b20bfe1f132f492993b41cec6081d34c5108cbe1e2f56a373f7",
+      "install/usv_mission_interfaces/local/lib/python3.10/dist-packages/usv_mission_interfaces/usv_mission_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so": "6d242a19f87c46e0457d89bd4ac5a7be9128fdf9eee16403bfa62c75245aa0a8",
+      "install/usv_mission_interfaces/local/lib/python3.10/dist-packages/usv_mission_interfaces/usv_mission_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so": "a5175f4dd1d81c5c457a4605df4686996eb48bd7763649959005bdea44664a26",
+      "install/usv_mission_interfaces/share/usv_mission_interfaces/srv/SetMission.srv": "d78781a1b931b8b674369d97d0db99c4dd6e829ebc002fe9062deea8be0234ab"
+    }
+  },
+  "source_unchanged": true,
+  "installation_unchanged": true,
+  "planned_trials": 1,
+  "completed_trials": 1,
+  "all_passed": false
+}

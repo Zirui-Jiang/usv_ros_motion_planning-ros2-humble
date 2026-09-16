@@ -20,6 +20,7 @@
 /// a wave field and keep it synchronised with the model used in
 /// the physics engine.
 
+// 海面渲染接口，维护波动着色器以及相机反射、折射的离屏渲染回调。
 #ifndef _ASV_WAVE_SIM_GAZEBO_PLUGINS_WAVEFIELD_VISUAL_PLUGIN_HH_
 #define _ASV_WAVE_SIM_GAZEBO_PLUGINS_WAVEFIELD_VISUAL_PLUGIN_HH_
 
@@ -134,6 +135,7 @@ namespace asv
   /// 13.<direction> (Vector2D, default: (1 0))
   ///    A two component vector specifiying the direction of the mean wave.
   ///
+  // 当前实现直接从 SDF 读取波谱，时间来自 Scene；上方遗留话题说明不代表本版本建立了这些订阅。
   class GZ_RENDERING_VISIBLE WavefieldVisualPlugin :
     public gazebo::VisualPlugin,
     public Ogre::RenderTargetListener
@@ -174,6 +176,7 @@ namespace asv
     /// internal
     /// \brief Create reflection refraction rtts for a given camera
     ///        Stores the render target and given camera
+    // 为一个相机创建反射和折射渲染目标，并按同一索引保存相机与纹理。
     private: void CreateRtts(Ogre::Camera* _camera);
 
     /// internal
@@ -195,6 +198,7 @@ namespace asv
     ///        eg. hide objects above water for refraction
     ///            hide objects below water for reflection
     ///            unhide all objects after texture is rendered
+    // 渲染前隐藏海面并设置裁剪/镜像，渲染后恢复状态，防止离屏效果影响主视图。
     private: virtual void preRenderTargetUpdate(
                  const Ogre::RenderTargetEvent& rte);
     private: virtual void postRenderTargetUpdate(

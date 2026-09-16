@@ -15,6 +15,7 @@
  *
 */
 
+// 波场参数与采样核心：由 SDF 推导 CWR 或 PMS 分量，再按位置和仿真时间计算波高。
 #include <Eigen/Dense>
 
 #include <array>
@@ -52,6 +53,7 @@ namespace asv
 
   /// \internal
   /// \brief Private data for the WavefieldParameters.
+  // 私有参数容器分别保存输入均值与各分量缓存；外部通过 WaveParameters 的接口访问。
   class WaveParametersPrivate
   {
     /// \brief Constructor.
@@ -134,6 +136,7 @@ namespace asv
     public: std::vector<ignition::math::Vector2d> directions;
 
     /// \brief Recalculate for constant wavelength-amplitude ratio
+    // CWR 保持各分量振幅与波长之比：振幅乘尺度、波数除尺度，方向按角度分散。
     public: void RecalculateCmr()
     {
       // Normalize direction
@@ -162,6 +165,7 @@ namespace asv
         const double omega = Physics::DeepWaterDispersionToOmega(k);
         const double phi = this->phase;
         double q = 0.0;
+        // 零振幅时令陡度系数为零，避免除零；非零时将 q 限制到至多 1。
         if (a != 0)
         {
           q = std::min(1.0, this->steepness / (a * k * this->number));
@@ -189,6 +193,7 @@ namespace asv
     }
 
     // \brief Pierson-Moskowitz wave spectrum
+    // 按角频率计算 Pierson–Moskowitz 谱密度，omega_p 对应谱峰角频率。
     public: double pm(double omega, double omega_p)
     {
       double alpha = 0.0081;
@@ -198,6 +203,7 @@ namespace asv
     }
 
     /// \brief Recalculate for Pierson-Moskowitz spectrum sampling model
+    // PMS 从谱值与频宽求振幅 a=gain·sqrt(2SΔω)，使用深水色散关系计算波数。
     public: void RecalculatePms()
     {
       // Normalize direction
@@ -218,6 +224,7 @@ namespace asv
       this->directions.clear();
 
       // Vector for spaceing
+      // 本实现只构造三个频宽，预期采用三分量 PMS 配置；number 超过三会越界访问。
       std::vector<double> omega_spacing;
       omega_spacing.push_back(this->angularFrequency*(1.0-1.0/this->scale));
       omega_spacing.push_back(this->angularFrequency* \
@@ -234,6 +241,7 @@ namespace asv
         const double k = Physics::DeepWaterDispersionToWavenumber(omega);
         const double phi = this->phase;
         double q = 0.0;
+        // 零振幅时令陡度系数为零，避免除零；非零时将 q 限制到至多 1。
         if (a != 0)
         {
           q = std::min(1.0, this->steepness / (a * k * this->number));
@@ -260,6 +268,7 @@ namespace asv
       }
     }
     /// \brief Recalculate all derived quantities from inputs.
+    // 仅识别 PMS 和 CWR；其它模型名只警告，不会自动生成一个可用的替代波谱。
     public: void Recalculate()
     {
       if (!this->model.compare("PMS"))
@@ -296,6 +305,7 @@ namespace asv
     this->data->Recalculate();
   }
 
+  // 从 wave 子元素读取参数：振幅/波长为 m，周期/tau 为 s，角度为 rad，方向是水平向量。
   void WaveParameters::SetFromSDF(sdf::Element& _sdf)
   {
     this->data->model = Utilities::SdfParamString(_sdf, "model", "default");
@@ -322,6 +332,7 @@ namespace asv
     this->data->Recalculate();
   }
 
+  // 以下只读接口返回均值参数；带 _V 后缀的接口返回每个分量的缓存数组。
   size_t WaveParameters::Number() const
   {
     return this->data->number;
@@ -387,6 +398,7 @@ namespace asv
     return this->data->direction;
   }
 
+  // 多数 setter 修改输入后立即重算全部分量，因此应保持周期、尺度等参数在有效范围内。
   void WaveParameters::SetNumber(size_t _number)
   {
     this->data->number = _number;
@@ -429,6 +441,7 @@ namespace asv
     this->data->Recalculate();
   }
 
+  // 这两个 setter 仅赋值；SetGain 本身不会立即刷新 PMS 振幅，需要后续重算。
   void WaveParameters::SetTau(double _tau)
   {
     this->data->tau = _tau;
@@ -475,6 +488,7 @@ namespace asv
     return this->data->directions;
   }
 
+  // 输出输入参数及推导分量，便于核对物理侧和渲染侧是否使用相同波谱配置。
   void WaveParameters::DebugPrint() const
   {
     gzmsg << "Input Parameters:" << std::endl;
@@ -511,6 +525,7 @@ namespace asv
 /////////////////////////////////////////////////////////////////////////////
 // WavefieldSampler
 
+  // 简化采样直接叠加 a·cos(k·位置投影-ωt)，忽略水平轨道位移，返回相对平均水面的波高 m。
   double WavefieldSampler::ComputeDepthSimply(
     const WaveParameters& _waveParams,
     const ignition::math::Vector3d& _point,
@@ -533,9 +548,11 @@ namespace asv
     }
 
     // Exponentially grow the waves
+    // 用 tau 秒时间常数让波高从初始时刻指数增长；输入 Z 不参与这里的波高计算。
     return h*(1-exp(-1.0*(time-time_init)/_waveParams.Tau()));
   }
 
+  // 按当前二维非线性方程反求参数位置并返回波高；函数名虽含 Depth，实际未减去采样点 Z。
   double WavefieldSampler::ComputeDepthDirectly(
     const WaveParameters& _waveParams,
     const ignition::math::Vector3d& _point,
@@ -565,6 +582,7 @@ namespace asv
     // Compute the target function and Jacobian. Also calculate pz,
     // the z-component of the Gerstner wave, which we essentially get for free.
     // cppcheck-suppress constParameter
+    // 同时计算位置残差、雅可比与竖直波高，以复用各波分量的三角函数值。
     auto wave_fdf = [=](auto x, auto p, auto t, auto& wp, auto& F, auto& J)
     {
       double pz = 0;
@@ -607,6 +625,7 @@ namespace asv
     // this version returns the z-component of the
     // wave field at the desired point p.
     // cppcheck-suppress constParameter
+    // 牛顿迭代用 J 的逆修正位置，残差范数达容差或次数达上限就退出；这里没有单独的失败状态返回。
     auto solver = [=](auto& fdfunc, auto x0, auto p, auto t, \
                       auto& wp, auto tol, auto nmax)
     {
@@ -637,6 +656,7 @@ namespace asv
       _waveParams.Direction_V());
 
     // Tolerances etc.
+    // 容差设为 1e-10、最大迭代 30 次；数值收敛仍取决于波陡度和雅可比是否可逆。
     const double tol = 1.0E-10;
     const double nmax = 30;
 

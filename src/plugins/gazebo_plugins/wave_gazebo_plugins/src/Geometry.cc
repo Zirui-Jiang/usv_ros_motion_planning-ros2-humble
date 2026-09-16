@@ -15,6 +15,7 @@
  *
 */
 
+// 几何辅助函数提供二维/三维单位向量及三角面法向，保留旧 ignition-math 版本兼容分支。
 #include <cmath>
 
 #include <ignition/math/config.hh>
@@ -57,6 +58,7 @@ namespace asv
   ignition::math::Vector2d
   Geometry::Normalize(const ignition::math::Vector2d& _v)
   {
+    // 零向量原样返回，防止归一化时除以零长度。
     if (_v == ign_math_vector2d_zero)
       return _v;
     else
@@ -67,6 +69,7 @@ namespace asv
   ignition::math::Vector3d
   Geometry::Normalize(const ignition::math::Vector3d& _v)
   {
+    // 零向量原样返回，防止归一化时除以零长度。
     if (_v == ign_math_vector3d_zero)
       return _v;
     else
@@ -74,6 +77,7 @@ namespace asv
   }
 
   /////////////////////////////////////////////////
+  // 按三顶点顺序计算法向并归一化；退化三角形返回零法向。
   ignition::math::Vector3d Geometry::Normal(
     const ignition::math::Vector3d& _p0,
     const ignition::math::Vector3d& _p1,

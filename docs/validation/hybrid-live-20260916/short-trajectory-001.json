@@ -1,0 +1,2333 @@
+{
+  "summary": {
+    "counts": {
+      "local_trajectory": 40,
+      "reference": 120,
+      "global_path": 16,
+      "navigation": 8,
+      "odom": 71
+    },
+    "navigation": {
+      "state": "NAVIGATING",
+      "reason": "",
+      "version": 1,
+      "stamp": 64.0,
+      "request_id": "",
+      "task_id": 0,
+      "current_task_id": 1,
+      "desired_speed_mps": 1.0,
+      "controller": "adrc",
+      "goal": [
+        8.655668258666992,
+        56.2249755859375,
+        1.9726821417982716
+      ],
+      "metrics": {
+        "costmap_conversion_ms": {
+          "count": 64,
+          "p50": 0.1809479872463271,
+          "p95": 0.27498015697347,
+          "p99": 0.493655932950786,
+          "max": 0.7923950033728033
+        },
+        "planning_ms": {
+          "count": 254,
+          "p50": 7.58087400754448,
+          "p95": 10.437192251265515,
+          "p99": 14.743378722341731,
+          "max": 27.008801989722997
+        },
+        "control_ms": {
+          "count": 666,
+          "p50": 0.26816500758286566,
+          "p95": 0.4026195019832812,
+          "p99": 0.5939648472121933,
+          "max": 1.2132140109315515
+        }
+      },
+      "counters": {
+        "pending_replacements": 4,
+        "stale_control_reports": 4,
+        "odom_tf_waits": 8,
+        "global_searches": 1,
+        "wrong_session_references": 1,
+        "stale_references": 659
+      },
+      "process": {
+        "pid": 47877,
+        "cpu_seconds": 5.499136999999999,
+        "peak_rss_kib": 76276,
+        "monotonic": 145011.813486933
+      },
+      "modules": {
+        "decision": "5e03460d079e48859ce209acbcaebee1",
+        "control": "7753d7ae65974c4d87c659fca014eeab",
+        "perception": "bb49ff0f25f141c589a55592aa430fc1",
+        "control_process": {
+          "pid": 47879,
+          "cpu_seconds": 4.728155,
+          "peak_rss_kib": 72136,
+          "monotonic": 145011.800409587
+        }
+      }
+    },
+    "global_path": {
+      "received": true,
+      "header": {
+        "stamp": {
+          "sec": 63,
+          "nanosec": 800000000
+        },
+        "frame_id": "otter/map"
+      },
+      "points": 61,
+      "length_m": 29.239857773749442,
+      "start": {
+        "x": 20.25,
+        "y": 31.21446609406727,
+        "z": 0.0
+      },
+      "end": {
+        "x": 8.75,
+        "y": 56.25,
+        "z": 0.0
+      }
+    },
+    "local_trajectory": {
+      "received": true,
+      "header": {
+        "stamp": {
+          "sec": 64,
+          "nanosec": 0
+        },
+        "frame_id": "otter/map"
+      },
+      "points": 21,
+      "length_m": 8.41101505965313,
+      "start": {
+        "x": 20.55064571784338,
+        "y": 31.280562509546307,
+        "z": 0.0
+      },
+      "end": {
+        "x": 16.665230619929442,
+        "y": 38.67842571738481,
+        "z": 0.0
+      }
+    },
+    "reference": {
+      "active": true,
+      "state": "NAVIGATING",
+      "reason": "",
+      "goal": {
+        "x": 8.655668258666992,
+        "y": 56.2249755859375,
+        "theta": 1.9726821417982716
+      },
+      "task_id": 1,
+      "trajectory_stamp": 63.9,
+      "received": true,
+      "point_count": 21,
+      "horizon_s": 10.0,
+      "max_speed_mps": 1.0
+    },
+    "odom": {
+      "position": {
+        "x": 20.42067142869365,
+        "y": 31.52395337914294,
+        "z": 0.0
+      },
+      "orientation": {
+        "x": 0.0029115898589646867,
+        "y": -0.00845517365933413,
+        "z": 0.8698216327508086,
+        "w": 0.4932852723137001
+      }
+    }
+  },
+  "messages": {
+    "local_trajectory": {
+      "header": {
+        "stamp": {
+          "sec": 64,
+          "nanosec": 0
+        },
+        "frame_id": "otter/map"
+      },
+      "poses": [
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 20.55064571784338,
+              "y": 31.280562509546307,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8697864857429783,
+              "w": 0.4934282817379641
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 20.267456988905444,
+              "y": 31.68723086974328,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8937072307747831,
+              "w": 0.44865062761671093
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 19.969994101954757,
+              "y": 32.07245649166922,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8982540579481497,
+              "w": 0.4394765606715359
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 19.668663544342564,
+              "y": 32.44393179010301,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.9074975617037778,
+              "w": 0.4200573478725232
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 19.383659925063323,
+              "y": 32.81632168792985,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8828533811403897,
+              "w": 0.4696487063848699
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 19.133902038441608,
+              "y": 33.2037489429064,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8809951615379564,
+              "w": 0.4731252744746469
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 18.898076135455437,
+              "y": 33.59024061528368,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8602806006550628,
+              "w": 0.5098208392529323
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 18.717674869666723,
+              "y": 33.99708653288675,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8214687426254371,
+              "w": 0.5702535443900224
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 18.582285052021653,
+              "y": 34.41319458835626,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8068717546429978,
+              "w": 0.590726647070648
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 18.447260084826283,
+              "y": 34.82115748632655,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8150583596817795,
+              "w": 0.5793788659528814
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 18.310500692326144,
+              "y": 35.22076625477498,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8089214942156051,
+              "w": 0.5879166745347445
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 18.169456457728295,
+              "y": 35.61060264599339,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8311365691789759,
+              "w": 0.5560683441569043
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 18.0092139820306,
+              "y": 35.98502799299187,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8306565617235833,
+              "w": 0.5567851259377848
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 17.853236386430012,
+              "y": 36.353457905174416,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8399886965554979,
+              "w": 0.5426038975707745
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 17.682142781328018,
+              "y": 36.7076287693895,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8501140698909022,
+              "w": 0.5265985835278388
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 17.507952660110806,
+              "y": 37.05282598380382,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8514520415541087,
+              "w": 0.5244324750941157
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 17.33412887842219,
+              "y": 37.39063282894184,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8572315212660597,
+              "w": 0.5149311788461415
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 17.157021311422934,
+              "y": 37.71862805484882,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8566301376875778,
+              "w": 0.5159310101218587
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 16.992807177015127,
+              "y": 38.04563724745613,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8492276436306208,
+              "w": 0.5280269020547944
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 16.8289896090829,
+              "y": 38.36570167665121,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8557077052545905,
+              "w": 0.5174594893978879
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 64,
+              "nanosec": 0
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 16.665230619929442,
+              "y": 38.67842571738481,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.853644210747053,
+              "w": 0.5208565651482574
+            }
+          }
+        }
+      ]
+    },
+    "reference": {
+      "header": {
+        "stamp": {
+          "sec": 64,
+          "nanosec": 100000000
+        },
+        "frame_id": "otter/map"
+      },
+      "planner_session": "5e03460d079e48859ce209acbcaebee1",
+      "control_session": "7753d7ae65974c4d87c659fca014eeab",
+      "perception_session": "bb49ff0f25f141c589a55592aa430fc1",
+      "task_id": 1,
+      "revision": 1,
+      "sequence": 257,
+      "active": true,
+      "pass_through": false,
+      "goal": {
+        "x": 8.655668258666992,
+        "y": 56.2249755859375,
+        "theta": 1.9726821417982716
+      },
+      "state": "NAVIGATING",
+      "reason": "",
+      "parameters_json": "{\"dynamics.D\": 0.395, \"dynamics.L\": 1.35, \"dynamics.W\": 1.0, \"dynamics.acceleration_max\": 1.0, \"dynamics.acceleration_min\": -1.0, \"dynamics.cruising_speed\": 1.0, \"dynamics.i_z\": 10.03, \"dynamics.jerk_max\": 2.0, \"dynamics.jerk_min\": -2.0, \"dynamics.mass\": 29.84, \"dynamics.max_force\": 50.0, \"dynamics.n_dot_r\": 1.0, \"dynamics.n_dot_u\": 0.0, \"dynamics.n_dot_v\": 0.0, \"dynamics.n_r\": -20.0, \"dynamics.n_r_r\": 0.0, \"dynamics.n_u\": 0.0, \"dynamics.n_v\": 0.0, \"dynamics.name\": \"otter\", \"dynamics.ns\": \"otter\", \"dynamics.type\": \"Differential\", \"dynamics.velocity_max\": 2.1, \"dynamics.velocity_min\": 0.0, \"dynamics.x_dot_r\": 0.0, \"dynamics.x_dot_u\": 5.0, \"dynamics.x_dot_v\": 0.0, \"dynamics.x_r\": 0.0, \"dynamics.x_u\": -20.0, \"dynamics.x_u_u\": 0.0, \"dynamics.x_v\": 0.0, \"dynamics.y_dot_r\": 0.0, \"dynamics.y_dot_u\": 0.0, \"dynamics.y_dot_v\": 5.0, \"dynamics.y_r\": 0.0, \"dynamics.y_u\": 0.0, \"dynamics.y_v\": -20.0, \"dynamics.y_v_v\": 0.0, \"navigation.costmap_topic\": \"costmap_raw\", \"navigation.footprint_length\": 2.2, \"navigation.footprint_width\": 1.2, \"navigation.map_timeout\": 1.5, \"navigation.max_expansions\": 200000, \"navigation.planning_frequency\": 5.0, \"navigation.planning_timeout\": 1.0, \"navigation.state_timeout\": 0.5, \"navigation.trajectory_timeout\": 1.0, \"obstacle_factor\": 0.25, \"path_planner.analytic_expansion_max_length\": 20.0, \"path_planner.angle_bins\": 72, \"path_planner.change_penalty\": 0.2, \"path_planner.collision_step\": 0.2, \"path_planner.convert_offset\": 0.0, \"path_planner.cost_penalty\": 0.0, \"path_planner.default_tolerance\": 0.0, \"path_planner.enable_resample\": true, \"path_planner.expand_zone\": true, \"path_planner.footprint_padding\": 0.0, \"path_planner.heuristic_weight\": 1.2, \"path_planner.minimum_turning_radius\": 4.0, \"path_planner.motion_step\": 1.0, \"path_planner.non_straight_penalty\": 1.05, \"path_planner.outline_map\": true, \"path_planner.resample_ratio\": 0.5, \"path_planner.reuse_max_deviation\": 2.0, \"path_planner.reuse_max_heading_error\": 1.0471975511965976, \"path_planner.reuse_search_distance\": 10.0, \"path_planner.show_safety_corridor\": false, \"planner_name\": \"astar\", \"usv_simulation.controller.adrc_controller.acceleration_gain\": 0.0, \"usv_simulation.controller.adrc_controller.command_limit\": 1.0, \"usv_simulation.controller.adrc_controller.error_reset_deg\": 20.0, \"usv_simulation.controller.adrc_controller.filter_history_length\": 50, \"usv_simulation.controller.adrc_controller.filter_window_length\": 10, \"usv_simulation.controller.adrc_controller.force_max\": 40.0, \"usv_simulation.controller.adrc_controller.force_min\": -40.0, \"usv_simulation.controller.adrc_controller.goal_distance_tolerance\": 1.5, \"usv_simulation.controller.adrc_controller.goal_speed_tolerance\": 0.25, \"usv_simulation.controller.adrc_controller.heading_integral_max\": 10.0, \"usv_simulation.controller.adrc_controller.heading_integral_min\": -10.0, \"usv_simulation.controller.adrc_controller.k_d_heading\": 4.0, \"usv_simulation.controller.adrc_controller.k_i_heading\": 0.03, \"usv_simulation.controller.adrc_controller.k_i_speed\": 4.0, \"usv_simulation.controller.adrc_controller.k_p_heading\": 8.0, \"usv_simulation.controller.adrc_controller.k_p_speed\": 8.0, \"usv_simulation.controller.adrc_controller.lookahead_time\": 2.6, \"usv_simulation.controller.adrc_controller.max_sample_gap\": 0.5, \"usv_simulation.controller.adrc_controller.moment_max\": 10.0, \"usv_simulation.controller.adrc_controller.moment_min\": -10.0, \"usv_simulation.controller.adrc_controller.sample_time\": 0.1, \"usv_simulation.controller.adrc_controller.speed_integral_max\": 30.0, \"usv_simulation.controller.adrc_controller.speed_integral_min\": -30.0, \"usv_simulation.controller.control_frequency\": 10.0, \"usv_simulation.controller.controller_name\": \"adrc\", \"usv_simulation.controller.lqr_controller.Q_matrix_diag\": [1.0, 1.0, 100.0, 10.0, 10.0, 10.0], \"usv_simulation.controller.lqr_controller.R_matrix_diag\": [20.0, 20.0], \"usv_simulation.controller.lqr_controller.discrete_dt\": 0.1, \"usv_simulation.controller.lqr_controller.goal_distance_tolerance\": 1.0, \"usv_simulation.controller.lqr_controller.goal_speed_tolerance\": 0.25, \"usv_simulation.controller.lqr_controller.lookahead_time\": 2.0, \"usv_simulation.controller.lqr_controller.max_iterations\": 5000, \"usv_simulation.controller.lqr_controller.solve_eps\": 0.1, \"usv_simulation.controller.lqr_controller.solve_timeout\": 0.08, \"usv_simulation.controller.pid_controller.goal_distance_tolerance\": 1.5, \"usv_simulation.controller.pid_controller.goal_speed_tolerance\": 0.25, \"usv_simulation.controller.pid_controller.k_d_course\": 0.0, \"usv_simulation.controller.pid_controller.k_d_speed\": 0.0, \"usv_simulation.controller.pid_controller.k_i_course\": 0.0, \"usv_simulation.controller.pid_controller.k_i_speed\": 0.5, \"usv_simulation.controller.pid_controller.k_p_course\": 2.0, \"usv_simulation.controller.pid_controller.k_p_speed\": 2.0, \"usv_simulation.controller.pid_controller.lookahead_time\": 2.6, \"usv_simulation.trajectory_planner.los.goal_tolerance\": 1.0, \"usv_simulation.trajectory_planner.los.kp_yaw\": 1.0, \"usv_simulation.trajectory_planner.los.lookahead_distance\": 1.0, \"usv_simulation.trajectory_planner.los.slowdown_distance\": 3.0, \"usv_simulation.trajectory_planner.los.switch_dist\": 5.0, \"usv_simulation.trajectory_planner.los.trajectory_time\": 10.0, \"usv_simulation.trajectory_planner.los.trajectory_time_interval\": 0.5, \"usv_simulation.trajectory_planner.los.yaw_rate_max\": 0.3, \"usv_simulation.trajectory_planner.planner_name\": \"los\"}",
+      "trajectory_stamp": 63.9,
+      "trajectory_frame": "otter/map",
+      "points": [
+        {
+          "time": 0.0,
+          "s": 0.0,
+          "x": 20.55064571784338,
+          "y": 31.280562509546307,
+          "theta": 2.1095388789817946,
+          "kappa": 0.0,
+          "velocity": 1.0,
+          "acceleration": 0.0
+        },
+        {
+          "time": 0.5,
+          "s": 0.49571633418379757,
+          "x": 20.267456988905444,
+          "y": 31.68723086974328,
+          "theta": 2.211082841003156,
+          "kappa": 0.12339533137587665,
+          "velocity": 0.9844785856477921,
+          "acceleration": -0.03104282870441577
+        },
+        {
+          "time": 1.0,
+          "s": 0.9824279520929702,
+          "x": 19.969994101954757,
+          "y": 32.07245649166922,
+          "theta": 2.2315609324741903,
+          "kappa": -0.01002403552944077,
+          "velocity": 0.9665364231699022,
+          "acceleration": -0.03588432495577987
+        },
+        {
+          "time": 1.5,
+          "s": 1.4608161135763273,
+          "x": 19.668663544342564,
+          "y": 32.44393179010301,
+          "theta": 2.2745756284628307,
+          "kappa": 0.10699194558565904,
+          "velocity": 0.9503213945688966,
+          "acceleration": -0.03243005720201109
+        },
+        {
+          "time": 2.0,
+          "s": 1.9301750125125536,
+          "x": 19.383659925063323,
+          "y": 32.81632168792985,
+          "theta": 2.1638069959961896,
+          "kappa": -0.3219029524919702,
+          "velocity": 0.9319579012170863,
+          "acceleration": -0.03672698670362062
+        },
+        {
+          "time": 2.5,
+          "s": 2.391143827544915,
+          "x": 19.133902038441608,
+          "y": 33.2037489429064,
+          "theta": 2.1559229549265897,
+          "kappa": 0.08257274716848524,
+          "velocity": 0.9155134862809132,
+          "acceleration": -0.032888829872346204
+        },
+        {
+          "time": 3.0,
+          "s": 2.844146440783207,
+          "x": 18.898076135455437,
+          "y": 33.59024061528368,
+          "theta": 2.0716396157467862,
+          "kappa": -0.2636721148875237,
+          "velocity": 0.8998809967506296,
+          "acceleration": -0.031264979060567244
+        },
+        {
+          "time": 3.5,
+          "s": 3.2895958278463047,
+          "x": 18.717674869666723,
+          "y": 33.99708653288675,
+          "theta": 1.9279637139872108,
+          "kappa": -0.33892200812627565,
+          "velocity": 0.8851593959877221,
+          "acceleration": -0.029443201525815033
+        },
+        {
+          "time": 4.0,
+          "s": 3.7271880504951787,
+          "x": 18.582285052021653,
+          "y": 34.41319458835626,
+          "theta": 1.8776744187903684,
+          "kappa": -0.016523324551126286,
+          "velocity": 0.8689793856090925,
+          "acceleration": -0.03236002075725919
+        },
+        {
+          "time": 4.5,
+          "s": 4.1569357780324365,
+          "x": 18.447260084826283,
+          "y": 34.82115748632655,
+          "theta": 1.9056598316337947,
+          "kappa": 0.10557459053796289,
+          "velocity": 0.8534800178788867,
+          "acceleration": -0.03099873546041154
+        },
+        {
+          "time": 5.0,
+          "s": 4.579324234360798,
+          "x": 18.310500692326144,
+          "y": 35.22076625477498,
+          "theta": 1.884630679327068,
+          "kappa": -0.09712625243851133,
+          "velocity": 0.8390366366251119,
+          "acceleration": -0.028886762507549735
+        },
+        {
+          "time": 5.5,
+          "s": 4.994083271391638,
+          "x": 18.169456457728295,
+          "y": 35.61060264599339,
+          "theta": 1.9622970221819447,
+          "kappa": 0.28179825327412783,
+          "velocity": 0.8236900973447996,
+          "acceleration": -0.03069307856062453
+        },
+        {
+          "time": 6.0,
+          "s": 5.40137443294177,
+          "x": 18.0092139820306,
+          "y": 35.98502799299187,
+          "theta": 1.9605717009657235,
+          "kappa": -0.10993297335271383,
+          "velocity": 0.8088551291042327,
+          "acceleration": -0.029669936481133696
+        },
+        {
+          "time": 6.5,
+          "s": 5.801510497718871,
+          "x": 17.853236386430012,
+          "y": 36.353457905174416,
+          "theta": 1.994524780366242,
+          "kappa": 0.15839180527130345,
+          "velocity": 0.794763061997049,
+          "acceleration": -0.028184134214367385
+        },
+        {
+          "time": 7.0,
+          "s": 6.194857351466038,
+          "x": 17.682142781328018,
+          "y": 36.7076287693895,
+          "theta": 2.0324037447156105,
+          "kappa": 0.06459929420979044,
+          "velocity": 0.7813506250401223,
+          "acceleration": -0.026824873913853464
+        },
+        {
+          "time": 7.5,
+          "s": 6.581514081962536,
+          "x": 17.507952660110806,
+          "y": 37.05282598380382,
+          "theta": 2.0374957766949926,
+          "kappa": -0.016347354903499485,
+          "velocity": 0.7680323504059089,
+          "acceleration": -0.026636549268426846
+        },
+        {
+          "time": 8.0,
+          "s": 6.961433946345408,
+          "x": 17.33412887842219,
+          "y": 37.39063282894184,
+          "theta": 2.059737925046325,
+          "kappa": 0.10948337105303216,
+          "velocity": 0.7545966442798624,
+          "acceleration": -0.026871412252092997
+        },
+        {
+          "time": 8.5,
+          "s": 7.334195321183698,
+          "x": 17.157021311422934,
+          "y": 37.71862805484882,
+          "theta": 2.0574044084358816,
+          "kappa": -0.09100102809949988,
+          "velocity": 0.7401197339362279,
+          "acceleration": -0.02895382068726904
+        },
+        {
+          "time": 9.0,
+          "s": 7.700130075046852,
+          "x": 16.992807177015127,
+          "y": 38.04563724745613,
+          "theta": 2.0290416941539373,
+          "kappa": -0.014179869914140398,
+          "velocity": 0.7267134032593416,
+          "acceleration": -0.02681266135377247
+        },
+        {
+          "time": 9.5,
+          "s": 8.05969472996799,
+          "x": 16.8289896090829,
+          "y": 38.36570167665121,
+          "theta": 2.0538339007200737,
+          "kappa": 0.044290393478232784,
+          "velocity": 0.714191282697012,
+          "acceleration": -0.025044241124659194
+        },
+        {
+          "time": 10.0,
+          "s": 8.412703681820034,
+          "x": 16.665230619929442,
+          "y": 38.67842571738481,
+          "theta": 2.045884522370832,
+          "kappa": -0.08635373004564172,
+          "velocity": 0.701043204019326,
+          "acceleration": -0.026296157355372163
+        }
+      ]
+    },
+    "global_path": {
+      "header": {
+        "stamp": {
+          "sec": 63,
+          "nanosec": 800000000
+        },
+        "frame_id": "otter/map"
+      },
+      "poses": [
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 20.25,
+              "y": 31.21446609406727,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8314696123025449,
+              "w": 0.5555702330196027
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 19.921572875253805,
+              "y": 31.578427124746195,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8730408836759967,
+              "w": 0.487647019298011
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 19.75,
+              "y": 32.00735931288072,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8314696123025461,
+              "w": 0.5555702330196008
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 19.568019484660528,
+              "y": 32.43198051533947,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8736663886635205,
+              "w": 0.48652547859248063
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 19.25,
+              "y": 32.80025253169418,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8314696123025446,
+              "w": 0.5555702330196033
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 19.214466094067255,
+              "y": 33.285533905932745,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8401126463150033,
+              "w": 0.5424119665914481
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 18.860912703473982,
+              "y": 33.63908729652602,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8608448742966707,
+              "w": 0.5088674703664494
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 18.75,
+              "y": 34.09314575050763,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.7495090993454879,
+              "w": 0.661994040757404
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 18.75,
+              "y": 34.59314575050763,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.799563311862101,
+              "w": 0.6005818098511715
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 18.507359312880705,
+              "y": 34.99264068711929,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8755914212505199,
+              "w": 0.4830524433563034
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 18.25,
+              "y": 35.386038969321085,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8314696123025445,
+              "w": 0.5555702330196034
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 18.153805922287432,
+              "y": 35.84619407771257,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8566160753884371,
+              "w": 0.5159543578516529
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 17.800252531694156,
+              "y": 36.199747468305844,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8439414959626439,
+              "w": 0.5364352257191308
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 17.75,
+              "y": 36.67893218813454,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8314696123025455,
+              "w": 0.5555702330196018
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 17.446699141100883,
+              "y": 37.053300858899114,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8744093913312804,
+              "w": 0.4851888460709497
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 17.25,
+              "y": 37.47182540694799,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8314696123025446,
+              "w": 0.5555702330196032
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 17.09314575050761,
+              "y": 37.90685424949239,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8720217414653438,
+              "w": 0.489467141299341
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 16.75,
+              "y": 38.264718625761446,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8314696123025455,
+              "w": 0.5555702330196018
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 16.739592359914333,
+              "y": 38.76040764008567,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8339062084910778,
+              "w": 0.5519061835493738
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 16.38603896932106,
+              "y": 39.113961030678944,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8681631821970534,
+              "w": 0.49627884206107953
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 16.25,
+              "y": 39.5576118445749,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.7595211617618247,
+              "w": 0.6504825937993791
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 16.25,
+              "y": 40.0576118445749,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.7907335310147994,
+              "w": 0.6121605042216194
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 16.032485578727787,
+              "y": 40.46751442127221,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8751635892732822,
+              "w": 0.48382713029583796
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 15.75,
+              "y": 40.850505063388354,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8314696123025453,
+              "w": 0.5555702330196021
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 15.67893218813451,
+              "y": 41.32106781186549,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8495650555973893,
+              "w": 0.5274838540730937
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 15.325378797541237,
+              "y": 41.674621202458766,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.923879532511287,
+              "w": 0.38268343236508917
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 14.971825406947962,
+              "y": 42.028174593052036,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.9238795325112873,
+              "w": 0.38268343236508856
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 14.618272016354688,
+              "y": 42.38172798364531,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.9238795325112863,
+              "w": 0.38268343236509084
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 14.264718625761413,
+              "y": 42.73528137423859,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.9238795325112873,
+              "w": 0.38268343236508856
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 13.911165235168138,
+              "y": 43.08883476483186,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.923879532511287,
+              "w": 0.38268343236508917
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 13.557611844574865,
+              "y": 43.442388155425135,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.9238795325112861,
+              "w": 0.38268343236509145
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 13.20405845398159,
+              "y": 43.79594154601841,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.9238795325112873,
+              "w": 0.38268343236508856
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 12.850505063388315,
+              "y": 44.14949493661168,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.9238795325112873,
+              "w": 0.38268343236508856
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 12.49695167279504,
+              "y": 44.50304832720496,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.9238795325112863,
+              "w": 0.38268343236509084
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 12.143398282201765,
+              "y": 44.856601717798235,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.9238795325112861,
+              "w": 0.38268343236509145
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 11.789844891608492,
+              "y": 45.21015510839151,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.923879532511287,
+              "w": 0.38268343236508917
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 11.436291501015218,
+              "y": 45.56370849898478,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.9238795325112873,
+              "w": 0.38268343236508856
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 11.082738110421943,
+              "y": 45.91726188957806,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.9238795325112863,
+              "w": 0.38268343236509084
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 10.729184719828668,
+              "y": 46.270815280171334,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.923879532511287,
+              "w": 0.38268343236508917
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 10.375631329235395,
+              "y": 46.6243686707646,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.923879532511287,
+              "w": 0.38268343236508917
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 10.02207793864212,
+              "y": 46.97792206135788,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.9238795325112863,
+              "w": 0.38268343236509084
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 9.668524548048845,
+              "y": 47.33147545195116,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.9238795325112873,
+              "w": 0.38268343236508856
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 9.31497115745557,
+              "y": 47.685028842544426,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8478948979769486,
+              "w": 0.5301643537476467
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 9.25,
+              "y": 48.15811690796326,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.7313530794003222,
+              "w": 0.6819990273099119
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 9.25,
+              "y": 48.65811690796326,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.7071067811865475,
+              "w": 0.7071067811865476
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 9.25,
+              "y": 49.15811690796326,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.7071067811865475,
+              "w": 0.7071067811865476
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 9.25,
+              "y": 49.65811690796326,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.7071067811865475,
+              "w": 0.7071067811865476
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 9.25,
+              "y": 50.15811690796326,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.7071067811865475,
+              "w": 0.7071067811865476
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 9.25,
+              "y": 50.65811690796326,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.7071067811865475,
+              "w": 0.7071067811865476
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 9.25,
+              "y": 51.15811690796326,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.7071067811865475,
+              "w": 0.7071067811865476
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 9.25,
+              "y": 51.65811690796326,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.7071067811865475,
+              "w": 0.7071067811865476
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 9.25,
+              "y": 52.15811690796326,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.7071067811865475,
+              "w": 0.7071067811865476
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 9.25,
+              "y": 52.65811690796326,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.7071067811865475,
+              "w": 0.7071067811865476
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 9.25,
+              "y": 53.15811690796326,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.7071067811865475,
+              "w": 0.7071067811865476
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 9.25,
+              "y": 53.65811690796326,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.7071067811865475,
+              "w": 0.7071067811865476
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 9.25,
+              "y": 54.15811690796326,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.7071067811865475,
+              "w": 0.7071067811865476
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 9.25,
+              "y": 54.65811690796326,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.7071067811865475,
+              "w": 0.7071067811865476
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 9.25,
+              "y": 55.15811690796326,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.814283325137195,
+              "w": 0.5804676273518733
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 8.961417766862294,
+              "y": 55.5385822331377,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.8749795492712817,
+              "w": 0.4841598789212347
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 8.75,
+              "y": 55.95101012677671,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.7693420090800708,
+              "w": 0.6388371256154736
+            }
+          }
+        },
+        {
+          "header": {
+            "stamp": {
+              "sec": 63,
+              "nanosec": 800000000
+            },
+            "frame_id": "otter/map"
+          },
+          "pose": {
+            "position": {
+              "x": 8.75,
+              "y": 56.25,
+              "z": 0.0
+            },
+            "orientation": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.834012769529631,
+              "w": 0.551745140677754
+            }
+          }
+        }
+      ]
+    },
+    "navigation": {
+      "data": "{\"state\": \"NAVIGATING\", \"reason\": \"\", \"version\": 1, \"stamp\": 64.0, \"request_id\": \"\", \"task_id\": 0, \"current_task_id\": 1, \"desired_speed_mps\": 1.0, \"controller\": \"adrc\", \"goal\": [8.655668258666992, 56.2249755859375, 1.9726821417982716], \"metrics\": {\"costmap_conversion_ms\": {\"count\": 64, \"p50\": 0.1809479872463271, \"p95\": 0.27498015697347, \"p99\": 0.493655932950786, \"max\": 0.7923950033728033}, \"planning_ms\": {\"count\": 254, \"p50\": 7.58087400754448, \"p95\": 10.437192251265515, \"p99\": 14.743378722341731, \"max\": 27.008801989722997}, \"control_ms\": {\"count\": 666, \"p50\": 0.26816500758286566, \"p95\": 0.4026195019832812, \"p99\": 0.5939648472121933, \"max\": 1.2132140109315515}}, \"counters\": {\"pending_replacements\": 4, \"stale_control_reports\": 4, \"odom_tf_waits\": 8, \"global_searches\": 1, \"wrong_session_references\": 1, \"stale_references\": 659}, \"process\": {\"pid\": 47877, \"cpu_seconds\": 5.499136999999999, \"peak_rss_kib\": 76276, \"monotonic\": 145011.813486933}, \"modules\": {\"decision\": \"5e03460d079e48859ce209acbcaebee1\", \"control\": \"7753d7ae65974c4d87c659fca014eeab\", \"perception\": \"bb49ff0f25f141c589a55592aa430fc1\", \"control_process\": {\"pid\": 47879, \"cpu_seconds\": 4.728155, \"peak_rss_kib\": 72136, \"monotonic\": 145011.800409587}}}"
+    },
+    "odom": {
+      "header": {
+        "stamp": {
+          "sec": 64,
+          "nanosec": 200000000
+        },
+        "frame_id": "otter/odom"
+      },
+      "child_frame_id": "otter/base_link",
+      "pose": {
+        "pose": {
+          "position": {
+            "x": 20.42067142869365,
+            "y": 31.52395337914294,
+            "z": 0.0
+          },
+          "orientation": {
+            "x": 0.0029115898589646867,
+            "y": -0.00845517365933413,
+            "z": 0.8698216327508086,
+            "w": 0.4932852723137001
+          }
+        },
+        "covariance": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "twist": {
+        "twist": {
+          "linear": {
+            "x": 0.9187664752449766,
+            "y": -0.03935461608242774,
+            "z": 0.0
+          },
+          "angular": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0007910080077593725
+          }
+        },
+        "covariance": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    }
+  }
+}

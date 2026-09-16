@@ -15,6 +15,7 @@
  *
 */
 
+// 世界风插件声明：将一个随机时变水平风场作用到多个模型，并维护调试话题状态。
 #ifndef USV_GAZEBO_PLUGINS_WIND_HH_
 #define USV_GAZEBO_PLUGINS_WIND_HH_
 
@@ -62,8 +63,10 @@ namespace gazebo
   /// <topic_wind_speed>: The debug topic to advertise the wind speed.
   ///
   /// <topic_wind_direction>: The debug topic to advertise the wind direction.
+  // 作为 WorldPlugin 加载，逐物理步寻找目标模型并施加船体系风载。
   class UsvWindPlugin : public WorldPlugin
   {
+    // 每个受风对象记录模型名、link 名和三个经验系数，分别参与纵向力、横向力和艏摇力矩。
     struct WindObj
     {
       /// \Bool to show weather the model and link pointers have been set
@@ -108,6 +111,7 @@ namespace gazebo
     private: physics::WorldPtr world;
 
     /// \brief Wind velocity unit vector in Gazebo coordinates [m/s].
+    // 此成员实际保存水平单位方向；乘平均风速与随机扰动后才得到世界风速 m/s。
     private: ignition::math::Vector3d windDirection;
 
     /// \brief Average wind velocity.
@@ -120,6 +124,7 @@ namespace gazebo
     private: double filterGain;
 
     /// \brief Time constant.
+    // 一阶随机滤波时间常数 s；与仿真步长共同控制阵风的时间变化。
     private: double timeConstant;
 
     /// \brief Previous time.
@@ -147,6 +152,7 @@ namespace gazebo
     private: double lastPublishTime = 0;
 
     /// \brief Update rate buffer for wind speed and direction.
+    // 仅用于风速和风向调试发布节流，不改变风载在每个物理步施加的频率。
     private: double updateRate;
 
     /// \brief Pointer to the update event connection.

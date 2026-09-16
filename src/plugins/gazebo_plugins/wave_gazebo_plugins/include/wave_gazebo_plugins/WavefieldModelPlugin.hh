@@ -18,6 +18,7 @@
 /// \file WavefieldModelPlugin.hh
 /// \brief This file defines a Gazebo ModelPlugin used to manage a wave field.
 
+// 物理端波场插件接口，负责创建实体、保存参数与提供只读查询。
 #ifndef _ASV_WAVE_SIM_GAZEBO_PLUGINS_WAVEFIELD_MODEL_PLUGIN_HH_
 #define _ASV_WAVE_SIM_GAZEBO_PLUGINS_WAVEFIELD_MODEL_PLUGIN_HH_
 
@@ -111,6 +112,7 @@ namespace asv
   /// 15. <tau> (double, default: 1.0)
   ///   Time constant used to gradually increase wavefield at startup.
   ///
+  // Load 将 WavefieldEntity 加入海面模型，GetWaveParams 可供船体、浮标和标尺插件调用。
   class GAZEBO_VISIBLE WavefieldModelPlugin : public gazebo::ModelPlugin
   {
     /// \brief Destructor.
@@ -138,6 +140,7 @@ namespace asv
     /// \param _waveModelName   The name of the wavefield model
     ///                         containing the wave field.
     /// \return A valid pointer to WaveParameters if found and nullptr if not.
+    // 模型或子实体未找到时返回空指针，使用端必须依据自身逻辑决定重试或跳过。
     public: static std::shared_ptr<const WaveParameters> GetWaveParams(
       gazebo::physics::WorldPtr _world,
       const std::string& _waveModelName);

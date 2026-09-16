@@ -1,0 +1,201 @@
+{
+  "source": "D:\\ROS2轻量仿真系统\\usv_ros_motion_planning-ros2-humble\\src\\core\\decision_module\\trajectory_planner\\trajectory_planner\\los_trajectory_planner.py",
+  "source_sha256": "70dce59c4daf67a496cbf3478c84e92e44cc7f15ebe8547f1a4e2d9a47c7950e",
+  "python_version": "3.12.10",
+  "numpy_version": "2.4.6",
+  "absolute_tolerance": 1e-09,
+  "fields": [
+    "time_s",
+    "arc_length_m",
+    "x_m",
+    "y_m",
+    "yaw_rad",
+    "curvature_per_m",
+    "speed_mps",
+    "acceleration_mps2"
+  ],
+  "case_count": 11,
+  "passed": true,
+  "mode": "python_js_numeric_comparison",
+  "engine_sha256": "ce6cb2e8a58d5ab5bfec1b51c27c4ed89d8bcc4cd9b61fbff2dc32ba230e82c5",
+  "node_version": "v24.15.0",
+  "cases": [
+    {
+      "id": "straight",
+      "python_status": "success",
+      "rows_compared": 41,
+      "max_abs_error_by_field": {
+        "time_s": 0.0,
+        "arc_length_m": 0.0,
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "yaw_rad": 0.0,
+        "curvature_per_m": 0.0,
+        "speed_mps": 0.0,
+        "acceleration_mps2": 0.0
+      },
+      "passed": true
+    },
+    {
+      "id": "cross_track",
+      "python_status": "success",
+      "rows_compared": 9,
+      "max_abs_error_by_field": {
+        "time_s": 0.0,
+        "arc_length_m": 4.440892098500626e-16,
+        "x_m": 1.7763568394002505e-15,
+        "y_m": 1.7763568394002505e-15,
+        "yaw_rad": 2.220446049250313e-15,
+        "curvature_per_m": 2.768618667658984e-15,
+        "speed_mps": 3.3306690738754696e-16,
+        "acceleration_mps2": 4.440892098500626e-16
+      },
+      "passed": true
+    },
+    {
+      "id": "wrap_pi_positive",
+      "python_status": "success",
+      "rows_compared": 11,
+      "max_abs_error_by_field": {
+        "time_s": 0.0,
+        "arc_length_m": 1.7763568394002505e-15,
+        "x_m": 8.881784197001252e-16,
+        "y_m": 1.2663481374630692e-15,
+        "yaw_rad": 1.7763568394002505e-15,
+        "curvature_per_m": 1.1514227071796057e-15,
+        "speed_mps": 4.440892098500626e-16,
+        "acceleration_mps2": 8.881784197001252e-16
+      },
+      "passed": true
+    },
+    {
+      "id": "wrap_pi_negative",
+      "python_status": "success",
+      "rows_compared": 11,
+      "max_abs_error_by_field": {
+        "time_s": 0.0,
+        "arc_length_m": 1.7763568394002505e-15,
+        "x_m": 8.881784197001252e-16,
+        "y_m": 7.042977312465837e-16,
+        "yaw_rad": 8.881784197001252e-16,
+        "curvature_per_m": 1.5814172887873568e-15,
+        "speed_mps": 4.440892098500626e-16,
+        "acceleration_mps2": 8.881784197001252e-16
+      },
+      "passed": true
+    },
+    {
+      "id": "turn_waypoints",
+      "python_status": "success",
+      "rows_compared": 41,
+      "max_abs_error_by_field": {
+        "time_s": 0.0,
+        "arc_length_m": 1.0658141036401503e-14,
+        "x_m": 1.7763568394002505e-14,
+        "y_m": 1.687538997430238e-14,
+        "yaw_rad": 1.509903313490213e-14,
+        "curvature_per_m": 1.504352198367087e-14,
+        "speed_mps": 8.881784197001252e-16,
+        "acceleration_mps2": 8.881784197001252e-16
+      },
+      "passed": true
+    },
+    {
+      "id": "dense_waypoint_switch",
+      "python_status": "success",
+      "rows_compared": 3,
+      "max_abs_error_by_field": {
+        "time_s": 0.0,
+        "arc_length_m": 0.0,
+        "x_m": 0.0,
+        "y_m": 4.3368086899420177e-16,
+        "yaw_rad": 1.7763568394002505e-15,
+        "curvature_per_m": 0.0,
+        "speed_mps": 1.1102230246251565e-16,
+        "acceleration_mps2": 2.220446049250313e-16
+      },
+      "passed": true
+    },
+    {
+      "id": "near_goal_approach",
+      "python_status": "success",
+      "rows_compared": 3,
+      "max_abs_error_by_field": {
+        "time_s": 0.0,
+        "arc_length_m": 2.7755575615628914e-17,
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "yaw_rad": 8.881784197001252e-16,
+        "curvature_per_m": 1.27675647831893e-15,
+        "speed_mps": 0.0,
+        "acceleration_mps2": 0.0
+      },
+      "passed": true
+    },
+    {
+      "id": "already_at_goal",
+      "python_status": "goal_reached",
+      "rows_compared": 2,
+      "max_abs_error_by_field": {
+        "time_s": 0.0,
+        "arc_length_m": 0.0,
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "yaw_rad": 0.0,
+        "curvature_per_m": 0.0,
+        "speed_mps": 0.0,
+        "acceleration_mps2": 0.0
+      },
+      "passed": true
+    },
+    {
+      "id": "duplicate_waypoints",
+      "python_status": "success",
+      "rows_compared": 17,
+      "max_abs_error_by_field": {
+        "time_s": 0.0,
+        "arc_length_m": 8.881784197001252e-16,
+        "x_m": 8.881784197001252e-16,
+        "y_m": 1.9984014443252818e-15,
+        "yaw_rad": 1.7763568394002505e-15,
+        "curvature_per_m": 1.8769708010069053e-15,
+        "speed_mps": 1.1102230246251565e-16,
+        "acceleration_mps2": 2.220446049250313e-16
+      },
+      "passed": true
+    },
+    {
+      "id": "single_waypoint",
+      "python_status": "success",
+      "rows_compared": 11,
+      "max_abs_error_by_field": {
+        "time_s": 0.0,
+        "arc_length_m": 0.0,
+        "x_m": 1.7763568394002505e-15,
+        "y_m": 1.3322676295501878e-15,
+        "yaw_rad": 2.220446049250313e-15,
+        "curvature_per_m": 4.0158848468863084e-15,
+        "speed_mps": 1.1102230246251565e-16,
+        "acceleration_mps2": 2.220446049250313e-16
+      },
+      "passed": true
+    },
+    {
+      "id": "substep_output_interval",
+      "python_status": "success",
+      "rows_compared": 16,
+      "max_abs_error_by_field": {
+        "time_s": 0.0,
+        "arc_length_m": 0.0,
+        "x_m": 2.220446049250313e-16,
+        "y_m": 1.0685896612017132e-15,
+        "yaw_rad": 2.220446049250313e-15,
+        "curvature_per_m": 2.706168622523819e-15,
+        "speed_mps": 2.220446049250313e-16,
+        "acceleration_mps2": 3.17280923756158e-15
+      },
+      "passed": true
+    }
+  ],
+  "max_abs_error": 1.7763568394002505e-14
+}

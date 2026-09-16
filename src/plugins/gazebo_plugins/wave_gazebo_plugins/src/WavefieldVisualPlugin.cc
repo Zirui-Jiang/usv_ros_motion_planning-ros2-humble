@@ -15,6 +15,7 @@
  *
 */
 
+// 海面视觉插件：把波谱参数送入着色器，并为相机维护反射/折射纹理；不对刚体施加水动力。
 #include <memory>
 #include <thread>
 #include <vector>
@@ -57,6 +58,7 @@ namespace asv
   ///
   /// \param[in] _v       A std::vector containing two entries.
   /// \param[out] _vout   The Ogre vector to be populated.
+  // 向量转换先清零，短输入用零补齐，超出目标维度则报错返回。
   void ToOgreVector2(const std::vector<double>& _v, Ogre::Vector2& _vout)
   {
     _vout = Ogre::Vector2::ZERO;
@@ -163,6 +165,7 @@ namespace asv
 
   /// \internal
   /// \brief Private data for the WavefieldVisualPlugin
+  // 集中管理海面对象、相机和两类渲染目标；三个数组同一索引对应同一相机。
   class WavefieldVisualPluginPrivate
   {
     public: WavefieldVisualPluginPrivate() :
@@ -226,6 +229,7 @@ namespace asv
 ///////////////////////////////////////////////////////////////////////////////
 // WavefieldVisualPlugin
 
+  // 释放波场参数并断开渲染事件，避免销毁后回调继续访问插件对象。
   WavefieldVisualPlugin::~WavefieldVisualPlugin()
   {
     // Clean up.
@@ -244,6 +248,7 @@ namespace asv
     this->data->isInitialised = false;
   }
 
+  // 从 visual 的 SDF 读取波谱与光学参数，取得海面实体后绑定每帧预渲染回调。
   void WavefieldVisualPlugin::Load(
     rendering::VisualPtr _visual,
     sdf::ElementPtr _sdf)
@@ -291,6 +296,7 @@ namespace asv
     this->data->rttNoise =
       Utilities::SdfParamDouble(*_sdf, "rttNoise", 0.1);
 
+    // 视觉侧自行读取 wave 参数；本实现未在这里通过话题向物理侧同步，应保证两侧配置一致。
     this->data->waveParams.reset(new WaveParameters());
     if (_sdf->HasElement("wave"))
     {
@@ -329,6 +335,7 @@ namespace asv
         std::bind(&WavefieldVisualPlugin::OnPreRender, this));
   }
 
+  // 只初始化一次着色器的时间与波参数，防止重复 Init 导致重复设置。
   void WavefieldVisualPlugin::Init()
   {
     // @DEBUG_INFO
@@ -359,6 +366,7 @@ namespace asv
     // gzmsg << "Reset WavefieldVisualPlugin" << std::endl;
   }
 
+  // 每帧更新海面裁剪平面并发现新相机；非静态模式把场景仿真时间传给顶点着色器。
   void WavefieldVisualPlugin::OnPreRender()
   {
     if (this->data->enableRtt)
@@ -388,6 +396,7 @@ namespace asv
 ///////////////////////////////////////////////////////////////////////////////
 // Reflection/Refraction setup and texture creation
 
+  // 建立朝上/朝下裁剪面并绑定材质纹理槽；反射和折射混合比例由 SDF 配置。
   void WavefieldVisualPlugin::SetupReflectionRefraction()
   {
     // OGRE setup
@@ -446,6 +455,7 @@ namespace asv
 #endif
   }
 
+  // 用海面的世界位置和姿态更新裁剪面，使海面移动或转动时两侧剔除区域保持一致。
   void WavefieldVisualPlugin::UpdateClipPlanes()
   {
     #if GAZEBO_MAJOR_VERSION >= 8
@@ -474,6 +484,7 @@ namespace asv
     this->data->planeDown.redefine(-oceanNormal, oceanPosition);
   }
 
+  // 客户端检查用户相机，服务端检查相机传感器；相机异步创建期间空指针直接返回。
   void WavefieldVisualPlugin::AddNewCamerasForReflectionRefraction()
   {
     // User cam setup in gzclient
@@ -511,6 +522,7 @@ namespace asv
     }
   }
 
+  // 按相机视口宽高的四分之一创建离屏纹理，保留宽高比；纹理更新由相机回调显式触发。
   void WavefieldVisualPlugin::CreateRtts(Ogre::Camera* _camera)
   {
     // Preserve the camera aspect ratio in the texture.
@@ -581,6 +593,7 @@ namespace asv
                                                 ->getName());
   }
 
+  // 从传感器管理器枚举普通相机，过滤已登记相机，返回需要新增纹理的对象。
   std::vector<rendering::CameraPtr> WavefieldVisualPlugin::NewCameras()
   {
     std::vector<rendering::CameraPtr> retVal;
@@ -607,6 +620,7 @@ namespace asv
 ///////////////////////////////////////////////////////////////////////////////
 // Shader Params Wave Generation
 
+  // 将振幅、波数、角频率和陡度装入三维向量；渲染接口最多容纳三个波分量。
   void WavefieldVisualPlugin::SetShaderParams()
   {
     const std::string shaderType = "vertex";
@@ -669,6 +683,7 @@ namespace asv
 ///////////////////////////////////////////////////////////////////////////////
 // OnCameraPreRender: How to update rtt before camera
 
+  // 在目标相机绘制前先刷新其反射/折射纹理，避免主画面采到上一帧的水面图像。
   void WavefieldVisualPlugin::OnCameraPreRender(const std::string &_camera)
   {
     // Get appropriate camera source
@@ -700,6 +715,7 @@ namespace asv
 ///////////////////////////////////////////////////////////////////////////////
 // pre and post RenderTargetUpdate(): RenderTargetListener methods
 
+  // 离屏渲染时暂时隐藏海面，按反射/折射用途启用对应裁剪面与镜像，避免海面采样自身。
   void WavefieldVisualPlugin::preRenderTargetUpdate(
       const Ogre::RenderTargetEvent& rte)
   {
@@ -737,6 +753,7 @@ namespace asv
     }
   }
 
+  // 离屏纹理绘制结束后恢复海面可见性，并撤销相机镜像及近裁剪设置。
   void WavefieldVisualPlugin::postRenderTargetUpdate(
       const Ogre::RenderTargetEvent& rte)
   {

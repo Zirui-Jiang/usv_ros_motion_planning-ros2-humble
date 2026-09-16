@@ -20,6 +20,7 @@
 /// a wave field. This includes wave parameters, wave generation,
 /// and sampling from the wave field.
 
+// 声明波谱参数对象和波高采样器，连接物理受力计算与海面着色器参数。
 #ifndef _ASV_WAVE_SIM_GAZEBO_PLUGINS_WAVEFIELD_HH_
 #define _ASV_WAVE_SIM_GAZEBO_PLUGINS_WAVEFIELD_HH_
 
@@ -43,6 +44,7 @@ namespace asv
 
   /// \brief A class to manage the parameters for generating a wave
   /// in a wave field.
+  // 输入参数由 SDF 读取并推导各分量；振幅/波长为 m、周期为 s、角频率为 rad/s。
   class WaveParameters
   {
     /// \brief Destructor.
@@ -153,6 +155,7 @@ namespace asv
     public: void SetDirection(const ignition::math::Vector2d& _direction);
 
     /// \brief Access the component angular frequencies.
+    // 带 _V 的接口返回分量数组的常量引用；各数组同一索引表示同一波分量。
     public: const std::vector<double>& AngularFrequency_V() const;
 
     /// \brief Access the component amplitudes.
@@ -182,6 +185,7 @@ namespace asv
 // WavefieldSampler
 
   /// \brief A class to manage sampling depths from a wave field.
+  // 两种采样实现都返回相对平均水面的波高 m，当前实现不减 _point.Z()；time/time_init 单位为 s。
   class WavefieldSampler
   {
     /// \brief Compute the depth at a point directly
@@ -211,6 +215,7 @@ namespace asv
     /// This method enforces that q (steepness) = 0 which allows us
     /// to caculate the wave height exactly for a given 2D point without the
     /// need to interatively solve for the position/height.
+    // 简化法忽略水平轨道位移，直接按 XY 投影叠加余弦分量，常用于浮力计算。
     public: static double ComputeDepthSimply(
             const WaveParameters& _waveParams,
       const ignition::math::Vector3d& _point,

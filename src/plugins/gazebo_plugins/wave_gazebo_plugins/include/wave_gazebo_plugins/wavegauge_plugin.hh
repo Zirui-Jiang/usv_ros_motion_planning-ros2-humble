@@ -15,6 +15,7 @@
  *
 */
 
+// 用于观察物理波高的标尺模型插件接口。
 #ifndef WAVE_GAZEBO_PLUGINS_WAVEGUAGE_PLUGIN_HH_
 #define WAVE_GAZEBO_PLUGINS_WAVEGUAGE_PLUGIN_HH_
 
@@ -45,6 +46,7 @@ namespace gazebo
   ///   </plugin> example
   ///
   ///
+  // 每步令模型 Z 等于平均水位加波面扰动，保持 XY 与姿态，找不到波场时跳过更新。
   class WaveguagePlugin : public ModelPlugin
   {
     /// \brief Constructor.

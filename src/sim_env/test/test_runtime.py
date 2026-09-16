@@ -1,3 +1,4 @@
+# 离线验证路径搜索到 LOS 的完整调用、路径复用、输入新鲜度和有界规划队列。
 from concurrent.futures import Future
 from dataclasses import replace
 import numpy as np
@@ -14,6 +15,7 @@ def request(version=1):
                            np.empty((0, 3)), resolve_parameters({}))
 
 
+# 完整离线规划链可产生参考，并在条件允许时复用已有路径。
 def test_complete_offline_chain_and_route_reuse():
     job = request()
     result = plan_navigation(job)
@@ -33,6 +35,7 @@ def soft_escape_request():
     return replace(job, grid=GridSnapshot(data, 1., stamp=10.))
 
 
+# 合法软膨胀区逃逸路径复用时不应重复调用全局搜索。
 def test_legal_soft_escape_route_is_reused_without_a_second_global_search():
     job = soft_escape_request()
     first = plan_navigation(job)
@@ -43,6 +46,7 @@ def test_legal_soft_escape_route_is_reused_without_a_second_global_search():
     np.testing.assert_array_equal(second.route, first.route)
 
 
+# 复用逃逸路径也必须重新检查最新地图的平台、上坡、硬障碍与未知格。
 @pytest.mark.parametrize('new_cost', [120, 121, 254, 255])
 def test_reused_escape_route_rechecks_latest_map_plateau_uphill_hard_and_unknown(new_cost):
     job = soft_escape_request()
@@ -57,6 +61,7 @@ def test_reused_escape_route_rechecks_latest_map_plateau_uphill_hard_and_unknown
     assert repeated.trajectory.empty()
 
 
+# 重新规划的连接段必须从最新船位检查，不能只验证历史起点。
 def test_reused_escape_route_checks_connection_from_the_latest_vessel_position():
     job = soft_escape_request()
     first = plan_navigation(job)
@@ -67,6 +72,7 @@ def test_reused_escape_route_checks_connection_from_the_latest_vessel_position()
     assert repeated.searched and repeated.status == AlgorithmStatus.NO_PATH
 
 
+# 失败结果必须显式说明状态，且不附带可继续执行的参考轨迹。
 def test_failure_is_explicit_and_has_no_reference():
     job = request()
     grid = job.grid.data.copy()
@@ -77,6 +83,7 @@ def test_failure_is_explicit_and_has_no_reference():
     assert response.trajectory.empty()
 
 
+# 默认 PID 的格心终点策略不应在直线路径尾部制造突兀折点。
 def test_default_pid_keeps_straight_grid_endpoint_without_a_goal_kink():
     job = PlanningRequest(1, (18.125, 10.125, 0.), VesselState(14.125, 10.125, 0., stamp=10.),
                           GridSnapshot(np.zeros((60, 60), np.uint8), .5, stamp=10.),
@@ -92,6 +99,7 @@ def test_default_pid_keeps_straight_grid_endpoint_without_a_goal_kink():
     assert np.linalg.norm(terminal - job.goal[:2]) <= 1.5
 
 
+# LOS 停止圆盘不能使 LQR 在尚未满足最终目标容差时提前完成。
 def test_los_stop_disk_does_not_stop_lqr_outside_the_requested_goal():
     cfg = resolve_parameters({C+'controller_name': 'lqr'})
     job = PlanningRequest(1, (10.49, 10.49, 0.), VesselState(9.3, 10.25, 0., stamp=10.),
@@ -109,6 +117,7 @@ def test_los_stop_disk_does_not_stop_lqr_outside_the_requested_goal():
     assert response.trajectory.points[-1, 6] == 0.
 
 
+# 较小或相等容差下追加精确目标，同时保留搜索得到的格心终点。
 @pytest.mark.parametrize('tolerance', [.1, .125])
 def test_small_or_equal_tolerance_appends_goal_without_losing_grid_endpoint(tolerance):
     cfg = resolve_parameters({C+'pid_controller.goal_distance_tolerance': tolerance})
@@ -126,6 +135,7 @@ def test_small_or_equal_tolerance_appends_goal_without_losing_grid_endpoint(tole
     np.testing.assert_array_equal(repeated.route, response.route)
 
 
+# 末端补接目标也必须通过软代价、硬障碍和未知区域检查。
 @pytest.mark.parametrize('blocked_cost', [75, 254, 255])
 def test_required_goal_connection_checks_soft_hard_and_unknown_cells(blocked_cost):
     job = request()
@@ -143,11 +153,13 @@ def test_required_goal_connection_checks_soft_hard_and_unknown_cells(blocked_cos
     np.testing.assert_array_equal(response.route, job.route)
 
 
+# 检查时间边界上的新鲜度判定，防止将过期输入视为有效。
 @pytest.mark.parametrize('stamp,now,timeout,expected', [(10.,10.4,.5,True), (10.,10.6,.5,False), (11.,10.,.5,False), (float('nan'),10.,1.,False)])
 def test_freshness(stamp, now, timeout, expected):
     assert fresh(stamp, now, timeout) == expected
 
 
+# 输入门控拒绝过期轨迹，不能因仍有缓存对象就继续执行。
 def test_input_gate_does_not_reuse_stale_trajectory():
     job = request()
     plan = plan_navigation(job)
@@ -157,6 +169,7 @@ def test_input_gate_does_not_reuse_stale_trajectory():
     assert readiness(10.1, job.state, job.grid, None, job.parameters) == 'WAITING_REFERENCE'
 
 
+# 有界工作队列只保留最新待处理请求，失效后旧结果不得重新进入控制。
 def test_worker_keeps_only_latest_pending_and_invalidates():
     class Executor:
         def __init__(self):
@@ -188,6 +201,7 @@ def test_worker_keeps_only_latest_pending_and_invalidates():
     worker.close()
 
 
+# 首次搜索结果可供后续请求复用，但不得把新请求的状态和地图回退到旧值。
 def test_first_search_refreshes_pending_route_but_keeps_latest_inputs():
     class Executor:
         def __init__(self):
@@ -216,6 +230,7 @@ def test_first_search_refreshes_pending_route_but_keeps_latest_inputs():
     assert not repeated.searched
 
 
+# 待处理请求复用路径前要检查最新障碍，不能直接信任先前通过的结果。
 def test_pending_route_is_rechecked_against_latest_obstacles():
     first = request()
     completed = plan_navigation(first)

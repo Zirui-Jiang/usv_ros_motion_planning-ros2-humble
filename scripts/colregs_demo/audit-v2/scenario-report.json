@@ -1,0 +1,1145 @@
+{
+  "version": 2,
+  "passed": true,
+  "scenarios": [
+    {
+      "id": "head-on",
+      "title": "对遇",
+      "rulesEnabled": true,
+      "complete": true,
+      "collision": false,
+      "elapsedSeconds": 109.29999999999806,
+      "wallMilliseconds": 120.7777,
+      "minCenterDistance": 45.003271990131076,
+      "requestedCenterDistance": 18,
+      "initialRoutePreserved": true,
+      "finalPhase": "抵达目标",
+      "searches": 3,
+      "phases": [
+        {
+          "time": 0,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 45.60000000000038,
+          "phase": "恢复航路",
+          "action": "沿原全局航路输出 LOS"
+        },
+        {
+          "time": 109.29999999999806,
+          "phase": "抵达目标",
+          "action": "沿原全局航路输出 LOS"
+        }
+      ],
+      "acceptedPlans": [
+        {
+          "time": 0,
+          "searches": 2,
+          "ruleVersion": 1,
+          "trigger": "首次避让约束激活",
+          "expanded": 2116,
+          "status": "搜索成功",
+          "cost": {
+            "length": 250.20815280171308,
+            "routeDeviation": 187.77793552151405,
+            "total": 437.9860883232272
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": true,
+            "reason": "岸障、规则与动态三项回验通过",
+            "minDistance": 44.98714755056501
+          }
+        },
+        {
+          "time": 45.60000000000038,
+          "searches": 3,
+          "ruleVersion": 2,
+          "trigger": "驶过让清：前向接回原航路",
+          "expanded": 65,
+          "status": "搜索成功",
+          "cost": {
+            "length": 60.70013986747149,
+            "routeDeviation": 33.965811405484004,
+            "total": 94.6659512729555
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": true,
+            "reason": "岸障、规则与动态三项回验通过",
+            "minDistance": 49.00264420665858
+          }
+        }
+      ]
+    },
+    {
+      "id": "head-on",
+      "title": "对遇",
+      "rulesEnabled": false,
+      "complete": false,
+      "collision": true,
+      "elapsedSeconds": 37.000000000000256,
+      "wallMilliseconds": 9.1858,
+      "minCenterDistance": 8.864443936073446,
+      "requestedCenterDistance": 18,
+      "initialRoutePreserved": true,
+      "finalPhase": "碰撞 / 约束失效",
+      "searches": 0,
+      "phases": [
+        {
+          "time": 0,
+          "phase": "基线 A* + LOS",
+          "action": "沿原物理 A* 航路输出 LOS"
+        },
+        {
+          "time": 37.000000000000256,
+          "phase": "碰撞 / 约束失效",
+          "action": "沿原物理 A* 航路输出 LOS"
+        }
+      ],
+      "acceptedPlans": [
+        {
+          "time": 0,
+          "searches": 0,
+          "ruleVersion": 0,
+          "trigger": "无规则搜索事件",
+          "expanded": 55,
+          "status": "规则关闭：物理 A* 基线",
+          "cost": {
+            "length": 270,
+            "routeDeviation": 0,
+            "total": 270
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": false,
+            "reason": "LOS 预测动态间距不足",
+            "minDistance": 1.567704896670007e-14
+          }
+        }
+      ]
+    },
+    {
+      "id": "crossing-starboard",
+      "title": "右舷交叉",
+      "rulesEnabled": true,
+      "complete": true,
+      "collision": false,
+      "elapsedSeconds": 108.7999999999981,
+      "wallMilliseconds": 86.81899999999999,
+      "minCenterDistance": 46.772327518952125,
+      "requestedCenterDistance": 18,
+      "initialRoutePreserved": true,
+      "finalPhase": "抵达目标",
+      "searches": 3,
+      "phases": [
+        {
+          "time": 0,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 47.600000000000406,
+          "phase": "恢复航路",
+          "action": "沿原全局航路输出 LOS"
+        },
+        {
+          "time": 108.7999999999981,
+          "phase": "抵达目标",
+          "action": "沿原全局航路输出 LOS"
+        }
+      ],
+      "acceptedPlans": [
+        {
+          "time": 0,
+          "searches": 2,
+          "ruleVersion": 1,
+          "trigger": "首次避让约束激活",
+          "expanded": 1958,
+          "status": "搜索成功",
+          "cost": {
+            "length": 240.20815280171308,
+            "routeDeviation": 187.77793552151405,
+            "total": 427.9860883232272
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": true,
+            "reason": "岸障、规则与动态三项回验通过",
+            "minDistance": 55.92004635440439
+          }
+        },
+        {
+          "time": 47.600000000000406,
+          "searches": 3,
+          "ruleVersion": 2,
+          "trigger": "驶过让清：前向接回原航路",
+          "expanded": 66,
+          "status": "搜索成功",
+          "cost": {
+            "length": 61.55792634809443,
+            "routeDeviation": 33.596131134551584,
+            "total": 95.15405748264601
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": true,
+            "reason": "岸障、规则与动态三项回验通过",
+            "minDistance": 83.84985749845812
+          }
+        }
+      ]
+    },
+    {
+      "id": "crossing-starboard",
+      "title": "右舷交叉",
+      "rulesEnabled": false,
+      "complete": false,
+      "collision": true,
+      "elapsedSeconds": 33.1000000000002,
+      "wallMilliseconds": 5.251000000000033,
+      "minCenterDistance": 8.600661570600272,
+      "requestedCenterDistance": 18,
+      "initialRoutePreserved": true,
+      "finalPhase": "碰撞 / 约束失效",
+      "searches": 0,
+      "phases": [
+        {
+          "time": 0,
+          "phase": "基线 A* + LOS",
+          "action": "沿原物理 A* 航路输出 LOS"
+        },
+        {
+          "time": 33.1000000000002,
+          "phase": "碰撞 / 约束失效",
+          "action": "沿原物理 A* 航路输出 LOS"
+        }
+      ],
+      "acceptedPlans": [
+        {
+          "time": 0,
+          "searches": 0,
+          "ruleVersion": 0,
+          "trigger": "无规则搜索事件",
+          "expanded": 55,
+          "status": "规则关闭：物理 A* 基线",
+          "cost": {
+            "length": 270,
+            "routeDeviation": 0,
+            "total": 270
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": false,
+            "reason": "LOS 预测动态间距不足",
+            "minDistance": 14.944061542611484
+          }
+        }
+      ]
+    },
+    {
+      "id": "crossing-port",
+      "title": "左舷交叉",
+      "rulesEnabled": true,
+      "complete": true,
+      "collision": false,
+      "elapsedSeconds": 133.4999999999967,
+      "wallMilliseconds": 95.15640000000002,
+      "minCenterDistance": 47.31929962791057,
+      "requestedCenterDistance": 18,
+      "initialRoutePreserved": true,
+      "finalPhase": "抵达目标",
+      "searches": 3,
+      "phases": [
+        {
+          "time": 0,
+          "phase": "直航监测",
+          "action": "保持航向航速，监测让路船"
+        },
+        {
+          "time": 13.599999999999968,
+          "phase": "直航船协助行动",
+          "action": "启用协助避碰约束并搜索可行航路"
+        },
+        {
+          "time": 47.600000000000406,
+          "phase": "恢复航路",
+          "action": "沿原全局航路输出 LOS"
+        },
+        {
+          "time": 133.4999999999967,
+          "phase": "抵达目标",
+          "action": "沿原全局航路输出 LOS"
+        }
+      ],
+      "acceptedPlans": [
+        {
+          "time": 0,
+          "searches": 0,
+          "ruleVersion": 0,
+          "trigger": "无规则搜索事件",
+          "expanded": 55,
+          "status": "常规 / 直航监测：沿用原航路",
+          "cost": {
+            "length": 270,
+            "routeDeviation": 0,
+            "total": 270
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": false,
+            "reason": "LOS 预测动态间距不足",
+            "minDistance": 14.944061542611484
+          }
+        },
+        {
+          "time": 13.599999999999968,
+          "searches": 2,
+          "ruleVersion": 1,
+          "trigger": "首次避让约束激活",
+          "expanded": 1844,
+          "status": "搜索成功",
+          "cost": {
+            "length": 217.47897579297683,
+            "routeDeviation": 178.43920723452294,
+            "total": 395.9181830274998
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": true,
+            "reason": "岸障、规则与动态三项回验通过",
+            "minDistance": 50.06917302906805
+          }
+        },
+        {
+          "time": 47.600000000000406,
+          "searches": 3,
+          "ruleVersion": 2,
+          "trigger": "驶过让清：前向接回原航路",
+          "expanded": 26,
+          "status": "搜索成功",
+          "cost": {
+            "length": 48.987128436557285,
+            "routeDeviation": 10.118014195764209,
+            "total": 59.10514263232149
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": true,
+            "reason": "岸障、规则与动态三项回验通过",
+            "minDistance": 44.05974984432747
+          }
+        }
+      ]
+    },
+    {
+      "id": "crossing-port",
+      "title": "左舷交叉",
+      "rulesEnabled": false,
+      "complete": false,
+      "collision": true,
+      "elapsedSeconds": 33.1000000000002,
+      "wallMilliseconds": 5.281499999999994,
+      "minCenterDistance": 8.600661570600272,
+      "requestedCenterDistance": 18,
+      "initialRoutePreserved": true,
+      "finalPhase": "碰撞 / 约束失效",
+      "searches": 0,
+      "phases": [
+        {
+          "time": 0,
+          "phase": "基线 A* + LOS",
+          "action": "沿原物理 A* 航路输出 LOS"
+        },
+        {
+          "time": 33.1000000000002,
+          "phase": "碰撞 / 约束失效",
+          "action": "沿原物理 A* 航路输出 LOS"
+        }
+      ],
+      "acceptedPlans": [
+        {
+          "time": 0,
+          "searches": 0,
+          "ruleVersion": 0,
+          "trigger": "无规则搜索事件",
+          "expanded": 55,
+          "status": "规则关闭：物理 A* 基线",
+          "cost": {
+            "length": 270,
+            "routeDeviation": 0,
+            "total": 270
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": false,
+            "reason": "LOS 预测动态间距不足",
+            "minDistance": 14.944061542611484
+          }
+        }
+      ]
+    },
+    {
+      "id": "overtaking",
+      "title": "本船追越",
+      "rulesEnabled": true,
+      "complete": true,
+      "collision": false,
+      "elapsedSeconds": 173.09999999999445,
+      "wallMilliseconds": 208.2308,
+      "minCenterDistance": 18.131070511028128,
+      "requestedCenterDistance": 18,
+      "initialRoutePreserved": true,
+      "finalPhase": "抵达目标 · 会遇责任未解除",
+      "searches": 2,
+      "phases": [
+        {
+          "time": 0,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 84.0999999999995,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 85.59999999999941,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 87.5999999999993,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 89.09999999999921,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 91.0999999999991,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 92.09999999999904,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 94.09999999999893,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 95.09999999999887,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 97.09999999999876,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 97.59999999999873,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 99.09999999999864,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 99.59999999999862,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 101.5999999999985,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 103.59999999999839,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 105.59999999999827,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 108.5999999999981,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 111.09999999999796,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 113.59999999999782,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 115.5999999999977,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 117.09999999999762,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 118.59999999999754,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 120.59999999999742,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 122.59999999999731,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 124.5999999999972,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 126.09999999999711,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 127.09999999999705,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 128.099999999997,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 129.59999999999692,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 131.09999999999684,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 132.59999999999675,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 134.09999999999667,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 135.59999999999658,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 137.0999999999965,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 138.5999999999964,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 140.09999999999633,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 141.59999999999624,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 143.09999999999616,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 144.59999999999607,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 146.099999999996,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 147.5999999999959,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 149.09999999999582,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 150.59999999999573,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 152.09999999999565,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 153.59999999999556,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 155.09999999999548,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 156.5999999999954,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 158.0999999999953,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 159.09999999999525,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 160.0999999999952,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 161.09999999999513,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 162.59999999999505,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 164.09999999999496,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 166.09999999999485,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 167.59999999999476,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 170.09999999999462,
+          "phase": "降速跟随 · 追越尚未完成",
+          "action": "采用已通过回验的低速候选，继续保持追越责任"
+        },
+        {
+          "time": 171.09999999999457,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 173.09999999999445,
+          "phase": "抵达目标 · 会遇责任未解除",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        }
+      ],
+      "acceptedPlans": [
+        {
+          "time": 0,
+          "searches": 2,
+          "ruleVersion": 1,
+          "trigger": "首次避让约束激活",
+          "expanded": 1611,
+          "status": "搜索成功",
+          "cost": {
+            "length": 225.63879049907578,
+            "routeDeviation": 183.60909823035146,
+            "total": 409.2478887294273
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": true,
+            "reason": "岸障、规则与动态三项回验通过",
+            "minDistance": 41.684697234178095
+          }
+        }
+      ]
+    },
+    {
+      "id": "overtaking",
+      "title": "本船追越",
+      "rulesEnabled": false,
+      "complete": false,
+      "collision": true,
+      "elapsedSeconds": 22.800000000000054,
+      "wallMilliseconds": 3.669499999999971,
+      "minCenterDistance": 8.96882689877647,
+      "requestedCenterDistance": 18,
+      "initialRoutePreserved": true,
+      "finalPhase": "碰撞 / 约束失效",
+      "searches": 0,
+      "phases": [
+        {
+          "time": 0,
+          "phase": "基线 A* + LOS",
+          "action": "沿原物理 A* 航路输出 LOS"
+        },
+        {
+          "time": 22.800000000000054,
+          "phase": "碰撞 / 约束失效",
+          "action": "沿原物理 A* 航路输出 LOS"
+        }
+      ],
+      "acceptedPlans": [
+        {
+          "time": 0,
+          "searches": 0,
+          "ruleVersion": 0,
+          "trigger": "无规则搜索事件",
+          "expanded": 55,
+          "status": "规则关闭：物理 A* 基线",
+          "cost": {
+            "length": 270,
+            "routeDeviation": 0,
+            "total": 270
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": false,
+            "reason": "LOS 预测动态间距不足",
+            "minDistance": 3.469446951953614e-18
+          }
+        }
+      ]
+    },
+    {
+      "id": "being-overtaken",
+      "title": "本船被追越",
+      "rulesEnabled": true,
+      "complete": true,
+      "collision": false,
+      "elapsedSeconds": 94.19999999999892,
+      "wallMilliseconds": 79.21690000000001,
+      "minCenterDistance": 29.651822870496613,
+      "requestedCenterDistance": 18,
+      "initialRoutePreserved": true,
+      "finalPhase": "抵达目标",
+      "searches": 3,
+      "phases": [
+        {
+          "time": 0,
+          "phase": "直航监测",
+          "action": "保持航向航速，监测让路船"
+        },
+        {
+          "time": 9.099999999999984,
+          "phase": "直航船协助行动",
+          "action": "启用协助避碰约束并搜索可行航路"
+        },
+        {
+          "time": 14.599999999999964,
+          "phase": "紧迫危险 · 协助避碰",
+          "action": "启用协助避碰约束并搜索可行航路"
+        },
+        {
+          "time": 29.100000000000144,
+          "phase": "直航船协助行动",
+          "action": "启用协助避碰约束并搜索可行航路"
+        },
+        {
+          "time": 44.10000000000036,
+          "phase": "恢复航路",
+          "action": "沿原全局航路输出 LOS"
+        },
+        {
+          "time": 94.19999999999892,
+          "phase": "抵达目标",
+          "action": "沿原全局航路输出 LOS"
+        }
+      ],
+      "acceptedPlans": [
+        {
+          "time": 0,
+          "searches": 0,
+          "ruleVersion": 0,
+          "trigger": "无规则搜索事件",
+          "expanded": 45,
+          "status": "常规 / 直航监测：沿用原航路",
+          "cost": {
+            "length": 220,
+            "routeDeviation": 0,
+            "total": 220
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": false,
+            "reason": "LOS 预测动态间距不足",
+            "minDistance": 2.220446049250313e-16
+          }
+        },
+        {
+          "time": 9.099999999999984,
+          "searches": 2,
+          "ruleVersion": 1,
+          "trigger": "首次避让约束激活",
+          "expanded": 2367,
+          "status": "搜索成功",
+          "cost": {
+            "length": 226.52123289678678,
+            "routeDeviation": 185.47643521559067,
+            "total": 411.99766811237754
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": true,
+            "reason": "岸障、规则与动态三项回验通过",
+            "minDistance": 27.940434793290997
+          }
+        },
+        {
+          "time": 44.10000000000036,
+          "searches": 3,
+          "ruleVersion": 2,
+          "trigger": "驶过让清：前向接回原航路",
+          "expanded": 64,
+          "status": "搜索成功",
+          "cost": {
+            "length": 61.18107288097234,
+            "routeDeviation": 33.556946154841455,
+            "total": 94.73801903581379
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": true,
+            "reason": "岸障、规则与动态三项回验通过",
+            "minDistance": 58.0634898939426
+          }
+        }
+      ]
+    },
+    {
+      "id": "being-overtaken",
+      "title": "本船被追越",
+      "rulesEnabled": false,
+      "complete": false,
+      "collision": true,
+      "elapsedSeconds": 33.400000000000205,
+      "wallMilliseconds": 5.3665999999999485,
+      "minCenterDistance": 8.901877182986967,
+      "requestedCenterDistance": 18,
+      "initialRoutePreserved": true,
+      "finalPhase": "碰撞 / 约束失效",
+      "searches": 0,
+      "phases": [
+        {
+          "time": 0,
+          "phase": "基线 A* + LOS",
+          "action": "沿原物理 A* 航路输出 LOS"
+        },
+        {
+          "time": 33.400000000000205,
+          "phase": "碰撞 / 约束失效",
+          "action": "沿原物理 A* 航路输出 LOS"
+        }
+      ],
+      "acceptedPlans": [
+        {
+          "time": 0,
+          "searches": 0,
+          "ruleVersion": 0,
+          "trigger": "无规则搜索事件",
+          "expanded": 45,
+          "status": "规则关闭：物理 A* 基线",
+          "cost": {
+            "length": 220,
+            "routeDeviation": 0,
+            "total": 220
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": false,
+            "reason": "LOS 预测动态间距不足",
+            "minDistance": 2.220446049250313e-16
+          }
+        }
+      ]
+    },
+    {
+      "id": "clear",
+      "title": "无会遇风险",
+      "rulesEnabled": true,
+      "complete": true,
+      "collision": false,
+      "elapsedSeconds": 92.39999999999903,
+      "wallMilliseconds": 14.38919999999996,
+      "minCenterDistance": 75.00000045535744,
+      "requestedCenterDistance": 18,
+      "initialRoutePreserved": true,
+      "finalPhase": "抵达目标",
+      "searches": 0,
+      "phases": [
+        {
+          "time": 0,
+          "phase": "常规航行",
+          "action": "沿原全局航路输出 LOS"
+        },
+        {
+          "time": 92.39999999999903,
+          "phase": "抵达目标",
+          "action": "沿原全局航路输出 LOS"
+        }
+      ],
+      "acceptedPlans": [
+        {
+          "time": 0,
+          "searches": 0,
+          "ruleVersion": 0,
+          "trigger": "无规则搜索事件",
+          "expanded": 55,
+          "status": "常规 / 直航监测：沿用原航路",
+          "cost": {
+            "length": 270,
+            "routeDeviation": 0,
+            "total": 270
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": true,
+            "reason": "岸障、规则与动态三项回验通过",
+            "minDistance": 77.41175954219906
+          }
+        }
+      ]
+    },
+    {
+      "id": "clear",
+      "title": "无会遇风险",
+      "rulesEnabled": false,
+      "complete": true,
+      "collision": false,
+      "elapsedSeconds": 92.39999999999903,
+      "wallMilliseconds": 14.71569999999997,
+      "minCenterDistance": 75.00000045535744,
+      "requestedCenterDistance": 18,
+      "initialRoutePreserved": true,
+      "finalPhase": "抵达目标",
+      "searches": 0,
+      "phases": [
+        {
+          "time": 0,
+          "phase": "基线 A* + LOS",
+          "action": "沿原物理 A* 航路输出 LOS"
+        },
+        {
+          "time": 92.39999999999903,
+          "phase": "抵达目标",
+          "action": "沿原物理 A* 航路输出 LOS"
+        }
+      ],
+      "acceptedPlans": [
+        {
+          "time": 0,
+          "searches": 0,
+          "ruleVersion": 0,
+          "trigger": "无规则搜索事件",
+          "expanded": 55,
+          "status": "规则关闭：物理 A* 基线",
+          "cost": {
+            "length": 270,
+            "routeDeviation": 0,
+            "total": 270
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": true,
+            "reason": "岸障、规则与动态三项回验通过",
+            "minDistance": 77.41175954219906
+          }
+        }
+      ]
+    },
+    {
+      "id": "obstacle-crossing",
+      "title": "岸障与交叉会遇",
+      "rulesEnabled": true,
+      "complete": true,
+      "collision": false,
+      "elapsedSeconds": 107.89999999999814,
+      "wallMilliseconds": 93.16669999999999,
+      "minCenterDistance": 46.78000283792889,
+      "requestedCenterDistance": 18,
+      "initialRoutePreserved": true,
+      "finalPhase": "抵达目标",
+      "searches": 3,
+      "phases": [
+        {
+          "time": 0,
+          "phase": "保持避让责任",
+          "action": "按规则区和方向边约束执行 A* 搜索航路"
+        },
+        {
+          "time": 47.600000000000406,
+          "phase": "恢复航路",
+          "action": "沿原全局航路输出 LOS"
+        },
+        {
+          "time": 107.89999999999814,
+          "phase": "抵达目标",
+          "action": "沿原全局航路输出 LOS"
+        }
+      ],
+      "acceptedPlans": [
+        {
+          "time": 0,
+          "searches": 2,
+          "ruleVersion": 1,
+          "trigger": "首次避让约束激活",
+          "expanded": 1109,
+          "status": "搜索成功",
+          "cost": {
+            "length": 208.2842712474619,
+            "routeDeviation": 88.99588040022851,
+            "total": 297.28015164769045
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": true,
+            "reason": "岸障、规则与动态三项回验通过",
+            "minDistance": 55.95537161911518
+          }
+        },
+        {
+          "time": 47.600000000000406,
+          "searches": 3,
+          "ruleVersion": 2,
+          "trigger": "驶过让清：前向接回原航路",
+          "expanded": 15,
+          "status": "搜索成功",
+          "cost": {
+            "length": 44.16043544892182,
+            "routeDeviation": 1.771198233731858,
+            "total": 45.93163368265367
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": true,
+            "reason": "岸障、规则与动态三项回验通过",
+            "minDistance": 83.84793027482046
+          }
+        }
+      ]
+    },
+    {
+      "id": "obstacle-crossing",
+      "title": "岸障与交叉会遇",
+      "rulesEnabled": false,
+      "complete": true,
+      "collision": false,
+      "elapsedSeconds": 103.59999999999839,
+      "wallMilliseconds": 20.11170000000004,
+      "minCenterDistance": 18.480639350112995,
+      "requestedCenterDistance": 18,
+      "initialRoutePreserved": true,
+      "finalPhase": "抵达目标",
+      "searches": 0,
+      "phases": [
+        {
+          "time": 0,
+          "phase": "基线 A* + LOS",
+          "action": "沿原物理 A* 航路输出 LOS"
+        },
+        {
+          "time": 103.59999999999839,
+          "phase": "抵达目标",
+          "action": "沿原物理 A* 航路输出 LOS"
+        }
+      ],
+      "acceptedPlans": [
+        {
+          "time": 0,
+          "searches": 0,
+          "ruleVersion": 0,
+          "trigger": "无规则搜索事件",
+          "expanded": 711,
+          "status": "规则关闭：物理 A* 基线",
+          "cost": {
+            "length": 298.99494936611666,
+            "routeDeviation": 0,
+            "total": 298.99494936611666
+          },
+          "validation": {
+            "staticSafe": true,
+            "ruleSafe": true,
+            "dynamicSafe": true,
+            "reason": "岸障、规则与动态三项回验通过",
+            "minDistance": 23.129800113145954
+          }
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "engineSha256": "f9ce329f81d9323b0397c426d1b9555ca1e4a970db60405e66341c464cfd91c4"
+}

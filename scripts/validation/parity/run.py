@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 调用原 C++ 动态库生成数值参照，再与 Python API 对比；同时记录库和输入来源。
 """Execute existing C++ shared libraries, then compare migrated Python APIs."""
 import argparse
 import hashlib
@@ -7,12 +8,27 @@ import math
 from pathlib import Path
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 
 
+# 计算当前文件哈希，用于对应基线快照或 C++ 动态库的精确来源。
 def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+# 按声明解析功能包位置，兼容历史 C++ 布局与当前按业务分组的 Python 布局。
+def package_paths(root):
+    """Resolve both the retained C++ checkout and the grouped Python checkout."""
+    result = {}
+    for manifest in (root / "src").rglob("package.xml"):
+        name = ET.parse(manifest).getroot().findtext("name")
+        if not name or name in result:
+            raise ValueError(f"Missing or duplicate package name: {manifest}")
+        result[name] = manifest.parent
+    return result
+
+
+# 建立确定性的数值输入夹具，确保两种实现接受同一组待比较数据。
 def fixtures():
     line = [[i, 0, 0] for i in range(9)]
     bend = [[0, 0, 0.2], [1, 0.2, 0.3], [2, 1, 0.6], [3, 1.2, 0.2]]
@@ -34,6 +50,7 @@ def fixtures():
     return {"model": dict(mass=29.84,i_z=10.03,D=0.395,max_force=50,x_dot_u=5,y_dot_v=5,n_dot_r=1,x_u=-20,y_v=-20,n_r=-20), "cases": cases}
 
 
+# 用 Python 数值接口运行一个夹具，并转换成与 C++ 参照一致的结果结构。
 def python_case(case, model):
     import numpy as np
     from common.models import USVModel, VesselState
@@ -60,6 +77,7 @@ def python_case(case, model):
     return np.array(result)
 
 
+# 命令行入口：解析本脚本选项并执行上述流程，运行结果由退出码及输出记录共同说明。
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("--baseline",type=Path,required=True)
@@ -84,8 +102,10 @@ def main():
     run(["cmake","--build",str(output/"build"),"-j2"],"build.log")
     binary=output/"build/cpp_golden"
     run([str(binary),str(fixture_path),str(output/"cpp_golden.tsv")],"cpp_execution.log")
-    for relative in ("src/core/common","src/core/path_planner/path_planner","src/core/path_planner/path_processor","src/core/trajectory_planner","src/core/controller/controller"):
-        sys.path.insert(0,str(source/relative))
+    source_packages = package_paths(source)
+    baseline_packages = package_paths(baseline)
+    for package in ("common", "path_planner", "path_processor", "trajectory_planner", "controller"):
+        sys.path.insert(0,str(source_packages[package]))
     import numpy as np
     cpp={}
     for line in (output/"cpp_golden.tsv").read_text().splitlines():
@@ -101,10 +121,27 @@ def main():
     libraries=list((baseline/"install").glob("*/lib/lib*.so"))
     required={"libcommon.so","libpath_planner.so","libpath_processor.so","libtrajectory_planner.so","libcontroller.so"}
     provenance=dict(baseline=str(baseline),baseline_commit=subprocess.check_output(["git","-C",str(baseline),"rev-parse","HEAD"],text=True).strip(),python_source=str(source),python_commit=subprocess.check_output(["git","-C",str(source),"rev-parse","HEAD"],text=True).strip(),python_dirty=subprocess.check_output(["git","-C",str(source),"status","--porcelain"],text=True),fixture_sha256=sha(fixture_path),golden_executable_sha256=sha(binary),libraries={str(lib):sha(lib) for lib in libraries if lib.name in required})
-    baseline_files=("src/core/path_planner/path_planner/src/path_planner.cpp", "src/core/path_planner/path_processor/src/path_prune/ramer_douglas_peucker.cpp", "src/core/path_planner/path_processor/src/path_smooth/savitzky_golay.cpp", "src/core/trajectory_planner/src/trajectory.cpp", "src/core/controller/controller/src/pid_controller/otter_pid_controller.cpp", "src/core/controller/controller/src/lqr_controller/otter_lqr_controller.cpp", "src/core/controller/controller/src/controller.cpp")
-    python_files=("src/core/path_planner/path_planner/path_planner/path_planner.py", "src/core/path_planner/path_processor/path_processor/ramer_douglas_peucker.py", "src/core/path_planner/path_processor/path_processor/savitzky_golay.py", "src/core/trajectory_planner/trajectory_planner/trajectory.py", "src/core/controller/controller/controller/pid_controller.py", "src/core/controller/controller/controller/lqr_controller.py", "src/core/controller/controller/controller/controller.py", "src/core/common/common/models.py", "src/core/common/common/math_helper.py")
-    provenance["baseline_source_sha256"]={name:sha(baseline/name) for name in baseline_files}
-    provenance["python_source_sha256"]={name:sha(source/name) for name in python_files}
+    baseline_files = [("path_planner", "src/path_planner.cpp"),
+                      ("path_processor", "src/path_prune/ramer_douglas_peucker.cpp"),
+                      ("path_processor", "src/path_smooth/savitzky_golay.cpp"),
+                      ("trajectory_planner", "src/trajectory.cpp"),
+                      ("controller", "src/pid_controller/otter_pid_controller.cpp"),
+                      ("controller", "src/lqr_controller/otter_lqr_controller.cpp"),
+                      ("controller", "src/controller.cpp")]
+    python_files = [("path_planner", "path_planner/path_planner.py"),
+                    ("path_processor", "path_processor/ramer_douglas_peucker.py"),
+                    ("path_processor", "path_processor/savitzky_golay.py"),
+                    ("trajectory_planner", "trajectory_planner/trajectory.py"),
+                    ("controller", "controller/pid_controller.py"),
+                    ("controller", "controller/lqr_controller.py"),
+                    ("controller", "controller/controller.py"),
+                    ("common", "common/models.py"), ("common", "common/math_helper.py")]
+    provenance["baseline_source_sha256"] = {
+        str((baseline_packages[package] / relative).relative_to(baseline)):
+        sha(baseline_packages[package] / relative) for package, relative in baseline_files}
+    provenance["python_source_sha256"] = {
+        str((source_packages[package] / relative).relative_to(source)):
+        sha(source_packages[package] / relative) for package, relative in python_files}
     provenance["tool_sha256"]={name:sha(tool/name) for name in ("golden.cpp","run.py","CMakeLists.txt")}
     run(["ldd",str(binary)],"linked_libraries.txt")
     linked=(output/"linked_libraries.txt").read_text()

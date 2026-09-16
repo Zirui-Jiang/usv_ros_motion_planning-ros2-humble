@@ -1,3 +1,4 @@
+# 构建 Qt/RViz 目标工具共享库，并注册 pluginlib 描述文件与图标资源。
 cmake_minimum_required(VERSION 3.8)
 project(goal_set_plugin)
 
@@ -17,6 +18,7 @@ find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
 
+# Qt 自动元对象编译处理 Q_OBJECT 和槽，避免手工维护生成的 moc 源码。
 set(CMAKE_AUTOMOC ON)
 
 set(HEADER_FILES
@@ -55,6 +57,7 @@ target_link_libraries(${PROJECT_NAME}
 # Register the tool with pluginlib so rviz_common can discover the class at
 # runtime. Without this, rviz reports the class does not exist even though the
 # shared library builds and installs correctly.
+# 把插件描述注册到 rviz_common 的发现索引，光有共享库还不足以让 RViz 找到工具。
 pluginlib_export_plugin_description_file(rviz_common goal_set_plugin.xml)
 
 install(TARGETS ${PROJECT_NAME}
@@ -81,4 +84,5 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+# 生成 ament 包索引和配置导出，使安装后的包可被 ROS 2 构建与运行工具找到。
 ament_package()

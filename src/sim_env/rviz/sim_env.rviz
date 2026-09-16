@@ -1,3 +1,5 @@
+# 当前 ROS 2 RViz 显示布局，配置固定坐标系、话题显示和交互工具。
+# 界面面板布局，与实际导航计算和控制参数无关。
 Panels:
   - Class: rviz_common/Displays
     Help Height: 78
@@ -22,6 +24,7 @@ Panels:
       - /Current View1
     Name: Views
     Splitter Ratio: 0.5
+# 显示对象、固定坐标系与工具设置；话题需与运行中的命名空间一致。
 Visualization Manager:
   Class: ""
   Displays:
@@ -244,7 +247,7 @@ Visualization Manager:
           Shaft Length: 0.10000000149011612
           Topic:
             Depth: 5
-            Durability Policy: Volatile
+            Durability Policy: Transient Local
             Filter size: 10
             History Policy: Keep Last
             Reliability Policy: Reliable

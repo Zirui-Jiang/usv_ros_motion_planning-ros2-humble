@@ -18,6 +18,7 @@
 /// \file Utilities.hh
 /// \brief This file defines utilities for extracting parameters from SDF.
 
+// SDF 参数读取辅助接口，为波场配置提供默认值处理。
 #ifndef _WAVE_GAZEBO_PLUGINS_UTILITIES_HH_
 #define _WAVE_GAZEBO_PLUGINS_UTILITIES_HH_
 
@@ -36,6 +37,7 @@ namespace asv
 // Utilities
 
   /// \brief A collection of static methods for common tasks.
+  // 每个接口接收 SDF 树、元素名和默认值；不存在该元素时返回默认值并打印日志。
   class Utilities
   {
     /// \brief Extract a named bool parameter from an SDF element.

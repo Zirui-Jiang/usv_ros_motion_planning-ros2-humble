@@ -1,3 +1,4 @@
+# 根据已有地图与离线轨迹绘制船体轮廓，帮助定位膨胀层拒绝或实体切角；不生成新试验结果。
 """Plot only captured maps and stored offline trajectories; no synthetic results."""
 from pathlib import Path
 import json
@@ -14,12 +15,14 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent
 
 
+# 根据位置和艏向构造完整矩形船体顶点，用于地图上显示船首、船尾和四角。
 def rectangle(row):
     c, s = math.cos(row[4]), math.sin(row[4])
     corners = np.asarray([[-1.1, -.6], [1.1, -.6], [1.1, .6], [-1.1, .6]])
     return corners @ np.asarray([[c, s], [-s, c]]) + row[2:4]
 
 
+# 命令行入口：解析本脚本选项并执行上述流程，运行结果由退出码及输出记录共同说明。
 def main():
     plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 9, "pdf.fonttype": 42})
     fig, axes = plt.subplots(1, 2, figsize=(12.4, 5.5))

@@ -1,0 +1,202 @@
+{
+  "results": [
+    {
+      "trial": "python_adrc_turn_01",
+      "mode": "python",
+      "controller": "adrc",
+      "scenario": "turn",
+      "fault": null,
+      "repeat": 1,
+      "result": "safety_stopped",
+      "passed": false,
+      "reason": "cross_track_boundary_exceeded",
+      "safety_stopped": true,
+      "arrived": false,
+      "duration_wall_s": 13.80055596499733,
+      "effective_arrival_distance_m": 1.5,
+      "duration_sim_s": 13.700000000000003,
+      "costmap_topic": "/otter/costmap_raw",
+      "cross_track_initial_m": {
+        "count": 133,
+        "mean": 1.710271344072811,
+        "rms": 2.1036750578859995,
+        "p95": 3.804032380535169,
+        "max": 4.012551056806682
+      },
+      "cross_track_live_m": {
+        "count": 133,
+        "mean": 1.7106844225988003,
+        "rms": 2.1042431212819115,
+        "p95": 3.804032380535169,
+        "max": 4.013467398209358
+      },
+      "minimum_footprint_clearance_m": null,
+      "goal_to_first_path_wall_s": 0.23899052399792708,
+      "goal_to_first_nonzero_command_wall_s": 0.31558468899675063,
+      "command_receipt_gap_ms": {
+        "count": 134,
+        "mean": 102.87577467164765,
+        "rms": 103.63833024153037,
+        "p95": 104.73815799923614,
+        "max": 104.98744500000612
+      },
+      "observed_odom_receipt_to_command_receipt_ms": {
+        "count": 135,
+        "mean": 49.82071616304219,
+        "rms": 57.089732998130955,
+        "p95": 94.16735999911907,
+        "max": 98.09616499842377
+      },
+      "path_header_age_sim_ms": {
+        "count": 70,
+        "mean": 1.4285714285720517,
+        "rms": 11.952286093344,
+        "p95": 1.7763568394002505e-12,
+        "max": 100.00000000000054
+      },
+      "status": {
+        "state": "NAVIGATING",
+        "reason": "",
+        "version": 1,
+        "stamp": 16.3,
+        "controller": "adrc",
+        "goal": [
+          23.0,
+          -22.0,
+          -1.5707963267948963
+        ],
+        "metrics": {
+          "costmap_conversion_ms": {
+            "count": 16,
+            "p50": 0.16037050045270007,
+            "p95": 0.22881999939272646,
+            "p99": 0.25638639817771036,
+            "max": 0.26327799787395634
+          },
+          "planning_ms": {
+            "count": 69,
+            "p50": 8.68217900278978,
+            "p95": 10.743016999185784,
+            "p99": 12.74912540058719,
+            "max": 15.504566999879899
+          },
+          "control_ms": {
+            "count": 461,
+            "p50": 0.05649699960486032,
+            "p95": 0.2913759999501053,
+            "p99": 0.3332402004161849,
+            "max": 0.584913999773562
+          }
+        },
+        "counters": {
+          "pending_replacements": 0,
+          "stale_control_reports": 9,
+          "odom_tf_waits": 3,
+          "global_searches": 1,
+          "wrong_session_references": 10,
+          "stale_references": 451
+        },
+        "process": {
+          "pid": 11543,
+          "cpu_seconds": 2.2982329999999997,
+          "peak_rss_kib": 74436,
+          "monotonic": 21974.44467782
+        },
+        "modules": {
+          "decision": "183e41fce34649bdb0a244980ccb3522",
+          "control": "29405359402641509b54766e2ab80249",
+          "perception": "468de7b0e99848478d38ff0ae195f2b1",
+          "control_process": {
+            "pid": 11545,
+            "cpu_seconds": 2.2269259999999997,
+            "peak_rss_kib": 71580,
+            "monotonic": 21974.412993733
+          }
+        }
+      },
+      "mapping_status": {
+        "stamp": 15.000000000000002,
+        "queue_size": 0,
+        "integrated_scans": 221,
+        "scan_overruns": 0,
+        "queue_counters": {
+          "accepted": 222,
+          "processed": 221,
+          "overflow": 0,
+          "expired": 1,
+          "duplicate": 0,
+          "invalid": 0,
+          "invalid_consumed": 0,
+          "resets": 0
+        },
+        "invalid_scans": 0,
+        "queue_observation_window": {
+          "window_s": 5.0,
+          "sampling_phase": "after_drain",
+          "capacity": 5,
+          "tf_wait_timeout_s": 0.2,
+          "observation_count": 375,
+          "pending_observations": 269,
+          "empty_observations": 106,
+          "max_queue_size": 2,
+          "latest_queue_size": 0,
+          "latest_oldest_pending_age_ms": null,
+          "oldest_pending_age_ms": {
+            "count": 269,
+            "p50": 28.890560002764687,
+            "p95": 68.58369240144384,
+            "p99": 71.5898932389973,
+            "max": 84.01068600142025
+          },
+          "oldest_pending_distinct_count": 50,
+          "latest_oldest_pending": null,
+          "max_observation_gap_ms": 65.96517499929178,
+          "observed_span_s": 4.999186222001299,
+          "first_observed_monotonic_s": 21968.194303364,
+          "last_observed_monotonic_s": 21973.193489586
+        },
+        "invalid_beams": 0,
+        "processing_ms": {
+          "count": 221,
+          "p50": 23.11064700188581,
+          "p95": 28.603107999515487,
+          "p99": 32.048469998699154,
+          "max": 33.02676699968288
+        },
+        "queue_ms": {
+          "count": 221,
+          "p50": 52.816060997429304,
+          "p95": 94.36234699751367,
+          "p99": 105.12963260189282,
+          "max": 108.51248700055294
+        },
+        "serialization_and_publish_ms": {
+          "count": 30,
+          "p50": 0.30041500031074975,
+          "p95": 0.8184245987649772,
+          "p99": 1.1264992409633126,
+          "max": 1.2347110023256391
+        },
+        "observed_scan_period_ms": {
+          "count": 221,
+          "p50": 67.0,
+          "p95": 67.0,
+          "p99": 67.0,
+          "max": 67.0
+        },
+        "process": {
+          "pid": 11537,
+          "cpu_seconds": 7.367042,
+          "peak_rss_kib": 67800,
+          "monotonic": 21973.194541514
+        }
+      }
+    }
+  ],
+  "completed": 0,
+  "passed": 0,
+  "run_finished": false,
+  "interrupted": false,
+  "safety_stopped": true,
+  "all_passed": false
+}

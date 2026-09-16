@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 给独立定位进程发送受控状态与时钟，检查畸形输入、坐标转换、时间回退及退出边界。
 """Isolated ROS input/clock/shutdown checks for one owned localization process.
 
 Source the selected workspace first. Outputs are exclusive; no Gazebo is started.
@@ -17,6 +18,7 @@ import time
 import uuid
 
 
+# 解析运行模式、场景、隔离域和输出选项，在启动进程前检查参数合法性。
 def arguments():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--workspace', required=True, type=Path)
@@ -32,6 +34,7 @@ def arguments():
     return args
 
 
+# 命令行入口：解析本脚本选项并执行上述流程，运行结果由退出码及输出记录共同说明。
 def main():
     args = arguments()
     binary = args.workspace.resolve() / 'install/sim_env/lib/sim_env/fake_localization_node'
@@ -40,6 +43,7 @@ def main():
     if args.gdb and not shutil.which('gdb'):
         raise SystemExit('gdb is unavailable')
     args.output.mkdir(parents=True, exist_ok=False)
+    # 独立非零 DDS 域与仅本机通信隔离输入；输出目录必须新建，避免覆盖已有验收证据。
     os.environ['ROS_DOMAIN_ID'] = str(args.domain_id)
     os.environ['ROS_LOCALHOST_ONLY'] = '1'
     import rclpy
@@ -70,6 +74,7 @@ def main():
     driver.create_subscription(Odometry, '/' + namespace + '/odom', odometry.append, 10)
     process = None
     identity = None
+    # 读取 Linux 进程启动时刻，配合 PID 识别本次创建的子进程，防止 PID 复用后误发信号。
     def starttime(pid):
         try:
             return int(Path(f'/proc/{pid}/stat').read_text().rsplit(')', 1)[1].split()[19])
@@ -85,6 +90,7 @@ def main():
                                        'monotonic_s': time.monotonic()})
             process.send_signal(sig)
 
+    # 观察窗口使用单调墙钟，仿真时钟暂停或倒退不会阻塞超时判定。
     def pump(duration, callback=None):
         deadline = time.monotonic() + duration
         while time.monotonic() < deadline:
@@ -107,6 +113,7 @@ def main():
         value.clock.sec, value.clock.nanosec = divmod(nanoseconds, 10**9)
         clock_pub.publish(value)
 
+    # 构造航向为 +π/2 的船舶：世界速度 (3,4) 应转为船体系 (4,-3)，偏航角速度不变。
     def valid_message():
         value = ModelStates()
         value.name = ['otter']
@@ -126,6 +133,7 @@ def main():
             until(lambda: model_pub.get_subscription_count() > 0, 15, 'model-state subscription discovery')
             if model_pub.get_subscription_count() != 1:
                 raise RuntimeError('Refusing shared domain: model-state subscriber count is not one')
+            # 探针模式仅发一次 name 有元素但 pose/twist 为空的消息，记录是否存活，不推断其它历史崩溃原因。
             if args.mode == 'malformed-probe':
                 message = ModelStates()
                 message.name = ['otter']
@@ -144,6 +152,7 @@ def main():
                 clock(10.0)
                 pump(0.1)
                 # Both missing pose and missing twist must be rejected without a crash.
+                # 逐项破坏 ModelStates 平行数组长度，要求节点不崩溃且不生成里程计。
                 for field in ('pose', 'twist'):
                     malformed = valid_message()
                     setattr(malformed, field, [])
@@ -156,6 +165,7 @@ def main():
                 model_pub.publish(valid_message())
                 until(lambda: len(odometry) > 0, 3, 'valid odometry')
                 observed = odometry[-1]
+                # 合法输入应采用受控仿真时间，并输出命名空间内 odom/base_link 及已转换的船体系速度。
                 assert observed.header.stamp.sec == 10
                 assert observed.header.frame_id == namespace + '/odom'
                 assert observed.child_frame_id == namespace + '/base_link'
@@ -168,8 +178,10 @@ def main():
                 pump(0.1)
                 model_pub.publish(valid_message())
                 pump(0.2)
+                # 同一仿真时刻的重复状态不应再次产生里程计，避免同时间样本重复消费。
                 assert len(odometry) == before, 'duplicate clock produced duplicate odometry'
                 receipt['checks']['duplicate_clock_suppressed'] = True
+                # 从十秒回退到五秒，再推进到五点一秒，分别验证回退后的首帧和后续时间进展。
                 for value in (5.0, 5.1):
                     before = len(odometry)
                     clock(value)
@@ -184,6 +196,7 @@ def main():
                     tick[0] += 0.02
                     clock(tick[0])
                     model_pub.publish(valid_message())
+                # 在合法输入持续到达时发送 SIGINT，退出观察期间继续驱动输入，覆盖回调活动中的关闭路径。
                 pump(0.3, stream)
                 owned_signal(signal.SIGINT)
                 deadline = time.monotonic() + 5
@@ -195,6 +208,7 @@ def main():
     except Exception as error:
         receipt.update(completed=False, error=f'{type(error).__name__}: {error}')
     finally:
+        # 仍存活的自有进程依次尝试 SIGINT、SIGTERM、SIGKILL；每次信号发送都会重新核验身份。
         if process is not None and process.poll() is None:
             owned_signal(signal.SIGINT)
             try:
@@ -211,6 +225,7 @@ def main():
         driver.destroy_node()
         rclpy.shutdown()
         data = log_path.read_bytes() if log_path.exists() else b''
+        # 归档退出码、日志哈希和调试器实际观测，异常路径也落盘 receipt，便于追溯本次运行。
         receipt['log_sha256'] = hashlib.sha256(data).hexdigest()
         receipt['gdb_observed_sigsegv'] = args.gdb and b'received signal SIGSEGV' in data
         with (args.output / 'receipt.json').open('x') as output:

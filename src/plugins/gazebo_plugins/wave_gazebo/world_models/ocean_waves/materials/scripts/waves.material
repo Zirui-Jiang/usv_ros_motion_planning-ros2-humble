@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.s
 
+// Ogre 材质脚本绑定 Gerstner 顶点/片元程序，并指定与视觉插件一致的 uniform 名称和纹理槽。
 vertex_program GerstnerWavesVS glsl
 {
   source ../programs/GerstnerWaves.vert
@@ -23,6 +24,7 @@ fragment_program GerstnerWavesFS glsl
   source ../programs/GerstnerWaves.frag
 }
 
+// 此材质由 ocean_waves 模型引用；几何波参数和时间由 WavefieldVisualPlugin 在运行时写入。
 material WaveSim/GerstnerWaves
 {
   technique GLSL
@@ -31,6 +33,7 @@ material WaveSim/GerstnerWaves
     {
       vertex_program_ref GerstnerWavesVS
       {
+        // 相机位置使用物体局部坐标，与顶点着色器 gl_Vertex 所在坐标系一致。
         param_named_auto eyePos camera_position_object_space
         param_named rescale float 0.5
         param_named bumpScale float2 25 25
@@ -45,6 +48,7 @@ material WaveSim/GerstnerWaves
       fragment_program_ref GerstnerWavesFS
       {
         // Colors and ratios
+        // 深浅颜色、Fresnel 幂次及亮度倍率控制视觉外观，不改变物理波谱或浮力。
         param_named deepColor float4 0 0.05 0.2 1.0
         param_named shallowColor float4 0 0.6 1 1.0
         param_named fresnelPower float 5
@@ -57,6 +61,7 @@ material WaveSim/GerstnerWaves
         // param_named rttNoise float 0.1
 
         // Textures
+        // 采样器槽 0/1/2/3 依次对应细节法线、环境立方纹理、反射和折射；顺序须与下方 texture_unit 对应。
         param_named bumpMap int 0
         param_named cubeMap int 1
         param_named reflectMap int 2
@@ -73,11 +78,13 @@ material WaveSim/GerstnerWaves
 
       texture_unit
       {
+        // 环境立方贴图提供远处云层颜色，地址钳制避免采样跨越纹理边界重复。
         cubic_texture ../textures/clouds.jpg combinedUVW
         tex_address_mode clamp
         tex_coord_set 1
         filtering linear linear linear
       }
+      // 最后两个纹理单元先留空，由 C++ 视觉插件为各相机生成离屏纹理并填入。
       // Reflection
       texture_unit
       {

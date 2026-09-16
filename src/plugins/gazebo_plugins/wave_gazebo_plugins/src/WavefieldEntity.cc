@@ -15,6 +15,7 @@
  *
 */
 
+// Gazebo Base 子实体保存波场参数，提供物理插件间共享访问；本版本不在此生成动态网格。
 #include <iostream>
 #include <string>
 
@@ -63,6 +64,7 @@ namespace asv
   }
 
   /////////////////////////////////////////////////
+  // 读取 size、cell_count 元数据，再从 wave 子元素生成分量参数；这两个尺寸字段当前仅保存。
   void WavefieldEntity::Load(sdf::ElementPtr _sdf)
   {
     GZ_ASSERT(_sdf != nullptr, "Invalid parameter _sdf");
@@ -109,17 +111,20 @@ namespace asv
   }
 
   /////////////////////////////////////////////////
+  // 当前更新函数为空，采样器直接使用共享参数和调用时刻求值。
   void WavefieldEntity::Update()
   {
   }
 
   /////////////////////////////////////////////////
+  // const 共享指针允许调用者读取参数而不通过该接口修改它。
   std::shared_ptr<const WaveParameters> WavefieldEntity::GetWaveParams() const
   {
     return this->data->waveParams;
   }
 
   /////////////////////////////////////////////////
+  // 固定使用父模型名加 ::wavefield_entity 后缀，与 GetWaveParams 的查找规则配套。
   std::string WavefieldEntity::MakeName(const std::string& _parentName)
   {
     return std::string(_parentName + "::wavefield_entity");

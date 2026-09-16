@@ -1,0 +1,148 @@
+Single-leg simulation profile:
+  base install: /home/usv/module-layout-20260914/install
+  overlay: /tmp/usv_ladds_multi_waypoint_20260915/install
+  source world: /home/usv/module-layout-20260914/install/sim_env/share/sim_env/worlds/ocean.world
+  runtime world: /tmp/ladds-single-leg-world.JJY4ow/ladds_single_leg.world
+  ROS domain: 88
+  Gazebo master: http://127.0.0.1:11359
+  speed profile: task requests 4 kn; dynamics.velocity_max=2.1 m/s; cruising_speed remains 1.0 m/s
+[INFO] [launch]: All log files can be found below /home/usv/.ros/log/2026-09-15-18-18-15-318425-DESKTOP-SFCU4PM-27053
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [launch.user]: [usv_navigation] dynamics_config: /mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/scripts/validation/config/ladds_single_leg_dynamics.yaml
+[INFO] [launch.user]: [usv_navigation] controller_config: /tmp/usv_ladds_multi_waypoint_20260915/install/usv_navigation/share/usv_navigation/config/robots/otter/controller_params_otter.yaml
+[INFO] [launch.user]: [usv_navigation] trajectory_config: /tmp/usv_ladds_multi_waypoint_20260915/install/usv_navigation/share/usv_navigation/config/trajectory_planner/trajectory_planner_params.yaml
+[INFO] [launch.user]: [usv_navigation] planner_config: /tmp/usv_ladds_multi_waypoint_20260915/install/usv_navigation/share/usv_navigation/config/path_planner/common_planner_params.yaml
+[INFO] [launch.user]: [usv_navigation] graph_planner_params.yaml is an inactive template and is not loaded.
+[INFO] [launch.user]: [usv_perception] mapping_config: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/config/costmap/mapping.yaml
+[INFO] [launch.user]: [usv_perception] costmap_config: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/config/robots/otter/global_costmap_params_otter.yaml
+[INFO] [launch.user]: [usv_navigation] dynamics_config: /mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/scripts/validation/config/ladds_single_leg_dynamics.yaml
+[INFO] [launch.user]: [usv_navigation] controller_config: /tmp/usv_ladds_multi_waypoint_20260915/install/usv_navigation/share/usv_navigation/config/robots/otter/controller_params_otter.yaml
+[INFO] [launch.user]: [usv_navigation] trajectory_config: /tmp/usv_ladds_multi_waypoint_20260915/install/usv_navigation/share/usv_navigation/config/trajectory_planner/trajectory_planner_params.yaml
+[INFO] [launch.user]: [usv_navigation] planner_config: /tmp/usv_ladds_multi_waypoint_20260915/install/usv_navigation/share/usv_navigation/config/path_planner/common_planner_params.yaml
+[INFO] [launch.user]: [usv_navigation] graph_planner_params.yaml is an inactive template and is not loaded.
+[INFO] [launch.user]: [usv_navigation] dynamics_config: /mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/scripts/validation/config/ladds_single_leg_dynamics.yaml
+[INFO] [launch.user]: [usv_navigation] controller_config: /tmp/usv_ladds_multi_waypoint_20260915/install/usv_navigation/share/usv_navigation/config/robots/otter/controller_params_otter.yaml
+[INFO] [launch.user]: [usv_navigation] trajectory_config: /tmp/usv_ladds_multi_waypoint_20260915/install/usv_navigation/share/usv_navigation/config/trajectory_planner/trajectory_planner_params.yaml
+[INFO] [launch.user]: [usv_navigation] planner_config: /tmp/usv_ladds_multi_waypoint_20260915/install/usv_navigation/share/usv_navigation/config/path_planner/common_planner_params.yaml
+[INFO] [launch.user]: [usv_navigation] graph_planner_params.yaml is an inactive template and is not loaded.
+[INFO] [gzserver-1]: process started with pid [27055]
+[INFO] [robot_state_publisher-2]: process started with pid [27057]
+[INFO] [joint_state_publisher-3]: process started with pid [27059]
+[INFO] [python3-4]: process started with pid [27061]
+[INFO] [fake_localization_node-5]: process started with pid [27063]
+[INFO] [python3-6]: process started with pid [27065]
+[INFO] [costmap_support_node-7]: process started with pid [27067]
+[INFO] [python3-8]: process started with pid [27069]
+[INFO] [python3-9]: process started with pid [27071]
+[INFO] [python3-10]: process started with pid [27073]
+[costmap_support_node-7] [INFO] [1789467496.509967761] [otter.costmap]: 
+[costmap_support_node-7] 	costmap lifecycle node launched. 
+[costmap_support_node-7] 	Waiting on external lifecycle transitions to activate
+[costmap_support_node-7] 	See https://design.ros2.org/articles/node_lifecycle.html for more information.
+[costmap_support_node-7] [INFO] [1789467496.511391118] [otter.costmap]: Creating Costmap
+[costmap_support_node-7] [INFO] [1789467496.511772995] [otter.costmap]: Configuring
+[costmap_support_node-7] [INFO] [1789467496.517617890] [otter.costmap]: Using plugin "obstacle_layer"
+[fake_localization_node-5] [INFO] [1789467496.513046290] [otter.fake_localization]: [fake_localization] model='otter' frames: otter/map -> otter/odom -> otter/base_link
+[costmap_support_node-7] [INFO] [1789467496.519607298] [otter.costmap]: Subscribed to Topics: scan
+[costmap_support_node-7] [INFO] [1789467496.526278398] [otter.costmap]: Initialized plugin "obstacle_layer"
+[costmap_support_node-7] [INFO] [1789467496.526316499] [otter.costmap]: Using plugin "inflation_layer"
+[costmap_support_node-7] [INFO] [1789467496.526669465] [otter.costmap]: Initialized plugin "inflation_layer"
+[costmap_support_node-7] [INFO] [1789467496.534304283] [otter.costmap]: Activating
+[costmap_support_node-7] [INFO] [1789467496.534353324] [otter.costmap]: Checking transform
+[costmap_support_node-7] [INFO] [1789467496.534377284] [otter.costmap]: Timed out waiting for transform from otter/base_link to otter/map to become available, tf error: Invalid frame ID "otter/map" passed to canTransform argument target_frame - frame does not exist
+[robot_state_publisher-2] [WARN] [1789467496.569901014] [kdl_parser]: The root link base_link has an inertia specified in the URDF, but KDL does not support a root link with an inertia.  As a workaround, you can add an extra dummy link to your URDF.
+[robot_state_publisher-2] [INFO] [1789467496.570035126] [robot_state_publisher]: got segment base_footprint
+[robot_state_publisher-2] [INFO] [1789467496.570106538] [robot_state_publisher]: got segment base_link
+[robot_state_publisher-2] [INFO] [1789467496.570117558] [robot_state_publisher]: got segment left_propeller_link
+[robot_state_publisher-2] [INFO] [1789467496.570120628] [robot_state_publisher]: got segment lidar_link
+[robot_state_publisher-2] [INFO] [1789467496.570123168] [robot_state_publisher]: got segment right_propeller_link
+[joint_state_publisher-3] [INFO] [1789467496.731427040] [joint_state_publisher]: Waiting for robot_description to be published on the robot_description topic...
+[python3-6] [INFO] [1789467496.797897614] [otter.mapping]: LiDAR mapping frame=otter/map, grid=1024x1024, resolution=0.5m, publication=2.0Hz, TF deadline=0.2s, backend=python
+[python3-4] [INFO] [1789467496.826594358] [spawn_entity]: Spawn Entity started
+[python3-4] [INFO] [1789467496.826896853] [spawn_entity]: Loading entity published on topic robot_description
+[python3-4] [INFO] [1789467496.829056745] [spawn_entity]: Waiting for entity xml on robot_description
+[python3-4] [INFO] [1789467496.840007789] [spawn_entity]: Waiting for service /spawn_entity, timeout = 120
+[python3-4] [INFO] [1789467496.840195212] [spawn_entity]: Waiting for service /spawn_entity
+[costmap_support_node-7] [INFO] [1789467497.034453183] [otter.costmap]: Timed out waiting for transform from otter/base_link to otter/map to become available, tf error: Invalid frame ID "otter/map" passed to canTransform argument target_frame - frame does not exist
+[costmap_support_node-7] [INFO] [1789467497.534452740] [otter.costmap]: Timed out waiting for transform from otter/base_link to otter/map to become available, tf error: Invalid frame ID "otter/map" passed to canTransform argument target_frame - frame does not exist
+[python3-10] [INFO] [1789467497.875189326] [otter.usv_control]: Effective navigation parameters: {"dynamics.D": 0.395, "dynamics.L": 1.35, "dynamics.W": 1.0, "dynamics.acceleration_max": 1.0, "dynamics.acceleration_min": -1.0, "dynamics.cruising_speed": 1.0, "dynamics.i_z": 10.03, "dynamics.jerk_max": 2.0, "dynamics.jerk_min": -2.0, "dynamics.mass": 29.84, "dynamics.max_force": 50.0, "dynamics.n_dot_r": 1.0, "dynamics.n_dot_u": 0.0, "dynamics.n_dot_v": 0.0, "dynamics.n_r": -20.0, "dynamics.n_r_r": 0.0, "dynamics.n_u": 0.0, "dynamics.n_v": 0.0, "dynamics.name": "otter", "dynamics.ns": "otter", "dynamics.type": "Differential", "dynamics.velocity_max": 2.1, "dynamics.velocity_min": 0.0, "dynamics.x_dot_r": 0.0, "dynamics.x_dot_u": 5.0, "dynamics.x_dot_v": 0.0, "dynamics.x_r": 0.0, "dynamics.x_u": -20.0, "dynamics.x_u_u": 0.0, "dynamics.x_v": 0.0, "dynamics.y_dot_r": 0.0, "dynamics.y_dot_u": 0.0, "dynamics.y_dot_v": 5.0, "dynamics.y_r": 0.0, "dynamics.y_u": 0.0, "dynamics.y_v": -20.0, "dynamics.y_v_v": 0.0, "navigation.costmap_topic": "costmap_raw", "navigation.footprint_length": 2.2, "navigation.footprint_width": 1.2, "navigation.map_timeout": 1.5, "navigation.max_expansions": 200000, "navigation.planning_frequency": 5.0, "navigation.planning_timeout": 1.0, "navigation.state_timeout": 0.5, "navigation.trajectory_timeout": 1.0, "obstacle_factor": 0.25, "path_planner.convert_offset": 0.0, "path_planner.default_tolerance": 0.0, "path_planner.enable_resample": true, "path_planner.expand_zone": true, "path_planner.outline_map": true, "path_planner.resample_ratio": 0.5, "path_planner.show_safety_corridor": false, "planner_name": "astar", "usv_simulation.controller.adrc_controller.acceleration_gain": 0.0, "usv_simulation.controller.adrc_controller.command_limit": 1.0, "usv_simulation.controller.adrc_controller.error_reset_deg": 20.0, "usv_simulation.controller.adrc_controller.filter_history_length": 50, "usv_simulation.controller.adrc_controller.filter_window_length": 10, "usv_simulation.controller.adrc_controller.force_max": 40.0, "usv_simulation.controller.adrc_controller.force_min": -40.0, "usv_simulation.controller.adrc_controller.goal_distance_tolerance": 1.5, "usv_simulation.controller.adrc_controller.goal_speed_tolerance": 0.25, "usv_simulation.controller.adrc_controller.heading_integral_max": 10.0, "usv_simulation.controller.adrc_controller.heading_integral_min": -10.0, "usv_simulation.controller.adrc_controller.k_d_heading": 4.0, "usv_simulation.controller.adrc_controller.k_i_heading": 0.03, "usv_simulation.controller.adrc_controller.k_i_speed": 4.0, "usv_simulation.controller.adrc_controller.k_p_heading": 8.0, "usv_simulation.controller.adrc_controller.k_p_speed": 8.0, "usv_simulation.controller.adrc_controller.lookahead_time": 2.6, "usv_simulation.controller.adrc_controller.max_sample_gap": 0.5, "usv_simulation.controller.adrc_controller.moment_max": 10.0, "usv_simulation.controller.adrc_controller.moment_min": -10.0, "usv_simulation.controller.adrc_controller.sample_time": 0.1, "usv_simulation.controller.adrc_controller.speed_integral_max": 30.0, "usv_simulation.controller.adrc_controller.speed_integral_min": -30.0, "usv_simulation.controller.control_frequency": 10.0, "usv_simulation.controller.controller_name": "adrc", "usv_simulation.controller.lqr_controller.Q_matrix_diag": [1.0, 1.0, 100.0, 10.0, 10.0, 10.0], "usv_simulation.controller.lqr_controller.R_matrix_diag": [20.0, 20.0], "usv_simulation.controller.lqr_controller.discrete_dt": 0.1, "usv_simulation.controller.lqr_controller.goal_distance_tolerance": 1.0, "usv_simulation.controller.lqr_controller.goal_speed_tolerance": 0.25, "usv_simulation.controller.lqr_controller.lookahead_time": 2.0, "usv_simulation.controller.lqr_controller.max_iterations": 5000, "usv_simulation.controller.lqr_controller.solve_eps": 0.1, "usv_simulation.controller.lqr_controller.solve_timeout": 0.08, "usv_simulation.controller.pid_controller.goal_distance_tolerance": 1.5, "usv_simulation.controller.pid_controller.goal_speed_tolerance": 0.25, "usv_simulation.controller.pid_controller.k_d_course": 0.0, "usv_simulation.controller.pid_controller.k_d_speed": 0.0, "usv_simulation.controller.pid_controller.k_i_course": 0.0, "usv_simulation.controller.pid_controller.k_i_speed": 0.5, "usv_simulation.controller.pid_controller.k_p_course": 2.0, "usv_simulation.controller.pid_controller.k_p_speed": 2.0, "usv_simulation.controller.pid_controller.lookahead_time": 2.6, "usv_simulation.trajectory_planner.los.goal_tolerance": 1.0, "usv_simulation.trajectory_planner.los.kp_yaw": 1.0, "usv_simulation.trajectory_planner.los.lookahead_distance": 1.0, "usv_simulation.trajectory_planner.los.slowdown_distance": 3.0, "usv_simulation.trajectory_planner.los.switch_dist": 5.0, "usv_simulation.trajectory_planner.los.trajectory_time": 10.0, "usv_simulation.trajectory_planner.los.trajectory_time_interval": 0.5, "usv_simulation.trajectory_planner.los.yaw_rate_max": 0.3, "usv_simulation.trajectory_planner.planner_name": "los"}
+[costmap_support_node-7] [INFO] [1789467498.034462067] [otter.costmap]: Timed out waiting for transform from otter/base_link to otter/map to become available, tf error: Invalid frame ID "otter/map" passed to canTransform argument target_frame - frame does not exist
+[python3-9] [INFO] [1789467498.055391295] [otter.usv_simulation]: Effective navigation parameters: {"dynamics.D": 0.395, "dynamics.L": 1.35, "dynamics.W": 1.0, "dynamics.acceleration_max": 1.0, "dynamics.acceleration_min": -1.0, "dynamics.cruising_speed": 1.0, "dynamics.i_z": 10.03, "dynamics.jerk_max": 2.0, "dynamics.jerk_min": -2.0, "dynamics.mass": 29.84, "dynamics.max_force": 50.0, "dynamics.n_dot_r": 1.0, "dynamics.n_dot_u": 0.0, "dynamics.n_dot_v": 0.0, "dynamics.n_r": -20.0, "dynamics.n_r_r": 0.0, "dynamics.n_u": 0.0, "dynamics.n_v": 0.0, "dynamics.name": "otter", "dynamics.ns": "otter", "dynamics.type": "Differential", "dynamics.velocity_max": 2.1, "dynamics.velocity_min": 0.0, "dynamics.x_dot_r": 0.0, "dynamics.x_dot_u": 5.0, "dynamics.x_dot_v": 0.0, "dynamics.x_r": 0.0, "dynamics.x_u": -20.0, "dynamics.x_u_u": 0.0, "dynamics.x_v": 0.0, "dynamics.y_dot_r": 0.0, "dynamics.y_dot_u": 0.0, "dynamics.y_dot_v": 5.0, "dynamics.y_r": 0.0, "dynamics.y_u": 0.0, "dynamics.y_v": -20.0, "dynamics.y_v_v": 0.0, "navigation.costmap_topic": "costmap_raw", "navigation.footprint_length": 2.2, "navigation.footprint_width": 1.2, "navigation.map_timeout": 1.5, "navigation.max_expansions": 200000, "navigation.planning_frequency": 5.0, "navigation.planning_timeout": 1.0, "navigation.state_timeout": 0.5, "navigation.trajectory_timeout": 1.0, "obstacle_factor": 0.25, "path_planner.convert_offset": 0.0, "path_planner.default_tolerance": 0.0, "path_planner.enable_resample": true, "path_planner.expand_zone": true, "path_planner.outline_map": true, "path_planner.resample_ratio": 0.5, "path_planner.show_safety_corridor": false, "planner_name": "astar", "usv_simulation.controller.adrc_controller.acceleration_gain": 0.0, "usv_simulation.controller.adrc_controller.command_limit": 1.0, "usv_simulation.controller.adrc_controller.error_reset_deg": 20.0, "usv_simulation.controller.adrc_controller.filter_history_length": 50, "usv_simulation.controller.adrc_controller.filter_window_length": 10, "usv_simulation.controller.adrc_controller.force_max": 40.0, "usv_simulation.controller.adrc_controller.force_min": -40.0, "usv_simulation.controller.adrc_controller.goal_distance_tolerance": 1.5, "usv_simulation.controller.adrc_controller.goal_speed_tolerance": 0.25, "usv_simulation.controller.adrc_controller.heading_integral_max": 10.0, "usv_simulation.controller.adrc_controller.heading_integral_min": -10.0, "usv_simulation.controller.adrc_controller.k_d_heading": 4.0, "usv_simulation.controller.adrc_controller.k_i_heading": 0.03, "usv_simulation.controller.adrc_controller.k_i_speed": 4.0, "usv_simulation.controller.adrc_controller.k_p_heading": 8.0, "usv_simulation.controller.adrc_controller.k_p_speed": 8.0, "usv_simulation.controller.adrc_controller.lookahead_time": 2.6, "usv_simulation.controller.adrc_controller.max_sample_gap": 0.5, "usv_simulation.controller.adrc_controller.moment_max": 10.0, "usv_simulation.controller.adrc_controller.moment_min": -10.0, "usv_simulation.controller.adrc_controller.sample_time": 0.1, "usv_simulation.controller.adrc_controller.speed_integral_max": 30.0, "usv_simulation.controller.adrc_controller.speed_integral_min": -30.0, "usv_simulation.controller.control_frequency": 10.0, "usv_simulation.controller.controller_name": "adrc", "usv_simulation.controller.lqr_controller.Q_matrix_diag": [1.0, 1.0, 100.0, 10.0, 10.0, 10.0], "usv_simulation.controller.lqr_controller.R_matrix_diag": [20.0, 20.0], "usv_simulation.controller.lqr_controller.discrete_dt": 0.1, "usv_simulation.controller.lqr_controller.goal_distance_tolerance": 1.0, "usv_simulation.controller.lqr_controller.goal_speed_tolerance": 0.25, "usv_simulation.controller.lqr_controller.lookahead_time": 2.0, "usv_simulation.controller.lqr_controller.max_iterations": 5000, "usv_simulation.controller.lqr_controller.solve_eps": 0.1, "usv_simulation.controller.lqr_controller.solve_timeout": 0.08, "usv_simulation.controller.pid_controller.goal_distance_tolerance": 1.5, "usv_simulation.controller.pid_controller.goal_speed_tolerance": 0.25, "usv_simulation.controller.pid_controller.k_d_course": 0.0, "usv_simulation.controller.pid_controller.k_d_speed": 0.0, "usv_simulation.controller.pid_controller.k_i_course": 0.0, "usv_simulation.controller.pid_controller.k_i_speed": 0.5, "usv_simulation.controller.pid_controller.k_p_course": 2.0, "usv_simulation.controller.pid_controller.k_p_speed": 2.0, "usv_simulation.controller.pid_controller.lookahead_time": 2.6, "usv_simulation.trajectory_planner.los.goal_tolerance": 1.0, "usv_simulation.trajectory_planner.los.kp_yaw": 1.0, "usv_simulation.trajectory_planner.los.lookahead_distance": 1.0, "usv_simulation.trajectory_planner.los.slowdown_distance": 3.0, "usv_simulation.trajectory_planner.los.switch_dist": 5.0, "usv_simulation.trajectory_planner.los.trajectory_time": 10.0, "usv_simulation.trajectory_planner.los.trajectory_time_interval": 0.5, "usv_simulation.trajectory_planner.los.yaw_rate_max": 0.3, "usv_simulation.trajectory_planner.planner_name": "los"}
+[costmap_support_node-7] [INFO] [1789467498.534447046] [otter.costmap]: Timed out waiting for transform from otter/base_link to otter/map to become available, tf error: Invalid frame ID "otter/map" passed to canTransform argument target_frame - frame does not exist
+[costmap_support_node-7] [INFO] [1789467499.034443133] [otter.costmap]: Timed out waiting for transform from otter/base_link to otter/map to become available, tf error: Invalid frame ID "otter/map" passed to canTransform argument target_frame - frame does not exist
+[gzserver-1] [INFO] [1789467499.042566209] [gazebo.gazebo_ros_state]: Publishing states of gazebo models at [/gazebo/model_states]
+[gzserver-1] [INFO] [1789467499.043871930] [gazebo.gazebo_ros_state]: Publishing states of gazebo links at [/gazebo/link_states]
+[python3-4] [INFO] [1789467499.096361385] [spawn_entity]: Calling service /spawn_entity
+[costmap_support_node-7] [INFO] [1789467499.534467881] [otter.costmap]: Timed out waiting for transform from otter/base_link to otter/map to become available, tf error: Invalid frame ID "otter/map" passed to canTransform argument target_frame - frame does not exist
+[python3-4] [INFO] [1789467499.572475889] [spawn_entity]: Spawn status: SpawnEntity: Successfully spawned entity [otter]
+[INFO] [python3-4]: process has finished cleanly [pid 27061]
+[costmap_support_node-7] [INFO] [1789467500.034546380] [otter.costmap]: start
+[python3-6] [INFO] [1789467501.783893317] [otter.mapping]: mapping queue=1 integrated=29 drops(tf=0, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=26.96, p95=31.50) queue_ms_p95=101.84
+[python3-6] [INFO] [1789467506.805640998] [otter.mapping]: mapping queue=0 integrated=104 drops(tf=0, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=25.43, p95=31.39) queue_ms_p95=96.37
+[python3-6] [INFO] [1789467511.836838832] [otter.mapping]: mapping queue=0 integrated=179 drops(tf=0, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=26.45, p95=33.80) queue_ms_p95=100.51
+[python3-6] [INFO] [1789467516.845720632] [otter.mapping]: mapping queue=0 integrated=252 drops(tf=0, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=27.25, p95=35.03) queue_ms_p95=100.72
+[python3-6] [INFO] [1789467521.825058996] [otter.mapping]: mapping queue=0 integrated=325 drops(tf=0, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=28.61, p95=37.55) queue_ms_p95=100.65
+[python3-6] [INFO] [1789467526.784070718] [otter.mapping]: mapping queue=1 integrated=398 drops(tf=0, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=29.48, p95=37.56) queue_ms_p95=89.41
+[python3-6] [INFO] [1789467531.805081027] [otter.mapping]: mapping queue=0 integrated=473 drops(tf=0, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=29.01, p95=36.72) queue_ms_p95=82.82
+[python3-6] [INFO] [1789467536.802951318] [otter.mapping]: mapping queue=0 integrated=547 drops(tf=0, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=28.95, p95=34.53) queue_ms_p95=100.46
+[python3-6] [INFO] [1789467541.784152528] [otter.mapping]: mapping queue=1 integrated=620 drops(tf=0, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=28.56, p95=34.49) queue_ms_p95=101.10
+[python3-6] [INFO] [1789467546.784022637] [otter.mapping]: mapping queue=1 integrated=694 drops(tf=0, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=28.82, p95=35.70) queue_ms_p95=97.84
+[python3-6] [INFO] [1789467551.784000509] [otter.mapping]: mapping queue=1 integrated=768 drops(tf=0, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=28.56, p95=35.86) queue_ms_p95=100.55
+[python3-6] [INFO] [1789467556.829962246] [otter.mapping]: mapping queue=0 integrated=843 drops(tf=0, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=28.10, p95=35.97) queue_ms_p95=101.60
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[python3-9] Process SpawnProcess-1:
+[INFO] [python3-10]: sending signal 'SIGINT' to process[python3-10]
+[INFO] [python3-9]: sending signal 'SIGINT' to process[python3-9]
+[INFO] [python3-8]: sending signal 'SIGINT' to process[python3-8]
+[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]
+[INFO] [python3-6]: sending signal 'SIGINT' to process[python3-6]
+[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]
+[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]
+[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]
+[ERROR] [fake_localization_node-5]: process has died [pid 27063, exit code -2, cmd '/home/usv/module-layout-20260914/install/sim_env/lib/sim_env/fake_localization_node --ros-args -r __node:=fake_localization -r __ns:=/otter --params-file /tmp/launch_params_2h6khspa'].
+[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]
+[ERROR] [joint_state_publisher-3]: process has died [pid 27059, exit code -2, cmd '/opt/ros/humble/lib/joint_state_publisher/joint_state_publisher --ros-args --params-file /tmp/launch_params_65u_yns1'].
+[costmap_support_node-7] [INFO] [1789467557.214701277] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[costmap_support_node-7] [INFO] [1789467557.214768648] [otter.costmap]: Running Nav2 LifecycleNode rcl preshutdown (costmap)
+[costmap_support_node-7] [INFO] [1789467557.214851220] [otter.costmap]: Deactivating
+[ERROR] [robot_state_publisher-2]: process has died [pid 27057, exit code -2, cmd '/opt/ros/humble/lib/robot_state_publisher/robot_state_publisher --ros-args --params-file /tmp/launch_params_qilns41e'].
+[robot_state_publisher-2] [INFO] [1789467557.214772641] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[python3-9] Traceback (most recent call last):
+[python3-9]   File "/usr/lib/python3.10/multiprocessing/process.py", line 314, in _bootstrap
+[python3-9]     self.run()
+[python3-9]   File "/usr/lib/python3.10/multiprocessing/process.py", line 108, in run
+[python3-9]     self._target(*self._args, **self._kwargs)
+[python3-9]   File "/usr/lib/python3.10/concurrent/futures/process.py", line 240, in _process_worker
+[python3-9]     call_item = call_queue.get(block=True)
+[python3-9]   File "/usr/lib/python3.10/multiprocessing/queues.py", line 103, in get
+[python3-9]     res = self._recv_bytes()
+[python3-9]   File "/usr/lib/python3.10/multiprocessing/connection.py", line 216, in recv_bytes
+[python3-9]     buf = self._recv_bytes(maxlength)
+[python3-9]   File "/usr/lib/python3.10/multiprocessing/connection.py", line 414, in _recv_bytes
+[python3-9]     buf = self._recv(4)
+[python3-9]   File "/usr/lib/python3.10/multiprocessing/connection.py", line 379, in _recv
+[python3-9]     chunk = read(handle, remaining)
+[python3-9] KeyboardInterrupt
+[fake_localization_node-5] [INFO] [1789467557.214887100] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[python3-6] Traceback (most recent call last):
+[python3-6]   File "/home/usv/module-layout-20260914/install/usv_perception/lib/usv_perception/perception_mapping_node", line 6, in <module>
+[python3-6]     main()
+[python3-6]   File "/home/usv/module-layout-20260914/install/usv_perception/local/lib/python3.10/dist-packages/usv_perception/mapping_node.py", line 208, in main
+[python3-6]     node.destroy_node()
+[python3-6]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/node.py", line 1691, in destroy_node
+[python3-6]     self.destroy_service(self._services[0])
+[python3-6]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/node.py", line 1615, in destroy_service
+[python3-6]     service.destroy()
+[python3-6]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/service.py", line 93, in destroy
+[python3-6]     self.__service.destroy_when_not_in_use()
+[python3-6] KeyboardInterrupt
+[ERROR] [python3-6]: process has died [pid 27065, exit code -2, cmd '/usr/bin/python3 /home/usv/module-layout-20260914/install/usv_perception/lib/usv_perception/perception_mapping_node --ros-args -r __node:=mapping -r __ns:=/otter --params-file /tmp/launch_params___x0ri59 --params-file /tmp/launch_params_2zdy8_n_ -r scan:=sensors/lidars/lidar/scan'].
+[INFO] [python3-10]: process has finished cleanly [pid 27073]
+[INFO] [python3-9]: process has finished cleanly [pid 27071]
+[INFO] [python3-8]: process has finished cleanly [pid 27069]
+[INFO] [gzserver-1]: process has finished cleanly [pid 27055]
+[costmap_support_node-7] [INFO] [1789467557.534771324] [otter.costmap]: Cleaning up
+[costmap_support_node-7] [INFO] [1789467557.536367530] [otter.costmap]: Destroying bond (costmap) to lifecycle manager.
+[costmap_support_node-7] [INFO] [1789467557.536877230] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[costmap_support_node-7] [INFO] [1789467557.538125889] [otter.costmap]: Destroying
+[INFO] [costmap_support_node-7]: process has finished cleanly [pid 27067]

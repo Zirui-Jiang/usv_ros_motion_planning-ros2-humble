@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 启动和观测真实 ROS/Gazebo 试验，保存原始事件、几何间隙和停推反馈；只清理自身创建的进程。
 """Run actual ROS 2/Gazebo acceptance trials; never synthesize trial results.
 
 Source ROS 2 Humble and the Python workspace before running this script in
@@ -22,14 +23,17 @@ import uuid
 from metrics import distribution, point_to_polyline_distance, swept_clearance, trial_verdict, wrap_angle, supervision_stop_reason
 
 
+# 表示环境或先决条件不足，不能把未执行的试验记为通过。
 class TrialBlocked(RuntimeError):
     pass
 
 
+# 单独区分旧同名节点参数服务的空响应，以便受限重试。
 class EmptyParameterResponse(TrialBlocked):
     pass
 
 
+# 把输出中的非有限浮点数转为可序列化的缺失标记，保留数据有效性边界。
 def sanitized(value):
     if isinstance(value, float) and not math.isfinite(value):
         return None
@@ -40,6 +44,35 @@ def sanitized(value):
     return value
 
 
+# 要求整个观察窗口都被各路新鲜有限零命令覆盖，不能只检查最后一条缓存值。
+def zero_output_window(records, since, until, epsilon=1e-6, max_gap=.35, minimum_samples=3):
+    """Require fresh finite zeros throughout a bounded observation interval.
+
+    Receipt times are monotonic timestamps. The first and last gaps are part
+    of the check, so one cached zero or an output stream that stops cannot pass.
+    This is a software observation criterion, not an actuator stop guarantee.
+    """
+    result = {"passed": True, "since": since, "until": until, "max_gap_s": max_gap,
+              "minimum_samples": minimum_samples, "axes": {}}
+    if not all(math.isfinite(v) for v in (since, until, epsilon, max_gap)) or until <= since or max_gap <= 0:
+        result.update(passed=False, reason="invalid observation window")
+        return result
+    for axis in ("left", "right", "lateral"):
+        raw = records.get(axis, [])
+        invalid_stamp = any(not math.isfinite(stamp) for stamp, _ in raw)
+        selected = [(stamp, value) for stamp, value in raw if math.isfinite(stamp) and since <= stamp <= until]
+        times = [stamp for stamp, _ in selected]
+        gaps = [times[0] - since, *[b - a for a, b in zip(times, times[1:])], until - times[-1]] if times else []
+        passed = (not invalid_stamp and len(selected) >= minimum_samples
+                  and all(math.isfinite(value) and abs(value) <= epsilon for _, value in selected)
+                  and all(0 <= gap <= max_gap for gap in gaps))
+        result["axes"][axis] = {"passed": passed, "samples": len(selected),
+                                "maximum_observed_gap_s": max(gaps) if gaps else None}
+        result["passed"] = result["passed"] and passed
+    return result
+
+
+# 逐事件写入并刷新 JSONL，保留试验运行中已经观测到的数据。
 class Jsonl:
     def __init__(self, path):
         self.file = path.open("w", encoding="utf-8")
@@ -53,6 +86,7 @@ class Jsonl:
         self.file.close()
 
 
+# 为本次试验创建独立进程组并保存输出；关闭时仅管理自己创建的进程。
 class OwnedProcess:
     def __init__(self, workspace, command, logfile, environment):
         setup = workspace / "install" / "setup.bash"
@@ -104,16 +138,40 @@ class OwnedProcess:
         self.output.close()
 
 
+# 集中管理本次创建的多个业务进程，任一异常退出都能被试验驱动发现。
+class OwnedProcessGroup:
+    """Check and close only the independently started processes of this trial."""
+
+    def __init__(self):
+        self.members = []
+
+    def add(self, workspace, command, logfile, environment):
+        child = OwnedProcess(workspace, command, logfile, environment)
+        self.members.append(child)
+        return child
+
+    def check(self):
+        for child in self.members:
+            child.check()
+
+    def close(self):
+        for child in reversed(self.members):
+            child.close()
+
+
+# 向系统申请一个当前空闲端口，用于隔离本次 Gazebo master。
 def free_port():
     with socket.socket() as server:
         server.bind(("127.0.0.1", 0))
         return server.getsockname()[1]
 
 
+# 将 ROS 消息时间戳转换为浮点秒，与接收端单调时间分别记录。
 def stamp_seconds(stamp):
     return stamp.sec + stamp.nanosec * 1e-9
 
 
+# 依据 Python 值类型构造 ROS 参数，区分布尔、整数和浮点数。
 def parameter_value(value):
     fields = {1: "bool_value", 2: "integer_value", 3: "double_value", 4: "string_value",
               5: "byte_array_value", 6: "bool_array_value", 7: "integer_array_value", 8: "double_array_value", 9: "string_array_value"}
@@ -121,6 +179,7 @@ def parameter_value(value):
     return list(item) if value.type >= 5 else item
 
 
+# 在需要实际运行时才加载 ROS，构造订阅状态、地图、轨迹和推进器的观测节点。
 def make_probe(namespace, log, use_sim_time=True):
     import rclpy
     from rclpy.node import Node
@@ -165,6 +224,7 @@ def make_probe(namespace, log, use_sim_time=True):
             self.failure_snapshot_active = False
             self.commands = {}
             self.command_wall = {}
+            self.command_samples = {axis: [] for axis in ("left", "right", "lateral")}
             self.command_gaps = []
             self.status = None
             self.mapping_status = None
@@ -191,13 +251,16 @@ def make_probe(namespace, log, use_sim_time=True):
                                          lambda msg, axis=axis: self.on_command(axis, msg), 10)
             self.goal_pub = self.create_publisher(PoseStamped, self.namespace + "/goal", 10)
 
+        # 读取 ROS 仿真时间，与用于超时监视的墙钟单调时间分别使用。
         def sim_time(self):
             return self.get_clock().now().nanoseconds * 1e-9
 
+        # 按 ROS 时钟计算消息源时间年龄，接收回调频繁不等于观测内容新鲜。
         def message_age(self, header):
             stamp = stamp_seconds(header.stamp)
             return max(0.0, self.sim_time() - stamp) * 1000 if stamp > 0 else None
 
+        # 保存真实船位与源时间，供到达判定、横向误差和相邻位姿扫掠计算使用。
         def on_odom(self, msg):
             q = msg.pose.pose.orientation
             yaw = math.atan2(2 * (q.w * q.z + q.x * q.y), 1 - 2 * (q.y * q.y + q.z * q.z))
@@ -210,10 +273,12 @@ def make_probe(namespace, log, use_sim_time=True):
             self.log.write("odom", sim_time_s=self.odom_stamp, pose=self.pose, body_velocity=self.velocity,
                            frame_id=msg.header.frame_id, child_frame_id=msg.child_frame_id)
 
+        # 记录扫描接收时刻、源时间年龄与间隔，不在验收端重建地图。
         def on_scan(self, msg):
             self.scan_wall = time.monotonic()
             self.scan_latency.append(self.message_age(msg.header))
 
+        # 记录有效路径；横向误差参考与任务边界关联，避免替换目标后继续沿用旧路径。
         def on_path(self, msg):
             self.path_stamp = stamp_seconds(msg.header.stamp)
             self.path_frame = msg.header.frame_id
@@ -228,6 +293,7 @@ def make_probe(namespace, log, use_sim_time=True):
             self.log.write("reference_path", sim_time_s=stamp_seconds(msg.header.stamp),
                            frame_id=msg.header.frame_id, points=self.path)
 
+        # 记录用于显示的局部轨迹及其源时戳，不把它代替模块间的完整执行参考。
         def on_trajectory(self, msg):
             self.trajectory = [(p.pose.position.x, p.pose.position.y) for p in msg.poses]
             self.received_nonempty_trajectory |= bool(self.trajectory)
@@ -242,6 +308,7 @@ def make_probe(namespace, log, use_sim_time=True):
                 self.last_nonempty_trajectory = payload
             self.log.write("local_trajectory", **payload)
 
+        # 保存导航状态；进入参考或地图失败状态时捕获相关输入，便于离线复查。
         def on_status(self, msg):
             try:
                 self.status = json.loads(msg.data)
@@ -258,6 +325,7 @@ def make_probe(namespace, log, use_sim_time=True):
                 if self.capture_inputs("navigation_failure_snapshot"):
                     self.failure_snapshot_active = True
 
+        # 原样记录建图节点报告的性能和队列证据，避免在验收端猜测缺失数据。
         def on_mapping_status(self, msg):
             try:
                 self.mapping_status = json.loads(msg.data)
@@ -265,6 +333,7 @@ def make_probe(namespace, log, use_sim_time=True):
                 self.mapping_status = {"unparsed_status": msg.data}
             self.log.write("mapping_status", payload=self.mapping_status)
 
+        # 记录运行中参数事件，区分从启动固定的配置与中途调参诊断。
         def on_parameter_event(self, msg):
             if msg.node != self.namespace + "/usv_simulation":
                 return
@@ -273,12 +342,15 @@ def make_probe(namespace, log, use_sim_time=True):
                            changed=[{"name": item.name, "value": parameter_value(item.value)} for item in msg.changed_parameters],
                            deleted=[item.name for item in msg.deleted_parameters])
 
+        # 记录实际目标消息和源时间，便于追溯任务何时被替换。
         def on_goal(self, msg):
             self.log.write("goal_observed", x=msg.pose.position.x, y=msg.pose.position.y,
                            sim_time_s=stamp_seconds(msg.header.stamp))
 
+        # 保存每路真实推力值及接收时刻，统计首命令延迟、输出间隔与停推窗口。
         def on_command(self, axis, msg):
             now = time.monotonic()
+            self.command_samples[axis].append((now, float(msg.data)))
             previous = self.command_wall.get(axis)
             if previous is not None and axis == "left":
                 self.command_gaps.append((now - previous) * 1000)
@@ -290,6 +362,7 @@ def make_probe(namespace, log, use_sim_time=True):
                 self.first_command_latency = now - self.goal_wall
             self.log.write("thruster_command", axis=axis, normalized_command=float(msg.data))
 
+        # 优先发现 raw costmap，必要时兼容 OccupancyGrid，并明确记录实际采用的话题类型。
         def discover_costmap(self, explicit=None):
             if self.costmap_topic:
                 return
@@ -314,6 +387,7 @@ def make_probe(namespace, log, use_sim_time=True):
                 self.costmap_topic = topic
                 self.log.write("costmap_discovered", topic=topic, type=kind.__name__)
 
+        # 保存地图数据、原点、分辨率和时间信息，保留 raw 与占据栅格的类型区别。
         def on_costmap(self, msg):
             if hasattr(msg, "metadata"):
                 meta = msg.metadata
@@ -327,6 +401,7 @@ def make_probe(namespace, log, use_sim_time=True):
             self.costmap_stamp = stamp_seconds(msg.header.stamp)
             self.costmap_frame = msg.header.frame_id
 
+        # 将当前可见的地图、状态和轨迹分别落盘；异步订阅快照不是规划线程的原子输入。
         def capture_inputs(self, event):
             """Capture the latest callback data at each failed-reference episode.
 
@@ -362,6 +437,7 @@ def make_probe(namespace, log, use_sim_time=True):
                 return True
             return False
 
+        # 先保存发布前输入快照，再发布目标并重置该目标的观测统计。
         def publish_goal(self, goal):
             self.goal_wall = time.monotonic()
             self.active_goal = goal
@@ -381,6 +457,7 @@ def make_probe(namespace, log, use_sim_time=True):
             self.goal_pub.publish(msg)
             self.log.write("goal_published", goal=goal, sim_time_s=self.sim_time())
 
+        # 检查指定时刻之后各通道是否收到零值；完整持续停推还需通过窗口覆盖检查。
         def zero_received_since(self, since, epsilon):
             return all(self.command_wall.get(axis, -math.inf) >= since and
                        abs(self.commands.get(axis, math.inf)) <= epsilon for axis in ("left", "right", "lateral"))
@@ -393,6 +470,7 @@ def make_probe(namespace, log, use_sim_time=True):
     return Probe()
 
 
+# 持续处理 ROS 回调并检查自建进程，直到条件成立或等待超时。
 def wait_until(probe, predicate, timeout, process=None, tick=None):
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
@@ -406,6 +484,7 @@ def wait_until(probe, predicate, timeout, process=None, tick=None):
     return False
 
 
+# 在限定时间内发现并调用服务，区分可选服务不存在与实际调用失败。
 def call_service(probe, kind, names, request, timeout=10.0, optional=False):
     for name in names:
         client = probe.create_client(kind, name)
@@ -426,6 +505,7 @@ def call_service(probe, kind, names, request, timeout=10.0, optional=False):
     raise TrialBlocked(f"required service unavailable: {names}")
 
 
+# 只对已知空参数回复重试；明确读回了另一控制器时立即拒绝。
 def verify_controller(probe, requested):
     """Retry empty replies from legacy duplicate node-name parameter services.
 
@@ -441,6 +521,7 @@ def verify_controller(probe, requested):
             wait_until(probe, lambda: False, 0.2)
 
 
+# 在发布目标前原子设置并读回指定参数，将实际生效配置写入证据。
 def apply_start_parameters(probe, overrides):
     """Apply an explicitly logged fixed test configuration before any goal."""
     if not overrides:
@@ -462,8 +543,21 @@ def apply_start_parameters(probe, overrides):
     probe.log.write("pre_goal_parameter_readback", values=values)
     if values != overrides:
         raise TrialBlocked(f"pre-goal parameter readback differs: {values!r}")
+    if getattr(probe, "controller_node", "usv_simulation") == "usv_control":
+        deadline = time.monotonic() + 5.
+        while True:
+            actual = call_service(probe, get_kind, [probe.namespace + "/usv_control/get_parameters"], verify)
+            control_values = {name: parameter_value(value) for name, value in zip(verify.names, actual.values)}
+            if control_values == overrides:
+                probe.log.write("pre_goal_control_parameter_readback", source_node=probe.namespace + "/usv_control",
+                                values=control_values)
+                break
+            if time.monotonic() >= deadline:
+                raise TrialBlocked(f"actual control parameters did not converge to requested values: {control_values!r}")
+            wait_until(probe, lambda: False, .05)
 
 
+# 读取运行中节点的实际控制器、容差和参数，不能仅凭启动命令认定配置生效。
 def _verify_controller_once(probe, requested):
     kind = probe.types["GetParameters"]
     request = kind.Request()
@@ -476,7 +570,9 @@ def _verify_controller_once(probe, requested):
                      "obstacle_factor", "path_planner.obstacle_factor",
                      "navigation.state_timeout", "navigation.trajectory_timeout", "dynamics.mass", "dynamics.max_force", "dynamics.D", "dynamics.cruising_speed"]
     list_kind = probe.types["ListParameters"]
-    listed = call_service(probe, list_kind, [probe.namespace + "/usv_simulation/list_parameters"], list_kind.Request())
+    controller_node = getattr(probe, "controller_node", "usv_simulation")
+    service_prefix = probe.namespace + "/" + controller_node
+    listed = call_service(probe, list_kind, [service_prefix + "/list_parameters"], list_kind.Request())
     available = set(listed.result.names)
     request.names = [name for name in request.names if name in available]
     # Capture newly declared numerical settings (for example LOS slowdown)
@@ -487,14 +583,15 @@ def _verify_controller_once(probe, requested):
                             if name.startswith(algorithm_prefixes))
     if prefix + "controller_name" not in request.names:
         raise EmptyParameterResponse("parameter service reply omitted controller_name")
-    response = call_service(probe, kind, [probe.namespace + "/usv_simulation/get_parameters"], request)
+    response = call_service(probe, kind, [service_prefix + "/get_parameters"], request)
     actual = response.values[0].string_value if response.values else ""
     if not actual:
         raise EmptyParameterResponse("parameter service returned an empty controller_name")
     parameters = {name: parameter_value(value) for name, value in zip(request.names, response.values)}
-    for controller in ("pid", "lqr"):
+    for controller in ("pid", "lqr", "adrc"):
         parameters.setdefault(prefix + controller + "_controller.goal_speed_tolerance", None)
-    probe.log.write("controller_verified", requested=requested, actual=actual, parameters=parameters)
+    probe.log.write("controller_verified", requested=requested, actual=actual, parameters=parameters,
+                    source_node=service_prefix)
     if actual != requested:
         raise TrialBlocked(f"requested controller {requested!r} but running node reports {actual!r}; the launch selector is not effective")
     tolerance = parameters.get(prefix + requested + "_controller.goal_distance_tolerance")
@@ -505,6 +602,7 @@ def _verify_controller_once(probe, requested):
                     source="running controller goal_distance_tolerance")
 
 
+# 生成受控障碍前先检查走廊地图，避免把原场景障碍造成的干扰算成待测障碍效果。
 def preflight_corridor(probe, start, goal, half_width):
     width, height, resolution, origin_x, origin_y, data, kind = probe.costmap
     if resolution <= 0 or len(data) != width * height:
@@ -533,6 +631,7 @@ def preflight_corridor(probe, start, goal, half_width):
                     costmap_topic=probe.costmap_topic)
 
 
+# 复位本次仿真的船舶状态并生成场景指定障碍，然后确认障碍已进入代价地图。
 def setup_world(probe, config, scenario, trial_id, process):
     empty = probe.types["Empty"]
     call_service(probe, empty, ["/reset_world", "/gazebo/reset_world"], empty.Request(), optional=True)
@@ -587,6 +686,7 @@ def setup_world(probe, config, scenario, trial_id, process):
                 raise TrialBlocked("spawned cylinder was not observed as occupied in costmap")
 
 
+# 完成一次普通导航或目标/取消故障试验，分别记录观测结束和后处理结束。
 def navigation_trial(args, config, workspace, mode, controller, scenario, repeat, fault=None):
     trial_id = f"{mode}_{controller}_{fault or scenario['name']}_{repeat:02d}"
     directory = args.output / trial_id
@@ -610,6 +710,7 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
             command.append("controller_config:=" + str(args.controller_config))
             log.write("controller_config_input", path=str(args.controller_config), sha256=digest)
         probe = make_probe("otter", log)
+        probe.controller_node = "usv_control" if args.distributed and mode == "python" else "usv_simulation"
         wait_until(probe, lambda: False, 1.0)
         if probe.count_publishers("/otter/odom") > 0:
             raise TrialBlocked("pre-existing /otter/odom found in this ROS domain; refusing to mutate another simulation")
@@ -618,8 +719,15 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
                           and probe.goal_pub.get_subscription_count() >= 2, args.startup_timeout, process,
                           lambda: probe.discover_costmap(args.costmap_topic)):
             raise TrialBlocked("odom, scan, discovered costmap, or navigation goal subscriber did not become ready")
+        # 先设置并读回参数，再发布目标，保证整次试验使用可追溯的固定起始配置。
         apply_start_parameters(probe, args.parameter_overrides)
         verify_controller(probe, controller)
+        if args.distributed and mode == "python":
+            publishers = {axis: probe.count_publishers(probe.namespace + f"/thrusters/{axis}_thrust_cmd")
+                          for axis in ("left", "right", "lateral")}
+            log.write("distributed_command_ownership", publishers=publishers)
+            if any(count != 1 for count in publishers.values()):
+                raise TrialBlocked(f"distributed control must be the sole command publisher: {publishers}")
         setup_world(probe, config, scenario, trial_id, process)
         probe.odom_history.clear()
         probe.commands.clear()
@@ -629,6 +737,7 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
         probe.publish_goal(scenario["goal"])
         goal = scenario["goal"]
         started, sim_started = time.monotonic(), probe.sim_time()
+        # 以运行中控制器的真实到点容差替代配置中的预备阈值。
         threshold = {**config["thresholds"], "arrival_distance_m": probe.actual_goal_tolerance}
         cross_track, live_cross_track = [], []
         min_clearance = None
@@ -671,6 +780,7 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
                     raise TrialBlocked("cancel request rejected: " + response.message)
                 cancelled, fault_action_wall = True, now
                 log.write("fault_cancel_accepted", response=response.message)
+            # 取消完成需观测各路及时归零且持续为零；服务成功不能代替后续命令观测。
             if cancelled:
                 if probe.zero_received_since(fault_action_wall, threshold["zero_command_epsilon"]) and fault_zero_latency is None:
                     fault_zero_latency = max(probe.command_wall.values()) - fault_action_wall
@@ -678,10 +788,16 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
                         abs(value) > threshold["zero_command_epsilon"] for value in probe.commands.values()):
                     nonzero_after_cancel_deadline = True
                 if now - fault_action_wall >= threshold["cancel_zero_deadline_wall_s"] + 1.0:
-                    passed = fault_zero_latency is not None and fault_zero_latency <= threshold["cancel_zero_deadline_wall_s"] and not nonzero_after_cancel_deadline and probe.zero_received_since(fault_action_wall, threshold["zero_command_epsilon"])
+                    process.check()
+                    window = zero_output_window(probe.command_samples,
+                        fault_action_wall + threshold["cancel_zero_deadline_wall_s"], now,
+                        threshold["zero_command_epsilon"])
+                    passed = fault_zero_latency is not None and fault_zero_latency <= threshold["cancel_zero_deadline_wall_s"] and not nonzero_after_cancel_deadline and window["passed"]
                     outcome.update(result="completed", passed=passed, zero_command_latency_wall_s=fault_zero_latency,
-                                   nonzero_after_deadline=nonzero_after_cancel_deadline)
+                                   nonzero_after_deadline=nonzero_after_cancel_deadline,
+                                   sustained_zero_output=window)
                     break
+            # 逐条处理新到的 odom，检查相邻观测之间的船体扫掠间隙。
             while history_index < len(probe.odom_history):
                 _, pose = probe.odom_history[history_index]
                 history_index += 1
@@ -772,24 +888,81 @@ def navigation_trial(args, config, workspace, mode, controller, scenario, repeat
     return outcome
 
 
-def odom_dropout_trial(args, config):
+# 持续发送空地图，只停止 odom 输入，检验状态过期后是否及时且持续停推。
+def fault_matrix(modes, controllers):
+    """Return the exact fault trials requested by the selected algorithms."""
+    return [
+        {"mode": mode, "controller": controller, "fault": fault, "repeat": 1}
+        for mode in modes for controller in controllers
+        for fault in (("goal_change", "cancel", "odom_dropout") if mode == "python"
+                      else ("goal_change", "cancel"))
+    ]
+
+
+def direct_navigation_commands(namespace, parameters):
+    """Build identical full-parameter ros2-run commands for decision and control."""
+    ros_arguments = ["--ros-args", "-r", f"__ns:=/{namespace}"]
+    for name in sorted(parameters):
+        ros_arguments.extend(("-p", f"{name}:={json.dumps(parameters[name], separators=(',', ':'))}"))
+    return [
+        ["ros2", "run", package, executable, *ros_arguments]
+        for package, executable in (("usv_decision", "decision_node"), ("usv_control", "control_node"))
+    ]
+
+
+def dropout_parameters(args, namespace, controller, threshold):
+    """Resolve the same four project YAMLs used by launch into one node snapshot."""
+    from ament_index_python.packages import get_package_share_directory
+    from usv_navigation.configuration import load_project_parameters, resolve_parameters
+    share = Path(get_package_share_directory("usv_navigation")) / "config"
+    paths = [share / "robots/otter/dynamics_otter.yaml",
+             args.controller_config or share / "robots/otter/controller_params_otter.yaml",
+             share / "trajectory_planner/trajectory_planner_params.yaml",
+             share / "path_planner/common_planner_params.yaml"]
+    if args.controller_config is not None:
+        digest = hashlib.sha256(args.controller_config.read_bytes()).hexdigest()
+        if digest != args.controller_config_sha256:
+            raise TrialBlocked("controller configuration changed after the manifest was created")
+    values = load_project_parameters(*paths)
+    values.update({"dynamics.ns": namespace,
+                   "navigation.state_timeout": threshold["odom_timeout_s"],
+                   "navigation.map_timeout": 2.0,
+                   "navigation.trajectory_timeout": 1.0,
+                   "usv_simulation.controller.controller_name": controller})
+    values = resolve_parameters(values)
+    values["use_sim_time"] = False
+    return values, paths
+
+
+def odom_dropout_trial(args, config, controller):
     """Controlled sensor publishers exercise stale-odom stopping without Gazebo."""
-    trial_id = "python_pid_odom_dropout"
+    trial_id = f"python_{controller}_odom_dropout"
     directory = args.output / trial_id
     directory.mkdir(parents=True, exist_ok=False)
     log = Jsonl(directory / "events.jsonl")
     probe, process = None, None
-    outcome = {"trial": trial_id, "mode": "python", "fault": "odom_dropout", "passed": False, "result": "not_run"}
+    outcome = {"trial": trial_id, "mode": "python", "controller": controller,
+               "fault": "odom_dropout", "passed": False, "result": "not_run"}
     try:
         namespace = "acceptance_smoke_" + uuid.uuid4().hex[:8]
         threshold = config["thresholds"]
-        command = ["ros2", "run", "sim_env", "sim_env_node", "--ros-args", "-r", f"__ns:=/{namespace}",
-                   "-p", "use_sim_time:=false", "-p", f"dynamics.ns:={namespace}",
-                   "-p", f"navigation.state_timeout:={threshold['odom_timeout_s']}",
-                   "-p", "navigation.map_timeout:=2.0", "-p", "navigation.trajectory_timeout:=1.0",
-                   "-p", "usv_simulation.controller.controller_name:=pid"]
+        parameters, config_paths = dropout_parameters(args, namespace, controller, threshold)
+        log.write("controller_config_input", controller=controller,
+                  paths=[str(path.resolve()) for path in config_paths], parameters=parameters)
         probe = make_probe(namespace, log, use_sim_time=False)
-        process = OwnedProcess(args.workspace, command, directory / "launch.log", dict(os.environ))
+        probe.controller_node = "usv_control" if args.distributed else "usv_simulation"
+        if args.distributed:
+            process = OwnedProcessGroup()
+            for command in direct_navigation_commands(namespace, parameters):
+                process.add(args.workspace, command, directory / (command[3] + ".log"), dict(os.environ))
+            process.add(args.workspace, ["ros2", "run", "usv_perception", "perception_monitor",
+                        "--ros-args", "-r", f"__ns:=/{namespace}", "-p", "use_sim_time:=false",
+                        "-p", "watched_topics:=[odom,costmap_raw]"],
+                        directory / "perception_monitor.log", dict(os.environ))
+        else:
+            ros_arguments = direct_navigation_commands(namespace, parameters)[0][4:]
+            process = OwnedProcess(args.workspace, ["ros2", "run", "sim_env", "sim_env_node", *ros_arguments],
+                                   directory / "launch.log", dict(os.environ))
         odom_pub = probe.create_publisher(probe.types["Odometry"], probe.namespace + "/odom", 10)
         qos = probe.types["QoSProfile"](depth=1, durability=probe.types["DurabilityPolicy"].TRANSIENT_LOCAL,
                                         reliability=probe.types["ReliabilityPolicy"].RELIABLE)
@@ -827,6 +1000,7 @@ def odom_dropout_trial(args, config):
                           and probe.goal_pub.get_subscription_count() >= 2, 30, process, publish_inputs):
             raise TrialBlocked("controlled smoke node did not subscribe to inputs")
         wait_until(probe, lambda: False, 1.0, process, publish_inputs)
+        verify_controller(probe, controller)
         probe.publish_goal([20.0, 10.0, 0.0])
         if not wait_until(probe, lambda: probe.first_command_latency is not None, 20, process, publish_inputs):
             raise TrialBlocked("smoke node never produced a nonzero command before odom dropout")
@@ -846,9 +1020,27 @@ def odom_dropout_trial(args, config):
             if now - dropped_at >= deadline and any(abs(v) > threshold["zero_command_epsilon"] for v in probe.commands.values()):
                 nonzero_after_deadline = True
         latency = None if zero_at is None else zero_at - dropped_at
-        outcome.update(result="completed", passed=latency is not None and latency <= deadline and not nonzero_after_deadline,
+        process.check()
+        window = zero_output_window(probe.command_samples, dropped_at + deadline, time.monotonic(),
+                                    threshold["zero_command_epsilon"])
+        # 保留断流停推证据后恢复输入，要求新的命令到达，不能用停顿前缓存。
+        publish_odom = True
+        resumed_at = time.monotonic()
+        log.write("fault_odom_publisher_resumed")
+        def resumed_command():
+            return bool(probe.status and probe.status.get("state") == "NAVIGATING") and any(stamp >= resumed_at and math.isfinite(value)
+                       and abs(value) > threshold["zero_command_epsilon"]
+                       for axis in ("left", "right")
+                       for stamp, value in probe.command_samples[axis][-10:])
+        recovered = wait_until(probe, resumed_command, 5.0, process, publish_inputs)
+        recovery_latency = time.monotonic() - resumed_at if recovered else None
+        log.write("fault_odom_recovery_observed", recovered=recovered, recovery_latency_wall_s=recovery_latency)
+        outcome.update(result="completed", passed=latency is not None and latency <= deadline and not nonzero_after_deadline and window["passed"] and recovered,
                        zero_command_latency_wall_s=latency, nonzero_after_deadline=nonzero_after_deadline,
-                       tested_state_timeout_s=threshold["odom_timeout_s"], deadline_wall_s=deadline, status=probe.status)
+                       tested_state_timeout_s=threshold["odom_timeout_s"], deadline_wall_s=deadline,
+                       recovered_after_odom_resumed=recovered, recovery_latency_wall_s=recovery_latency,
+                       recovery_observation_timeout_wall_s=5.0,
+                       sustained_zero_output=window, status=probe.status)
     except KeyboardInterrupt:
         outcome.update(result="interrupted", reason="user interrupted this smoke trial")
         raise
@@ -865,12 +1057,15 @@ def odom_dropout_trial(args, config):
     return outcome
 
 
+# 解析运行模式、场景、隔离域和输出选项，在启动进程前检查参数合法性。
 def arguments(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--workspace", type=Path, required=True, help="built Python ROS workspace")
+    parser.add_argument("--distributed", action="store_true",
+                        help="verify actual usv_control parameters and run dropout with three separate module processes")
     parser.add_argument("--baseline-workspace", type=Path)
     parser.add_argument("--mode", choices=["python", "cpp", "both"], default="python")
-    parser.add_argument("--controllers", nargs="+", choices=["pid", "lqr"], default=["pid", "lqr"])
+    parser.add_argument("--controllers", nargs="+", choices=["pid", "lqr", "adrc"], default=["pid", "lqr"])
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--scenario", nargs="+", choices=["straight", "turn", "single_obstacle"])
     parser.add_argument("--scenarios-file", type=Path, default=Path(__file__).with_name("scenarios.json"))
@@ -908,6 +1103,7 @@ def arguments(argv=None):
     return args
 
 
+# 命令行入口：解析本脚本选项并执行上述流程，运行结果由退出码及输出记录共同说明。
 def main(argv=None):
     args = arguments(argv)
     args.workspace = args.workspace.resolve()
@@ -926,11 +1122,16 @@ def main(argv=None):
     scenarios = [s for s in config["scenarios"] if not args.scenario or s["name"] in args.scenario]
     matrix = [] if args.only_faults else [{"mode": mode, "controller": controller, "scenario": scene["name"], "repeat": repeat}
              for mode in modes for controller in args.controllers for scene in scenarios for repeat in range(1, args.repeats + 1)]
+    faults = fault_matrix(modes, args.controllers) if args.faults or args.only_faults else []
     manifest = {"schema_version": 1, "config": config, "matrix": matrix,
+                "fault_matrix": faults,
                 "workspace": str(args.workspace), "baseline_workspace": str(args.baseline_workspace) if args.baseline_workspace else None,
                 "faults_requested": args.faults or args.only_faults, "mode": "dry_run" if args.dry_run else "live",
                 "created_unix_s": time.time(), "domain_id": args.domain_id,
                 "pre_goal_parameter_overrides": args.parameter_overrides,
+                "python_navigation_layout": "distributed" if args.distributed else "monolithic",
+                "zero_output_observation": {"maximum_receipt_gap_wall_s": .35, "minimum_samples_per_axis": 3,
+                                            "finite_values_required": True},
                 "diagnostic_stop_on_reference_failure": args.stop_on_reference_failure,
                 "controller_config": str(args.controller_config) if args.controller_config is not None else None,
                 "controller_config_sha256": args.controller_config_sha256,
@@ -971,12 +1172,13 @@ def main(argv=None):
                 break
         if (args.faults or args.only_faults) and not safety_stopped:
             scene = next(s for s in config["scenarios"] if s["name"] == "straight")
-            for mode in modes:
-                workspace = args.workspace if mode == "python" else args.baseline_workspace
-                for fault in ("goal_change", "cancel"):
-                    results.append(navigation_trial(args, config, workspace, mode, "pid", scene, 1, fault=fault))
-            if "python" in modes:
-                results.append(odom_dropout_trial(args, config))
+            for item in faults:
+                if item["fault"] == "odom_dropout":
+                    results.append(odom_dropout_trial(args, config, item["controller"]))
+                else:
+                    workspace = args.workspace if item["mode"] == "python" else args.baseline_workspace
+                    results.append(navigation_trial(args, config, workspace, item["mode"],
+                                                    item["controller"], scene, 1, fault=item["fault"]))
         run_finished = not safety_stopped
     except KeyboardInterrupt:
         interrupted = True

@@ -41,12 +41,15 @@
   reflectOpacity = 0.2
 %>
 
+<!-- ERB 先把上方 Ruby 常量展开为 xacro 文件，运行时 xacro 再解析宏参数；这是两阶段模板。 -->
 <world xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:macro name="ocean_waves" params="gain:=0.1 period:=5
                      direction_x:=1.0 direction_y:=0.0
                      angle:=0.4 scale:=1.5">
+  <!-- 模型本体保持静态，物理波高由波场插件按时间计算，视觉波动由着色器表现。 -->
   <model name='ocean_waves'>
     <static>true</static>
+    <!-- 将同一组 Ruby 波谱常量写入物理端；period/gain/方向/尺度等宏参数留待 xacro 展开。 -->
     <plugin name="wavefield_plugin" filename="libWavefieldModelPlugin.so">
       <static>false</static>
       <update_rate>30</update_rate>
@@ -68,6 +71,7 @@
 
     <link name="ocean_waves_link">
       <visual name="ocean_waves_visual">
+        <!-- 视觉端复用同一套波谱值，并加入反射、折射和纹理噪声配置，保证与物理端参数来源一致。 -->
         <plugin name="ocean_waves_visual_plugin" filename="libWavefieldVisualPlugin.so">
           <enableRtt><%= enableRtt %></enableRtt>
           <rttNoise><%= rttNoise %></rttNoise>
@@ -100,6 +104,7 @@
         </material>
         <laser_retro>-1</laser_retro>
       </visual>
+      <!-- 下表面向下偏移 0.05 m，避免上下两层海面重合导致渲染冲突。 -->
       <visual name="ocean_waves_below_visual">
         <pose>0 0 -0.05 0 0 0</pose>  <!-- Offset to prevent rendering conflict -->
         <geometry>

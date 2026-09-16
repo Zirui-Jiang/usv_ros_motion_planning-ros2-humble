@@ -1,0 +1,103 @@
+{
+  "passed": true,
+  "result": "completed",
+  "checks": [
+    {
+      "name": "three_processes_and_unique_output",
+      "passed": true,
+      "pids": {
+        "perception": 217475,
+        "control": 217478,
+        "decision": 217482
+      },
+      "publishers": {
+        "left": 1,
+        "right": 1,
+        "lateral": 1
+      }
+    },
+    {
+      "name": "installed_end_to_end_reference",
+      "passed": true,
+      "points": 41,
+      "trajectory_stamp": 1789314923.8838508,
+      "task_id": 1
+    },
+    {
+      "name": "cancel_ack_and_late_reference_do_not_revive",
+      "passed": true,
+      "observed_zero_samples": {
+        "left": 4,
+        "right": 4,
+        "lateral": 4
+      },
+      "cancelled_task_id": 2,
+      "reference_sequence": 5,
+      "stale_reference_counter_before": 4,
+      "stale_reference_counter_after": 5,
+      "paused_decision_s": 0.6653676779824309
+    },
+    {
+      "name": "odom_dropout_stops_control",
+      "passed": true,
+      "zero_latency_s": 0.434785281016957,
+      "deadline_s": 0.7
+    },
+    {
+      "name": "map_dropout_stops_control",
+      "passed": true,
+      "zero_latency_s": 1.516447664995212,
+      "deadline_s": 1.9
+    },
+    {
+      "name": "decision_restart_requires_new_goal",
+      "passed": true,
+      "old_session": "c2f751fd62f74b58abb587bf71401a25",
+      "new_session": "623378b377ca4e0c99fa004a0a6a19e5",
+      "observed_zero_samples": {
+        "left": 12,
+        "right": 12,
+        "lateral": 12
+      }
+    },
+    {
+      "name": "decision_restart_recovers_on_new_goal",
+      "passed": true
+    },
+    {
+      "name": "control_restart_requires_new_goal",
+      "passed": true,
+      "old_session": "c4469205f65a477a81066a93750df52b",
+      "new_session": "279c10c706e24f3385c6d039eb2ed53a",
+      "observed_zero_samples": {
+        "left": 6,
+        "right": 6,
+        "lateral": 6
+      }
+    },
+    {
+      "name": "control_restart_recovers_on_new_goal",
+      "passed": true
+    },
+    {
+      "name": "perception_restart_requires_new_goal",
+      "passed": true,
+      "old_session": "472aa3703a9a4c359243fcd46da9969d",
+      "new_session": "20884f50a07142ca822827c178b465db",
+      "observed_zero_samples": {
+        "left": 6,
+        "right": 6,
+        "lateral": 6
+      }
+    },
+    {
+      "name": "perception_restart_recovers_on_new_goal",
+      "passed": true
+    },
+    {
+      "name": "perception_output_publisher_restart_invalidates_task",
+      "passed": true
+    }
+  ],
+  "scope": "independent local ROS processes with synthetic sensors; no Gazebo/multi-host claim"
+}

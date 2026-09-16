@@ -1,0 +1,36 @@
+# 共享全局规划配置：选择全局算法、设置规划预算/输入超时，并配置膨胀阈值及重采样。
+# 通过 planner_name:=hybrid_astar 切换；默认仍为原 A*。
+planner_name: hybrid_astar
+navigation:
+  # 规划投递频率为 Hz；其后的 state/map/trajectory/planning_timeout 单位均为秒。
+  planning_frequency: 5.0
+  state_timeout: 0.5
+  map_timeout: 1.5
+  trajectory_timeout: 1.0
+  planning_timeout: 1.0
+  # 搜索扩展单元数硬上限，和耗时预算共同限制一次搜索。
+  max_expansions: 200000
+  costmap_topic: costmap_raw
+
+path_planner:
+  # offset of transform from world(x,y) to grid map(x,y)
+  # 保留历史兼容参数；当前坐标转换使用 GridSnapshot 的原点与分辨率。
+  convert_offset: 0.0
+  # error tolerance
+  default_tolerance: 0.0
+  # whether outline the map or not
+  outline_map: true
+  # Reject raw costs >= 254 * factor. A smaller factor leaves more room
+  # for the finite hull and PID yaw/velocity lag; search costs are unchanged.
+  # 高代价阻塞阈值为 254×factor；起点软膨胀区仍可按实现中的严格下降规则退出。
+  obstacle_factor: 0.05
+  # whether publish expand zone or not
+  expand_zone: true
+  # safety corridor
+  show_safety_corridor: false
+  # resample path [m]
+  enable_resample: true
+  # 历史键名 ratio 在当前实现中表示弧长采样间距，单位米。
+  resample_ratio: 0.5
+  # Hybrid A* 参数示例在同目录 hybrid_astar_planner_params.yaml。
+  # 仅用 planner_name:=hybrid_astar 覆盖时采用共享默认值；保持本文件兼容旧任务应用。

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 短时启动图形界面并保存候选证据；不下发目标，截图是否显示正确仍需人工检查。
 """Short, goal-free GUI smoke run, including an interactive (Conda) shell.
 
 Source ROS and the target install before running with the system Python.
@@ -22,6 +23,7 @@ from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
 
 
+# 命令行入口：解析本脚本选项并执行上述流程，运行结果由退出码及输出记录共同说明。
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('workspace', type=Path)

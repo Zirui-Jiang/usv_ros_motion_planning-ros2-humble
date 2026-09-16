@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="2" time="0.689" timestamp="2026-09-14T01:50:24.400517" hostname="DESKTOP-SFCU4PM"><testcase classname="src.core.perception_module.usv_perception.test.test_launch" name="test_python_nodes_start_with_incompatible_python_on_path[perception_mapping_node]" time="0.152"><failure message="AssertionError: incompatible-python&#10;  &#10;assert 86 == 0&#10; +  where 86 = CompletedProcess(args=['/tmp/pytest-of-usv/pytest-153/test_python_nodes_start_with_i0/node_entry'], returncode=86, stdout='', stderr='incompatible-python\n').returncode">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x700b66e16740&gt;
+tmp_path = PosixPath('/tmp/pytest-of-usv/pytest-153/test_python_nodes_start_with_i0')
+executable = 'perception_mapping_node'
+
+    @pytest.mark.parametrize("executable", ["perception_mapping_node", "perception_monitor"])
+    def test_python_nodes_start_with_incompatible_python_on_path(monkeypatch, tmp_path, executable):
+        """A Conda-first PATH must not select a different Python for ROS wrappers."""
+        import os
+        import subprocess
+        import sys
+        from launch.actions import ExecuteProcess
+    
+        context, actions = _launch_graph(monkeypatch)
+        node = _nodes(context, actions)[("usv_perception", executable)]
+        other_python = tmp_path / "python3"
+        other_python.write_text("#!/bin/sh\necho incompatible-python &gt;&amp;2\nexit 86\n")
+        other_python.chmod(0o755)
+        wrapper = tmp_path / "node_entry"
+        wrapper.write_text("#!/usr/bin/env python3\nimport sys\nprint(sys.executable)\n")
+        wrapper.chmod(0o755)
+        context.environment["PATH"] = str(tmp_path) + os.pathsep + context.environment["PATH"]
+        # Resolve the real node's launch prefix and execute a lightweight wrapper
+        # with the same shebang as the installed node, without starting ROS.
+        probe = ExecuteProcess(cmd=[str(wrapper)], prefix=node.process_description.prefix)
+        probe.process_description.prepare(context, probe)
+        result = subprocess.run(probe.process_description.final_cmd,
+                                env=probe.process_description.final_env,
+                                capture_output=True, text=True, timeout=5)
+&gt;       assert result.returncode == 0, result.stderr
+E       AssertionError: incompatible-python
+E         
+E       assert 86 == 0
+E        +  where 86 = CompletedProcess(args=['/tmp/pytest-of-usv/pytest-153/test_python_nodes_start_with_i0/node_entry'], returncode=86, stdout='', stderr='incompatible-python\n').returncode
+
+src/core/perception_module/usv_perception/test/test_launch.py:110: AssertionError</failure></testcase><testcase classname="src.core.perception_module.usv_perception.test.test_launch" name="test_python_nodes_start_with_incompatible_python_on_path[perception_monitor]" time="0.036" /></testsuite></testsuites>

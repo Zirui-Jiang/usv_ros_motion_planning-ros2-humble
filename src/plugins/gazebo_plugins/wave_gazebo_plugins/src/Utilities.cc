@@ -15,6 +15,7 @@
  *
 */
 
+// 统一读取波场 SDF 参数，提供布尔、数值、字符串和向量的具名包装接口。
 #include <algorithm>
 #include <iostream>
 #include <string>
@@ -35,6 +36,7 @@ namespace asv
   // Templates
 
   // This code adapted vmrc/usv_gazebo_plugins/usv_gazebo_dynamics_plugin.cc
+  // 模板复用“缺项取默认值、有项按类型读取”的逻辑；类型错误由 SDF 读取过程处理。
   template <typename T>T
     SdfParam(sdf::Element& _sdf, const std::string &_paramName, \
              const T &_defaultVal)
@@ -60,6 +62,7 @@ namespace asv
     return SdfParam<bool>(_sdf, _paramName, _defaultVal);
   }
 
+  // 现有实现先按 double 读取，再转换为 size_t；调用方应提供有效非负计数。
   size_t Utilities::SdfParamSizeT(sdf::Element& _sdf,
     const std::string& _paramName, const size_t _defaultVal)
   {

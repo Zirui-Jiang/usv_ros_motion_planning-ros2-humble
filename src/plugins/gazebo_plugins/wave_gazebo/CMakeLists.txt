@@ -1,3 +1,4 @@
+# 处理 ERB/xacro 海面资源并安装示例世界，构建时需要 ruby 的 erb 程序。
 cmake_minimum_required(VERSION 3.8)
 project(wave_gazebo)
 
@@ -17,6 +18,7 @@ set (xacro_erb_files
   world_models/ocean_waves/model.xacro.erb
 )
 # Process the xacro erb files
+# 将 ERB 模板展开成源码目录下的 model.xacro，输出位置由原有构建规则指定。
 foreach(_erb ${xacro_erb_files})
   string(REGEX REPLACE ".xacro.erb" ".xacro" _model ${_erb})
   set(_model ${CMAKE_CURRENT_SOURCE_DIR}/${_model})
@@ -38,6 +40,7 @@ add_custom_target(model_erb_generation ALL
 )
 
 # Generate world files from xacro and install
+# 把示例 xacro 世界展开为 Gazebo 可加载的世界文件并安排安装。
 xacro_add_files(
   worlds/ocean.world.xacro
   worlds/ocean_buoys.world.xacro
@@ -53,4 +56,5 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+# 生成 ament 包索引和配置导出，使安装后的包可被 ROS 2 构建与运行工具找到。
 ament_package()

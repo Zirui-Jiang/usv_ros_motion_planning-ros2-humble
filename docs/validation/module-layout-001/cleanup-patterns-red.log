@@ -1,0 +1,148 @@
+FFFFF..F....                                                             [100%]
+=================================== FAILURES ===================================
+_ test_cleanup_matches_new_business_and_legacy_installed_entrypoints[/ws/install/usv_perception/lib/usv_perception/costmap_support_node --ros-args] _
+
+command = '/ws/install/usv_perception/lib/usv_perception/costmap_support_node --ros-args'
+
+    @pytest.mark.parametrize('command', [
+        '/ws/install/usv_perception/lib/usv_perception/costmap_support_node --ros-args',
+        '/usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_mapping_node',
+        '/usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_monitor',
+        '/usr/bin/python3 /ws/install/usv_decision/lib/usv_decision/decision_node',
+        '/usr/bin/python3 /ws/install/usv_control/lib/usv_control/control_node',
+        '/ws/install/sim_env/lib/sim_env/fake_localization_node',
+        '/ws/install/perception/lib/perception/perception_mapping_node',
+        '/usr/bin/python3 /ws/install/usv_navigation/lib/usv_navigation/control_node',
+    ])
+    def test_cleanup_matches_new_business_and_legacy_installed_entrypoints(command):
+        # killpro uses grep -F: the production predicate is literal containment,
+        # not an executable basename or a regular expression.
+>       assert any(pattern in command for pattern in cleanup_patterns()), command
+E       AssertionError: /ws/install/usv_perception/lib/usv_perception/costmap_support_node --ros-args
+E       assert False
+E        +  where False = any(<generator object test_cleanup_matches_new_business_and_legacy_installed_entrypoints.<locals>.<genexpr> at 0x7e33cce37b50>)
+
+scripts/validation/test_killpro_patterns.py:33: AssertionError
+_ test_cleanup_matches_new_business_and_legacy_installed_entrypoints[/usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_mapping_node] _
+
+command = '/usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_mapping_node'
+
+    @pytest.mark.parametrize('command', [
+        '/ws/install/usv_perception/lib/usv_perception/costmap_support_node --ros-args',
+        '/usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_mapping_node',
+        '/usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_monitor',
+        '/usr/bin/python3 /ws/install/usv_decision/lib/usv_decision/decision_node',
+        '/usr/bin/python3 /ws/install/usv_control/lib/usv_control/control_node',
+        '/ws/install/sim_env/lib/sim_env/fake_localization_node',
+        '/ws/install/perception/lib/perception/perception_mapping_node',
+        '/usr/bin/python3 /ws/install/usv_navigation/lib/usv_navigation/control_node',
+    ])
+    def test_cleanup_matches_new_business_and_legacy_installed_entrypoints(command):
+        # killpro uses grep -F: the production predicate is literal containment,
+        # not an executable basename or a regular expression.
+>       assert any(pattern in command for pattern in cleanup_patterns()), command
+E       AssertionError: /usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_mapping_node
+E       assert False
+E        +  where False = any(<generator object test_cleanup_matches_new_business_and_legacy_installed_entrypoints.<locals>.<genexpr> at 0x7e33cc6ab4c0>)
+
+scripts/validation/test_killpro_patterns.py:33: AssertionError
+_ test_cleanup_matches_new_business_and_legacy_installed_entrypoints[/usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_monitor] _
+
+command = '/usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_monitor'
+
+    @pytest.mark.parametrize('command', [
+        '/ws/install/usv_perception/lib/usv_perception/costmap_support_node --ros-args',
+        '/usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_mapping_node',
+        '/usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_monitor',
+        '/usr/bin/python3 /ws/install/usv_decision/lib/usv_decision/decision_node',
+        '/usr/bin/python3 /ws/install/usv_control/lib/usv_control/control_node',
+        '/ws/install/sim_env/lib/sim_env/fake_localization_node',
+        '/ws/install/perception/lib/perception/perception_mapping_node',
+        '/usr/bin/python3 /ws/install/usv_navigation/lib/usv_navigation/control_node',
+    ])
+    def test_cleanup_matches_new_business_and_legacy_installed_entrypoints(command):
+        # killpro uses grep -F: the production predicate is literal containment,
+        # not an executable basename or a regular expression.
+>       assert any(pattern in command for pattern in cleanup_patterns()), command
+E       AssertionError: /usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_monitor
+E       assert False
+E        +  where False = any(<generator object test_cleanup_matches_new_business_and_legacy_installed_entrypoints.<locals>.<genexpr> at 0x7e33cc6ab990>)
+
+scripts/validation/test_killpro_patterns.py:33: AssertionError
+_ test_cleanup_matches_new_business_and_legacy_installed_entrypoints[/usr/bin/python3 /ws/install/usv_decision/lib/usv_decision/decision_node] _
+
+command = '/usr/bin/python3 /ws/install/usv_decision/lib/usv_decision/decision_node'
+
+    @pytest.mark.parametrize('command', [
+        '/ws/install/usv_perception/lib/usv_perception/costmap_support_node --ros-args',
+        '/usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_mapping_node',
+        '/usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_monitor',
+        '/usr/bin/python3 /ws/install/usv_decision/lib/usv_decision/decision_node',
+        '/usr/bin/python3 /ws/install/usv_control/lib/usv_control/control_node',
+        '/ws/install/sim_env/lib/sim_env/fake_localization_node',
+        '/ws/install/perception/lib/perception/perception_mapping_node',
+        '/usr/bin/python3 /ws/install/usv_navigation/lib/usv_navigation/control_node',
+    ])
+    def test_cleanup_matches_new_business_and_legacy_installed_entrypoints(command):
+        # killpro uses grep -F: the production predicate is literal containment,
+        # not an executable basename or a regular expression.
+>       assert any(pattern in command for pattern in cleanup_patterns()), command
+E       AssertionError: /usr/bin/python3 /ws/install/usv_decision/lib/usv_decision/decision_node
+E       assert False
+E        +  where False = any(<generator object test_cleanup_matches_new_business_and_legacy_installed_entrypoints.<locals>.<genexpr> at 0x7e33cc4d4040>)
+
+scripts/validation/test_killpro_patterns.py:33: AssertionError
+_ test_cleanup_matches_new_business_and_legacy_installed_entrypoints[/usr/bin/python3 /ws/install/usv_control/lib/usv_control/control_node] _
+
+command = '/usr/bin/python3 /ws/install/usv_control/lib/usv_control/control_node'
+
+    @pytest.mark.parametrize('command', [
+        '/ws/install/usv_perception/lib/usv_perception/costmap_support_node --ros-args',
+        '/usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_mapping_node',
+        '/usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_monitor',
+        '/usr/bin/python3 /ws/install/usv_decision/lib/usv_decision/decision_node',
+        '/usr/bin/python3 /ws/install/usv_control/lib/usv_control/control_node',
+        '/ws/install/sim_env/lib/sim_env/fake_localization_node',
+        '/ws/install/perception/lib/perception/perception_mapping_node',
+        '/usr/bin/python3 /ws/install/usv_navigation/lib/usv_navigation/control_node',
+    ])
+    def test_cleanup_matches_new_business_and_legacy_installed_entrypoints(command):
+        # killpro uses grep -F: the production predicate is literal containment,
+        # not an executable basename or a regular expression.
+>       assert any(pattern in command for pattern in cleanup_patterns()), command
+E       AssertionError: /usr/bin/python3 /ws/install/usv_control/lib/usv_control/control_node
+E       assert False
+E        +  where False = any(<generator object test_cleanup_matches_new_business_and_legacy_installed_entrypoints.<locals>.<genexpr> at 0x7e33cc4d43c0>)
+
+scripts/validation/test_killpro_patterns.py:33: AssertionError
+_ test_cleanup_matches_new_business_and_legacy_installed_entrypoints[/usr/bin/python3 /ws/install/usv_navigation/lib/usv_navigation/control_node] _
+
+command = '/usr/bin/python3 /ws/install/usv_navigation/lib/usv_navigation/control_node'
+
+    @pytest.mark.parametrize('command', [
+        '/ws/install/usv_perception/lib/usv_perception/costmap_support_node --ros-args',
+        '/usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_mapping_node',
+        '/usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_monitor',
+        '/usr/bin/python3 /ws/install/usv_decision/lib/usv_decision/decision_node',
+        '/usr/bin/python3 /ws/install/usv_control/lib/usv_control/control_node',
+        '/ws/install/sim_env/lib/sim_env/fake_localization_node',
+        '/ws/install/perception/lib/perception/perception_mapping_node',
+        '/usr/bin/python3 /ws/install/usv_navigation/lib/usv_navigation/control_node',
+    ])
+    def test_cleanup_matches_new_business_and_legacy_installed_entrypoints(command):
+        # killpro uses grep -F: the production predicate is literal containment,
+        # not an executable basename or a regular expression.
+>       assert any(pattern in command for pattern in cleanup_patterns()), command
+E       AssertionError: /usr/bin/python3 /ws/install/usv_navigation/lib/usv_navigation/control_node
+E       assert False
+E        +  where False = any(<generator object test_cleanup_matches_new_business_and_legacy_installed_entrypoints.<locals>.<genexpr> at 0x7e33cc6abca0>)
+
+scripts/validation/test_killpro_patterns.py:33: AssertionError
+=========================== short test summary info ============================
+FAILED scripts/validation/test_killpro_patterns.py::test_cleanup_matches_new_business_and_legacy_installed_entrypoints[/ws/install/usv_perception/lib/usv_perception/costmap_support_node --ros-args]
+FAILED scripts/validation/test_killpro_patterns.py::test_cleanup_matches_new_business_and_legacy_installed_entrypoints[/usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_mapping_node]
+FAILED scripts/validation/test_killpro_patterns.py::test_cleanup_matches_new_business_and_legacy_installed_entrypoints[/usr/bin/python3 /ws/install/usv_perception/lib/usv_perception/perception_monitor]
+FAILED scripts/validation/test_killpro_patterns.py::test_cleanup_matches_new_business_and_legacy_installed_entrypoints[/usr/bin/python3 /ws/install/usv_decision/lib/usv_decision/decision_node]
+FAILED scripts/validation/test_killpro_patterns.py::test_cleanup_matches_new_business_and_legacy_installed_entrypoints[/usr/bin/python3 /ws/install/usv_control/lib/usv_control/control_node]
+FAILED scripts/validation/test_killpro_patterns.py::test_cleanup_matches_new_business_and_legacy_installed_entrypoints[/usr/bin/python3 /ws/install/usv_navigation/lib/usv_navigation/control_node]
+6 failed, 6 passed in 0.20s

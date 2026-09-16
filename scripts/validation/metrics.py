@@ -1,12 +1,15 @@
+# 不依赖 ROS 的验收几何计算；长度用米、角度用弧度，并按完整矩形船体评价圆柱间隙。
 """ROS-free acceptance geometry. Distances use metres; angles use radians."""
 
 import math
 
 
+# 将角差约束到 [-π, π)，避免跨越正负 π 时产生接近一整圈的虚假转角。
 def wrap_angle(angle):
     return (angle + math.pi) % (2 * math.pi) - math.pi
 
 
+# 投影到每条有限线段并取最近距离，端点之外不能按无限直线计算。
 def point_to_polyline_distance(point, path):
     if not path:
         return None
@@ -21,6 +24,7 @@ def point_to_polyline_distance(point, path):
     return best
 
 
+# 先把圆心变换到船体系，再求圆与有向矩形的有符号间隙：正为分离、负为重叠。
 def rectangle_circle_clearance(pose, obstacle, length=2.2, width=1.2):
     """Signed distance between an oriented rectangle and a circular cylinder.
 
@@ -29,11 +33,13 @@ def rectangle_circle_clearance(pose, obstacle, length=2.2, width=1.2):
     """
     dx, dy = obstacle["x"] - pose[0], obstacle["y"] - pose[1]
     c, s = math.cos(pose[2]), math.sin(pose[2])
+    # 减去矩形半长和半宽，把四角与边界统一为有符号距离问题。
     qx = abs(c * dx + s * dy) - length / 2
     qy = abs(-s * dx + c * dy) - width / 2
     return math.hypot(max(qx, 0.0), max(qy, 0.0)) + min(max(qx, qy), 0.0) - obstacle["radius"]
 
 
+# 在相邻位姿间插值并扣除未采样区间的运动上界，覆盖船角转动造成的间隙变化。
 def swept_clearance(previous, current, obstacle, length=2.2, width=1.2):
     """Conservative clearance along linear position/shortest-yaw interpolation.
 
@@ -51,9 +57,11 @@ def swept_clearance(previous, current, obstacle, length=2.2, width=1.2):
                 previous[1] + fraction * (current[1] - previous[1]), previous[2] + fraction * angle)
         minimum = min(minimum, rectangle_circle_clearance(pose, obstacle, length, width))
     corner_radius = math.hypot(length / 2, width / 2)
+    # 扣除插值步内平移和船角转动的保守上界，不代表重建了未知真实动力学。
     return minimum - 0.5 * (distance + corner_radius * abs(angle)) / count
 
 
+# 过滤无效观测后计算均值、均方根及分位数；空数据不填零。
 def distribution(values):
     values = sorted(v for v in values if v is not None and math.isfinite(v))
     if not values:
@@ -63,6 +71,7 @@ def distribution(values):
             "p95": values[max(0, math.ceil(0.95 * len(values)) - 1)], "max": values[-1]}
 
 
+# 联合到达、推力合法性、横向误差与船体间隙判断试验，而不是只看是否到点。
 def trial_verdict(arrived, cross_track, clearance, command_valid, thresholds, has_obstacles):
     reasons = []
     if not arrived:
@@ -76,6 +85,7 @@ def trial_verdict(arrived, cross_track, clearance, command_valid, thresholds, ha
     return {"passed": not reasons, "reasons": reasons}
 
 
+# 几何边界触发停止采集；仍为正但小于验收裕量的间隙，会验收失败但不触发此边界。
 def supervision_stop_reason(clearance, cross_track, cross_track_limit):
     """Stop acquisition at a geometric boundary, independent of human polling.
 

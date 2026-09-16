@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 读取真实验收记录并比较 Python/C++ 的导航、性能与故障结果；缺失或不合格证据保持不可比。
 """Summarize observed ROS acceptance data without modifying raw runs.
 
 Typical invocation (one completed run per implementation):
@@ -40,16 +41,19 @@ MAPPING_METRICS = ("processing_ms", "queue_ms", "serialization_and_publish_ms", 
 MAPPING_REPORT_PERIOD_S = 5.0
 
 
+# 将单项结论和说明组成统一结构，保留通过、失败与未知的区别。
 def verdict(status, reason, **evidence):
     return {"status": status, "passed": True if status == "pass" else False if status == "fail" else None,
             "reason": reason, **evidence}
 
 
+# 汇总多个独立证据的状态，不能把未知项简单当作通过。
 def combined_status(items):
     states = [item["status"] for item in items]
     return "fail" if "fail" in states else "pass" if states and all(s == "pass" for s in states) else "unknown"
 
 
+# 核对出队后的有限观测窗口；幸存扫描等待时间小，不等于被丢弃或过期的扫描也正常。
 def post_drain_queue_evidence(records):
     """Validate the new producer contract without treating survivor ages as proof alone.
 
@@ -79,6 +83,7 @@ def post_drain_queue_evidence(records):
         def integer(value):
             return type(value) is int and value >= 0
 
+        # 过滤无效观测后计算均值、均方根及分位数；空数据不填零。
         def distribution(value, count=None):
             if not isinstance(value, dict) or not integer(value.get("count")):
                 return False
@@ -167,6 +172,7 @@ def post_drain_queue_evidence(records):
     return verdict("pass", "dense_post_drain_windows_with_bounded_waiting_and_identity_turnover", **details)
 
 
+# 联合队列长度、计数增量和观测时长判断积压，两个非空队列快照不能证明持续积压。
 def backlog_performance(records, window):
     """Finite observation-window evidence, never infer continuous fullness from two gauges."""
     samples, missing, seen, sample_issues, schemas = [], 0, set(), [], set()
@@ -308,6 +314,7 @@ def backlog_performance(records, window):
     return verdict("pass", "observed_progress_balanced_counters_no_overflow_and_recovery_or_no_net_growth", **evidence)
 
 
+# 分别评价计算时间、吞吐与观测覆盖；导航到达不能替代实时性证据。
 def performance_verdict(observed):
     """Separate real computation percentiles from throughput evidence."""
     evidence = observed["performance_observations"]
@@ -376,10 +383,12 @@ def performance_verdict(observed):
                    window=window, control_timing=control, mapping_timing=mapping, backlog=backlog)
 
 
+# 只接受有限数值，并排除 Python 中作为整数子类的布尔值。
 def number(value):
     return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
 
 
+# 安全读取嵌套结果字段；缺少字段时保留 None，而不补造零值。
 def nested(value, *keys):
     for key in keys:
         if not isinstance(value, dict):
@@ -388,6 +397,7 @@ def nested(value, *keys):
     return value
 
 
+# 读取 JSON 并拒绝非有限数字标记，保持后续统计与序列化的输入契约。
 def read_json(path):
     def nonfinite(token):
         raise ValueError(f"nonfinite JSON value {token} in {path}")
@@ -395,21 +405,25 @@ def read_json(path):
         return json.load(stream, parse_constant=nonfinite)
 
 
+# 仅汇总实际存在的有效数值，无观测时保留空结果。
 def metric_summary(values):
     values = [float(v) for v in values if number(v)]
     return {"count": len(values), "mean": statistics.fmean(values) if values else None,
             "min": min(values) if values else None, "max": max(values) if values else None}
 
 
+# 使用实现、控制器、场景、重复次数与故障类型共同标识试验。
 def trial_key(row):
     """Faults have a separate key and never enter navigation ratio matching."""
     return (row.get("mode"), row.get("controller"), row.get("scenario"), row.get("repeat"), row.get("fault"))
 
 
+# 配对同控制器、同场景、同重复次数的 Python/C++ 普通导航结果。
 def comparison_key(row):
     return (row.get("controller"), row.get("scenario"), row.get("repeat"))
 
 
+# 仅比较双方有效指标；基线为零时使用绝对误差阈值，不能虚构除零比例。
 def ratio_comparison(python_value, baseline_value, limit=1.10, atol=1e-6):
     result = {"python": python_value, "cpp": baseline_value, "ratio": None,
               "limit": limit, "zero_baseline_atol": atol, "comparable": False,
@@ -432,6 +446,7 @@ def ratio_comparison(python_value, baseline_value, limit=1.10, atol=1e-6):
     return result
 
 
+# CPU 增量只能在同一进程、单调时间和未重置的累计计数之间计算。
 def process_metrics(samples):
     """CPU percent uses only same-PID, monotonic, non-reset intervals."""
     groups = defaultdict(list)
@@ -484,6 +499,7 @@ def process_metrics(samples):
             "valid_intervals": sum(p["valid_intervals"] for p in processes)}
 
 
+# 从逐条事件提取命令、状态、进程资源与轨迹观测，同时保留无效样本和证据缺口。
 def event_metrics(path, summary, frame_contract=None, rmse_metric="legacy_wall"):
     commands = {axis: [] for axis in AXES}
     invalid_commands = defaultdict(int)
@@ -578,6 +594,7 @@ def event_metrics(path, summary, frame_contract=None, rmse_metric="legacy_wall")
             "tracking": _tracking.tracking_scores(tracking_events, summary, frame_contract=frame_contract)}
 
 
+# 读取一个试验目录的清单、汇总和原始事件，检查来源及完成状态。
 def load_run(directory, role, order, frame_contract=None, rmse_metric="legacy_wall"):
     directory = Path(directory).resolve()
     if not directory.is_dir():
@@ -652,6 +669,7 @@ def load_run(directory, role, order, frame_contract=None, rmse_metric="legacy_wa
     return selected, planned, metadata
 
 
+# 按明确选择的策略处理重复试验，记录选取依据而不悄悄挑最好结果。
 def select_duplicates(records, policy):
     chosen = []
     decisions = []
@@ -677,11 +695,13 @@ def select_duplicates(records, policy):
     return chosen, decisions
 
 
+# 只有真实完成且通过的试验可进入有效配对，dry-run 计划不计作运行结果。
 def completed_pass(record):
     return (record is not None and record["result"].get("result") == "completed"
             and record["result"].get("passed") is True and record["source"].get("manifest_mode") != "dry_run")
 
 
+# 按报告指定的定义取 RMSE；源时间证据无效时不回退到墙钟指标。
 def selected_rmse(record, metric):
     if metric == "legacy_wall":
         return nested(record["result"], "cross_track_initial_m", "rms")
@@ -689,6 +709,7 @@ def selected_rmse(record, metric):
     return observed.get("rmse_m") if observed.get("status") == "valid" else None
 
 
+# 逐对比较导航指标，并把缺失、失败或不合格来源解释为不可比。
 def compare_pair(key, python_record, cpp_record, limit, atol, rmse_metric="legacy_wall"):
     pair = {"controller": key[0], "scenario": key[1], "repeat": key[2],
             "comparable": False, "passed": None, "reasons": [], "metrics": {},
@@ -722,6 +743,7 @@ def compare_pair(key, python_record, cpp_record, limit, atol, rmse_metric="legac
     return pair
 
 
+# 按实现、控制器和场景分组，结合计划中的重复次数保留缺失试验。
 def group_results(records, planned, rmse_metric="legacy_wall"):
     groups = defaultdict(list)
     expected = defaultdict(set)
@@ -765,6 +787,7 @@ def group_results(records, planned, rmse_metric="legacy_wall"):
     return output
 
 
+# 要求双方固定三次试验均合格后比较算术均值，同时保留逐次值、标准差与最差情况。
 def scenario_mean_acceptance(report):
     """Optional three-repeat mean gate; preserve all original per-repeat verdicts.
 
@@ -857,6 +880,7 @@ def scenario_mean_acceptance(report):
                 "all_groups_comparable": bool(output) and len(eligible) == len(output)}}
 
 
+# 将配对导航、独立性能和故障结果合成报告；各项通过条件分别保留。
 def build_report(sources, duplicate_policy="error", limit=1.10, atol=1e-6, *, rmse_metric="legacy_wall", frame_contract=None,
                  acceptance_aggregation="per_repeat"):
     if duplicate_policy not in ("error", "latest", "provided-list"):
@@ -936,6 +960,7 @@ def build_report(sources, duplicate_policy="error", limit=1.10, atol=1e-6, *, rm
     return report
 
 
+# 把已计算的报告转换为可读表格，不改变数值或验收结论。
 def markdown(report):
     def fmt(value):
         return f"{value:.6g}" if number(value) else "缺失/不可比"
@@ -1040,6 +1065,7 @@ def markdown(report):
     return "\n".join(lines) + "\n"
 
 
+# 命令行入口：解析本脚本选项并执行上述流程，运行结果由退出码及输出记录共同说明。
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--python", type=Path, action="append", default=[], help="Python run directory; may repeat explicitly")

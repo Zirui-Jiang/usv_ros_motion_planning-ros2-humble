@@ -1,3 +1,4 @@
+# 检查 Otter 网格引用的纹理是否可读，避免 RViz 载入船模时找不到材质。
 """Regression checks for the textures used by RViz's Collada mesh loader."""
 
 from pathlib import Path

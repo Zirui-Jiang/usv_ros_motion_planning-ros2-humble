@@ -1,0 +1,100 @@
+[INFO] [launch]: All log files can be found below /home/usv/usv_migration/mmwave-map-view-002/ros_logs/2026-09-12-17-50-28-324333-DESKTOP-SFCU4PM-168512
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [launch.user]: [sim_env] dynamics_config: /home/usv/usv_migration/mmwave-sim-001/install/sim_env/share/sim_env/config/robots/otter/dynamics_otter.yaml
+[INFO] [launch.user]: [sim_env] controller_config: /home/usv/usv_migration/mmwave-sim-001/install/sim_env/share/sim_env/config/robots/otter/controller_params_otter.yaml
+[INFO] [launch.user]: [sim_env] trajectory_config: /home/usv/usv_migration/mmwave-sim-001/install/sim_env/share/sim_env/config/trajectory_planner/trajectory_planner_params.yaml
+[INFO] [launch.user]: [sim_env] planner_config: /home/usv/usv_migration/mmwave-sim-001/install/sim_env/share/sim_env/config/path_planner/common_planner_params.yaml
+[INFO] [launch.user]: [sim_env] mission_config: /home/usv/usv_migration/mmwave-sim-001/install/sim_env/share/sim_env/config/mission/mission_params.yaml
+[INFO] [launch.user]: [sim_env] graph_planner_params.yaml is an inactive template and is not loaded.
+[INFO] [launch.user]: [sim_env] mission geographic reference: /home/usv/usv_migration/mmwave-sim-001/install/sim_env/share/sim_env/worlds/ocean.world
+[INFO] [launch.user]: [sim_env] obstacle sensor: mmwave
+[INFO] [gzserver-1]: process started with pid [168514]
+[INFO] [robot_state_publisher-2]: process started with pid [168516]
+[INFO] [joint_state_publisher-3]: process started with pid [168518]
+[INFO] [python3-4]: process started with pid [168520]
+[INFO] [fake_localization_node-5]: process started with pid [168522]
+[INFO] [mmwave_perception_node-6]: process started with pid [168524]
+[INFO] [costmap_support_node-7]: process started with pid [168526]
+[INFO] [python3-8]: process started with pid [168528]
+[INFO] [rviz2-9]: process started with pid [168530]
+[fake_localization_node-5] [INFO] [1789206628.646194191] [otter.fake_localization]: [fake_localization] model='otter' frames: otter/map -> otter/odom -> otter/base_link
+[costmap_support_node-7] [INFO] [1789206628.649624261] [otter.costmap]: 
+[costmap_support_node-7] 	costmap lifecycle node launched. 
+[costmap_support_node-7] 	Waiting on external lifecycle transitions to activate
+[costmap_support_node-7] 	See https://design.ros2.org/articles/node_lifecycle.html for more information.
+[costmap_support_node-7] [INFO] [1789206628.650302028] [otter.costmap]: Creating Costmap
+[costmap_support_node-7] [INFO] [1789206628.650766468] [otter.costmap]: Configuring
+[costmap_support_node-7] [INFO] [1789206628.655280867] [otter.costmap]: Using plugin "radar_layer"
+[costmap_support_node-7] [INFO] [1789206628.657953645] [otter.costmap]: RadarLayer radar_layer: topic=/otter/sensors/mmwave/front/points, retention=2.00s, source/receipt timeout=0.50s
+[costmap_support_node-7] [INFO] [1789206628.657993729] [otter.costmap]: Initialized plugin "radar_layer"
+[costmap_support_node-7] [INFO] [1789206628.657999010] [otter.costmap]: Using plugin "inflation_layer"
+[costmap_support_node-7] [INFO] [1789206628.660466851] [otter.costmap]: Initialized plugin "inflation_layer"
+[costmap_support_node-7] [INFO] [1789206628.668735927] [otter.costmap]: Activating
+[costmap_support_node-7] [INFO] [1789206628.668792479] [otter.costmap]: Checking transform
+[costmap_support_node-7] [INFO] [1789206628.668811015] [otter.costmap]: Timed out waiting for transform from otter/base_link to otter/map to become available, tf error: Invalid frame ID "otter/map" passed to canTransform argument target_frame - frame does not exist
+[robot_state_publisher-2] [WARN] [1789206628.669378401] [kdl_parser]: The root link base_link has an inertia specified in the URDF, but KDL does not support a root link with an inertia.  As a workaround, you can add an extra dummy link to your URDF.
+[robot_state_publisher-2] [INFO] [1789206628.669712494] [robot_state_publisher]: got segment base_footprint
+[robot_state_publisher-2] [INFO] [1789206628.669775756] [robot_state_publisher]: got segment base_link
+[robot_state_publisher-2] [INFO] [1789206628.669780530] [robot_state_publisher]: got segment left_propeller_link
+[robot_state_publisher-2] [INFO] [1789206628.669783973] [robot_state_publisher]: got segment mmwave_link
+[robot_state_publisher-2] [INFO] [1789206628.669786921] [robot_state_publisher]: got segment right_propeller_link
+[joint_state_publisher-3] [INFO] [1789206628.959794947] [joint_state_publisher]: Waiting for robot_description to be published on the robot_description topic...
+[python3-4] [INFO] [1789206628.984835193] [spawn_entity]: Spawn Entity started
+[python3-4] [INFO] [1789206628.985517096] [spawn_entity]: Loading entity published on topic robot_description
+[python3-4] [INFO] [1789206628.991276095] [spawn_entity]: Waiting for entity xml on robot_description
+[python3-4] [INFO] [1789206629.004376700] [spawn_entity]: Waiting for service /spawn_entity, timeout = 120
+[python3-4] [INFO] [1789206629.005574092] [spawn_entity]: Waiting for service /spawn_entity
+[mmwave_perception_node-6] [INFO] [1789206629.025759568] [otter.mmwave_perception]: Planar geometric radar ready: raw_scan -> detections/points; radial velocity and RCS are unavailable in this backend.
+[python3-8] [INFO] [1789206629.093432185] [otter.usv_simulation]: Effective navigation parameters: {"dynamics.D": 0.395, "dynamics.L": 1.35, "dynamics.W": 1.0, "dynamics.acceleration_max": 1.0, "dynamics.acceleration_min": -1.0, "dynamics.cruising_speed": 1.0, "dynamics.i_z": 10.03, "dynamics.jerk_max": 2.0, "dynamics.jerk_min": -2.0, "dynamics.mass": 29.84, "dynamics.max_force": 50.0, "dynamics.n_dot_r": 1.0, "dynamics.n_dot_u": 0.0, "dynamics.n_dot_v": 0.0, "dynamics.n_r": -20.0, "dynamics.n_r_r": 0.0, "dynamics.n_u": 0.0, "dynamics.n_v": 0.0, "dynamics.name": "otter", "dynamics.ns": "otter", "dynamics.type": "Differential", "dynamics.velocity_max": 1.0, "dynamics.velocity_min": 0.0, "dynamics.x_dot_r": 0.0, "dynamics.x_dot_u": 5.0, "dynamics.x_dot_v": 0.0, "dynamics.x_r": 0.0, "dynamics.x_u": -20.0, "dynamics.x_u_u": 0.0, "dynamics.x_v": 0.0, "dynamics.y_dot_r": 0.0, "dynamics.y_dot_u": 0.0, "dynamics.y_dot_v": 5.0, "dynamics.y_r": 0.0, "dynamics.y_u": 0.0, "dynamics.y_v": -20.0, "dynamics.y_v_v": 0.0, "mission.geo.altitude": 0.0, "mission.geo.enabled": true, "mission.geo.latitude": -33.7242, "mission.geo.longitude": 150.68, "mission.heading_tolerance_deg": 5.0, "mission.safety_margin": 0.1, "navigation.costmap_topic": "costmap_raw", "navigation.footprint_length": 2.2, "navigation.footprint_width": 1.2, "navigation.map_timeout": 1.5, "navigation.max_expansions": 200000, "navigation.planning_frequency": 5.0, "navigation.planning_timeout": 1.0, "navigation.radar_timeout": 0.5, "navigation.require_radar": true, "navigation.state_timeout": 0.5, "navigation.trajectory_timeout": 1.0, "obstacle_factor": 0.25, "path_planner.convert_offset": 0.0, "path_planner.default_tolerance": 0.0, "path_planner.enable_resample": true, "path_planner.expand_zone": true, "path_planner.outline_map": true, "path_planner.resample_ratio": 0.5, "path_planner.show_safety_corridor": false, "planner_name": "astar", "usv_simulation.controller.control_frequency": 10.0, "usv_simulation.controller.controller_name": "pid", "usv_simulation.controller.lqr_controller.Q_matrix_diag": [1.0, 1.0, 100.0, 10.0, 10.0, 10.0], "usv_simulation.controller.lqr_controller.R_matrix_diag": [20.0, 20.0], "usv_simulation.controller.lqr_controller.discrete_dt": 0.1, "usv_simulation.controller.lqr_controller.goal_distance_tolerance": 1.0, "usv_simulation.controller.lqr_controller.goal_speed_tolerance": 0.25, "usv_simulation.controller.lqr_controller.lookahead_time": 2.0, "usv_simulation.controller.lqr_controller.max_iterations": 5000, "usv_simulation.controller.lqr_controller.solve_eps": 0.1, "usv_simulation.controller.lqr_controller.solve_timeout": 0.08, "usv_simulation.controller.pid_controller.goal_distance_tolerance": 1.5, "usv_simulation.controller.pid_controller.goal_speed_tolerance": 0.25, "usv_simulation.controller.pid_controller.k_d_course": 0.0, "usv_simulation.controller.pid_controller.k_d_speed": 0.0, "usv_simulation.controller.pid_controller.k_i_course": 0.0, "usv_simulation.controller.pid_controller.k_i_speed": 0.5, "usv_simulation.controller.pid_controller.k_p_course": 2.0, "usv_simulation.controller.pid_controller.k_p_speed": 2.0, "usv_simulation.controller.pid_controller.lookahead_time": 2.6, "usv_simulation.trajectory_planner.los.goal_tolerance": 1.0, "usv_simulation.trajectory_planner.los.kp_yaw": 1.0, "usv_simulation.trajectory_planner.los.lookahead_distance": 1.0, "usv_simulation.trajectory_planner.los.slowdown_distance": 3.0, "usv_simulation.trajectory_planner.los.switch_dist": 5.0, "usv_simulation.trajectory_planner.los.trajectory_time": 20.0, "usv_simulation.trajectory_planner.los.trajectory_time_interval": 0.5, "usv_simulation.trajectory_planner.los.yaw_rate_max": 0.3, "usv_simulation.trajectory_planner.planner_name": "los"}
+[costmap_support_node-7] [INFO] [1789206629.169115709] [otter.costmap]: Timed out waiting for transform from otter/base_link to otter/map to become available, tf error: Invalid frame ID "otter/map" passed to canTransform argument target_frame - frame does not exist
+[costmap_support_node-7] [INFO] [1789206629.671478927] [otter.costmap]: Timed out waiting for transform from otter/base_link to otter/map to become available, tf error: Invalid frame ID "otter/map" passed to canTransform argument target_frame - frame does not exist
+[rviz2-9] [INFO] [1789206629.913620878] [rviz2]: Stereo is NOT SUPPORTED
+[rviz2-9] [INFO] [1789206629.913814658] [rviz2]: OpenGl version: 4.2 (GLSL 4.2)
+[rviz2-9] [INFO] [1789206629.946840134] [rviz2]: Stereo is NOT SUPPORTED
+[rviz2-9] [WARN] [1789206630.045063895] [rcl.logging_rosout]: Publisher already registered for provided node name. If this is due to multiple nodes with the same name then all logs for that logger name will go out over the existing publisher. As soon as any node with that name is destructed it will unregister the publisher, preventing any further logs for that name from being published on the rosout topic.
+[costmap_support_node-7] [INFO] [1789206630.169653390] [otter.costmap]: Timed out waiting for transform from otter/base_link to otter/map to become available, tf error: Invalid frame ID "otter/map" passed to canTransform argument target_frame - frame does not exist
+[gzserver-1] ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+[gzserver-1] ALSA lib conf.c:5182:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+[gzserver-1] ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+[gzserver-1] ALSA lib conf.c:5182:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+[gzserver-1] ALSA lib confmisc.c:1334:(snd_func_refer) error evaluating name
+[gzserver-1] ALSA lib conf.c:5182:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+[gzserver-1] ALSA lib conf.c:5705:(snd_config_expand) Evaluate error: No such file or directory
+[gzserver-1] ALSA lib pcm.c:2664:(snd_pcm_open_noupdate) Unknown PCM default
+[gzserver-1] AL lib: (EE) ALCplaybackAlsa_open: Could not open playback device 'default': No such file or directory
+[gzserver-1] [INFO] [1789206630.482071438] [gazebo.gazebo_ros_state]: Publishing states of gazebo models at [/gazebo/model_states]
+[gzserver-1] [INFO] [1789206630.483541474] [gazebo.gazebo_ros_state]: Publishing states of gazebo links at [/gazebo/link_states]
+[python3-4] [INFO] [1789206630.550871040] [spawn_entity]: Calling service /spawn_entity
+[costmap_support_node-7] [INFO] [1789206630.669723213] [otter.costmap]: Timed out waiting for transform from otter/base_link to otter/map to become available, tf error: Invalid frame ID "otter/map" passed to canTransform argument target_frame - frame does not exist
+[python3-4] [INFO] [1789206630.831187344] [spawn_entity]: Spawn status: SpawnEntity: Successfully spawned entity [otter]
+[INFO] [python3-4]: process has finished cleanly [pid 168520]
+[costmap_support_node-7] [INFO] [1789206631.169428557] [otter.costmap]: start
+[rviz2-9] [INFO] [1789206631.711230108] [rviz2]: Trying to create a map of size 800 x 800 using 1 swatches
+[rviz2-9] [ERROR] [1789206631.738173126] [rviz2]: Vertex Program:rviz/glsl120/indexed_8bit_image.vert Fragment Program:rviz/glsl120/indexed_8bit_image.frag GLSL link result : 
+[rviz2-9] active samplers with a different type refer to the same texture image unit
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [rviz2-9]: sending signal 'SIGINT' to process[rviz2-9]
+[INFO] [python3-8]: sending signal 'SIGINT' to process[python3-8]
+[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]
+[INFO] [mmwave_perception_node-6]: sending signal 'SIGINT' to process[mmwave_perception_node-6]
+[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]
+[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]
+[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]
+[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]
+[rviz2-9] [INFO] [1789206683.115638718] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[costmap_support_node-7] [INFO] [1789206683.116914823] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[costmap_support_node-7] [INFO] [1789206683.117064419] [otter.costmap]: Running Nav2 LifecycleNode rcl preshutdown (costmap)
+[costmap_support_node-7] [INFO] [1789206683.117143958] [otter.costmap]: Deactivating
+[fake_localization_node-5] [INFO] [1789206683.118118350] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[robot_state_publisher-2] [INFO] [1789206683.119705999] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [fake_localization_node-5]: process has finished cleanly [pid 168522]
+[INFO] [robot_state_publisher-2]: process has finished cleanly [pid 168516]
+[INFO] [joint_state_publisher-3]: process has finished cleanly [pid 168518]
+[INFO] [mmwave_perception_node-6]: process has finished cleanly [pid 168524]
+[INFO] [python3-8]: process has finished cleanly [pid 168528]
+[INFO] [gzserver-1]: process has finished cleanly [pid 168514]
+[costmap_support_node-7] [INFO] [1789206683.590356931] [otter.costmap]: Cleaning up
+[costmap_support_node-7] [INFO] [1789206683.592646182] [otter.costmap]: Destroying bond (costmap) to lifecycle manager.
+[costmap_support_node-7] [INFO] [1789206683.597367286] [otter.costmap]: Destroying
+[INFO] [rviz2-9]: process has finished cleanly [pid 168530]
+[INFO] [costmap_support_node-7]: process has finished cleanly [pid 168526]

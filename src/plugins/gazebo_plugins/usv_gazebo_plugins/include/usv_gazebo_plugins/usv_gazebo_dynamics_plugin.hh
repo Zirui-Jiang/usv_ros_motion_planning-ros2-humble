@@ -15,6 +15,7 @@
  *
 */
 
+// 声明六自由度附加质量/阻尼与双浮筒分段浮力模型，实际参数读取与施力见对应 .cc。
 #ifndef USV_GAZEBO_PLUGINS_DYNAMICS_PLUGIN_HH_
 #define USV_GAZEBO_PLUGINS_DYNAMICS_PLUGIN_HH_
 
@@ -64,6 +65,7 @@ namespace gazebo
   /// <wave_amp<N>>: Amplitude for each component [m].
   /// <wave_period<N>>: Period for each compenent [s].
   /// <wave_direction<N>>: Direction of motion for each component ENU [rad].
+  // Gazebo 模型插件生命周期：Load 绑定 link 和系数，Update 在世界物理步中施加水动力。
   class UsvDynamicsPlugin : public ModelPlugin
   {
     /// \brief Constructor.
@@ -108,6 +110,7 @@ namespace gazebo
 
     /// \brief Linear velocity from previous time step,
     /// for estimating acceleration.
+    // 保存上一物理步的船体系线速度与角速度，差分后用于附加质量力及力矩。
     private: ignition::math::Vector3d prevLinVel;
 
     /// \brief Angular velocity from previous time step,
@@ -116,6 +119,7 @@ namespace gazebo
 
     /// \brief Values to set via Plugin Parameters.
     /// Plugin Parameter: Added mass in surge, X_\dot{u}.
+    // 六个 Dot 系数形成附加质量对角项，依次对应 u/v/w 平动与 p/q/r 转动加速度。
     private: double paramXdotU;
 
     /// \brief Plugin Parameter: Added mass in sway, Y_\dot{v}.
@@ -134,6 +138,7 @@ namespace gazebo
     private: double paramNdotR;
 
     /// \brief Plugin Parameter: Linear drag in surge.
+    // 成对的一次/二次阻尼系数用于 -(线性系数+二次系数·|速度|)·速度。
     private: double paramXu;
 
     /// \brief Plugin Parameter: Quadratic drag in surge.
@@ -186,6 +191,7 @@ namespace gazebo
     private: double paramHullRadius;
 
     /// \brief Length discretization, i.e., "N"
+    // 每个浮筒沿长度分段的数量，应为正；增加分段会增加每步波高查询与施力次数。
     private: int paramLengthN;
 
     /// \brief Added mass matrix, 6x6.
@@ -210,6 +216,7 @@ namespace gazebo
     private: event::ConnectionPtr updateConnection;
 
     /// \brief The wave parameters.
+    // 共享只读波谱参数来自 waveModelName 指定的海面模型，采样结果是相对平均水面的波高。
     private: std::shared_ptr<const asv::WaveParameters> waveParams;
   };
 }

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 只读 Linux /proc 采样验收进程及其后代的 CPU/RSS；不发送信号，也不估计漏采进程。
 """Observe one acceptance harness and descendants through Linux /proc only.
 
 Writes a new sidecar JSONL; never signals, attaches to, or changes a process.
@@ -17,10 +18,12 @@ import sys
 import time
 
 
+# 用 UTC 时间标记采样记录，便于与其他观测文件对照。
 def utc_now():
     return datetime.now(timezone.utc).isoformat()
 
 
+# 读取一个进程的 /proc 计数，保留采样时刻、父进程和命令行身份。
 def read_process(directory, ticks, page_size):
     observed = time.monotonic()
     raw = (directory / "stat").read_text()
@@ -37,6 +40,7 @@ def read_process(directory, ticks, page_size):
             "vm_bytes": int(fields[20]), "observed_monotonic_s": observed}
 
 
+# 逐个读取当前可见进程；读取期间已退出的进程只计为观测缺口。
 def census(ticks, page_size):
     processes, errors = {}, 0
     for directory in Path("/proc").iterdir():
@@ -49,6 +53,7 @@ def census(ticks, page_size):
     return processes, errors
 
 
+# 用验收脚本名和精确输出目录识别目标任务，避免把别的试验合并进来。
 def matching_harness(command, output):
     if not any(Path(arg).name == "ros_acceptance.py" for arg in command):
         return False
@@ -60,6 +65,7 @@ def matching_harness(command, output):
     return False
 
 
+# 沿父子关系寻找目标验收进程的后代，限制资源统计范围。
 def descendants(processes, root_pid):
     selected = {root_pid}
     while True:
@@ -70,6 +76,7 @@ def descendants(processes, root_pid):
         selected.update(added)
 
 
+# 依据进程命令行识别导航、建图、仿真器等角色。
 def direct_role(process, root_pid):
     if process["pid"] == root_pid:
         return "harness"
@@ -89,6 +96,7 @@ def direct_role(process, root_pid):
     return "other_descendant"
 
 
+# 对无法直接识别的子进程追溯已知祖先，归入相应模块的资源消耗。
 def classify(processes, selected, root_pid):
     roles = {pid: direct_role(processes[pid], root_pid) for pid in selected}
     for pid in selected:
@@ -111,6 +119,7 @@ def classify(processes, selected, root_pid):
     return roles
 
 
+# 命令行入口：解析本脚本选项并执行上述流程，运行结果由退出码及输出记录共同说明。
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--harness-output", required=True,

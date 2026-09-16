@@ -19,6 +19,7 @@
 /// \brief This file contains the definition for a Gazebo physics object
 /// that allows a wave field to be added into a simulated world.
 
+// 将波场参数挂入 Gazebo 对象树，供其它模型插件按父模型名查询。
 #ifndef _WAVE_GAZEBO_PLUGINS_WAVEFIELD_ENTITY_HH_
 #define _WAVE_GAZEBO_PLUGINS_WAVEFIELD_ENTITY_HH_
 
@@ -39,6 +40,7 @@ namespace asv
   class WavefieldEntityPrivate;
 
   /// \brief A class to manage a wave field that can be accessed from the World.
+  // 继承 Base 以成为模型子实体；本版本 Update 为空，实际波高由 WavefieldSampler 按时间求值。
   class GZ_PHYSICS_VISIBLE WavefieldEntity : public gazebo::physics::Base
   {
     /// \brief Destructor.
@@ -63,6 +65,7 @@ namespace asv
     public: virtual void Update();
 
     /// \brief Get a pointer to the wave pararameters.
+    // 共享所有权使读取端可保留波谱参数；const 限制通过返回接口修改参数。
     std::shared_ptr<const WaveParameters> GetWaveParams() const;
 
     /// \brief Make a wave field entity name given a parent object name.

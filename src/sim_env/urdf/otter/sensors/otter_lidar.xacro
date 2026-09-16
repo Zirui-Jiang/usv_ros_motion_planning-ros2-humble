@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- LiDAR 传感器模板，配置扫描几何、量程和发布接口，作为当前障碍感知输入。 -->
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- 定义可复用宏；调用时替换参数并展开为实际 URDF/SDF 元素。 -->
   <xacro:macro name="otter_lidar" params="name x:=0.5 y:=0 z:=0 R:=0 P:=0 Y:=0 min_range:=0.2 max_range:=25 visualize:=false">
     <link name="${name}_link">
+      <!-- 外观几何与材质只负责显示，不能据此认定物理碰撞尺寸。 -->
       <visual name="${name}_visual">
         <origin xyz="0 0 -0.05"/>
         <geometry>
@@ -18,6 +21,7 @@
       <child link="${name}_link" />
     </joint>
     <gazebo reference="${name}_link">
+      <!-- 传感器更新率、测量范围与插件输出在此配置。 -->
       <sensor type="ray" name="lidar_${name}">
         <update_rate>15</update_rate>
 	      <visualize>${visualize}</visualize>
@@ -40,6 +44,7 @@
           </range>
         </ray>
         <!-- ROS 2 gazebo_ros_pkgs ray sensor (laser scan output) -->
+        <!-- 加载指定动态库并传入参数；具体数值处理由对应插件源码完成。 -->
         <plugin name="lidar" filename="libgazebo_ros_ray_sensor.so">
           <ros>
             <!-- remap to the topic used by the mapping and costmap nodes -->

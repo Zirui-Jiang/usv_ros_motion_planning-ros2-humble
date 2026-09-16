@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>会遇实验台 V2 · 规则约束 A* + LOS</title>
+  <link rel="icon" href="data:,">
+  <style>/* INLINE_STYLE */</style>
+</head>
+<body>
+  <header class="masthead">
+    <div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3 33 31 20 25 7 31Z" fill="currentColor"/><path d="M20 12v13M8 35h24" fill="none" stroke="white" stroke-width="2"/></svg><div><strong>会遇实验台</strong><span>MARITIME ENCOUNTER LAB</span></div></div>
+    <div class="header-meta"><span class="prototype-badge" id="version-badge">V2 · 规则约束 A*</span><button class="text-btn" id="about-btn">方法与边界 <span aria-hidden="true">↗</span></button></div>
+  </header>
+  <main>
+    <section class="intro"><div><div class="eyebrow">V2 · 规则约束 A* / 原 LOS 轨迹生成</div><h1>观察规则如何改变航行。</h1><p>让规则进入 A* 搜索，再用原 LOS 生成轨迹；观察搜索、回验与接回原航路的过程。</p></div><div class="intro-key"><span class="key-line original"></span>原航路<span class="key-line detour"></span>约束后航路<span class="key-line reference"></span>LOS 轨迹</div></section>
+    <div class="workspace">
+      <aside class="panel setup-panel" aria-label="场景与参数">
+        <div class="panel-title"><h2>选择会遇场景</h2><span class="small muted">单目标船</span></div>
+        <div id="scene-list" class="scene-list"></div>
+        <div class="control-divider"></div>
+        <div class="switch-row"><div><strong>启用海事规则</strong><small>关闭后观察原 A* + LOS</small></div><label class="switch"><input id="rules-toggle" type="checkbox" checked aria-label="启用海事规则"><span></span></label></div>
+        <div class="switch-row"><div><strong>目标船配合避让</strong><small>按目标船承担的责任行动</small></div><label class="switch"><input id="cooperative-toggle" type="checkbox" aria-label="目标船配合避让"><span></span></label></div>
+        <details class="parameter-section" open><summary>场景参数 <span>修改后重新开始</span></summary>
+          <label class="range-label" for="own-speed">自船巡航速度 <output id="own-speed-value">3.0 m/s</output></label><input id="own-speed" type="range" min="0.5" max="5" step="0.1" value="3">
+          <label class="range-label" for="target-speed">目标船速度 <output id="target-speed-value">3.0 m/s</output></label><input id="target-speed" type="range" min="0.5" max="5" step="0.1" value="3">
+          <label class="range-label" for="target-course">目标船艏向 <output id="target-course-value">270°</output></label><input id="target-course" type="range" min="0" max="359" step="1" value="270">
+          <label class="range-label" for="safety-distance">期望中心间距 <output id="safety-distance-value">18 m</output></label><input id="safety-distance" type="range" min="8" max="35" step="1" value="18">
+          <label class="range-label" for="lookahead">LOS 预瞄距离 <output id="lookahead-value">1 m</output></label><input id="lookahead" type="range" min="1" max="15" step="0.5" value="1">
+        </details>
+      </aside>
+      <section class="center-panel" aria-label="会遇仿真">
+        <div class="chart-panel panel">
+          <div class="chart-header"><div><span class="live-dot"></span><strong id="scene-name">对遇</strong><span id="mode-label">规则约束 A*</span></div><div class="chart-actions"><button id="fit-btn" class="icon-btn" title="恢复默认视野" aria-label="恢复默认视野">⌖</button><button id="capture-btn" class="icon-btn" title="保存海图截图" aria-label="保存海图截图">↓</button></div></div>
+          <div class="chart-wrap" id="chart-wrap"><canvas id="chart" tabindex="0" aria-label="会遇海图：自船为蓝绿色，目标船为橙色，暂停时可拖动船位"></canvas><div class="map-status"><span id="run-state">已暂停</span><b id="sim-clock">00:00.0</b></div><div id="finish-banner" class="finish-banner" hidden></div><div class="map-help">暂停时拖动船位以重设场景 · 滚轮缩放</div></div>
+          <div class="layer-bar"><label><input id="show-trails" type="checkbox" checked>历史航迹</label><label><input id="show-prediction" type="checkbox" checked>目标预测 / CPA</label><label><input id="show-rules" type="checkbox" checked>规则 / 安全区</label><label><input id="show-search" type="checkbox">搜索展开点</label><label><input id="show-candidates" type="checkbox">候选航路</label><span>北向上 · 米</span></div>
+          <div class="zone-key"><span><i class="zone-swatch rule-swatch"></i>工程规则区</span><span><i class="zone-swatch safety-swatch"></i>预测安全区</span><span><i class="zone-swatch obstacle-swatch"></i>实体障碍</span><small>规则区由引擎生成，不代表实体岸障</small></div>
+          <div class="transport"><button id="play-btn" class="primary-btn"><span id="play-icon">▶</span><span id="play-label">开始仿真</span></button><button id="step-btn" class="secondary-btn">单步 +1 s</button><button id="reset-btn" class="secondary-btn">重置</button><div class="playback"><label for="speed-select">播放</label><select id="speed-select"><option value="1">1×</option><option value="2">2×</option><option value="4" selected>4×</option><option value="8">8×</option></select></div></div>
+        </div>
+        <section class="search-panel panel" aria-labelledby="search-title">
+          <div class="panel-title"><h2 id="search-title">航路搜索与回验</h2><span id="search-status" class="status-badge">等待更新</span></div>
+          <div class="search-context"><span id="search-algorithm">规则约束 A*</span><p id="search-trigger">监测会遇，等待搜索触发</p></div>
+          <dl class="search-stats"><div><dt>搜索次数</dt><dd id="search-count">0</dd></div><div><dt>展开节点</dt><dd id="search-expanded">—</dd></div><div><dt>规则版本</dt><dd id="search-version">—</dd></div><div><dt>栅格尺寸</dt><dd id="search-grid">—</dd></div></dl>
+          <div class="rejoin-row"><span class="rejoin-symbol">◇</span><span>原航路接回点</span><b id="search-rejoin">无活动接回点</b></div>
+          <div id="active-constraints" class="constraint-list" aria-label="当前搜索约束"></div>
+          <div class="validation-heading"><h3>硬约束与轨迹回验</h3><span>当前模型 / 有限预测时域</span></div>
+          <div class="validation-checks"><div><span>静态障碍</span><strong id="check-static" data-result="unknown">未回验</strong></div><div><span>规则约束</span><strong id="check-rule" data-result="unknown">未回验</strong></div><div><span>动态间距</span><strong id="check-dynamic" data-result="unknown">未回验</strong></div></div>
+          <p id="validation-reason" class="validation-note">等待引擎提供几何与预测回验结果。</p><p class="validation-distance">回验预测最小中心间距 <b id="validation-distance">—</b><span>与右侧已发生的全程最小间距分别记录</span></p>
+          <details class="candidate-details" open><summary>候选航路与代价 <span id="candidate-count">0 / 0 可行</span></summary><p class="cost-note">航路代价 = 完整候选航路长度 + 加权偏离代价（含接回后的尾段）；候选总代价再加时间惩罚（折算为米）。先通过硬约束回验，再比较本轮可行候选。</p><ul id="candidate-list" class="candidate-list" aria-label="候选航路与代价"></ul></details>
+        </section>
+        <section class="scenario-guide panel"><span class="guide-label">本场景观察重点</span><h3 id="guide-title">及早避让，驶过让清后恢复。</h3><p id="guide-description"></p><div class="guide-steps"><button id="observe-btn">① 推进 10 秒</button><button id="compare-btn">② 重置并切换规则对照</button><button id="export-btn">③ 导出本次记录 ↗</button></div></section>
+      </section>
+      <aside class="panel inspector" aria-label="实时决策与数据">
+        <div class="panel-title"><h2>当前决策</h2><span id="risk-badge" class="status-badge">监测</span></div>
+        <div class="decision-card"><div id="rule-number" class="rule-number">COLREGs</div><h3 id="decision-action">沿原航路航行</h3><p id="decision-reason">根据本船与目标船的相对运动评估会遇。</p><div class="decision-tags"><span id="encounter-label">—</span><span id="role-label">—</span></div></div>
+        <div class="state-line"><span>执行阶段</span><strong id="phase-label">监测</strong></div>
+        <div class="metrics-grid"><div><span>当前中心间距</span><strong id="distance-value">—</strong><small>m</small></div><div><span>全程最小间距</span><strong id="minimum-value">—</strong><small>m</small></div><div><span>DCPA</span><strong id="dcpa-value">—</strong><small>m</small></div><div><span>TCPA</span><strong id="tcpa-value">—</strong><small id="tcpa-unit">s</small></div></div>
+        <p class="metric-note">CPA 按当前速度匀速外推；与实际最小间距分别记录。</p>
+        <div class="vessel-data"><div><span><i class="ship-dot own-dot"></i>自船</span><b id="own-status">—</b></div><div><span><i class="ship-dot target-dot"></i>目标</span><b id="target-status">—</b></div><div><span>航路横向偏差</span><b id="cross-track">—</b></div><div><span>LOS 参考航速</span><b id="reference-speed">—</b></div></div>
+        <div class="log-title"><h3>决策记录</h3><span id="log-count">0 条</span></div><ol id="event-log" class="event-log" aria-label="决策记录"></ol>
+      </aside>
+    </div>
+    <section class="pipeline panel" aria-label="规划数据流"><div class="pipeline-label">本 Demo 的规划链路</div><div class="pipeline-node"><b>A*</b><span>保留原全局航路</span></div><span class="pipeline-arrow">→</span><div class="pipeline-node highlighted"><b>规则约束 A*</b><span>规则区 / 方向约束 / 航速候选</span></div><span class="pipeline-arrow">→</span><div class="pipeline-node"><b>LOS + 回验</b><span>原导引与轨迹积分 / 几何检查</span></div><span class="pipeline-arrow">→</span><div class="pipeline-node"><b>简化跟踪</b><span>二维运动响应</span></div><button id="details-btn" class="text-btn">查看说明 ↗</button></section>
+    <footer class="page-footer"><span>开阔水域 · 普通机动船 · 互见条件 · 规则行为演示</span><span>单文件离线运行 / 不连接 ROS</span></footer>
+  </main>
+  <dialog id="about-dialog"><div class="dialog-heading"><h2>V2：规则如何进入 A* 搜索</h2><button id="close-dialog" class="icon-btn" aria-label="关闭说明">×</button></div><div class="dialog-body"><p>这个原型检验：<strong>保留原 A* 全局航路与 LOS 轨迹生成，将会遇规则转成搜索约束后，能否产生可解释、可回验的避让与接回过程？</strong></p><h3>保留的 A* 与 LOS</h3><ul><li>原全局航路使用八邻域 A*。浏览器采用二值占用栅格，并在规则搜索时叠加非负偏离代价，未复刻完整 Nav2 代价地图语义。</li><li>LOS 普通路径分支参考仓库 Python 实现移植：横向误差修正、偏航角速度限幅、剩余距离速度剖面、0.1 s 内部积分、0.5 s 输出。</li><li>LOS 默认预瞄 1 m、参考时域 20 s。场景航速、期望间距和风险门限是演示参数。</li></ul><h3>V2 的搜索与选择</h3><p>规则层保存会遇责任，将工程规则区、预测安全区与方向约束直接交给 A* 节点或边的可行性检查。A* 在可通行边上累计路径长度与非负的原航路偏离代价，搜索至原航路接回点。生成航路后，原 LOS 在航速候选下积分轨迹，再进行静态、规则与动态间距回验。</p><p>搜索记录中的图搜索代价，是 A* 沿原始网格边累计到接回点的长度与加权偏离代价之和。候选列表中的航路代价，则对共线简化后的完整候选航路重新累计，包含接回后的原航路尾段；候选排序使用这一完整航路代价，再加折算为距离的时间惩罚。选择范围限于本轮离散栅格、规则近似、接回点及航速候选。画面中的“采用”不意味着连续空间或实船任务的全局最优。关闭规则后，使用原全局航路 + LOS 作为行为对照。</p><h3>如何理解画面</h3><ul><li>灰色虚线为原全局航路；橙色折线为约束后航路；蓝绿色曲线为 LOS 时间轨迹；菱形标记为原航路接回点。</li><li>淡紫色表示工程规则区，淡琥珀色表示预测安全区。这些区域直接来自本轮引擎约束，不是实体岸障。绿色圆形才是场景中的静态障碍。</li><li>打开“搜索展开点”可见最近一次搜索展开的节点及原始网格航路；大规模搜索仅对显示点抽样，展开节点统计保留引擎数值。</li><li>目标圆环表示期望船舶中心间距。CPA 按当前速度匀速外推；负 TCPA 表示最近会遇点在过去。预测回验间距与已发生的全程最小间距分别记录。</li><li>参数变化、规则切换和拖动船位都会重新开始场景。V2 JSON 包含约束、搜索、候选代价和回验记录；展开点最多导出 1,500 个，并标记总数与是否截断。</li></ul><h3>当前验证边界</h3><p>目标状态来自仿真真值；规则区及其时间处理为有限时域工程近似。LOS 几何回验检验的是当前模型的预测轨迹，不能保证目标后续机动、感知误差或真实船舶响应下的安全。航控采用简化二维响应，未接入真实 PID / ADRC、Gazebo 水动力、AIS 或雷达。此页面用于检验方案与发现失败场景，不代表完整 COLREGs 合规或实船避碰保证。</p><p>规则依据：<a href="https://www.imo.org/en/about/conventions/pages/colreg.aspx" target="_blank" rel="noreferrer">IMO COLREGs 概述</a> · <a href="https://www.navcen.uscg.gov/navigation-rules-amalgamated" target="_blank" rel="noreferrer">USCG 条文（国际规则部分）</a></p></div></dialog>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <script>/* INLINE_ENGINE */</script>
+  <script>/* INLINE_APP */</script>
+</body>
+</html>

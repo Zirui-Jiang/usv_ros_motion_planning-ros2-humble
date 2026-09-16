@@ -16,6 +16,7 @@
    limitations under the License.
 
 -->
+<!-- 基础海面示例世界，配置相机、天空和太阳后展开 ocean_waves 宏。 -->
 <sdf version="1.6" xmlns:xacro="http://ros.org/wiki/xacro">
   <world name="ocean_world">
 
@@ -50,6 +51,7 @@
     </include>
 
     <!--Waves-->
+    <!-- 海面物理与视觉波谱由同一模型宏定义，修改宏参数可改变示例海况。 -->
     <xacro:include filename="$(find wave_gazebo)/world_models/ocean_waves/model.xacro"/>
     <xacro:ocean_waves/>
 

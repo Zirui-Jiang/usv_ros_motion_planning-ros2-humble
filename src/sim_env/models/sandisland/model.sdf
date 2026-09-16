@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Gazebo 模型 sandisland 的结构描述；碰撞体、外观和惯性分别定义，网格纹理仍由资源文件提供。 -->
 <sdf version="1.6">
   <model name="sandisland">
     <pose>0 0 0 0 0 0</pose>
     <static>true</static>
     <link name="silink">
+      <!-- 外观几何与材质只负责显示，不能据此认定物理碰撞尺寸。 -->
       <visual name="visual">
         <geometry>
           <mesh>
@@ -11,6 +13,7 @@
           </mesh>
         </geometry>
       </visual>
+      <!-- 碰撞几何参与物理接触检测，不一定与显示网格完全相同。 -->
       <collision name="collision">
         <geometry>
           <mesh>

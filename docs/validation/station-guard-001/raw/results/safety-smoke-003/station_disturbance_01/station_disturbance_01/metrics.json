@@ -1,0 +1,216 @@
+{
+  "trial": "station_disturbance_01",
+  "scenario": "station_disturbance",
+  "repeat": 1,
+  "domain_id": 206,
+  "result": "passed",
+  "passed": true,
+  "config": {
+    "mode": "station_keep",
+    "target": [
+      25.0,
+      -8.0,
+      1.5707963267948966
+    ],
+    "heading_deg": 0.0,
+    "speed": 0.5,
+    "position_tolerance": 0.5,
+    "watch_radius": 4.0
+  },
+  "thresholds": {
+    "position_m": 0.5,
+    "heading_deg": 5.0,
+    "joint_fraction": 0.95,
+    "settle_position_m": 0.25,
+    "settle_heading_deg": 3.0,
+    "settle_speed_mps": 0.04,
+    "settle_dwell_s": 5.0,
+    "settle_timeout_s": 180.0,
+    "window_s": 60.0,
+    "radial_p95_m": 0.5,
+    "clearance_m": 0.2,
+    "max_odom_gap_s": 0.5,
+    "max_phase_boundary_interval_s": 1.5,
+    "max_lap_angle_tolerance_rad": 0.15,
+    "centre_dwell_s": 1.0,
+    "centre_speed_mps": 0.1,
+    "impulse_service_delay_max_s": 2.0,
+    "impulse_post_response_window_s": 0.5
+  },
+  "windows": {
+    "initial": {
+      "start_sim_s": 28.9,
+      "end_sim_s": 88.9,
+      "sample_count": 600,
+      "complete": true,
+      "joint_fraction": 1.0,
+      "position_error_m": {
+        "count": 600,
+        "mean": 0.009565444077731711,
+        "rms": 0.011627275778112086,
+        "p95": 0.021236202295430356,
+        "max": 0.025262117948672756
+      },
+      "heading_error_deg": {
+        "count": 600,
+        "mean": 0.012771963183523576,
+        "rms": 0.029762279234038666,
+        "p95": 0.05584319961550139,
+        "max": 0.2254318060505282
+      },
+      "passed": true,
+      "settle_elapsed_sim_s": 26.0
+    },
+    "after_disturbance": {
+      "start_sim_s": 117.4,
+      "end_sim_s": 177.4,
+      "sample_count": 600,
+      "complete": true,
+      "joint_fraction": 1.0,
+      "position_error_m": {
+        "count": 600,
+        "mean": 0.0536694739332986,
+        "rms": 0.054340490899284624,
+        "p95": 0.066999855117491,
+        "max": 0.0703062258769556
+      },
+      "heading_error_deg": {
+        "count": 600,
+        "mean": 0.014019949555298306,
+        "rms": 0.03506586897632485,
+        "p95": 0.05701297356014259,
+        "max": 0.2605062470944942
+      },
+      "passed": true,
+      "settle_elapsed_sim_s": 28.400000000000006
+    }
+  },
+  "gazebo_master_uri": "http://127.0.0.1:51215",
+  "mission_id": 1,
+  "lateral_velocity_impulse": {
+    "observed": true,
+    "requested_body_lateral_mps": 0.4,
+    "observation_interval_sim_s": [
+      88.9,
+      89.4
+    ],
+    "peak_observed_body_lateral_mps": 0.29691224217800305,
+    "observed_sample": {
+      "sim_time_s": 89.0,
+      "pose": [
+        24.970177244218117,
+        -7.998610727831198,
+        1.570215447202802
+      ],
+      "body_velocity": [
+        0.009413549070686424,
+        0.29691224217800305,
+        -0.007429922973913878
+      ],
+      "phase": "STATION_KEEP",
+      "temporary_goal": null,
+      "position_error_m": 0.029855097380260247,
+      "heading_error_deg": 0.03328194903229674,
+      "speed_mps": 0.2970614321336167
+    },
+    "service_request_sim_s": 88.9,
+    "service_response_sim_s": 88.9,
+    "service_delay_sim_s": 0.0,
+    "service_delay_within_limit": true,
+    "service_delay_limit_sim_s": 2.0,
+    "requested_world_velocity_mps": [
+      -0.39999999880250375,
+      3.0951526813140585e-05
+    ]
+  },
+  "duration_sim_s": 174.5,
+  "original_mission_preserved": true,
+  "reason": "all measured criteria passed",
+  "final_status": {
+    "state": "STATION_KEEP",
+    "reason": "",
+    "version": 3,
+    "stamp": 176.70000000000002,
+    "controller": "pid",
+    "goal": [
+      25.00000000143523,
+      -7.999999999508427,
+      1.5707963267948966
+    ],
+    "mission": {
+      "mission_id": "1",
+      "mode": "station_keep",
+      "phase": "STATION_KEEP",
+      "revision": 2,
+      "original_target": {
+        "latitude": -33.72427212543971,
+        "longitude": 150.68026973892916,
+        "heading_deg": 0.0,
+        "local_pose": [
+          25.00000000143523,
+          -7.999999999508427,
+          1.5707963267948966
+        ]
+      },
+      "temporary_goal": null,
+      "position_error": 0.06728866458227543,
+      "heading_error_deg": 0.009590029740890063,
+      "radial_error": null,
+      "completed_laps": 0.0,
+      "elapsed_time": 173.9,
+      "inside_watch_region": true,
+      "blocked_reason": "",
+      "orbit_completed": false,
+      "control_phase": "HOLD",
+      "safety_reason": ""
+    },
+    "metrics": {
+      "control_ms": {
+        "count": 2273,
+        "p50": 0.6522010080516338,
+        "p95": 4.439191392157228,
+        "p99": 10.419928329065453,
+        "max": 24.00325599592179
+      },
+      "costmap_conversion_ms": {
+        "count": 192,
+        "p50": 0.19683397840708494,
+        "p95": 0.4013814133941195,
+        "p99": 2.553674262017013,
+        "max": 4.5955629902891815
+      },
+      "planning_ms": {
+        "count": 20,
+        "p50": 13.082197503536008,
+        "p95": 18.740805046400055,
+        "p99": 20.53057541023008,
+        "max": 20.978018001187593
+      }
+    },
+    "counters": {
+      "pending_replacements": 2,
+      "global_searches": 1,
+      "odom_tf_waits": 60
+    },
+    "process": {
+      "pid": 153924,
+      "cpu_seconds": 13.065275,
+      "peak_rss_kib": 74808,
+      "monotonic": 187207.208873272
+    }
+  },
+  "phase_transitions": [
+    {
+      "phase": "APPROACH_STATION",
+      "sim_time_s": 3.8,
+      "wall_monotonic_s": 187005.92496051
+    },
+    {
+      "phase": "STATION_KEEP",
+      "sim_time_s": 7.8,
+      "wall_monotonic_s": 187010.030003374
+    }
+  ],
+  "invalid_command_observed": false,
+  "sample_count": 1744
+}

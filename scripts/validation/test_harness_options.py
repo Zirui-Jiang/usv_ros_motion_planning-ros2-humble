@@ -1,3 +1,4 @@
+# 检查验收命令行参数、配置哈希和安全停止边界；dry-run 只生成计划，不冒充实际试验。
 """ROS-free command-line provenance checks; no live results are generated."""
 
 import hashlib
@@ -48,6 +49,33 @@ def test_duplicate_parameter_assignments_are_rejected(tmp_path):
     ], capture_output=True, text=True)
     assert process.returncode != 0
     assert "duplicate parameter name" in process.stderr
+
+
+def test_adrc_is_selectable_and_dry_run_records_both_matrices(tmp_path):
+    output = tmp_path / "adrc_plan"
+    process = subprocess.run([
+        sys.executable, str(SCRIPT), "--workspace", str(tmp_path), "--output", str(output),
+        "--dry-run", "--controllers", "adrc", "--scenario", "straight",
+        "--repeats", "1", "--faults",
+    ], capture_output=True, text=True)
+    assert process.returncode == 0, process.stderr
+    manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["matrix"] == [
+        {"mode": "python", "controller": "adrc", "scenario": "straight", "repeat": 1}]
+    assert manifest["fault_matrix"] == [
+        {"mode": "python", "controller": "adrc", "fault": fault, "repeat": 1}
+        for fault in ("goal_change", "cancel", "odom_dropout")]
+
+
+def test_default_controller_matrix_remains_pid_and_lqr(tmp_path):
+    output = tmp_path / "default_plan"
+    process = subprocess.run([
+        sys.executable, str(SCRIPT), "--workspace", str(tmp_path), "--output", str(output),
+        "--dry-run", "--scenario", "straight", "--repeats", "1",
+    ], capture_output=True, text=True)
+    assert process.returncode == 0, process.stderr
+    manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+    assert [row["controller"] for row in manifest["matrix"]] == ["pid", "lqr"]
 
 
 def test_safety_boundary_stops_remaining_matrix_and_faults(tmp_path, monkeypatch):

@@ -1,0 +1,70 @@
+{
+  "trial": "python_pid_odom_dropout",
+  "mode": "python",
+  "fault": "odom_dropout",
+  "passed": true,
+  "result": "completed",
+  "zero_command_latency_wall_s": 0.4346557970275171,
+  "nonzero_after_deadline": false,
+  "tested_state_timeout_s": 0.4,
+  "deadline_wall_s": 0.7,
+  "status": {
+    "state": "WAITING_STATE",
+    "reason": "",
+    "version": 1,
+    "stamp": 1789311202.2025175,
+    "controller": "pid",
+    "goal": [
+      20.0,
+      10.0,
+      0.0
+    ],
+    "metrics": {
+      "costmap_conversion_ms": {
+        "count": 39,
+        "p50": 0.08720997720956802,
+        "p95": 0.11340951314195992,
+        "p99": 0.1232397649437189,
+        "max": 0.12499804142862558
+      },
+      "planning_ms": {
+        "count": 4,
+        "p50": 7.280000543687493,
+        "p95": 7.973560350365005,
+        "p99": 8.068755266140215,
+        "max": 8.092553995084018
+      },
+      "control_ms": {
+        "count": 21,
+        "p50": 0.06337597733363509,
+        "p95": 0.22137199994176626,
+        "p99": 0.2906552283093334,
+        "max": 0.3079760354012251
+      }
+    },
+    "counters": {
+      "stale_control_reports": 2,
+      "pending_replacements": 0,
+      "global_searches": 1,
+      "wrong_session_references": 3,
+      "stale_references": 18
+    },
+    "process": {
+      "pid": 209010,
+      "cpu_seconds": 0.38023799999999996,
+      "peak_rss_kib": 66548,
+      "monotonic": 302738.694167164
+    },
+    "modules": {
+      "decision": "2cc26d58adde40e3ba1c930939b02582",
+      "control": "796626f3750243a28285757125f70a92",
+      "perception": "8ed6a0158cb441e8ba8229a618c128e0",
+      "control_process": {
+        "pid": 209009,
+        "cpu_seconds": 0.33325099999999996,
+        "peak_rss_kib": 64972,
+        "monotonic": 302738.688446414
+      }
+    }
+  }
+}

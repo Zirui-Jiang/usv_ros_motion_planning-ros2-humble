@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 只读记录源码和安装产物的哈希及 Git 状态；采集时机决定这份记录能证明哪个阶段的版本。
 """Record source and installed artifacts without importing ROS or mutating them.
 
 Use --phase before/during/after to describe when the snapshot was collected.
@@ -20,6 +21,7 @@ def git(workspace, *arguments):
     return {"exit_code": result.returncode, "stdout": result.stdout, "stderr": result.stderr}
 
 
+# 跟随安装区的包符号链接遍历文件，同时用真实路径去重，避免目录环。
 def files_under(root):
     """Follow ament symlinked package directories, but avoid directory cycles."""
     visited = set()
@@ -35,6 +37,7 @@ def files_under(root):
                 yield Path(current) / name
 
 
+# 计算文件哈希并比较读取前后的状态，识别采集过程中内容变化的情况。
 def fingerprint(path):
     try:
         before = path.stat()
@@ -50,6 +53,7 @@ def fingerprint(path):
         return {"error": str(error)}
 
 
+# 汇总源码、安装产物和验收脚本的版本信息，用于追溯本次试验究竟使用了哪些文件。
 def capture(workspace):
     result = {"path": str(workspace), "commit": git(workspace, "rev-parse", "HEAD"),
               "status": git(workspace, "status", "--porcelain"),
@@ -61,6 +65,7 @@ def capture(workspace):
     return result
 
 
+# 命令行入口：解析本脚本选项并执行上述流程，运行结果由退出码及输出记录共同说明。
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--workspace", action="append", required=True, metavar="LABEL=PATH")

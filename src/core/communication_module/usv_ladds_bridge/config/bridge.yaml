@@ -1,0 +1,22 @@
+usv_ladds_bridge:
+  ros__parameters:
+    # Windows 原生 LaDDS 由 TCP relay 转发给 WSL 中的 ROS 2 节点。
+    backend: "tcp"
+    # 留空时读取 LADDS_LIBRARY_PATH；不指向仓库内的厂商 SDK。
+    library_path: ""
+    relay_host: "127.0.0.1"
+    relay_port: 17880
+    relay_timeout: 5.0
+    domain_id: 1
+    bind_ip: ""
+    ttl: 1
+    qos: "best_effort"
+    # 字符串引号不可去掉，否则 YAML 会丢失前导零。
+    send_topic: "0211"
+    receive_topic: "0211"
+    src: 0
+    dst: 0
+    encryption: false
+    max_payload_bytes: 1048576
+    queue_depth: 100
+    poll_interval_sec: 0.01

@@ -1,0 +1,150 @@
+# LaDDS 与 ROS 2 双向通信桥
+
+## 当前推荐：0211 多航点航路
+
+已支持按 `points` 原顺序执行 1–255 个必经点。中间点在实测进入 1.5 m 范围后连续切换，最终点停稳后发送一次 0052。每点 `speed` 是进入该点的航段速度（节），允许为转弯和变速提前减速。
+
+启动、构建和三点报文见 [多航点快速联调](../../../../docs/ladds-multi-waypoint-quickstart.md)。使用新的 `start_ladds_route_sim.bash` 和 `start_ladds_route.bash`，两端均加载多航点 overlay；新增 ROS 消息需要一起更新决策、控制和适配器。
+
+下面保留通信桥及早期单点联调说明。
+
+单段航渡已增加独立入口：见 [0211 单段航渡联调](README.single-leg.md)，包含给定经纬度原点、4节速度、任务执行及0052完成反馈。
+
+当前实测链路：**Windows LaDDS 1.0.3 → 本机 TCP → WSL Ubuntu 22.04 / ROS 2 Humble**，双向可用。
+
+用户联调配置：DDS 数据域 **1**、主题字符串 **`0211`**（保留前导零）、QoS **尽力传输 / best_effort**、IP 留空使用活动接口。报文为可按 UTF-8 解码的 JSON，现场样本 638 字节，含 `head` 与 `content`。桥接原样传输，不解释任务类型、转换经纬度或执行导航任务。
+
+## 为什么有 Windows 中继
+
+当前 Windows SDK 能使用原有授权创建通信句柄并收发。提供的麒麟 Linux SDK 在 Ubuntu 中直接加载报告 `undefined symbol: SSL_CTX_free`；在单独探针进程预加载现有 `libssl.so.3` 后能读取版本，但创建句柄仍报告授权失败。未修改或复制厂商授权。
+
+因此当前默认 `backend=tcp`：Windows 使用有效 SDK，WSL 仅运行 ROS 适配。TCP 是本机部署连接，不是将 ROS 2 底层 RMW 换成 LaDDS。Linux 兼容 SDK/授权齐备后，可使用已保留的 `backend=native`。
+
+## 1. 构建一次
+
+在 WSL 的 Bash 中，项目根目录执行：
+
+```bash
+source /opt/ros/humble/setup.bash
+colcon build --base-paths src/core/communication_module/usv_ladds_bridge \
+  --packages-select usv_ladds_bridge --cmake-args -DBUILD_TESTING=ON
+```
+
+构建只需要 ROS 2、ament_cmake_python、标准消息和 Python 标准库，不链接厂商 SDK。厂商 DLL/许可证保留在原目录，不放入仓库。
+
+## 2. Windows 启动 LaDDS 中继
+
+在项目根目录的 PowerShell 中执行，终端保持运行：
+
+```powershell
+.\scripts\start_ladds_relay.ps1
+```
+
+脚本默认读取本机原有联调工具的 DLL，自动选择 Windows 的 WSL 虚拟网卡作为 TCP 监听地址。2026-09-15 实测地址是 `172.27.128.1:17880`，WSL 地址是 `172.27.138.43`；重启后地址可能改变。
+
+若需指定配置：
+
+```powershell
+.\scripts\start_ladds_relay.ps1 -ListenAddress '172.27.128.1' -DomainId 1 -Topic '0211' -Qos best_effort
+```
+
+`-LibraryPath`、`-PythonExe` 可指定本机 SDK 和 Python。SDK 需要的工作目录由脚本切换为 DLL 所在目录。
+
+中继只允许一个活动 TCP 客户端，绑定本机 WSL 网卡，不应暴露到公共网络；此初版没有远程认证或 TLS。DDS `--encryption` 与 TCP 加密无关。WSL 连接断开后，中继允许新的客户端连接；ROS 节点需要重新启动，不自动重连。
+
+## 3. WSL 启动 ROS 桥
+
+另开 WSL 终端，在项目根目录执行：
+
+```bash
+export ROS_DOMAIN_ID=196
+export ROS_LOCALHOST_ONLY=1
+bash scripts/start_ladds_bridge.bash
+```
+
+脚本默认用 WSL 默认网关作为 Windows 中继 IP，也可以显式指定：
+
+```bash
+bash scripts/start_ladds_bridge.bash 172.27.128.1
+```
+
+正常启动会显示 `LaDDS bridge started (TCP relay ... version 1.0.3)`。若端口已被占用，先检查是否已有本桥运行，不要重复启动中继。
+
+`ROS_DOMAIN_ID=196` 是本轮隔离测试域，**不要求与 LaDDS 域 1 相同**。需要与现有 ROS 节点同域时，可由你明确选择相同 ROS 域，但本桥仍仅使用 `/ladds/*` 测试话题。
+
+本轮工具验证使用独立安装区 `/tmp/usv_ladds_20260915/install`，没有修改原仿真安装区。直接复用该安装区时，在运行脚本前添加：
+
+```bash
+export LADDS_INSTALL_BASE=/tmp/usv_ladds_20260915/install
+```
+
+该临时目录若被清理，重新按第 1 步构建即可。也可手动加载 overlay 后直接启动：
+
+```bash
+source /opt/ros/humble/setup.bash
+source /tmp/usv_ladds_20260915/install/setup.bash
+ros2 launch usv_ladds_bridge bridge.launch.py relay_host:=172.27.128.1
+```
+
+## 4. 观察收到的 JSON
+
+第三个 WSL 终端：
+
+```bash
+source /opt/ros/humble/setup.bash
+export ROS_DOMAIN_ID=196
+export ROS_LOCALHOST_ONLY=1
+ros2 topic echo /ladds/rx
+```
+
+此时在联调工具里持续发送到域 1、主题 `0211`，应看到原样 JSON。ROS CLI 输出外层 `data:` 是 `std_msgs/msg/String` 的字段，里面才是原始 JSON。
+
+| ROS 话题 | 类型 | 用途 |
+| --- | --- | --- |
+| `/ladds/tx` | `std_msgs/msg/String` | UTF-8 文本发到 LaDDS `0211` |
+| `/ladds/rx` | `std_msgs/msg/String` | LaDDS `0211` 收到的有效 UTF-8 文本 |
+| `/ladds/tx_bytes` | `std_msgs/msg/UInt8MultiArray` | 原始字节发送 |
+| `/ladds/rx_bytes` | `std_msgs/msg/UInt8MultiArray` | 每包原始字节，包括 NUL 和非 UTF-8 |
+| `/ladds/rx_info` | `std_msgs/msg/String` | JSON 格式的域、主题、src/dst 和长度 |
+
+有效文本包会同时出现在 `/ladds/rx` 与 `/ladds/rx_bytes`，表示同一份数据的两种观察形式，不是 DDS 重复收包。非 UTF-8 只出现在字节和元信息话题，不做有损替换。
+
+## 5. ROS 发给联调工具
+
+工具订阅域 1、主题 `0211`、尽力传输。在具有上述 ROS 环境变量的终端执行：
+
+首次启动时应先让双方完成 DDS 发现，并用持续的低频测试消息确认已能接收。注册主题成功不等于远端已匹配；本轮同时启动时的少量早期测试消息没有被新 DDS 进程收到，先启动独立 DDS 端、再发测试标记后往返通过。Best Effort 不会补发发现完成前丢失的首包。
+
+```bash
+ros2 topic pub --once /ladds/tx std_msgs/msg/String \
+  "{data: '{\"bridge_test\":\"hello_from_ros2\"}'}"
+```
+
+在工具中检查 `bridge_test` 标记。这不是航行任务报文。桥不会自动发送或把 RX 转发回 TX；若收发使用同一 DDS 主题，自己发送的消息也可能被本地订阅者收到，不能仅用这种回环证明另一端已收到。
+
+ROS 发布成功只代表提交给 ROS；TCP 的 `sent` 响应代表 SDK 的 `LaDDS_SendEx` 返回成功，不代表业务对端执行成功。应用级 ACK、任务重试和去重不在本阶段范围内。正式验收应像本轮一样用独立 DDS 订阅端核对唯一标记。
+
+## 停止与排错
+
+- 分别在 ROS 桥、中继所在终端按 Ctrl+C。只停止本桥，不执行 `killall` 等全局进程清理。
+- `Connection refused`：Windows 中继未运行，或 IP/端口不匹配。
+- `relay disconnected`：检查中继终端错误，修复后重启 ROS 桥。
+- 如果工具暂停发送，`ros2 topic echo` 保持等待属于正常现象；不要用历史包中不变的时间戳判断链路是否断开。
+- `LaDDS_Create returned 0`：核对厂商授权、平台、工作目录和绑定 IP；不要修改许可证内容。
+- 收不到数据：先确认工具确实正在发送，域为 1、主题是字符串 `0211`、QoS 尽力传输。工具显示“添加订阅”本身不表示它在发布。
+- TCP 模式的 DDS 域、主题和 QoS 以 **Windows 中继参数**为准；ROS 同名参数仅对 native 后端生效。
+- 队列默认最多 100 包，满时丢弃新包并计数，适用于本轮低频通信检查；不是可靠任务队列，也不提供状态新鲜度保证。
+
+## 代码和测试
+
+- `ladds_client.py`：ctypes 参数、句柄和回调生命周期，按长度复制原始字节。
+- `wire.py` / `relay.py` / `tcp_client.py`：本机 TCP 长度前缀报文、SDK 收发结果及连接管理。
+- `bridge_node.py` / `config.py`：ROS 消息适配与参数校验。
+
+从项目根目录执行单元测试：
+
+```bash
+python3 -m pytest -q src/core/communication_module/usv_ladds_bridge/test
+```
+
+单元测试使用 SDK 替身及真实本机 socket，不能替代厂商互通测试。真实抓包、ROS 接收以及独立 DDS 订阅端证据见项目 `docs/validation/ladds-communication-20260915/`。

@@ -15,6 +15,7 @@
  *
 */
 
+// 用三角面组成多面体，通过水平面裁剪和有向四面体积分求浸没体积及浮心。
 #include "usv_gazebo_plugins/polyhedron_volume.hh"
 
 using namespace buoyancy;
@@ -39,6 +40,7 @@ Volume::Volume()
 }
 
 //////////////////////////////////////////////////////
+// 积分累计阶段 centroid 保存体积一阶矩，不能在此把它当作已归一化的质心坐标。
 Volume& Volume::operator+=(const Volume &rhs)
 {
   this->volume += rhs.volume;
@@ -47,6 +49,7 @@ Volume& Volume::operator+=(const Volume &rhs)
 }
 
 //////////////////////////////////////////////////////
+// 构造以原点为中心、沿局部 XYZ 轴展开的长方体，尺寸单位为 m。
 Polyhedron Polyhedron::makeCube(double x, double y, double z)
 {
   Polyhedron cube;
@@ -81,6 +84,7 @@ Polyhedron Polyhedron::makeCube(double x, double y, double z)
 }
 
 //////////////////////////////////////////////////////
+// 圆柱轴沿局部 Z 轴，以 n 边形近似圆周；三角面顶点顺序影响有向体积符号。
 Polyhedron Polyhedron::makeCylinder(double r, double l, int n)
 {
   assert(n > 4);
@@ -125,6 +129,7 @@ Polyhedron Polyhedron::makeCylinder(double r, double l, int n)
 }
 
 //////////////////////////////////////////////////////
+// 标量三重积除以六得到有向体积；质心乘体积后返回，便于面片贡献直接相加。
 Volume Polyhedron::tetrahedronVolume(const ignition::math::Vector3d &v1,
     const ignition::math::Vector3d &v2, const ignition::math::Vector3d &v3,
     const ignition::math::Vector3d &p)
@@ -140,6 +145,7 @@ Volume Polyhedron::tetrahedronVolume(const ignition::math::Vector3d &v1,
 }
 
 //////////////////////////////////////////////////////
+// 将各三角面与默认原点组成四面体并累加；此函数保留未除以总体积的一阶矩。
 Volume Polyhedron::ComputeFullVolume()
 {
   Volume output;
@@ -155,6 +161,7 @@ Volume Polyhedron::ComputeFullVolume()
 }
 
 //////////////////////////////////////////////////////
+// d1/d2 异号表示一条边穿过水面，插值得交点后将水下部分拆为一个或两个三角形。
 Volume Polyhedron::clipTriangle(const ignition::math::Vector3d &v1,
     const ignition::math::Vector3d &v2,
     const ignition::math::Vector3d &v3, double d1, double d2, double d3,
@@ -203,10 +210,12 @@ Volume Polyhedron::clipTriangle(const ignition::math::Vector3d &v1,
 }
 
 //////////////////////////////////////////////////////
+// 输入世界位置、姿态和水面平面，返回浸没体积 m³ 与世界坐标浮心 m。
 Volume Polyhedron::SubmergedVolume(const ignition::math::Vector3d &x,
     const ignition::math::Quaterniond &q, Plane &plane)
 {
   // transform the plane into the polyhedron frame
+  // 把世界水面转换到多面体局部系，随后无需逐点把全部顶点旋转到世界坐标。
   auto qt = q.Inverse();
   auto normal = qt.RotateVector(plane.normal);
   double offset = plane.offset - plane.normal.Dot(x);
@@ -236,6 +245,7 @@ Volume Polyhedron::SubmergedVolume(const ignition::math::Vector3d &x,
   // computing all the tetrahedron volumes. Since this point is on the
   // surface, all of the surface faces get zero volume tetrahedrons.
   // This way the surface polygon does not need to be considered.
+  // 以水面上的投影点作为积分原点，使补出的水面封口四面体体积为零。
   ignition::math::Vector3d p = vertices[sampleVert] - ds[sampleVert] * normal;
 
   // compute the contribution of each triangle
@@ -269,6 +279,7 @@ Volume Polyhedron::SubmergedVolume(const ignition::math::Vector3d &x,
 
   // small submerged slivers may have rounding error leading to
   // a zero or negative volume. If so, then return a result of zero.
+  // 极薄浸没切片可能有舍入误差；小于容差时返回零体积，避免质心除以近零数。
   if (output.volume <= EPSILON)
   {
     return Volume{};

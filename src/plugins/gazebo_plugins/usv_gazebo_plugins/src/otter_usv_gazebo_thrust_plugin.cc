@@ -21,6 +21,7 @@ along with this package.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+// 接收各推进器 Float32 指令，按选定曲线映射为推力 N，并发布螺旋桨关节状态供显示。
 #include <chrono>
 #include <functional>
 
@@ -45,6 +46,7 @@ OtterThruster::OtterThruster(OtterUsvThrust* _parent)
 }
 
 //////////////////////////////////////////////////
+// 回调仅在互斥锁内保存最新指令及接收时的仿真时间，实际施力由 Update 完成。
 void OtterThruster::OnThrustCmd(const std_msgs::msg::Float32::SharedPtr _msg)
 {
   // When we get a new thrust command!
@@ -56,6 +58,7 @@ void OtterThruster::OnThrustCmd(const std_msgs::msg::Float32::SharedPtr _msg)
 }
 
 //////////////////////////////////////////////////
+// SDF 缺项返回给定默认值；ROS 节点须先创建，才能通过其 logger 输出参数信息。
 double OtterUsvThrust::SdfParamDouble(sdf::ElementPtr _sdfPtr, const std::string& _paramName,
                                       const double _defaultVal) const
 {
@@ -76,6 +79,7 @@ double OtterUsvThrust::SdfParamDouble(sdf::ElementPtr _sdfPtr, const std::string
 }
 
 //////////////////////////////////////////////////
+// 按 robotNamespace 创建 ROS 2 节点，遍历 otter_thruster 项配置 link、关节、话题与推力限制。
 void OtterUsvThrust::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
 {
   RCLCPP_DEBUG(this->rosnode ? this->rosnode->get_logger() : rclcpp::get_logger("otter_usv_gazebo_thrust_plugin"),
@@ -151,6 +155,7 @@ void OtterUsvThrust::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
       }
 
       // Parse individual thruster SDF parameters
+      // maxCmd 是线性映射的指令尺度；maxForceFwd/maxForceRev 为正反向推力上限 N。
       thruster.maxCmd = this->SdfParamDouble(thrusterSDF, "maxCmd", 1.0);
       thruster.maxForceFwd = this->SdfParamDouble(thrusterSDF, "maxForceFwd", 250.0);
       thruster.maxForceRev = this->SdfParamDouble(thrusterSDF, "maxForceRev", -100.0);
@@ -206,6 +211,7 @@ void OtterUsvThrust::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
   for (size_t i = 0; i < this->thrusters.size(); ++i)
   {
     // Prefill the joint state message with the propeller joint.
+    // 此处直接访问 propJoint，所以模型必须提供有效螺旋桨关节；前面的警告不会自动跳过该项。
     this->jointStateMsg.name[i] = this->thrusters[i].propJoint->GetName();
 
     // Subscribe to commands for each thruster.
@@ -221,6 +227,7 @@ void OtterUsvThrust::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
 }
 
 //////////////////////////////////////////////////
+// 正反向分别按最大指令缩放并饱和，允许两方向最大推力不对称；maxCmd 应非零。
 double OtterUsvThrust::ScaleThrustCmd(const double _cmd, const double _maxCmd, const double _maxPos,
                                       const double _maxNeg) const
 {
@@ -240,6 +247,7 @@ double OtterUsvThrust::ScaleThrustCmd(const double _cmd, const double _maxCmd, c
 }
 
 //////////////////////////////////////////////////
+// 广义 Logistic 曲线将输入映射为非线性输出，各参数控制上下渐近值、增长和偏移。
 double OtterUsvThrust::Glf(const double _x, const float _A, const float _K, const float _B, const float _v,
                            const float _C, const float _M) const
 {
@@ -247,6 +255,7 @@ double OtterUsvThrust::Glf(const double _x, const float _A, const float _K, cons
 }
 
 //////////////////////////////////////////////////
+// 分正反向拟合曲线后限幅；实际分支阈值是 0.01，不能把这里描述为对称死区。
 double OtterUsvThrust::GlfThrustCmd(const double _cmd, const double _maxPos, const double _maxNeg) const
 {
   double val = 0.0;
@@ -265,12 +274,14 @@ double OtterUsvThrust::GlfThrustCmd(const double _cmd, const double _maxPos, con
 
 //////////////////////////////////////////////////
 // Otter thruster mapping.
+// 带符号二次映射 k·|x|·x 保留输入方向，输出的正负对应前进与倒车。
 double OtterUsvThrust::Square(const double _x, const double _k) const
 {
   return _k * abs(_x) * _x;
 }
 
 //////////////////////////////////////////////////
+// 两段分别采用 17.86 和 10.86 系数并限幅；0.01 为现有比较边界。
 double OtterUsvThrust::SquareThrustCmd(const double _cmd, const double _maxPos, const double _maxNeg) const
 {
   double val = 0.0;
@@ -288,6 +299,7 @@ double OtterUsvThrust::SquareThrustCmd(const double _cmd, const double _maxPos, 
 }
 
 //////////////////////////////////////////////////
+// 先处理等待中的 ROS 回调，再检查超时、映射推力、驱动关节并发布 JointState。
 void OtterUsvThrust::Update()
 {
   rclcpp::spin_some(this->rosnode);
@@ -300,6 +312,7 @@ void OtterUsvThrust::Update()
       std::lock_guard<std::mutex> lock(this->mutex);
       // Enforce command timeout
       double dtc = (now - this->thrusters[i].lastCmdTime).Double();
+      // 超时采用仿真秒数；仅当 cmdTimeout 大于零时启用失联归零。
       if (dtc > this->cmdTimeout && this->cmdTimeout > 0.0)
       {
         this->thrusters[i].currCmd = 0.0;
@@ -308,6 +321,7 @@ void OtterUsvThrust::Update()
 
       // Apply the thrust mapping
       ignition::math::Vector3d tforcev(0, 0, 0);
+      // mappingType 0/1/2 依次为线性、Logistic 和二次映射，力只写入推进器 link 的 X 分量。
       switch (this->thrusters[i].mappingType)
       {
         case 0:
@@ -342,6 +356,7 @@ void OtterUsvThrust::Update()
 }
 
 //////////////////////////////////////////////////
+// 给关节施加转动力矩并回读位置 rad、速度 rad/s；推力本身已在 Update 中另行施加。
 void OtterUsvThrust::SpinPropeller(physics::JointPtr& _propeller, const double _input)
 {
   if (!_propeller)

@@ -1,7 +1,9 @@
 <?xml version="1.0" ?>
+<!-- Gazebo 模型 blue_totem 的结构描述；碰撞体、外观和惯性分别定义，网格纹理仍由资源文件提供。 -->
 <sdf version="1.6">
   <model name="blue_totem">
     <link name="link">
+      <!-- 质量和惯性张量影响动力学；与仅用于显示的网格外观分别配置。 -->
       <inertial>
         <pose>0 0 -2 0 0 0</pose>
         <!-- Mass determined based on buoyancy geometry so object 
@@ -17,6 +19,7 @@
           <izz>0.1</izz>
         </inertia>
       </inertial>
+      <!-- 碰撞几何参与物理接触检测，不一定与显示网格完全相同。 -->
       <collision name="collision_inner">
         <pose>0 0 0.367 0 0 0</pose>
         <geometry>
@@ -35,6 +38,7 @@
           </cylinder>
         </geometry>
       </collision>
+      <!-- 外观几何与材质只负责显示，不能据此认定物理碰撞尺寸。 -->
       <visual name="visual">
         <geometry>
           <mesh><uri>model://surmark46104/mesh/surmark46104.dae</uri></mesh>
@@ -62,6 +66,7 @@
         </material>
       </visual>
     </link>
+    <!-- 加载指定动态库并传入参数；具体数值处理由对应插件源码完成。 -->
     <plugin name="BuoyancyPlugin" filename="libbuoyancy_gazebo_plugin.so">
       <wave_model>ocean_waves</wave_model>
       <fluid_density>1000</fluid_density>

@@ -1,0 +1,10 @@
+Host working directory:
+D:\ROS2轻量仿真系统\usv_ros_motion_planning-ros2-humble
+
+Actual PowerShell command:
+wsl.exe -d Ubuntu-22.04 -- bash -lc 'source /opt/ros/humble/setup.bash; source /home/usv/distributed-navigation-build-20260913/install/setup.bash; export ROS_DOMAIN_ID=184 ROS_LOCALHOST_ONLY=1 PYTHONDONTWRITEBYTECODE=1; unset PYTEST_ADDOPTS; set -o pipefail; python3 -m pytest src/core/usv_navigation/test/test_distributed_ros.py -q -p no:cacheprovider 2>&1 | tee /tmp/distributed-cancel-ack-green.log'
+
+Observed shell command exit code: 0.
+Pytest summary: 8 passed in 17.75s.
+
+The repository root conftest.py places src/core/usv_navigation on sys.path. The installed overlay supplies ROS interface packages; this test exercises the modified source implementation without changing the installation.

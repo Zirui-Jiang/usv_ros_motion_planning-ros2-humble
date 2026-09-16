@@ -1,3 +1,4 @@
+# 配置仿真资源及定位节点的构建与安装；运行时通过安装区查找 launch、world 和船模。
 cmake_minimum_required(VERSION 3.8)
 project(sim_env)
 
@@ -6,6 +7,7 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif()
 
+# 查找构建所需依赖，名称与 package.xml 中的声明对应。
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -16,25 +18,17 @@ find_package(gazebo_dev REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
-find_package(nav2_costmap_2d REQUIRED)
-find_package(nav2_util REQUIRED)
-find_package(lifecycle_msgs REQUIRED)
-find_package(Threads REQUIRED)
 
-# C++ owns infrastructure only; Python owns numerical navigation.
+# Simulation truth adapter and compatibility Python entry.
 ament_python_install_package(${PROJECT_NAME})
+# 将构建产物或资源放入 ROS 包安装目录，源码修改后需重新安装才能被 launch 读取。
 install(PROGRAMS scripts/sim_env_node DESTINATION lib/${PROJECT_NAME})
 
 add_executable(fake_localization_node src/fake_localization_node.cpp)
 ament_target_dependencies(fake_localization_node
   rclcpp geometry_msgs nav_msgs gazebo_msgs tf2 tf2_ros tf2_geometry_msgs)
 
-add_executable(costmap_support_node src/costmap_support_node.cpp)
-ament_target_dependencies(costmap_support_node
-  rclcpp nav2_costmap_2d nav2_util lifecycle_msgs)
-target_link_libraries(costmap_support_node Threads::Threads)
-
-install(TARGETS fake_localization_node costmap_support_node
+install(TARGETS fake_localization_node
   DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY launch config rviz urdf worlds meshes models
   DESTINATION share/${PROJECT_NAME})

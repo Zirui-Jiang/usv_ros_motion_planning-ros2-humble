@@ -1,0 +1,23 @@
+# 当前分布式决策与仿真入口的 Hybrid A* 示例，通用导航参数从共享默认值补齐。
+planner_name: hybrid_astar
+path_planner:
+  # 4 米是待验证的仿真起点，不是实艇测得的最小回转半径。
+  minimum_turning_radius: 4.0
+  angle_bins: 72
+  # f=g+w*h；1.2 减少长航段展开，可能略增路径长度；1.0 恢复原排序。
+  heuristic_weight: 1.2
+  # 正常航行复用全局路径；超过横向/方向误差门限才重新搜索。
+  reuse_max_deviation: 2.0                 # 米
+  reuse_max_heading_error: 1.0471975512    # 弧度，约60度
+  reuse_search_distance: 10.0             # 只在剩余路径前方10米内寻找进度投影
+  # 运动段长度下限、沿途碰撞/路径输出最大采样间隔，单位米。
+  motion_step: 1.0
+  collision_step: 0.2
+  analytic_expansion_max_length: 20.0
+  non_straight_penalty: 1.05
+  change_penalty: 0.2
+  cost_penalty: 0.0
+  # 长宽统一来自 navigation.footprint_length/width，此项为每侧额外余量，米。
+  footprint_padding: 0.0
+  # Hybrid 返回真实圆弧采样，不需要通用直线重采样。
+  enable_resample: false

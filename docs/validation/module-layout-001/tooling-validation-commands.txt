@@ -1,0 +1,15 @@
+All commands were executed through WSL Ubuntu-22.04, with direct exec python3 so the tool observes the Python exit status. No build, Gazebo, or new-install node process was started by this tooling subtask.
+
+1. Tooling, mission launch/configuration/validation, and common tests
+wsl -d Ubuntu-22.04 -- bash -lc 'source /opt/ros/humble/setup.bash && cd /mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble && export PYTEST_ADDOPTS="-o testpaths=src/common/test" && exec python3 -m pytest scripts src/core/mission_module/usv_mission/test/test_mission_launch.py src/core/mission_module/usv_mission/test/test_mission_cli.py src/core/mission_module/usv_mission/test/test_task_configuration.py src/core/mission_module/usv_mission/validation src/core/shared/common/test -q --junitxml=docs/validation/module-layout-001/tooling-tests-001.xml > docs/validation/module-layout-001/tooling-tests-001.log 2>&1'
+Observed terminal: session 46726, chunk 87f28a, exit_code 0. Pytest: 406 passed, 1 skipped in 18.47s.
+
+2. Preserved algorithms, configuration and relocated definitions
+wsl -d Ubuntu-22.04 -- bash -lc 'cd /mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble && exec python3 scripts/validation/verify_navigation_preservation.py --baseline /home/usv/module-layout-20260914/source-before --source /mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble --output /mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/docs/validation/module-layout-001/preservation-tooling-001.json'
+Observed terminal: chunk 84e662, exit_code 0. All 98 checks passed, including 46 algorithm-source byte comparisons, 6 YAML byte comparisons and the complete configuration AST.
+
+3. Added audit guards and grouped-layout contracts
+wsl -d Ubuntu-22.04 -- bash -lc 'source /opt/ros/humble/setup.bash && cd /mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble && export PYTEST_ADDOPTS="-o testpaths=src/common/test" && exec python3 -m pytest scripts/validation/test_preservation_audit.py scripts/validation/test_distributed_install.py scripts/validation/test_module_package_layout.py -q --junitxml=docs/validation/module-layout-001/audit-guards-001.xml > docs/validation/module-layout-001/audit-guards-001.log 2>&1'
+Observed terminal: chunk 8db70f, exit_code 0. Pytest: 32 passed, 1 skipped in 8.35s.
+
+The two pytest collections overlap and their pass counts must not be summed as distinct tests. Both skips are the opt-in real-install audit because USV_DISTRIBUTED_INSTALL was not set; the clean final installation is built and tested separately by the root agent. PYTEST_ADDOPTS preserves the existing exported-workspace child fixture setting. Explicit outer paths still collect the requested complete scopes.

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 审计当前加载的隔离安装布局，验证模块与资源解析路径；结果不代表 ROS 闭环已运行通过。
 """Audit the sourced installation, without adding source paths to sys.path.
 
 Run in a new ROS shell after sourcing only the selected install/setup.bash.
@@ -23,12 +24,18 @@ MODULES = {
     "path_processor": "path_processor.path_processor",
     "trajectory_planner": "trajectory_planner.los_trajectory_planner",
     "controller": "controller.controller_factory",
-    "perception": "perception.mapping_node",
+    "perception": "perception.mapping",
+    "usv_perception": "usv_perception.mapping_node",
+    "usv_navigation": "usv_navigation.configuration",
+    "usv_decision": "usv_decision.decision",
+    "usv_control": "usv_control.control",
     "sim_env": "sim_env.simulation",
 }
 EXECUTABLES = {
-    "perception": ["perception_mapping_node"],
-    "sim_env": ["sim_env_node", "fake_localization_node", "costmap_support_node"],
+    "usv_perception": ["perception_mapping_node", "perception_monitor", "costmap_support_node", "usv_tf_expander.py"],
+    "usv_decision": ["decision_node"],
+    "usv_control": ["control_node"],
+    "sim_env": ["sim_env_node", "fake_localization_node"],
 }
 REQUIRED_PACKAGES = set(MODULES) | {
     "dynamic_rviz_config", "dynamic_xml_config", "goal_set_plugin",
@@ -36,6 +43,7 @@ REQUIRED_PACKAGES = set(MODULES) | {
 }
 
 
+# 将实际路径解析后检查是否位于指定安装区，防止源码或旧 overlay 冒充当前安装结果。
 def within(path, parent):
     try:
         path.resolve().relative_to(parent.resolve())
@@ -44,6 +52,7 @@ def within(path, parent):
         return False
 
 
+# 验证安装路径、包发现和资源位置，避免误用当前源码目录满足安装检查。
 def audit(source, install):
     from ament_index_python.packages import get_package_prefix
 
@@ -84,7 +93,7 @@ def audit(source, install):
             executable = prefix / "lib" / package / name
             record(package + ":" + name, executable.is_file() and os.access(executable, os.X_OK),
                    path=str(executable))
-            if package == "sim_env" and name != "sim_env_node" and executable.is_file():
+            if name in ("fake_localization_node", "costmap_support_node") and executable.is_file():
                 links = subprocess.run(["ldd", str(executable)], capture_output=True, text=True, timeout=15)
                 legacy = re.findall(r"\blib(?:common|path_planner|path_processor|trajectory_planner|controller|sim_env)\.so\b",
                                     links.stdout)
@@ -106,6 +115,7 @@ def audit(source, install):
             "checks": rows, "all_passed": bool(rows) and all(row["passed"] for row in rows)}
 
 
+# 命令行入口：解析本脚本选项并执行上述流程，运行结果由退出码及输出记录共同说明。
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", required=True, type=Path)

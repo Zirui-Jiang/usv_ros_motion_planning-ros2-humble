@@ -15,6 +15,7 @@
  *
 */
 
+// 多面体浸没计算的几何接口：平面裁剪三角网格，再积算体积与浮心。
 #pragma once
 
 #include <cassert>
@@ -26,6 +27,7 @@
 namespace buoyancy
 {
   /// \brief Represents a plane as a normal and offset
+  // 平面满足 normal·位置=offset；默认法向朝世界 Z 正方向，offset 是水面高度。
   struct Plane
   {
     /// \brief Initializes plane at z=0
@@ -39,6 +41,7 @@ namespace buoyancy
   };
 
   /// \brief Represents output volume with centroid
+  // volume 为 m³；centroid 在积分中是体积一阶矩，在 SubmergedVolume 返回前才归一化到世界坐标。
   struct Volume
   {
     Volume();
@@ -55,6 +58,7 @@ namespace buoyancy
 
   /// \brief Submerged volume calculation using polyhedron
   /// based on: Exact Buoyancy for Polyhedra by Eric Catto
+  // 顶点存于局部系，Face 存三角面索引；调用时用世界位姿把水面转换进局部系裁剪。
   class Polyhedron
   {
     /// \brief Store vertex index for a triangular face
@@ -136,6 +140,7 @@ namespace buoyancy
     private: std::vector<Face> faces;
 
     /// \brief Values below this are zeroed out
+    // 容差用于判断水下顶点、舍弃很小的体积及清零浮心分量。
     private: const double EPSILON = 1e-6;
   };  // class Polyhedron
 }

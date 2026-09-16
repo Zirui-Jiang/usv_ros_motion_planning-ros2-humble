@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
+<!-- 推进器连杆与关节的 xacro 模板，描述安装位置及其机械连接。 -->
 
 <robot name="otter_propeller" xmlns:xacro="http://ros.org/wiki/xacro">
 
   <!-- Macro for inserting a propeller. -->
+  <!-- 定义可复用宏；调用时替换参数并展开为实际 URDF/SDF 元素。 -->
   <xacro:macro name="propeller" params="prefix position:='0 0 0' orientation:='0 0 0'">
 
     <link name="${prefix}_propeller_link">
@@ -12,12 +14,14 @@
           <mesh filename="package://otter_description/meshes/propeller.dae" scale="0.45 0.45 0.45" />
         </geometry>
       </visual>-->
+      <!-- 碰撞几何参与物理接触检测，不一定与显示网格完全相同。 -->
       <collision name="${prefix}_propeller_collision">
         <origin xyz="-0.08 0 0" rpy="0 1.57 0" />
         <geometry>
           <cylinder length="0.18" radius="0.24" />
         </geometry>
       </collision>
+      <!-- 质量和惯性张量影响动力学；与仅用于显示的网格外观分别配置。 -->
       <inertial>
         <mass value="0.5"/>
         <inertia ixx="0.008545" ixy="0.0" ixz="0.0" iyy="0.008545" iyz="0.0" izz="0.0144"/>

@@ -1,0 +1,72 @@
+........................................................................ [  8%]
+........................................................................ [ 17%]
+........................................................................ [ 25%]
+........................................................................ [ 34%]
+........................................................................ [ 42%]
+........................................................................ [ 51%]
+........................................................................ [ 59%]
+........................................................................ [ 68%]
+..........................................F............................. [ 76%]
+.........F.............................................................. [ 85%]
+........................................................................ [ 93%]
+......................................................                   [100%]
+=================================== FAILURES ===================================
+_______________ test_radar_recovery_without_goal_returns_to_idle _______________
+
+radar_navigation = <sim_env.simulation.Simulator object at 0x74e4b24b29b0>
+
+    def test_radar_recovery_without_goal_returns_to_idle(radar_navigation):
+        node = radar_navigation
+        node._control()
+        assert node.mode == 'WAITING_SENSOR'
+        node._on_radar(cloud(node))
+        node._control()
+        assert node.mode == 'IDLE'
+        assert node.reason == ''
+>       assert node.last_published_command.left == node.last_published_command.right == 0.
+E       AttributeError: 'Simulator' object has no attribute 'last_published_command'
+
+src/sim_env/test/test_radar_navigation_ros.py:81: AttributeError
+---------------------------- Captured stderr setup -----------------------------
+[INFO] [1789227482.385749135] [radar_nav_test.usv_simulation]: Effective navigation parameters: {"dynamics.D": 0.395, "dynamics.L": 1.35, "dynamics.W": 1.0, "dynamics.acceleration_max": 1.0, "dynamics.acceleration_min": -1.0, "dynamics.cruising_speed": 1.0, "dynamics.i_z": 10.03, "dynamics.jerk_max": 2.0, "dynamics.jerk_min": -2.0, "dynamics.mass": 29.84, "dynamics.max_force": 50.0, "dynamics.n_dot_r": 1.0, "dynamics.n_dot_u": 0.0, "dynamics.n_dot_v": 0.0, "dynamics.n_r": -20.0, "dynamics.n_r_r": 0.0, "dynamics.n_u": 0.0, "dynamics.n_v": 0.0, "dynamics.name": "otter", "dynamics.ns": "otter", "dynamics.type": "Differential", "dynamics.velocity_max": 1.0, "dynamics.velocity_min": 0.0, "dynamics.x_dot_r": 0.0, "dynamics.x_dot_u": 5.0, "dynamics.x_dot_v": 0.0, "dynamics.x_r": 0.0, "dynamics.x_u": -20.0, "dynamics.x_u_u": 0.0, "dynamics.x_v": 0.0, "dynamics.y_dot_r": 0.0, "dynamics.y_dot_u": 0.0, "dynamics.y_dot_v": 5.0, "dynamics.y_r": 0.0, "dynamics.y_u": 0.0, "dynamics.y_v": -20.0, "dynamics.y_v_v": 0.0, "navigation.costmap_topic": "costmap_raw", "navigation.footprint_length": 2.2, "navigation.footprint_width": 1.2, "navigation.map_timeout": 1.5, "navigation.max_expansions": 200000, "navigation.planning_frequency": 5.0, "navigation.planning_timeout": 1.0, "navigation.radar_timeout": 0.5, "navigation.require_radar": true, "navigation.state_timeout": 0.5, "navigation.trajectory_timeout": 1.0, "obstacle_factor": 0.25, "path_planner.convert_offset": 0.0, "path_planner.default_tolerance": 0.0, "path_planner.enable_resample": true, "path_planner.expand_zone": true, "path_planner.outline_map": true, "path_planner.resample_ratio": 0.5, "path_planner.show_safety_corridor": false, "planner_name": "astar", "usv_simulation.controller.control_frequency": 10.0, "usv_simulation.controller.controller_name": "pid", "usv_simulation.controller.lqr_controller.Q_matrix_diag": [1.0, 1.0, 100.0, 10.0, 10.0, 10.0], "usv_simulation.controller.lqr_controller.R_matrix_diag": [20.0, 20.0], "usv_simulation.controller.lqr_controller.discrete_dt": 0.1, "usv_simulation.controller.lqr_controller.goal_distance_tolerance": 1.0, "usv_simulation.controller.lqr_controller.goal_speed_tolerance": 0.25, "usv_simulation.controller.lqr_controller.lookahead_time": 2.0, "usv_simulation.controller.lqr_controller.max_iterations": 5000, "usv_simulation.controller.lqr_controller.solve_eps": 0.1, "usv_simulation.controller.lqr_controller.solve_timeout": 0.08, "usv_simulation.controller.pid_controller.goal_distance_tolerance": 1.5, "usv_simulation.controller.pid_controller.goal_speed_tolerance": 0.25, "usv_simulation.controller.pid_controller.k_d_course": 0.0, "usv_simulation.controller.pid_controller.k_d_speed": 0.0, "usv_simulation.controller.pid_controller.k_i_course": 0.0, "usv_simulation.controller.pid_controller.k_i_speed": 0.5, "usv_simulation.controller.pid_controller.k_p_course": 2.0, "usv_simulation.controller.pid_controller.k_p_speed": 2.0, "usv_simulation.controller.pid_controller.lookahead_time": 2.6, "usv_simulation.trajectory_planner.los.goal_tolerance": 1.0, "usv_simulation.trajectory_planner.los.kp_yaw": 1.0, "usv_simulation.trajectory_planner.los.lookahead_distance": 1.0, "usv_simulation.trajectory_planner.los.slowdown_distance": 3.0, "usv_simulation.trajectory_planner.los.switch_dist": 5.0, "usv_simulation.trajectory_planner.los.trajectory_time": 20.0, "usv_simulation.trajectory_planner.los.trajectory_time_interval": 0.5, "usv_simulation.trajectory_planner.los.yaw_rate_max": 0.3, "usv_simulation.trajectory_planner.planner_name": "los"}
+_______ test_standalone_collection_skips_only_known_world_fixture_cases ________
+
+source_tree = PosixPath('/tmp/pytest-of-usv/pytest-108/test_standalone_collection_ski0/source')
+tmp_path = PosixPath('/tmp/pytest-of-usv/pytest-108/test_standalone_collection_ski0')
+
+    def test_standalone_collection_skips_only_known_world_fixture_cases(source_tree, tmp_path):
+        common_test = source_tree / "src/core/common/test/test_geodesy.py"
+        common_test.write_text('''import pytest
+    def test_world_reference_matches_current_world_and_example_point():
+        raise AssertionError("sim_env world is not exported")
+    @pytest.mark.parametrize("change", ["absent", "NED", "heading", "surface", "latitude", "elevation"])
+    def test_unsupported_or_incomplete_world_rejected(change):
+        raise AssertionError("sim_env world is not exported")
+    def test_unrelated_geodesy_failure_is_not_hidden():
+        assert False
+    ''', encoding="utf-8")
+        other_test = source_tree / "src/core/common/test/test_other.py"
+        other_test.write_text('''def test_world_reference_matches_current_world_and_example_point():
+        assert False
+    ''', encoding="utf-8")
+        output, archive = tmp_path / "kit", tmp_path / "kit.zip"
+        result = run_export(source_tree, output, archive)
+        assert result.returncode == 0, result.stderr
+        check = subprocess.run(
+            [sys.executable, "-I", "-B", "-m", "pytest", "--confcutdir=.", "-q", "-p", "no:cacheprovider"],
+            cwd=output, capture_output=True, encoding="utf-8", errors="replace",
+        )
+>       assert check.returncode == 1, check.stdout + check.stderr
+E       AssertionError: 
+E         no tests ran in 0.00s
+E         ERROR: file or directory not found: src/trajectory_planner/test
+E         
+E         
+E       assert 4 == 1
+E        +  where 4 = CompletedProcess(args=['/usr/bin/python3', '-I', '-B', '-m', 'pytest', '--confcutdir=.', '-q', '-p', 'no:cacheprovider...de=4, stdout='\nno tests ran in 0.00s\n', stderr='ERROR: file or directory not found: src/trajectory_planner/test\n\n').returncode
+
+scripts/control/test_export_control_workspace.py:172: AssertionError
+=========================== short test summary info ============================
+FAILED src/sim_env/test/test_radar_navigation_ros.py::test_radar_recovery_without_goal_returns_to_idle
+FAILED scripts/control/test_export_control_workspace.py::test_standalone_collection_skips_only_known_world_fixture_cases
+2 failed, 844 passed in 20.18s

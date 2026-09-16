@@ -1,0 +1,30 @@
+{
+  "python_on_path": "/home/usv/miniconda3/bin/python3",
+  "harness_python": "/usr/bin/python3",
+  "installed_launch": "/home/usv/module-layout-20260914/install/usv_perception/local/lib/python3.10/dist-packages/usv_perception/launch_support.py",
+  "launch_source_matches_install": true,
+  "launch_sha256": "c446e3e92dac48dfae9bcb5a2b228d2c45529bc6f1e7a32ed12612939603c151",
+  "probes": {
+    "path_python": {
+      "command": [
+        "/usr/bin/env",
+        "python3",
+        "-c",
+        "import sys,runpy; print(sys.executable,sys.version,flush=True); runpy.run_path('/home/usv/module-layout-20260914/install/usv_perception/lib/usv_perception/perception_mapping_node',run_name='mapping_import_probe'); print('MAPPING_IMPORT_OK')"
+      ],
+      "exit_code": 1,
+      "stdout": "/home/usv/miniconda3/bin/python3 3.13.13 | packaged by Anaconda, Inc. | (main, Apr 14 2026, 06:19:41) [GCC 14.3.0]\n",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import sys,runpy; print(sys.executable,sys.version,flush=True); runpy.run_path('/home/usv/module-layout-20260914/install/usv_perception/lib/usv_perception/perception_mapping_node',run_name='mapping_import_probe'); print('MAPPING_IMPORT_OK')\n                                                                    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen runpy>\", line 287, in run_path\n  File \"<frozen runpy>\", line 98, in _run_module_code\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/home/usv/module-layout-20260914/install/usv_perception/lib/usv_perception/perception_mapping_node\", line 2, in <module>\n    from usv_perception.mapping_node import main\n  File \"/home/usv/module-layout-20260914/install/usv_perception/local/lib/python3.10/dist-packages/usv_perception/mapping_node.py\", line 12, in <module>\n    import rclpy\n  File \"/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py\", line 49, in <module>\n    from rclpy.signals import install_signal_handlers\n  File \"/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/signals.py\", line 15, in <module>\n    from rclpy.exceptions import InvalidHandle\n  File \"/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/exceptions.py\", line 15, in <module>\n    from rclpy.impl.implementation_singleton import rclpy_implementation as _rclpy\n  File \"/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/impl/implementation_singleton.py\", line 32, in <module>\n    rclpy_implementation = import_c_library('._rclpy_pybind11', package)\n  File \"/opt/ros/humble/lib/python3.10/site-packages/rpyutils/import_c_library.py\", line 39, in import_c_library\n    return importlib.import_module(name, package=package)\n           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/usv/miniconda3/lib/python3.13/importlib/__init__.py\", line 88, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nModuleNotFoundError: No module named 'rclpy._rclpy_pybind11'\nThe C extension '/opt/ros/humble/lib/python3.10/site-packages/_rclpy_pybind11.cpython-313-x86_64-linux-gnu.so' isn't present on the system. Please refer to 'https://docs.ros.org/en/humble/Guides/Installation-Troubleshooting.html#import-failing-without-library-present-on-the-system' for possible solutions\n"
+    },
+    "ros_python": {
+      "command": [
+        "/usr/bin/python3",
+        "-c",
+        "import sys,runpy; print(sys.executable,sys.version,flush=True); runpy.run_path('/home/usv/module-layout-20260914/install/usv_perception/lib/usv_perception/perception_mapping_node',run_name='mapping_import_probe'); print('MAPPING_IMPORT_OK')"
+      ],
+      "exit_code": 0,
+      "stdout": "/usr/bin/python3 3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]\nMAPPING_IMPORT_OK\n",
+      "stderr": ""
+    }
+  }
+}

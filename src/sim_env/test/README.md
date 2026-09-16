@@ -1,5 +1,7 @@
 # Costmap shutdown regression (ROS Humble)
 
+普通导航拆分后，`test_navigation_ros.py` 使用本目录 `legacy_reference.py` 保留拆分前的 LiDAR 行为参照。该文件不安装，已按当前 LiDAR 范围移除停用传感器的分支。新生产节点的控制测试位于 `src/core/control_module/usv_control/test`，决策及跨模块闭环测试位于 `src/core/decision_module/usv_decision/test`；启动及 YAML 兼容测试为本目录 `test_launch_modules.py`。不能用旧参照测试通过代替新节点或 Gazebo 验证。
+
 `costmap_shutdown_regression.py` runs the real `Costmap2DROS` executable in a
 separate process and sends SIGINT. It requires ROS Humble and PyYAML, but does
 not require Gazebo. Select a ROS domain that is not used by another experiment.

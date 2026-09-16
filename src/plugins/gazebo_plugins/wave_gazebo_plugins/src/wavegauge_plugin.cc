@@ -15,6 +15,7 @@
  *
 */
 
+// 波高标尺插件直接将模型世界 Z 设置为计算水面高度，便于比对视觉海面与物理波高。
 #include <functional>
 #include <string>
 #include <gazebo/common/Assert.hh>
@@ -36,6 +37,7 @@ WaveguagePlugin::WaveguagePlugin()
 }
 
 /////////////////////////////////////////////////
+// 读取 wave_model 名称与 fluid_level 平均水位 m，保留传入的模型指针。
 void WaveguagePlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 {
   GZ_ASSERT(_model != NULL, "Received NULL model pointer");
@@ -55,6 +57,7 @@ void WaveguagePlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
+// 注册每个物理步的回调，周期由 Gazebo 世界更新驱动。
 void WaveguagePlugin::Init()
 {
   this->updateConnection = event::Events::ConnectWorldUpdateBegin(
@@ -62,6 +65,7 @@ void WaveguagePlugin::Init()
 }
 
 /////////////////////////////////////////////////
+// 先查共享波场参数；找不到时保持原位，找到后在模型 XY 处取波高并加平均水位。
 void WaveguagePlugin::OnUpdate()
 {
   // Retrieve the wave model...
@@ -96,6 +100,7 @@ void WaveguagePlugin::OnUpdate()
   waveHeightS += this->fluidLevel;
 
   // Set vertical location to match the wave height
+  // 只替换竖直位置，保留水平位置与姿态；这里不通过浮力动力学积分更新位置。
   modelPose.Pos().Z(waveHeightS);
   this->model->SetWorldPose(modelPose);
 }

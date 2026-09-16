@@ -1,0 +1,14 @@
+{
+  "before": "ActiveState=active\nFragmentPath=/lib/systemd/system/systemd-timesyncd.service\nUnitFileState=enabled\n",
+  "wall_before": 1789407644.6388896,
+  "command": [
+    "systemctl",
+    "disable",
+    "--now",
+    "systemd-timesyncd.service"
+  ],
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "Removed /etc/systemd/system/dbus-org.freedesktop.timesync1.service.\nRemoved /etc/systemd/system/sysinit.target.wants/systemd-timesyncd.service.\n",
+  "after": "ActiveState=inactive\nFragmentPath=/lib/systemd/system/systemd-timesyncd.service\nUnitFileState=disabled\n"
+}

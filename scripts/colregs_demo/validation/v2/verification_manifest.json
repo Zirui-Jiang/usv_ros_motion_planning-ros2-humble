@@ -1,0 +1,96 @@
+{
+  "verified_at": "2026-09-15T13:38:21.842320+08:00",
+  "demo_version": "2.0",
+  "passed": true,
+  "tested_url": "file:///D:/ROS2%E8%BD%BB%E9%87%8F%E4%BB%BF%E7%9C%9F%E7%B3%BB%E7%BB%9F/usv_ros_motion_planning-ros2-humble/scripts/colregs_demo/colregs-demo.html",
+  "html_bytes": 108983,
+  "embedded_sources_match": {
+    "engine.js": true,
+    "app.js": true,
+    "style.css": true
+  },
+  "reports_match_current_files": {
+    "los_engine_hash": true,
+    "browser_html_hash": true,
+    "python_source_hash": true
+  },
+  "los_cases": 11,
+  "los_samples": 165,
+  "los_fields_per_sample": 8,
+  "los_max_abs_error": 1.7763568394002505e-14,
+  "browser_checks": 15,
+  "initial_head_on": {
+    "name": "v2_real_rule_polygons_and_astar_evidence",
+    "passed": true,
+    "zone_areas_m2": {
+      "safety-1": 5248.8,
+      "rule-1": 5103.0
+    },
+    "expanded": 2116,
+    "raw_waypoints": 44,
+    "search_count": 2,
+    "active_constraints": [
+      "预测冲突安全域：由当前相对位置、速度和 CPA 冲突点建立，随 safetyDistance 缩放；本轮冻结的有限时域二维工程约束。",
+      "抑制左绕的规则区：将本轮右转 / 避免船首通过意图转换为非对称禁止区；矩形形状和范围属于工程近似。",
+      "预测冲突航段限制左向边；已在安全域右侧允许 LOS 横向修正",
+      "搜索额外净空 12/20 m；LOS 对原规则边界独立回验",
+      "g = 距离 + 0.025 (1/m) × 原路偏离 × 边长；h = 欧氏距离"
+    ],
+    "cost_breakdown": {
+      "length": 250.20815280171308,
+      "routeDeviation": 187.77793552151405,
+      "total": 437.9860883232272
+    },
+    "route_validation": {
+      "staticSafe": true,
+      "ruleSafe": true,
+      "dynamicSafe": true,
+      "reason": "岸障、规则与动态三项回验通过",
+      "minDistance": 44.98714755056501
+    },
+    "chosen_label": "A* 净空 12 m / 3.00 m/s",
+    "chosen_speed_mps": 3,
+    "chosen_cost": 523.8367677233699,
+    "speed_limit_mps": 3,
+    "initial_phase": "保持避让责任"
+  },
+  "stable_search_reuse": {
+    "name": "v2_stable_route_search_reuse",
+    "passed": true,
+    "seconds": 5,
+    "interval_seconds": 0.5,
+    "search_counts": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "reused_intervals": 10
+  },
+  "browser_version": "148.0.7778.96",
+  "page_errors": [],
+  "console_errors": [],
+  "external_requests": [],
+  "screenshots": [
+    "D:\\ROS2轻量仿真系统\\usv_ros_motion_planning-ros2-humble\\scripts\\colregs_demo\\validation\\v2\\desktop-initial.png",
+    "D:\\ROS2轻量仿真系统\\usv_ros_motion_planning-ros2-humble\\scripts\\colregs_demo\\validation\\v2\\desktop-rule-search-layers.png",
+    "D:\\ROS2轻量仿真系统\\usv_ros_motion_planning-ros2-humble\\scripts\\colregs_demo\\validation\\v2\\desktop-running.png",
+    "D:\\ROS2轻量仿真系统\\usv_ros_motion_planning-ros2-humble\\scripts\\colregs_demo\\validation\\v2\\mobile.png"
+  ],
+  "sha256": {
+    "colregs-demo.html": "8693e7db77f2e8be87de975bd73fd16e3ffaef5d15f279dca0b39dabaef3d855",
+    "engine.js": "f9ce329f81d9323b0397c426d1b9555ca1e4a970db60405e66341c464cfd91c4",
+    "app.js": "c746f5f3239ea6e01d779c3bc74871ba131fd7245bd272369c035147844d0e6b",
+    "style.css": "31cf4aba47aca4579ab91b9f5cfc966bc65bb9246a853167675adcea1bf20358",
+    "verify_los.py": "0fd75faee35995e7b63aa2376593af59b683f900adb6ca1ed0c22ed36760a680",
+    "browser_check.py": "3a503ecdef4df5ded68a8725ff195238ba379bbb3d9662b9cbd13c795ece1a16"
+  },
+  "scope": "V2 ordinary LOS numerical parity and offline Chromium UI/search-evidence interactions at 1365x900 and 390x844. Scenario completion and algorithm edge-case tests are reported separately by the engine tests and root audit. ROS/Gazebo, real vessels, and other browser engines were not run."
+}

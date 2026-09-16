@@ -1,0 +1,29 @@
+# Otter 差动船模参数：质量千克、惯量千克米²、尺寸米、速度米/秒；阻尼系数已经带作用力符号。
+dynamics:
+  name: otter
+  type: Differential
+  cruising_speed: 1.0
+  # 单个纵向推进器满归一化命令对应的最大力，单位牛顿。
+  max_force: 50.0
+  mass: 29.84
+  i_z: 10.03
+  L: 1.35
+  W: 1.00
+  # 纵向推力相对船体中心线的横向力臂，偏航力矩由右减左推力乘 D 得到。
+  D: 0.395
+  # 附加质量/惯量参与有效惯性，纵横向使用质量项，偏航使用惯量项。
+  x_dot_u: 5.0
+  y_dot_v: 5.0
+  n_dot_r: 1.0
+  # 线性阻尼带负号，对正向速度产生反向阻力；勿在使用处再次翻转符号。
+  x_u: -20.0
+  y_v: -20.0
+  n_r: -20.0
+  # physical limitation
+  velocity_min: 0.0
+  velocity_max: 1.0
+  acceleration_min: -1.0
+  acceleration_max: 1.0
+  # 加速度变化率约束的单位为米/秒³。
+  jerk_min: -2.0
+  jerk_max: 2.0

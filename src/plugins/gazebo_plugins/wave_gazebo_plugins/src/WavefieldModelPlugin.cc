@@ -15,6 +15,7 @@
  *
 */
 
+// 物理侧波场入口：把共享 WaveParameters 挂为海面模型子实体，供船体/浮标插件按模型名读取。
 #include <algorithm>
 #include <iostream>
 #include <string>
@@ -81,6 +82,7 @@ namespace asv
   {
   }
 
+  // 加载 SDF、连接更新事件并创建 WavefieldEntity；子实体命名必须与查询接口约定一致。
   void WavefieldModelPlugin::Load(physics::ModelPtr _model, \
                                   sdf::ElementPtr _sdf)
   {
@@ -129,6 +131,7 @@ namespace asv
   {
   }
 
+  // 重置更新计时基准，使后续节流按重置后的仿真时间计算。
   void WavefieldModelPlugin::Reset()
   {
     // Reset time
@@ -139,6 +142,7 @@ namespace asv
     #endif
   }
 
+  // static 为假时按 update_rate Hz 调用实体更新；当前实体 Update 为空，波高由采样器按时间计算。
   void WavefieldModelPlugin::OnUpdate()
   {
     GZ_ASSERT(this->data->world != nullptr, "World is NULL");
@@ -167,6 +171,7 @@ namespace asv
     }
   }
 
+  // 按世界中的模型名找到波场子实体，返回只读共享指针；模型或实体不存在时返回 nullptr。
   std::shared_ptr<const WaveParameters> WavefieldModelPlugin::GetWaveParams(
     gazebo::physics::WorldPtr _world,
     const std::string& _waveModelName)

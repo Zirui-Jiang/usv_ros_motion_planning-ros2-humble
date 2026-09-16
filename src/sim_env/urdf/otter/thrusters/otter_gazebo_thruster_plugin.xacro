@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
+<!-- 向船模挂载推进器插件，由插件把接收的命令施加到仿真刚体。 -->
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- 定义可复用宏；调用时替换参数并展开为实际 URDF/SDF 元素。 -->
   <xacro:macro name="otter_usv_thrust_gazebo" params="name">
     <gazebo>
+      <!-- 加载指定动态库并传入参数；具体数值处理由对应插件源码完成。 -->
       <plugin name="otter_gazebo_thrust" filename="libotter_usv_gazebo_thrust_plugin.so">
         <!-- ROS 2 namespace so subscriptions resolve inside the robot namespace -->
         <robotNamespace>${namespace}</robotNamespace>

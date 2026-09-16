@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<!-- 波场共享库及模型/视觉/标尺插件包，导出 Gazebo 插件库搜索路径。 -->
 <package format="3">
   <name>wave_gazebo_plugins</name>
   <version>1.3.0</version>
@@ -21,6 +22,7 @@
   <exec_depend>gazebo_dev</exec_depend>
   <exec_depend>gazebo_ros</exec_depend>
 
+  <!-- 导出 ament 构建类型及下方列出的包资源信息，供 ROS 2 工具发现和使用。 -->
   <export>
     <build_type>ament_cmake</build_type>
     <gazebo_ros plugin_path="${prefix}/lib"/>

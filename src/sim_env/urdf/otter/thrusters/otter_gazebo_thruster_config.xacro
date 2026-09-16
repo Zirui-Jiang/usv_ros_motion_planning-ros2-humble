@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
+<!-- 将推进器名称及模型配置展开为插件可读取的单个推进器条目。 -->
+<!-- 加载指定动态库并传入参数；具体数值处理由对应插件源码完成。 -->
 <plugin xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- 定义可复用宏；调用时替换参数并展开为实际 URDF/SDF 元素。 -->
   <xacro:macro name="otter_gazebo_thruster_config" params="name">
     <otter_thruster>
       <linkName>${name}_propeller_link</linkName>

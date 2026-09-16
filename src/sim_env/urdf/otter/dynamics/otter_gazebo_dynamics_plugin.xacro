@@ -1,8 +1,11 @@
 <?xml version="1.0"?>
+<!-- 向 Gazebo 水动力插件传入船型、附加质量与阻尼配置。 -->
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- 定义可复用宏；调用时替换参数并展开为实际 URDF/SDF 元素。 -->
   <xacro:macro name="usv_dynamics_gazebo" params="name">
     <!--Gazebo Plugin for simulating Otter dynamics-->
     <gazebo>
+      <!-- 加载指定动态库并传入参数；具体数值处理由对应插件源码完成。 -->
       <plugin name="usv_dynamics_${name}" filename="libusv_gazebo_dynamics_plugin.so">
         <bodyName>base_link</bodyName>
         <!-- Must be same as the ocean model!-->

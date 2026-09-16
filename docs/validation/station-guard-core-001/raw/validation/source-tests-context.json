@@ -1,0 +1,24 @@
+{
+  "workspace": "/home/usv/usv_migration/station-guard-core-001",
+  "platform": "WSL Ubuntu-22.04 / ROS 2 Humble / system pytest 6.2.5",
+  "scope_command": "ROS_DOMAIN_ID=207 bash src/core/usv_mission/validation/run_source_tests.bash src scripts/validation",
+  "scope_result": {
+    "passed": 838,
+    "failed": 0,
+    "seconds": 20.89
+  },
+  "full_command": "ROS_DOMAIN_ID=207 PYTEST_ADDOPTS=\"-o testpaths=src/common/test\" bash src/core/usv_mission/validation/run_source_tests.bash",
+  "full_result": {
+    "passed": 846,
+    "failed": 0,
+    "seconds": 19.84
+  },
+  "compatibility_reason": "The unchanged control-export minimal fixture creates only src/common/test. Its generated pytest.ini also lists absent controller and trajectory test directories. System pytest 6.2.5 rejects absent testpaths before collection; Windows pytest 9.1.1 passes. The one-time override affects only this child pytest with no explicit paths. The parent explicitly collects src scripts; its scope and assertions are unchanged.",
+  "unchanged_control_test_sha256": "2e10480c5867e1bdd87bf8e704d3b0b10e7b7bad7f7952e20e0ff922bb26ad59",
+  "unchanged_control_exporter_sha256": "32827920077638237c13ca3e5e416080fada4d55581a5a1385f3c123a12302bc",
+  "retained_attempts": {
+    "attempt-001": "ROS launch_testing imported duplicate new/old test basenames; fixed by renaming four new task tests only.",
+    "attempt-002": "844 passed, 2 failed. Restored the pre-existing last_published_command diagnostic assignment used by radar; other failure was the control fixture version issue.",
+    "attempt-003": "845 passed, 1 failed. Original command without the one-time child collection compatibility setting; no task or radar failures."
+  }
+}

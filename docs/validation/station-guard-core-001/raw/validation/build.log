@@ -1,0 +1,104 @@
+Starting >>> common
+Starting >>> wave_gazebo_plugins
+Starting >>> usv_radar_interfaces
+Finished <<< common [0.63s]
+Starting >>> trajectory_planner
+Finished <<< trajectory_planner [0.73s]
+Starting >>> perception
+Finished <<< perception [0.51s]
+Starting >>> usv_radar_costmap
+Finished <<< usv_radar_interfaces [6.24s]
+Starting >>> mmwave_perception
+Finished <<< mmwave_perception [0.77s]
+Starting >>> path_planner
+Finished <<< path_planner [0.74s]
+Starting >>> controller
+Finished <<< controller [1.10s]
+Starting >>> usv_mission_interfaces
+Finished <<< usv_mission_interfaces [5.79s]
+Starting >>> dynamic_rviz_config
+Finished <<< dynamic_rviz_config [2.33s]
+Starting >>> dynamic_xml_config
+Finished <<< dynamic_xml_config [2.36s]
+Starting >>> goal_set_plugin
+Finished <<< usv_radar_costmap [24.2s]
+Starting >>> path_processor
+Finished <<< path_processor [0.49s]
+Finished <<< goal_set_plugin [31.2s]
+--- stderr: wave_gazebo_plugins
+CMake Deprecation Warning at CMakeLists.txt:11 (cmake_policy):
+  The OLD behavior for policy CMP0054 will be removed from a future version
+  of CMake.
+
+  The cmake-policies(7) manual explains that the OLD behaviors of all
+  policies are deprecated and that a policy should be set to OLD only under
+  specific short-term circumstances.  Projects should be ported to the NEW
+  behavior and not rely on setting a policy to OLD.
+
+
+---
+[Processing: wave_gazebo_plugins]
+Finished <<< wave_gazebo_plugins [1min 30s]
+Starting >>> usv_gazebo_plugins
+Starting >>> wave_gazebo
+--- stderr: wave_gazebo
+CMake Warning at /opt/ros/humble/share/xacro/cmake/xacro-extras.cmake:72 (message):
+  failed to determine deps for: worlds/ocean.world.xacro
+
+  error: <class 'ament_index_python.packages.PackageNotFoundError'>: "package
+  'wave_gazebo' not found, searching:
+  ['/home/usv/usv_migration/station-guard-core-001/install/wave_gazebo_plugins',
+  '/opt/ros/humble']" "package 'wave_gazebo' not found, searching:
+  ['/home/usv/usv_migration/station-guard-core-001/install/wave_gazebo_plugins',
+  '/opt/ros/humble']"
+
+  when processing file: worlds/ocean.world.xacro
+
+Call Stack (most recent call first):
+  /opt/ros/humble/share/xacro/cmake/xacro-extras.cmake:137 (xacro_add_xacro_file)
+  CMakeLists.txt:41 (xacro_add_files)
+
+
+CMake Warning at /opt/ros/humble/share/xacro/cmake/xacro-extras.cmake:72 (message):
+  failed to determine deps for: worlds/ocean_buoys.world.xacro
+
+  error: <class 'ament_index_python.packages.PackageNotFoundError'>: "package
+  'wave_gazebo' not found, searching:
+  ['/home/usv/usv_migration/station-guard-core-001/install/wave_gazebo_plugins',
+  '/opt/ros/humble']" "package 'wave_gazebo' not found, searching:
+  ['/home/usv/usv_migration/station-guard-core-001/install/wave_gazebo_plugins',
+  '/opt/ros/humble']"
+
+  when processing file: worlds/ocean_buoys.world.xacro
+
+Call Stack (most recent call first):
+  /opt/ros/humble/share/xacro/cmake/xacro-extras.cmake:137 (xacro_add_xacro_file)
+  CMakeLists.txt:41 (xacro_add_files)
+
+
+---
+Finished <<< wave_gazebo [1.91s]
+--- stderr: usv_gazebo_plugins
+CMake Deprecation Warning at CMakeLists.txt:21 (cmake_policy):
+  The OLD behavior for policy CMP0054 will be removed from a future version
+  of CMake.
+
+  The cmake-policies(7) manual explains that the OLD behaviors of all
+  policies are deprecated and that a policy should be set to OLD only under
+  specific short-term circumstances.  Projects should be ported to the NEW
+  behavior and not rely on setting a policy to OLD.
+
+
+---
+[Processing: usv_gazebo_plugins]
+[Processing: usv_gazebo_plugins]
+Finished <<< usv_gazebo_plugins [1min 27s]
+Starting >>> sim_env
+[Processing: sim_env]
+[Processing: sim_env]
+Finished <<< sim_env [1min 24s]
+Starting >>> usv_mission
+Finished <<< usv_mission [4.39s]
+
+Summary: 18 packages finished [4min 27s]
+  3 packages had stderr output: usv_gazebo_plugins wave_gazebo wave_gazebo_plugins

@@ -15,6 +15,7 @@
  *
  */
 
+// 世界级风载插件：对配置的多个模型施加水平风力和艏摇力矩，并可发布风速/风向调试值。
 #include <std_msgs/msg/float64.hpp>
 #include <functional>
 #include <gazebo/common/Console.hh>
@@ -28,6 +29,7 @@ UsvWindPlugin::UsvWindPlugin()
 }
 
 //////////////////////////////////////////////////
+// 读取 wind_obj 列表与随机风参数，创建 ROS 发布器并连接世界物理更新事件。
 void UsvWindPlugin::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
 {
   if (char* env_dbg = std::getenv("VRX_DEBUG"))
@@ -86,6 +88,7 @@ void UsvWindPlugin::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
 
   if (_sdf->HasElement("wind_direction"))
   {
+    // wind_direction 使用世界 ENU 平面内的度数，表示风速度指向，转换为水平单位向量。
     double windAngle = _sdf->GetElement("wind_direction")->Get<double>();
     this->windDirection.X(cos(windAngle * M_PI / 180));
     this->windDirection.Y(sin(windAngle * M_PI / 180));
@@ -137,6 +140,7 @@ void UsvWindPlugin::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
   gzmsg << "topic wind direction  = " << this->topicWindDirection << std::endl;
 
   // Setting the  seed for the random generator.
+  // 非零 random_seed 可固定随机序列；缺省或零使用随机设备提供种子。
   unsigned int seed = std::random_device{}();
   if (_sdf->HasElement("random_seed") && _sdf->GetElement("random_seed")->Get<unsigned int>() != 0)
   {
@@ -169,6 +173,7 @@ void UsvWindPlugin::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
 }
 
 //////////////////////////////////////////////////
+// 世界启动后模型可能稍晚出现，因此逐步查找模型，再对已初始化且 link 有效的对象施力。
 void UsvWindPlugin::Update()
 {
   // Look for the missing models if not all of them have been initialized
@@ -211,6 +216,7 @@ void UsvWindPlugin::Update()
   double randomDist = dist(*this->randGenerator);
 
   // Current variable wind velocity
+  // 一阶随机滤波叠加到平均风速；dT 为仿真秒数，平方根及除法要求 dT、timeConstant 为正。
   this->varVel += 1.0 / this->timeConstant * (-1.0 * this->varVel + this->filterGain / sqrt(dT) * randomDist) * dT;
   // Current wind velocity
   double velocity = this->varVel + this->windMeanVelocity;
@@ -230,6 +236,7 @@ void UsvWindPlugin::Update()
     ignition::math::Vector3d relativeWind =
         windObj.link->GetWorldPose().rot.Ign().Inverse().RotateVector(this->windDirection * velocity);
 #endif
+    // 先将世界风速旋转至船体系，再计算减去船体速度后的 apparentWind；下方施力仍使用 relativeWind。
     // Calculate apparent wind
 #if GAZEBO_MAJOR_VERSION >= 8
     ignition::math::Vector3d apparentWind = relativeWind - windObj.link->RelativeLinearVel();
@@ -241,6 +248,7 @@ void UsvWindPlugin::Update()
     // gzdbg << "Apparent wind: " << apparentWind << std::endl;
 
     // Calculate wind force - body coordinates
+    // 向量 X/Y 存纵横向力，Z 存艏摇力矩；这里的 Z 不是竖直风力。
     ignition::math::Vector3d windForce(windObj.windCoeff.X() * relativeWind.X() * abs(relativeWind.X()),
                                        windObj.windCoeff.Y() * relativeWind.Y() * abs(relativeWind.Y()),
                                        -2.0 * windObj.windCoeff.Z() * relativeWind.X() * relativeWind.Y());
@@ -252,6 +260,7 @@ void UsvWindPlugin::Update()
   // Moving the previous time one step forward.
   this->previousTime = currentTime;
 
+  // update_rate 仅控制调试话题发布间隔，施力仍每步计算；负值允许每步发布。
   double publishingBuffer = 1 / this->updateRate;
   if (this->updateRate < 0)
   {

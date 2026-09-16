@@ -1,0 +1,88 @@
+{
+  "passed": true,
+  "domain_id": 193,
+  "installed_share": "/home/usv/distributed-navigation-build-20260913/install/sim_env/share/sim_env",
+  "config_paths": {
+    "dynamics_config": "/home/usv/distributed-navigation-build-20260913/validation/yaml-runtime-001/dynamics_config.yaml",
+    "controller_config": "/home/usv/distributed-navigation-build-20260913/validation/yaml-runtime-001/controller_config.yaml",
+    "trajectory_config": "/home/usv/distributed-navigation-build-20260913/validation/yaml-runtime-001/trajectory_config.yaml",
+    "planner_config": "/home/usv/distributed-navigation-build-20260913/validation/yaml-runtime-001/planner_config.yaml"
+  },
+  "expected": {
+    "dynamics.mass": 31.25,
+    "dynamics.ns": "yaml_probe",
+    "planner_name": "dijkstra",
+    "obstacle_factor": 0.35,
+    "usv_simulation.controller.controller_name": "lqr",
+    "usv_simulation.controller.control_frequency": 8.0,
+    "usv_simulation.controller.pid_controller.k_p_speed": 3.25,
+    "usv_simulation.trajectory_planner.los.yaw_rate_max": 0.23
+  },
+  "commands": [
+    {
+      "argv": [
+        "ros2",
+        "launch",
+        "sim_env",
+        "decision.launch.py",
+        "robot_namespace:=yaml_probe",
+        "use_sim_time:=false",
+        "dynamics_config:=/home/usv/distributed-navigation-build-20260913/validation/yaml-runtime-001/dynamics_config.yaml",
+        "controller_config:=/home/usv/distributed-navigation-build-20260913/validation/yaml-runtime-001/controller_config.yaml",
+        "trajectory_config:=/home/usv/distributed-navigation-build-20260913/validation/yaml-runtime-001/trajectory_config.yaml",
+        "planner_config:=/home/usv/distributed-navigation-build-20260913/validation/yaml-runtime-001/planner_config.yaml"
+      ],
+      "launcher_pid": 202814
+    },
+    {
+      "argv": [
+        "ros2",
+        "launch",
+        "sim_env",
+        "control.launch.py",
+        "robot_namespace:=yaml_probe",
+        "use_sim_time:=false",
+        "dynamics_config:=/home/usv/distributed-navigation-build-20260913/validation/yaml-runtime-001/dynamics_config.yaml",
+        "controller_config:=/home/usv/distributed-navigation-build-20260913/validation/yaml-runtime-001/controller_config.yaml",
+        "trajectory_config:=/home/usv/distributed-navigation-build-20260913/validation/yaml-runtime-001/trajectory_config.yaml",
+        "planner_config:=/home/usv/distributed-navigation-build-20260913/validation/yaml-runtime-001/planner_config.yaml"
+      ],
+      "launcher_pid": 202815
+    }
+  ],
+  "checks": {
+    "usv_simulation_startup_yaml": {
+      "passed": true,
+      "actual": {
+        "dynamics.mass": 31.25,
+        "dynamics.ns": "yaml_probe",
+        "planner_name": "dijkstra",
+        "obstacle_factor": 0.35,
+        "usv_simulation.controller.controller_name": "lqr",
+        "usv_simulation.controller.control_frequency": 8.0,
+        "usv_simulation.controller.pid_controller.k_p_speed": 3.25,
+        "usv_simulation.trajectory_planner.los.yaw_rate_max": 0.23
+      }
+    },
+    "usv_control_startup_yaml": {
+      "passed": true,
+      "actual": {
+        "dynamics.mass": 31.25,
+        "dynamics.ns": "yaml_probe",
+        "planner_name": "dijkstra",
+        "obstacle_factor": 0.35,
+        "usv_simulation.controller.controller_name": "lqr",
+        "usv_simulation.controller.control_frequency": 8.0,
+        "usv_simulation.controller.pid_controller.k_p_speed": 3.25,
+        "usv_simulation.trajectory_planner.los.yaw_rate_max": 0.23
+      }
+    },
+    "hot_update_actual_control": {
+      "passed": true,
+      "actual": 4.75
+    },
+    "export_compatibility": {
+      "passed": true
+    }
+  }
+}

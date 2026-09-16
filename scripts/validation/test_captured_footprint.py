@@ -1,3 +1,4 @@
+# 用已捕获的 raw 地图与轨迹检查完整船体：允许合法软膨胀区情况，仍拒绝实体障碍切角。
 """Regression geometry from recorded raw-map/trajectory captures, not new runs."""
 import json
 from pathlib import Path

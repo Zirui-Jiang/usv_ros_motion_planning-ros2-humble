@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- GPS 传感器模板，描述安装位姿和仿真输出；普通导航入口当前关闭该传感器。 -->
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- 定义可复用宏；调用时替换参数并展开为实际 URDF/SDF 元素。 -->
   <xacro:macro name="otter_gps" params="name:=gps x:=0 y:=0 z:=0 R:=0 P:=0 Y:=0">
     <link name="${name}_link">
+      <!-- 外观几何与材质只负责显示，不能据此认定物理碰撞尺寸。 -->
       <visual name="${name}_visual_base">
         <geometry>
           <box size="0.1 0.1 0.025" />
@@ -27,6 +30,7 @@
     </joint>
     <gazebo reference="${name}_link">
       <!-- ROS 2 gazebo_ros_pkgs GPS sensor (navsat) -->
+      <!-- 加载指定动态库并传入参数；具体数值处理由对应插件源码完成。 -->
       <plugin name="gps_plugin_${name}" filename="libgazebo_ros_gps_sensor.so">
         <ros>
           <namespace>/${namespace}</namespace>

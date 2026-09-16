@@ -1,0 +1,332 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "domain_id": 218,
+  "python": "/usr/bin/python3",
+  "assertions": {
+    "domain_was_unoccupied": {
+      "passed": true,
+      "detail": null
+    },
+    "sensor_message_contract": {
+      "passed": true,
+      "detail": []
+    },
+    "same_stamp_and_count_across_raw_cloud_detection": {
+      "passed": true,
+      "detail": null
+    },
+    "costmap_lethal_and_inflation": {
+      "passed": true,
+      "detail": null
+    },
+    "map_to_sensor_tf": {
+      "passed": true,
+      "detail": {
+        "parent": "otter/map",
+        "child": "otter/mmwave_link",
+        "stamp_ns": 1300000000
+      }
+    },
+    "lidar_has_no_publisher": {
+      "passed": true,
+      "detail": null
+    },
+    "costmap_uses_only_radar_and_inflation": {
+      "passed": true,
+      "detail": {
+        "plugins": [
+          "radar_layer",
+          "inflation_layer"
+        ],
+        "topic": "/otter/sensors/mmwave/front/points",
+        "frame": "otter/mmwave_link"
+      }
+    },
+    "costmap_subscribes_to_radar_points": {
+      "passed": true,
+      "detail": [
+        {
+          "name": "mmwave_smoke_observer",
+          "namespace": "/"
+        },
+        {
+          "name": "costmap",
+          "namespace": "/otter"
+        },
+        {
+          "name": "usv_simulation",
+          "namespace": "/otter"
+        },
+        {
+          "name": "usv_control",
+          "namespace": "/otter"
+        }
+      ]
+    },
+    "navigation_requires_radar": {
+      "passed": true,
+      "detail": null
+    },
+    "actual_control_requires_radar": {
+      "passed": true,
+      "detail": null
+    },
+    "sole_control_publisher_left": {
+      "passed": true,
+      "detail": [
+        {
+          "name": "usv_control",
+          "namespace": "/otter"
+        }
+      ]
+    },
+    "sole_control_publisher_right": {
+      "passed": true,
+      "detail": [
+        {
+          "name": "usv_control",
+          "namespace": "/otter"
+        }
+      ]
+    },
+    "sole_control_publisher_lateral": {
+      "passed": true,
+      "detail": [
+        {
+          "name": "usv_control",
+          "namespace": "/otter"
+        }
+      ]
+    },
+    "front_goal_path_and_thrust": {
+      "passed": true,
+      "detail": {
+        "goal": [
+          5.0,
+          0.0
+        ],
+        "path_messages": 1
+      }
+    },
+    "raw_gazebo_and_costmap_continue_during_loss": {
+      "passed": true,
+      "detail": null
+    },
+    "perception_outputs_stop": {
+      "passed": true,
+      "detail": {
+        "before": 25,
+        "after": 25
+      }
+    },
+    "radar_loss_waiting_sensor_and_zero_thrust": {
+      "passed": true,
+      "detail": {
+        "stop_to_check_wall_s": 2.5504900259547867,
+        "states": [
+          "NAVIGATING",
+          "WAITING_SENSOR",
+          "WAITING_SENSOR"
+        ]
+      }
+    },
+    "radar_and_navigation_recover": {
+      "passed": true,
+      "detail": "NAVIGATING"
+    },
+    "final_sensor_contract": {
+      "passed": true,
+      "detail": []
+    },
+    "final_no_lidar_publisher": {
+      "passed": true,
+      "detail": null
+    }
+  },
+  "started_unix_s": 1789311510.4708734,
+  "scope": "geometric radar, costmap, short goal and stopped-perception safety; no long navigation claim",
+  "fixture": {
+    "source": "/home/usv/distributed-navigation-build-20260913/install/sim_env/share/sim_env/worlds/ocean.world",
+    "removed_models": [
+      "sandisland",
+      "BOX_0",
+      "BOX_1",
+      "BOX_2",
+      "BOX_3"
+    ],
+    "targets": [
+      {
+        "name": "smoke_front",
+        "x": 12.0,
+        "y": 0.0,
+        "size": [
+          2,
+          3,
+          2
+        ]
+      },
+      {
+        "name": "smoke_side_rear",
+        "x": -6.0,
+        "y": 12.0,
+        "size": [
+          2,
+          3,
+          2
+        ]
+      }
+    ],
+    "sha256": "c4654929b1d8745df9cdea3713f68cd1dabcdddddd0c4ef52bf083b5807451d3"
+  },
+  "install_share": "/home/usv/distributed-navigation-build-20260913/install/sim_env/share/sim_env",
+  "gazebo_master_uri": "http://127.0.0.1:53273",
+  "command": [
+    "/usr/bin/python3",
+    "/opt/ros/humble/bin/ros2",
+    "launch",
+    "sim_env",
+    "main.launch.py",
+    "obstacle_sensor:=mmwave",
+    "headless:=true",
+    "robot_x:=0",
+    "robot_y:=0",
+    "robot_yaw:=0",
+    "world:=/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/docs/validation/distributed-navigation-001/mmwave-001/mmwave_smoke"
+  ],
+  "owned_process_group": 209305,
+  "stopped_perception_pid": 209317,
+  "loss_period": {
+    "raw_scan_messages_after_drain": 50,
+    "costmap_messages_after_drain": 2,
+    "pointcloud_messages_after_drain": 0,
+    "costmap_stamp_advanced_ns": 2000000000,
+    "last_thrust": {
+      "left": 0.0,
+      "right": 0.0,
+      "lateral": 0.0
+    }
+  },
+  "launch_exit_code": 0,
+  "counts": {
+    "left_commands": 75,
+    "right_commands": 75,
+    "lateral_commands": 75,
+    "statuses": 8,
+    "raw_scans": 184,
+    "batches": 54,
+    "clouds": 54,
+    "nonempty_clouds": 54,
+    "matched_batches": 54,
+    "matched_nonempty_batches": 54,
+    "odometry": 63,
+    "maps": 7,
+    "lethal_maps": 6,
+    "inflated_maps": 6,
+    "paths": 13,
+    "nonempty_paths": 12
+  },
+  "violations": [],
+  "scan_geometry": {
+    "frame": "otter/mmwave_link",
+    "angle_min": -1.0471999645233154,
+    "angle_max": 1.0471999645233154,
+    "range_max": 40.0,
+    "samples": 241
+  },
+  "last_status": {
+    "state": "NAVIGATING",
+    "reason": "",
+    "version": 1,
+    "stamp": 6.300000000000001,
+    "controller": "pid",
+    "goal": [
+      5.0,
+      0.0,
+      0.0
+    ],
+    "metrics": {
+      "costmap_conversion_ms": {
+        "count": 3,
+        "p50": 0.18461403669789433,
+        "p95": 0.22735949023626745,
+        "p99": 0.23115908610634506,
+        "max": 0.23210898507386446
+      },
+      "planning_ms": {
+        "count": 12,
+        "p50": 3.5664619936142117,
+        "p95": 4.698463651584461,
+        "p99": 4.827461518580094,
+        "max": 4.859710985329002
+      },
+      "control_ms": {
+        "count": 71,
+        "p50": 0.048296002205461264,
+        "p95": 0.26748600066639483,
+        "p99": 0.31289952457882436,
+        "max": 0.3780800034292042
+      }
+    },
+    "counters": {
+      "stale_control_reports": 9,
+      "pending_replacements": 0,
+      "global_searches": 1,
+      "costmaps_without_fresh_radar": 3,
+      "wrong_session_references": 10,
+      "stale_references": 61
+    },
+    "process": {
+      "pid": 209323,
+      "cpu_seconds": 0.697133,
+      "peak_rss_kib": 75112,
+      "monotonic": 303084.057930292
+    },
+    "modules": {
+      "decision": "72b91e7a673d4485be2a61a4ba4d0bfd",
+      "control": "da3a481de2d74ea4a5b5afd92f493343",
+      "perception": "423a767870bf4d16a42697bd3b7c0950",
+      "control_process": {
+        "pid": 209325,
+        "cpu_seconds": 0.679683,
+        "peak_rss_kib": 71732,
+        "monotonic": 303084.03871695
+      }
+    }
+  },
+  "status_history": [
+    {
+      "wall_monotonic_s": 303076.473327368,
+      "state": "WAITING_SENSOR"
+    },
+    {
+      "wall_monotonic_s": 303077.556612527,
+      "state": "WAITING_SENSOR"
+    },
+    {
+      "wall_monotonic_s": 303078.640128658,
+      "state": "IDLE"
+    },
+    {
+      "wall_monotonic_s": 303079.723702097,
+      "state": "NAVIGATING"
+    },
+    {
+      "wall_monotonic_s": 303080.806942739,
+      "state": "WAITING_SENSOR"
+    },
+    {
+      "wall_monotonic_s": 303081.890306847,
+      "state": "WAITING_SENSOR"
+    },
+    {
+      "wall_monotonic_s": 303082.974058675,
+      "state": "WAITING_MAP"
+    },
+    {
+      "wall_monotonic_s": 303084.058204908,
+      "state": "NAVIGATING"
+    }
+  ],
+  "wall_duration_s": 12.486186706984881
+}

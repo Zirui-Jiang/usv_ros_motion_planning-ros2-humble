@@ -19,6 +19,7 @@
 /// \brief This file contains methods to calculate properties of
 /// simple geometrical objects.
 
+// 波场几何辅助接口，封装向量归一化和三角面法向计算。
 #ifndef _WAVE_GAZEBO_PLUGINS_GEOMETRY_HH_
 #define _WAVE_GAZEBO_PLUGINS_GEOMETRY_HH_
 
@@ -31,6 +32,7 @@ namespace asv
 // Geometry
 
   /// \brief A collection of static methods concerning linear geometry.
+  // 静态方法无需构造对象；零向量与退化三角形的处理见实现中的零值分支。
   class Geometry
   {
     /// \brief Normalise a Vector2 (i.e. ensure it has unit length)

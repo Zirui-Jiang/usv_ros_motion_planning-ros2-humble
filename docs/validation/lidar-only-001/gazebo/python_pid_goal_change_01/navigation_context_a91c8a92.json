@@ -1,0 +1,80 @@
+{
+  "status": {
+    "state": "WAITING_REFERENCE",
+    "reason": "",
+    "version": 2,
+    "stamp": 7.0,
+    "controller": "pid",
+    "goal": [
+      23.125,
+      -22.125,
+      -1.5707963267948963
+    ],
+    "metrics": {
+      "costmap_conversion_ms": {
+        "count": 7,
+        "p50": 0.1484079984948039,
+        "p95": 0.2569134405348449,
+        "p99": 0.2901707228738814,
+        "max": 0.2984850434586406
+      },
+      "planning_ms": {
+        "count": 21,
+        "p50": 7.634920999407768,
+        "p95": 8.8049559853971,
+        "p99": 8.971593622118235,
+        "max": 9.013253031298518
+      },
+      "control_ms": {
+        "count": 81,
+        "p50": 0.0598439946770668,
+        "p95": 0.2601890009827912,
+        "p99": 0.3065889934077859,
+        "max": 0.31261297408491373
+      }
+    },
+    "counters": {
+      "stale_control_reports": 2,
+      "pending_replacements": 0,
+      "odom_tf_waits": 2,
+      "global_searches": 1,
+      "stale_results": 1,
+      "wrong_session_references": 3,
+      "stale_references": 76
+    },
+    "process": {
+      "pid": 219183,
+      "cpu_seconds": 0.800711,
+      "peak_rss_kib": 74068,
+      "monotonic": 306932.54230229
+    },
+    "modules": {
+      "decision": "6ca2229a72d64773b73e168d535cb02a",
+      "control": "6620e022fd8241369eb6d7607b57ec30",
+      "perception": "f391ea797e274b0bac2e63df6fe14a5f",
+      "control_process": {
+        "pid": 219185,
+        "cpu_seconds": 0.743114,
+        "peak_rss_kib": 71124,
+        "monotonic": 306932.521844818
+      }
+    }
+  },
+  "goal": [
+    23.125,
+    -22.125,
+    -1.5707963267948966
+  ],
+  "path": {
+    "points": [],
+    "stamp": 7.0,
+    "frame_id": "otter/map"
+  },
+  "last_nonempty_trajectory": null,
+  "capture_wall_monotonic_s": 306932.561278379,
+  "source_age_wall_s": {
+    "map": 0.1334631409845315,
+    "odom": 0.01899521198356524
+  },
+  "limitation": "Latest subscription callback data; separate map/state/path stamps retained; not an atomic worker snapshot"
+}

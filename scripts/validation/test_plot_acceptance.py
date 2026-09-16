@@ -1,3 +1,4 @@
+# 验证图表与 CSV 明确标注所选 RMSE，同时保留旧指标和源时间指标。
 """Export labels must identify the selected RMSE without hiding legacy values."""
 import importlib.util
 from pathlib import Path
@@ -7,6 +8,7 @@ plot = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(plot)
 
 
+# 旧报告缺少新指标字段时，仍明确使用原有墙钟 RMSE。
 def test_old_report_uses_legacy_label_and_value():
     trial = {"row": {"cross_track_initial_m": {"rms": .2}}, "record": {"observations": {}}}
     assert plot.rmse_metric_name({}) == "legacy_wall"
@@ -14,6 +16,7 @@ def test_old_report_uses_legacy_label_and_value():
     assert plot.rmse_export_values(trial, {})["selected_rmse_m"] == .2
 
 
+# 选择源时间指标后，导出标签及两种指标值都要可追溯。
 def test_source_plot_csv_labels_and_both_values():
     report = {"method": {"rmse_metric": "source_time_trapezoid"}}
     trial = {"row": {"cross_track_initial_m": {"rms": .2}}, "record": {"observations": {"tracking": {

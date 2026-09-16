@@ -18,6 +18,7 @@
 /// \file Gazebo.hh
 /// \brief Support for methods not available in legacy versions of Gazebo.
 
+// 兼容旧版 Gazebo 的着色器参数写入声明。
 #ifndef _WAVE_GAZEBO_PLUGINS_GAZEBO_HH_
 #define _WAVE_GAZEBO_PLUGINS_GAZEBO_HH_
 
@@ -39,6 +40,7 @@ namespace gazebo
     /// be a number (int, float) or a space delimited array of numbers
     /// (floats). The value type must match the type defined in the shaders.
     /// Note: Setting vec2/float2 params is only supported in ogre1.9+
+    // 输入视觉对象、参数名、着色器类型及数值字符串，实际类型按 GPU 常量定义转换。
     void SetMaterialShaderParam(
       Visual& _visual,
       const std::string &_paramName,

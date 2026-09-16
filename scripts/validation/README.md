@@ -2,6 +2,21 @@
 
 本目录运行真实系统并保存观测。`--dry-run` 只输出计划，明确标记 `not_run`。当前脚本开发阶段已做 Python 语法检查与几何单元测试；是否通过 Gazebo 验收，以每次运行生成的 `summary.json` 为准。
 
+当前三模块导航验收必须给 `ros_acceptance.py` 传入 `--distributed`：实际航控参数从
+`usv_control` 读取，断流用例分别运行 `ros2 run usv_decision decision_node`、
+`ros2 run usv_control control_node` 和 `ros2 run usv_perception perception_monitor`。
+主组合入口仍为 `ros2 launch sim_env main.launch.py`。四份共享 YAML 来自
+`usv_navigation/config`，mapping/costmap 两份来自 `usv_perception/config`。
+`distributed_yaml_probe.py` 直接启动两个业务包的独立 launch，并读取实际节点参数。
+`distributed_smoke.py` 直接执行三个包的已安装 Python 入口，以保证暂停/重启信号作用于
+真实业务进程，而不是 `ros2 run` 的外层启动器。所有脚本均从选定的安装区加载。
+
+`verify_distributed_install.py` 检查新包发现、真实入口、消息类型支持、独立 launch、
+单份 YAML 与依赖边界，并拒绝旧环境或已移除雷达包污染。
+`verify_navigation_preservation.py` 通过 `package.xml` 分别发现快照和当前源码的位置，
+严格比较算法字节、六份 YAML、完整配置 AST 及明确迁移的节点/worker 定义。
+这两类审计不替代真实 ROS/Gazebo 运行。
+
 ## 调用方式
 
 在 WSL Ubuntu / Linux 中先加载 ROS 2 Humble 与已构建工作区。`PY_WS` 和 `CPP_WS` 都应是含 `install/setup.bash` 的绝对路径；C++ 基线工作区与 Python 工作区分开构建。
@@ -13,41 +28,41 @@ source "$PY_WS/install/setup.bash"
 
 # PID / LQR × 直线 / 转弯 / 单圆柱绕行 × 各 3 次，共 18 个独立 launch。
 python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
-  --workspace "$PY_WS" --mode python --costmap-topic /otter/costmap_raw \
+  --workspace "$PY_WS" --distributed --mode python --costmap-topic /otter/costmap_raw \
   --output /tmp/usv_acceptance_python_001
 
 # 先用 1 次直线检查环境与接口。
 python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
-  --workspace "$PY_WS" --controllers pid --scenario straight --repeats 1 \
+  --workspace "$PY_WS" --distributed --controllers pid --scenario straight --repeats 1 \
   --output /tmp/usv_acceptance_smoke_001
 
 # 候选参数校准：每次首个goal前原子设置并读回；整次导航期间保持固定。
 python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
-  --workspace "$PY_WS" --controllers pid --scenario single_obstacle --repeats 3 \
+  --workspace "$PY_WS" --distributed --controllers pid --scenario single_obstacle --repeats 3 \
   --costmap-topic /otter/costmap_raw \
   --parameter usv_simulation.trajectory_planner.los.switch_dist=1.0 \
   --output /tmp/usv_acceptance_switch1_candidate_001
 
 # 诊断模式：首次NO_PATH/map-invalid即保存当前输入并结束该例，不计通过。
 python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
-  --workspace "$PY_WS" --controllers pid --scenario single_obstacle --repeats 1 \
+  --workspace "$PY_WS" --distributed --controllers pid --scenario single_obstacle --repeats 1 \
   --costmap-topic /otter/costmap_raw --stop-on-reference-failure \
   --output /tmp/usv_acceptance_first_failure_001
 
 # 两个工作区的同场景比较，共 36 个导航试验，再加故障用例。
 export CPP_WS=/absolute/path/to/cpp_baseline_workspace
 python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
-  --workspace "$PY_WS" --baseline-workspace "$CPP_WS" --mode both --faults \
+  --workspace "$PY_WS" --distributed --baseline-workspace "$CPP_WS" --mode both --faults \
   --output /tmp/usv_acceptance_comparison_001
 
 # 只跑目标替换、取消，以及 Python 的受控 odom 断流。
 python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
-  --workspace "$PY_WS" --only-faults \
+  --workspace "$PY_WS" --distributed --only-faults \
   --output /tmp/usv_acceptance_faults_001
 
 # 不加载 ROS、不启动 Gazebo，只检查矩阵与配置。
 python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
-  --workspace "$PY_WS" --dry-run --output /tmp/usv_acceptance_plan_001
+  --workspace "$PY_WS" --distributed --dry-run --output /tmp/usv_acceptance_plan_001
 ```
 
 输出目录必须不存在，防止覆盖已有实验结果。退出码为 `0` 仅表示所请求且实际运行的用例全部通过；`blocked`、`unsupported` 或失败都会使 live run 返回非零。`--dry-run` 成功只表示计划生成成功。
@@ -60,7 +75,7 @@ python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
 
 旧 C++ `main.launch.py` 如果没有真正接入 `controller_name` 参数，不能仅凭 launch 命令认定 LQR 已运行。脚本通过 `/otter/usv_simulation/get_parameters` 校验实际 `usv_simulation.controller.controller_name`，不匹配就记 `blocked`。可用 `--baseline-launch-file validation.launch.py` 指向基线工作区中已安装、已接好算法选择的 launch 文件；该文件应启动同一 Gazebo/传感器/算法链。脚本不会修改基线源文件或用户 YAML。
 
-原 C++ 没有 `/otter/cancel_navigation` 时记为 `unsupported`，不伪造取消成功。odom 断流是针对 Python 调度节点的独立测试：通过 `ros2 run sim_env sim_env_node` 启动独占 namespace，持续发布空闲 raw costmap 和静止 odom，观察非零推力后仅停止 odom，costmap 保持新鲜。它不依赖 Gazebo，也不切断其他节点的数据。
+原 C++ 没有 `/otter/cancel_navigation` 时记为 `unsupported`，不伪造取消成功。odom 断流是受控输入测试：`--distributed` 启动三个业务包的节点，持续发布空闲 raw costmap 和静止 odom，观察非零推力后仅停止 odom，costmap 保持新鲜。它不依赖 Gazebo，也不切断其他节点的数据。未传 `--distributed` 的 `ros2 run sim_env sim_env_node` 分支只适用于历史单节点安装区。
 
 ## 场景与环境预检
 
@@ -179,7 +194,7 @@ python3 "$PY_WS/scripts/validation/compare_results.py" \
 
 ```bash
 python3 "$PY_WS/scripts/validation/localization_smoke.py" \
-  --workspace "$PY_WS" --domain-id 188 --mode acceptance \
+  --workspace "$PY_WS" --distributed --domain-id 188 --mode acceptance \
   --output /tmp/usv_localization_green_001
 
 python3 "$PY_WS/scripts/validation/mapping_throughput.py" \
@@ -200,3 +215,11 @@ python3 -m pytest scripts/validation/test_metrics.py -q
 ```
 
 本目录中的 `run_source_tests.bash` 是主集成任务提供的全仓库 ROS/source 测试入口，与本验收 harness 独立。
+
+## WSL 下周期性的秒级卡顿
+
+若关闭 Gazebo GUI 后 `/clock`、odom、scan 仍同时停顿，而控制报告和 RViz 鼠标交互继续，
+先核查系统时间是否回拨。当前机器已确认 WSL 根命名空间 chronyd 与 Ubuntu timesyncd
+重复校时；停用 Ubuntu 的重复服务、保留宿主机校时后做了独立复测。
+具体证据、适用条件、修复与回滚命令见
+[WSL 校时冲突记录](../../docs/validation/wsl-clock-fix-20260915/README.md)。

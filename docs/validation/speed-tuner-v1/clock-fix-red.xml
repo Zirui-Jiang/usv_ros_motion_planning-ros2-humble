@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="3" time="10.952" timestamp="2026-09-14T20:22:16.355576" hostname="DESKTOP-SFCU4PM"><testcase classname="src.core.control_module.usv_control.test.test_control_ros" name="test_control_waits_for_clock_sample_without_cutting_thrust_or_reintegrating[pid]" time="9.956"><failure message="AssertionError: assert 'SIMULATION_PAUSED' == 'NAVIGATING'&#10;  - NAVIGATING&#10;  + SIMULATION_PAUSED">algorithm = 'pid'
+
+    @pytest.mark.parametrize('algorithm', ['pid', 'lqr', 'adrc'])
+    def test_control_waits_for_clock_sample_without_cutting_thrust_or_reintegrating(algorithm):
+        """A slow Gazebo clock may stay unchanged across several wall timer ticks."""
+        with control_harness(extra_args=('-p', 'usv_simulation.controller.controller_name:=' + algorithm)) as h:
+            h.ready()
+            h.send_reference()
+            h.until(lambda: h.control.mode == 'NAVIGATING')
+            h.control.control_timer.cancel()
+            for _ in range(5):
+                h.step()
+                h.control._control()
+                previous = h.control.last_published_command
+                assert previous.left &gt; 0 and previous.right &gt; 0
+                if algorithm == 'adrc':
+                    core = h.control.controller
+                    integral = core.speed_loop.integral_speed
+                    history = list(core.heading_loop.heading_filter.position_history)
+                # Same ROS time, no new observation: keep output, never run the core twice.
+                h.control._control()
+&gt;               assert h.control.mode == 'NAVIGATING'
+E               AssertionError: assert 'SIMULATION_PAUSED' == 'NAVIGATING'
+E                 - NAVIGATING
+E                 + SIMULATION_PAUSED
+
+src/core/control_module/usv_control/test/test_control_ros.py:285: AssertionError</failure></testcase><testcase classname="src.core.control_module.usv_control.test.test_control_ros" name="test_control_waits_for_clock_sample_without_cutting_thrust_or_reintegrating[lqr]" time="0.347"><failure message="AssertionError: assert 'SIMULATION_PAUSED' == 'NAVIGATING'&#10;  - NAVIGATING&#10;  + SIMULATION_PAUSED">algorithm = 'lqr'
+
+    @pytest.mark.parametrize('algorithm', ['pid', 'lqr', 'adrc'])
+    def test_control_waits_for_clock_sample_without_cutting_thrust_or_reintegrating(algorithm):
+        """A slow Gazebo clock may stay unchanged across several wall timer ticks."""
+        with control_harness(extra_args=('-p', 'usv_simulation.controller.controller_name:=' + algorithm)) as h:
+            h.ready()
+            h.send_reference()
+            h.until(lambda: h.control.mode == 'NAVIGATING')
+            h.control.control_timer.cancel()
+            for _ in range(5):
+                h.step()
+                h.control._control()
+                previous = h.control.last_published_command
+                assert previous.left &gt; 0 and previous.right &gt; 0
+                if algorithm == 'adrc':
+                    core = h.control.controller
+                    integral = core.speed_loop.integral_speed
+                    history = list(core.heading_loop.heading_filter.position_history)
+                # Same ROS time, no new observation: keep output, never run the core twice.
+                h.control._control()
+&gt;               assert h.control.mode == 'NAVIGATING'
+E               AssertionError: assert 'SIMULATION_PAUSED' == 'NAVIGATING'
+E                 - NAVIGATING
+E                 + SIMULATION_PAUSED
+
+src/core/control_module/usv_control/test/test_control_ros.py:285: AssertionError</failure></testcase><testcase classname="src.core.control_module.usv_control.test.test_control_ros" name="test_control_waits_for_clock_sample_without_cutting_thrust_or_reintegrating[adrc]" time="0.283"><failure message="AssertionError: assert 'SIMULATION_PAUSED' == 'NAVIGATING'&#10;  - NAVIGATING&#10;  + SIMULATION_PAUSED">algorithm = 'adrc'
+
+    @pytest.mark.parametrize('algorithm', ['pid', 'lqr', 'adrc'])
+    def test_control_waits_for_clock_sample_without_cutting_thrust_or_reintegrating(algorithm):
+        """A slow Gazebo clock may stay unchanged across several wall timer ticks."""
+        with control_harness(extra_args=('-p', 'usv_simulation.controller.controller_name:=' + algorithm)) as h:
+            h.ready()
+            h.send_reference()
+            h.until(lambda: h.control.mode == 'NAVIGATING')
+            h.control.control_timer.cancel()
+            for _ in range(5):
+                h.step()
+                h.control._control()
+                previous = h.control.last_published_command
+                assert previous.left &gt; 0 and previous.right &gt; 0
+                if algorithm == 'adrc':
+                    core = h.control.controller
+                    integral = core.speed_loop.integral_speed
+                    history = list(core.heading_loop.heading_filter.position_history)
+                # Same ROS time, no new observation: keep output, never run the core twice.
+                h.control._control()
+&gt;               assert h.control.mode == 'NAVIGATING'
+E               AssertionError: assert 'SIMULATION_PAUSED' == 'NAVIGATING'
+E                 - NAVIGATING
+E                 + SIMULATION_PAUSED
+
+src/core/control_module/usv_control/test/test_control_ros.py:285: AssertionError</failure></testcase></testsuite></testsuites>

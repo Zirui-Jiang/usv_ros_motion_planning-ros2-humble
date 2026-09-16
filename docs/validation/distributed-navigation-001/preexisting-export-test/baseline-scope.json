@@ -1,0 +1,15 @@
+{
+  "original_command": "ROS_DOMAIN_ID=215 ROS_LOCALHOST_ONLY=1 PYTEST_ADDOPTS=\"-o testpaths=src/common/test\" bash src/core/usv_mission/validation/run_source_tests.bash src scripts --junitxml=validation/full-source-tests.xml\n",
+  "testcase_count": 846,
+  "target_cases": [
+    {
+      "attributes": {
+        "classname": "scripts.control.test_export_control_workspace",
+        "name": "test_standalone_collection_skips_only_known_world_fixture_cases",
+        "time": "0.186"
+      },
+      "child_tags": []
+    }
+  ],
+  "explanation": "The outer invocation explicitly selects src scripts. PYTEST_ADDOPTS overrides testpaths only for the nested pytest invocation, which has no positional test path."
+}

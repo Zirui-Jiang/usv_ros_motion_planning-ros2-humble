@@ -1,3 +1,4 @@
+# 构建浮力、船体水动力、Otter 推进与风载四个 Gazebo 共享插件。
 cmake_minimum_required(VERSION 3.8)
 project(usv_gazebo_plugins)
 
@@ -48,6 +49,7 @@ link_directories(
 # Libraries
 ########################################
 
+# 浮力插件将通用形状和多面体体积算法一并编入共享库。
 add_library(buoyancy_gazebo_plugin SHARED
   src/buoyancy_gazebo_plugin.cc
   src/shape_volume.cc
@@ -98,6 +100,7 @@ target_link_libraries(usv_gazebo_wind_plugin
 # Install
 ########################################
 
+# 统一安装四个动态库，SDF 的 filename 通过 Gazebo 插件搜索路径加载这些库。
 install(TARGETS
   buoyancy_gazebo_plugin
   usv_gazebo_dynamics_plugin
@@ -119,4 +122,5 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+# 生成 ament 包索引和配置导出，使安装后的包可被 ROS 2 构建与运行工具找到。
 ament_package()

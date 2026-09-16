@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "thresholds": {
+    "speed_tail_mae_mps_max": 0.1,
+    "heading_tail_mae_deg_max": 5.0,
+    "command_abs_max": 1.0,
+    "duration_s": 180.0,
+    "tail_duration_s": 20.0,
+    "dt_s": 0.1
+  },
+  "config": {
+    "path": "D:\\ROS2轻量仿真系统\\usv_ros_motion_planning-ros2-humble\\src\\core\\shared\\usv_navigation\\config\\robots\\otter\\adrc_controller_params_otter.yaml",
+    "sha256": "d28a306c4c5a492998e797e9821266c6d0194fccd4a8c929d339c069222c1176",
+    "controller_name": "adrc",
+    "adrc_controller": {
+      "goal_distance_tolerance": 1.5,
+      "goal_speed_tolerance": 0.25,
+      "lookahead_time": 2.6,
+      "command_limit": 1.0,
+      "sample_time": 0.1,
+      "max_sample_gap": 0.5,
+      "k_p_speed": 8.0,
+      "k_i_speed": 0.8,
+      "force_min": -40.0,
+      "force_max": 40.0,
+      "speed_integral_min": -30.0,
+      "speed_integral_max": 30.0,
+      "k_p_heading": 1.5,
+      "k_d_heading": 0.5,
+      "k_i_heading": 0.03,
+      "moment_min": -10.0,
+      "moment_max": 10.0,
+      "heading_integral_min": -2.0,
+      "heading_integral_max": 2.0,
+      "error_reset_deg": 20.0,
+      "acceleration_gain": 0.0,
+      "filter_window_length": 10,
+      "filter_history_length": 50
+    }
+  },
+  "model_config": {
+    "path": "D:\\ROS2轻量仿真系统\\usv_ros_motion_planning-ros2-humble\\src\\core\\shared\\usv_navigation\\config\\robots\\otter\\dynamics_otter.yaml",
+    "sha256": "a66691e03d2e7585e889f886a797742d2dc779b549a6cb9173db4df7c8f57de1",
+    "model": {
+      "ns": "otter",
+      "name": "otter",
+      "type": "Differential",
+      "cruising_speed": 1.0,
+      "max_force": 50.0,
+      "mass": 29.84,
+      "i_z": 10.03,
+      "L": 1.35,
+      "W": 1.0,
+      "D": 0.395,
+      "velocity_min": 0.0,
+      "velocity_max": 1.0,
+      "acceleration_min": -1.0,
+      "acceleration_max": 1.0,
+      "jerk_min": -2.0,
+      "jerk_max": 2.0,
+      "x_dot_u": 5.0,
+      "x_dot_v": 0.0,
+      "x_dot_r": 0.0,
+      "y_dot_u": 0.0,
+      "y_dot_v": 5.0,
+      "y_dot_r": 0.0,
+      "n_dot_u": 0.0,
+      "n_dot_v": 0.0,
+      "n_dot_r": 1.0,
+      "x_u": -20.0,
+      "x_v": 0.0,
+      "x_r": 0.0,
+      "y_u": 0.0,
+      "y_v": -20.0,
+      "y_r": 0.0,
+      "n_u": 0.0,
+      "n_v": 0.0,
+      "n_r": -20.0,
+      "x_u_u": 0.0,
+      "y_v_v": 0.0,
+      "n_r_r": 0.0
+    }
+  },
+  "sources": [
+    {
+      "path": "src\\core\\control_module\\controller\\controller\\adrc_controller.py",
+      "sha256": "9f2b06a1bf7b1428004e15b3b56f68e2d14235a8935c0724956e125170efd4c7"
+    },
+    {
+      "path": "src\\core\\control_module\\controller\\controller\\adrc_core\\__init__.py",
+      "sha256": "5c3d0a2dcf2536eb8a1e771f457383f6f887489f56dff0df31abbbf4b863d2dd"
+    },
+    {
+      "path": "src\\core\\control_module\\controller\\controller\\adrc_core\\adrc_controller.py",
+      "sha256": "554eac77466329726f939a050f569fbb93cdc618de16ff2e1507ff95fb0b6274"
+    },
+    {
+      "path": "src\\core\\control_module\\controller\\controller\\adrc_core\\pi_controller.py",
+      "sha256": "2155b0a21c5fa836c59d09933d3b70f5633fb503d10f7d8303c655bb1aff3818"
+    },
+    {
+      "path": "src\\core\\control_module\\controller\\controller\\adrc_core\\heading_linear_regression_filter.py",
+      "sha256": "e8317f8ca05a138cf3b909f1d5c9719a1153f69327f17f04e85fda1569c2f85c"
+    },
+    {
+      "path": "src\\core\\shared\\common\\common\\dynamics.py",
+      "sha256": "442164ded47d8258e4939067b8834600a46e1beff148a98a4874b6cbb0b931b0"
+    }
+  ],
+  "timing": {
+    "definition": "wall-clock time spent in ADRCController.compute per numerical control step; excludes step_dynamics and file output",
+    "samples": 5400,
+    "mean_s": 2.8383000268756103e-05,
+    "p99_s": 7.830001413822174e-05,
+    "max_s": 0.00022270000772550702,
+    "over_100ms_count": 0
+  },
+  "scenarios": {
+    "speed_1mps": {
+      "passed": true,
+      "finite_states_and_commands": true,
+      "bounded_commands": true,
+      "all_control_status_success": true,
+      "tail_speed_mae_mps": 0.004780707154923185,
+      "tail_heading_mae_deg": 0.0,
+      "steps": 1800,
+      "compute_wall_time_s": {
+        "mean": 3.0198223345602552e-05,
+        "p99": 9.109999518841505e-05,
+        "max": 0.0001753999968059361,
+        "over_100ms_count": 0
+      }
+    },
+    "heading_plus_30deg": {
+      "passed": true,
+      "finite_states_and_commands": true,
+      "bounded_commands": true,
+      "all_control_status_success": true,
+      "tail_speed_mae_mps": 0.0015138831306698835,
+      "tail_heading_mae_deg": 0.15779535342084297,
+      "steps": 1800,
+      "compute_wall_time_s": {
+        "mean": 2.8773555952486478e-05,
+        "p99": 7.100001676008105e-05,
+        "max": 0.00022270000772550702,
+        "over_100ms_count": 0
+      }
+    },
+    "heading_minus_30deg": {
+      "passed": true,
+      "finite_states_and_commands": true,
+      "bounded_commands": true,
+      "all_control_status_success": true,
+      "tail_speed_mae_mps": 0.0015138831306698835,
+      "tail_heading_mae_deg": 0.15779535342084297,
+      "steps": 1800,
+      "compute_wall_time_s": {
+        "mean": 2.6177221508179275e-05,
+        "p99": 6.549997488036752e-05,
+        "max": 0.0001566999708302319,
+        "over_100ms_count": 0
+      }
+    }
+  },
+  "artifacts": {
+    "samples_csv": "samples.csv"
+  },
+  "scope": "Deterministic common.step_dynamics model check; not Gazebo or real-vessel evidence."
+}

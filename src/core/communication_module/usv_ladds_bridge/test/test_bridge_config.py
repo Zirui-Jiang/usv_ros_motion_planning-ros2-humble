@@ -1,0 +1,130 @@
+"""ROS-independent tests for bridge parameter validation and payload decoding."""
+
+import pytest
+
+from dataclasses import dataclass
+import json
+
+from usv_ladds_bridge.config import (
+    BridgeConfig,
+    decode_utf8,
+    drain_received,
+    packet_info_json,
+)
+
+
+def test_library_path_falls_back_to_environment():
+    config = BridgeConfig.from_mapping(
+        {"backend": "native", "library_path": ""},
+        environ={"LADDS_LIBRARY_PATH": "/opt/ladds/lib/libladds.so"},
+    )
+
+    assert config.library_path == "/opt/ladds/lib/libladds.so"
+
+
+def test_missing_library_path_has_actionable_error():
+    with pytest.raises(ValueError, match="library_path.*LADDS_LIBRARY_PATH"):
+        BridgeConfig.from_mapping(
+            {"backend": "native", "library_path": ""}, environ={}
+        )
+
+
+def test_tcp_backend_does_not_require_native_library():
+    config = BridgeConfig.from_mapping(
+        {"backend": "tcp", "library_path": ""}, environ={}
+    )
+
+    assert config.library_path == ""
+
+
+@pytest.mark.parametrize(
+    ("override", "message"),
+    [
+        ({"max_payload_bytes": 0}, "max_payload_bytes"),
+        ({"queue_depth": 0}, "queue_depth"),
+        ({"poll_interval_sec": 0.0}, "poll_interval_sec"),
+        ({"ttl": -1}, "ttl"),
+        ({"ttl": 256}, "ttl"),
+        ({"send_topic": ""}, "send_topic"),
+        ({"receive_topic": ""}, "receive_topic"),
+        ({"backend": "udp"}, "backend"),
+        ({"relay_port": 0}, "relay_port"),
+        ({"relay_port": 65536}, "relay_port"),
+        ({"relay_timeout": 0.0}, "relay_timeout"),
+    ],
+)
+def test_invalid_transport_limits_are_rejected(override, message):
+    values = {"library_path": "/tmp/libladds.so", **override}
+
+    with pytest.raises(ValueError, match=message):
+        BridgeConfig.from_mapping(values, environ={})
+
+
+def test_default_transport_parameters_match_bridge_contract():
+    config = BridgeConfig.from_mapping(
+        {},
+        environ={},
+    )
+
+    assert config.backend == "tcp"
+    assert config.library_path == ""
+    assert config.relay_host == "127.0.0.1"
+    assert config.relay_port == 17880
+    assert config.relay_timeout == 5.0
+    assert config.domain_id == 1
+    assert config.bind_ip == ""
+    assert config.ttl == 1
+    assert config.qos == "best_effort"
+    assert config.send_topic == "0211"
+    assert config.receive_topic == "0211"
+    assert config.src == 0
+    assert config.dst == 0
+    assert config.encryption is False
+    assert config.max_payload_bytes == 1_048_576
+    assert config.queue_depth == 100
+    assert config.poll_interval_sec == 0.01
+
+
+def test_decode_utf8_returns_text_only_for_valid_utf8():
+    assert decode_utf8("避碰".encode("utf-8")) == "避碰"
+    assert decode_utf8(b"\xff\xfe") is None
+
+
+@dataclass(frozen=True)
+class _Packet:
+    domain_id: int
+    topic: str
+    payload: bytes
+    src: int
+    dst: int
+
+
+class _QueuedReceiver:
+    def __init__(self, packets):
+        self._packets = list(packets)
+
+    def receive(self):
+        return self._packets.pop(0) if self._packets else None
+
+
+def test_receive_drain_stops_at_per_tick_limit():
+    packets = [_Packet(1, "targets", bytes([value]), 10, 20) for value in range(3)]
+    receiver = _QueuedReceiver(packets)
+
+    first_tick = drain_received(receiver, limit=2)
+    second_tick = drain_received(receiver, limit=2)
+
+    assert [packet.payload for packet in first_tick] == [b"\x00", b"\x01"]
+    assert [packet.payload for packet in second_tick] == [b"\x02"]
+
+
+def test_packet_info_json_contains_observation_fields_and_byte_length():
+    packet = _Packet(7, "radar/targets", b"\x00\xff\x10", 41, 52)
+
+    assert json.loads(packet_info_json(packet)) == {
+        "domain": 7,
+        "topic": "radar/targets",
+        "src": 41,
+        "dst": 52,
+        "length": 3,
+    }

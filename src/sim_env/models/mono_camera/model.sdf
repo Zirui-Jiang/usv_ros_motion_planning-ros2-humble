@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
+<!-- Gazebo 模型 mono_camera 的结构描述；碰撞体、外观和惯性分别定义，网格纹理仍由资源文件提供。 -->
 <sdf version="1.6">
   <model name="mono_camera">
     <link name="mono_camera_link">
+      <!-- 外观几何与材质只负责显示，不能据此认定物理碰撞尺寸。 -->
       <visual name="mono_camera_visual">
         <pose>0 -0.033 0 0 0 3.1415</pose>
         <geometry>
@@ -10,6 +12,7 @@
           </mesh>
         </geometry>
       </visual>
+      <!-- 碰撞几何参与物理接触检测，不一定与显示网格完全相同。 -->
       <collision name="mono_camera_lens_collision">
         <pose>0 0.018 0 1.57 0 0</pose>
         <geometry>
@@ -28,6 +31,7 @@
         </geometry>
       </collision>
       <!-- Model inertia as box with <size>0.03 0.078 0.03</size> -->
+      <!-- 质量和惯性张量影响动力学；与仅用于显示的网格外观分别配置。 -->
       <inertial>
         <mass>0.3</mass>
         <inertia>

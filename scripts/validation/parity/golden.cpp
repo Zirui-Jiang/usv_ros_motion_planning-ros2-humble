@@ -1,3 +1,4 @@
+// 数值对照可执行程序：直接调用既有 C++ 算法库，不在此重新抄写算法公式。
 // Calls the existing baseline shared libraries. No algorithm formulas copied.
 #include <fstream>
 #include <iomanip>
@@ -20,6 +21,7 @@ Trajectory trajectory(const YAML::Node& points) {
   for (const auto& p : points) result.push({p[0].as<double>(),p[1].as<double>(),p[2].as<double>(),p[3].as<double>(),p[4].as<double>(),p[5].as<double>(),p[6].as<double>(),p[7].as<double>()});
   return result;
 }
+// 读取确定性的测试输入并输出结果，供 Python 对照脚本进行误差比较。
 int main(int argc, char** argv) {
   if (argc != 3) return 2;
   auto fixture = YAML::LoadFile(argv[1]);

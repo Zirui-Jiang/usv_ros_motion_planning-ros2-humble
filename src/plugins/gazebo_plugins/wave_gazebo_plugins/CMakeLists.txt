@@ -1,3 +1,4 @@
+# 构建 Hydrodynamics 公共库及波场模型、视觉、标尺插件，并导出库给其它包链接。
 cmake_minimum_required(VERSION 3.8)
 project(wave_gazebo_plugins)
 
@@ -44,6 +45,7 @@ link_directories(
 # Libraries...
 
 # Hydrodynamics
+# 公共库包括波谱计算、几何工具和实体管理，模型与视觉插件共同链接该库。
 add_library(Hydrodynamics SHARED
   src/Gazebo.cc
   src/Geometry.cc
@@ -65,6 +67,7 @@ list(APPEND WAVE_GAZEBO_LIBRARIES_LIST Hydrodynamics)
 # Plugins...
 
 # WavefieldModelPlugin
+# 物理端插件挂接共享波参数，视觉端插件独立负责海面渲染。
 add_library(WavefieldModelPlugin SHARED
   src/WavefieldModelPlugin.cc
 )
@@ -125,9 +128,11 @@ install(DIRECTORY include/${PROJECT_NAME}/
 ament_export_include_directories(include)
 ament_export_libraries(${WAVE_GAZEBO_LIBRARIES_LIST})
 
+# 当前测试分支仅配置 ament_lint；本文件没有将 Wavefield_TEST.cc 注册为构建测试目标。
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+# 生成 ament 包索引和配置导出，使安装后的包可被 ROS 2 构建与运行工具找到。
 ament_package()

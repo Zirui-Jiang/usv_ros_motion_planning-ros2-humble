@@ -15,6 +15,7 @@
  *
 */
 
+// 兼容旧版 Gazebo 的材质参数设置工具，将文本参数转换成 Ogre 着色器声明的类型。
 #include <array>
 #include <iostream>
 #include <iterator>
@@ -30,6 +31,7 @@ namespace gazebo
 {
   namespace rendering
   {
+    // 只支持 vertex 和 fragment 两类着色器；参数名须与材质脚本、着色器声明对应。
     void SetMaterialShaderParam(
       Visual& _visual,
       const std::string &_paramName,
@@ -46,6 +48,7 @@ namespace gazebo
 
       // set the parameter based name and type defined in material script
       // and shaders
+      // 根据 GPU 常量类型解析标量、向量或矩阵；不存在的参数跳过，不创建新常量。
       auto setNamedParam = [](Ogre::GpuProgramParametersSharedPtr _params,
           const std::string &_name, const std::string &_v)
       {
@@ -110,6 +113,7 @@ namespace gazebo
               << std::endl;
         return;
       }
+      // 遍历材质的全部 technique/pass，只对可编程且存在相应着色器的 pass 设置参数。
       for (unsigned int i = 0; i < mat->getNumTechniques(); ++i)
       {
         Ogre::Technique *technique = mat->getTechnique(i);

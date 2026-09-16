@@ -15,6 +15,7 @@
  *
 */
 
+// 浮力插件接口与状态：用多个几何体描述排水体积，各几何体绑定到模型的具体 link。
 #ifndef USV_GAZEBO_PLUGINS_BUOYANCY_GAZEBO_PLUGIN_HH_
 #define USV_GAZEBO_PLUGINS_BUOYANCY_GAZEBO_PLUGIN_HH_
 
@@ -39,6 +40,7 @@ namespace gazebo
   namespace buoyancy
   {
     /// \brief A class for storing buoyancy object properties
+    // 单个浮力对象保存 link 标识、相对位姿、质量和形状所有权；含 unique_ptr，因此禁用拷贝。
     class BuoyancyObject
     {
       /// \brief Default constructor
@@ -111,6 +113,7 @@ namespace gazebo
   ///     <geometry>:    Geometry element specifying buoyancy object's
   ///                    volume properties.
   ///                    Supported shapes: box, sphere, cylinder
+  // 加载时解析 SDF，初始化时连接事件，每步求波高、浸没体积和作用于浮心的合力。
   class BuoyancyPlugin : public ModelPlugin
   {
     /// \brief Constructor.
@@ -146,6 +149,7 @@ namespace gazebo
     protected: std::vector<buoyancy::BuoyancyObject> buoyancyObjects;
 
     /// \brief Map of <link ID, link pointer>
+    // 按 link ID 复用 link 指针，避免同一刚体有多个浮力形状时重复查询模型。
     protected: std::map<int, gazebo::physics::LinkPtr> linkMap;
 
     /// \brief Pointer to base model
@@ -159,6 +163,7 @@ namespace gazebo
     protected: std::string waveModelName;
 
     /// \brief Map of water height at each link from previous timestep
+    // 分别缓存每个 link 处的波高 m 与差分波面速度 m/s，供水相对速度阻尼计算。
     protected: std::map<gazebo::physics::LinkPtr, double> linkHeights;
 
     /// \brief Map of water velocity at each link

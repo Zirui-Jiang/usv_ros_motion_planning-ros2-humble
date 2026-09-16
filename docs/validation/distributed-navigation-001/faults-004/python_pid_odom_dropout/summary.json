@@ -1,0 +1,94 @@
+{
+  "trial": "python_pid_odom_dropout",
+  "mode": "python",
+  "fault": "odom_dropout",
+  "passed": true,
+  "result": "completed",
+  "zero_command_latency_wall_s": 0.43381986301392317,
+  "nonzero_after_deadline": false,
+  "tested_state_timeout_s": 0.4,
+  "deadline_wall_s": 0.7,
+  "sustained_zero_output": {
+    "passed": true,
+    "since": 304048.770516475,
+    "until": 304049.774797155,
+    "max_gap_s": 0.35,
+    "minimum_samples": 3,
+    "axes": {
+      "left": {
+        "passed": true,
+        "samples": 9,
+        "maximum_observed_gap_s": 0.10851708299014717
+      },
+      "right": {
+        "passed": true,
+        "samples": 9,
+        "maximum_observed_gap_s": 0.10860970203066245
+      },
+      "lateral": {
+        "passed": true,
+        "samples": 9,
+        "maximum_observed_gap_s": 0.10862894402816892
+      }
+    }
+  },
+  "status": {
+    "state": "WAITING_STATE",
+    "reason": "",
+    "version": 1,
+    "stamp": 1789312411.8203442,
+    "controller": "pid",
+    "goal": [
+      20.0,
+      10.0,
+      0.0
+    ],
+    "metrics": {
+      "costmap_conversion_ms": {
+        "count": 38,
+        "p50": 0.09387201862409711,
+        "p95": 0.11713578132912515,
+        "p99": 0.12428041140083225,
+        "max": 0.12561498442664742
+      },
+      "planning_ms": {
+        "count": 3,
+        "p50": 8.008295961190015,
+        "p95": 11.5141415852122,
+        "p99": 11.825772307347506,
+        "max": 11.903679987881333
+      },
+      "control_ms": {
+        "count": 20,
+        "p50": 0.05854500341229141,
+        "p95": 0.2207634533988312,
+        "p99": 0.22352146042976528,
+        "max": 0.2242109621874988
+      }
+    },
+    "counters": {
+      "pending_replacements": 0,
+      "stale_control_reports": 1,
+      "global_searches": 1,
+      "wrong_session_references": 2,
+      "stale_references": 19
+    },
+    "process": {
+      "pid": 213370,
+      "cpu_seconds": 0.434726,
+      "peak_rss_kib": 66648,
+      "monotonic": 304049.146405612
+    },
+    "modules": {
+      "decision": "c4a387ee1b6f44d9aa50bbcf892d2437",
+      "control": "9a62a7363bcc4088a111535a74e7e84a",
+      "perception": "cb31456634764595b332efde6f58fa68",
+      "control_process": {
+        "pid": 213371,
+        "cpu_seconds": 0.386702,
+        "peak_rss_kib": 65188,
+        "monotonic": 304049.045290104
+      }
+    }
+  }
+}

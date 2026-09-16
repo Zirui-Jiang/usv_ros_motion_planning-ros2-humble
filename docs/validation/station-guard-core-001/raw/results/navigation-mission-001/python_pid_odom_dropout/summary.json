@@ -1,0 +1,176 @@
+{
+  "trial": "python_pid_odom_dropout",
+  "mode": "python",
+  "fault": "odom_dropout",
+  "passed": true,
+  "result": "completed",
+  "zero_command_latency_wall_s": 0.4298506499908399,
+  "nonzero_after_deadline": false,
+  "tested_state_timeout_s": 0.4,
+  "deadline_wall_s": 0.7,
+  "status": {
+    "state": "WAITING_STATE",
+    "reason": "",
+    "version": 1,
+    "stamp": 1789229059.3789988,
+    "controller": "pid",
+    "goal": [
+      20.0,
+      10.0,
+      0.0
+    ],
+    "mission": null,
+    "control_authority": {
+      "conflicted": false,
+      "reason": "",
+      "publishers": {
+        "/acceptance_smoke_1202ab15/thrusters/left_thrust_cmd": 1,
+        "/acceptance_smoke_1202ab15/thrusters/right_thrust_cmd": 1,
+        "/acceptance_smoke_1202ab15/thrusters/lateral_thrust_cmd": 1
+      },
+      "restart_required": false
+    },
+    "metrics": {
+      "costmap_conversion_ms": {
+        "count": 39,
+        "p50": 1.7210929945576936,
+        "p95": 2.182019624160603,
+        "p99": 2.411732692853547,
+        "max": 2.450676984153688
+      },
+      "control_ms": {
+        "count": 21,
+        "p50": 0.04577200161293149,
+        "p95": 3.016406000824645,
+        "p99": 3.2493787875864655,
+        "max": 3.3076219842769206
+      },
+      "planning_ms": {
+        "count": 3,
+        "p50": 8.768097002757713,
+        "p95": 8.849928606650792,
+        "p99": 8.857202526996844,
+        "max": 8.859021007083356
+      }
+    },
+    "counters": {
+      "pending_replacements": 0,
+      "global_searches": 1
+    },
+    "process": {
+      "pid": 188138,
+      "cpu_seconds": 0.383644,
+      "peak_rss_kib": 67856,
+      "monotonic": 216098.743123647
+    }
+  },
+  "control_ownership_graph": {
+    "requirements": {
+      "node": "mission_manager",
+      "forbidden_node": "usv_simulation",
+      "required_thruster_axes": [
+        "left",
+        "right",
+        "lateral"
+      ],
+      "maximum_poll_interval_wall_s": 0.5,
+      "command_publishers_per_topic": 1
+    },
+    "observation_count": 4,
+    "passed": true,
+    "observations": [
+      {
+        "namespace": "/acceptance_smoke_1202ab15",
+        "expected_publisher": "/acceptance_smoke_1202ab15/mission_manager",
+        "nodes": [
+          "/acceptance_1d7cd750",
+          "/acceptance_smoke_1202ab15/mission_manager"
+        ],
+        "publishers": {
+          "/acceptance_smoke_1202ab15/thrusters/lateral_thrust_cmd": [
+            "/acceptance_smoke_1202ab15/mission_manager"
+          ],
+          "/acceptance_smoke_1202ab15/thrusters/left_thrust_cmd": [
+            "/acceptance_smoke_1202ab15/mission_manager"
+          ],
+          "/acceptance_smoke_1202ab15/thrusters/right_thrust_cmd": [
+            "/acceptance_smoke_1202ab15/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216097.48816902,
+        "sim_time_s": 1789229058.124274
+      },
+      {
+        "namespace": "/acceptance_smoke_1202ab15",
+        "expected_publisher": "/acceptance_smoke_1202ab15/mission_manager",
+        "nodes": [
+          "/acceptance_1d7cd750",
+          "/acceptance_smoke_1202ab15/mission_manager"
+        ],
+        "publishers": {
+          "/acceptance_smoke_1202ab15/thrusters/lateral_thrust_cmd": [
+            "/acceptance_smoke_1202ab15/mission_manager"
+          ],
+          "/acceptance_smoke_1202ab15/thrusters/left_thrust_cmd": [
+            "/acceptance_smoke_1202ab15/mission_manager"
+          ],
+          "/acceptance_smoke_1202ab15/thrusters/right_thrust_cmd": [
+            "/acceptance_smoke_1202ab15/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216097.988192005,
+        "sim_time_s": 1789229058.6242647
+      },
+      {
+        "namespace": "/acceptance_smoke_1202ab15",
+        "expected_publisher": "/acceptance_smoke_1202ab15/mission_manager",
+        "nodes": [
+          "/acceptance_1d7cd750",
+          "/acceptance_smoke_1202ab15/mission_manager"
+        ],
+        "publishers": {
+          "/acceptance_smoke_1202ab15/thrusters/lateral_thrust_cmd": [
+            "/acceptance_smoke_1202ab15/mission_manager"
+          ],
+          "/acceptance_smoke_1202ab15/thrusters/left_thrust_cmd": [
+            "/acceptance_smoke_1202ab15/mission_manager"
+          ],
+          "/acceptance_smoke_1202ab15/thrusters/right_thrust_cmd": [
+            "/acceptance_smoke_1202ab15/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216098.496531777,
+        "sim_time_s": 1789229059.1326404
+      },
+      {
+        "namespace": "/acceptance_smoke_1202ab15",
+        "expected_publisher": "/acceptance_smoke_1202ab15/mission_manager",
+        "nodes": [
+          "/acceptance_1d7cd750",
+          "/acceptance_smoke_1202ab15/mission_manager"
+        ],
+        "publishers": {
+          "/acceptance_smoke_1202ab15/thrusters/lateral_thrust_cmd": [
+            "/acceptance_smoke_1202ab15/mission_manager"
+          ],
+          "/acceptance_smoke_1202ab15/thrusters/left_thrust_cmd": [
+            "/acceptance_smoke_1202ab15/mission_manager"
+          ],
+          "/acceptance_smoke_1202ab15/thrusters/right_thrust_cmd": [
+            "/acceptance_smoke_1202ab15/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216099.00496888,
+        "sim_time_s": 1789229059.6410794
+      }
+    ]
+  }
+}

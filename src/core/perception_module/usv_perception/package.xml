@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!-- 感知节点包清单：依赖 Nav2 代价地图、TF、激光/占用图消息及模块心跳接口。 -->
+<package format="3">
+  <name>usv_perception</name>
+  <version>0.1.0</version>
+  <description>Independent LiDAR mapping, costmap and perception monitoring nodes.</description>
+  <maintainer email="913982779@qq.com">Winter</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>nav2_costmap_2d</depend>
+  <depend>nav2_util</depend>
+  <depend>lifecycle_msgs</depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>rcl_interfaces</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <exec_depend>perception</exec_depend>
+  <exec_depend>usv_navigation</exec_depend>
+  <exec_depend>usv_navigation_interfaces</exec_depend>
+  <test_depend>python3-pytest</test_depend>
+  <test_depend>rosgraph_msgs</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

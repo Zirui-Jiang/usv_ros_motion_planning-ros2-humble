@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 从记录的 raw 地图、自船状态和首条路径离线重放 LOS；各输入时间单独保留。
 """Replay captured raw-map/state/path inputs, without ROS or Gazebo.
 
 The snapshot is taken immediately before the goal publication and the route is
@@ -19,6 +20,7 @@ from trajectory_planner.los_trajectory_planner import LosTrajectoryPlanner
 from metrics import swept_clearance
 
 
+# 恢复捕获的 raw 地图、状态和首条有效路径；OccupancyGrid 有损转换不满足此重放要求。
 def read_inputs(trial):
     events = []
     with (trial / "events.jsonl").open(encoding="utf-8") as stream:
@@ -39,10 +41,12 @@ def read_inputs(trial):
     xy = np.asarray(route_event["points"], dtype=float)
     route = np.column_stack((xy[:, :2], np.zeros(len(xy))))
     # The runtime replaces the search cell centre with the precise goal before LOS.
+    # 此历史重放脚本会把末点换成精确目标；不要把它等同于所有后续运行时版本的私有输入。
     route[-1] = state_data["goal"]
     return grid, state, route, parameters, snapshot, route_event
 
 
+# 命令行入口：解析本脚本选项并执行上述流程，运行结果由退出码及输出记录共同说明。
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("trial", type=Path)

@@ -1,0 +1,23 @@
+# 任务服务请求采用 WGS84 经纬度；响应说明是否接受、任务编号和拒绝原因。
+# mode: standby, orbit, station_keep. Coordinates are WGS84 degrees.
+string mode
+float64 latitude
+float64 longitude
+# Heading: true north = 0 degrees, clockwise positive.
+# 真北为 0 度，顺时针增加；服务适配层会转换为 ROS yaw。
+float64 heading_deg 0.0
+# 速度为米/秒，下面三个位置/观察/绕圈半径参数均为米。
+float64 speed 0.5
+float64 position_tolerance 0.5
+float64 watch_radius 10.0
+float64 orbit_radius 10.0
+bool clockwise true
+# Zero laps/duration means unlimited. First nonzero limit reached ends orbit.
+# 圈数和秒制时长中任一非零上限先到达即结束绕圈；零表示该项不限。
+uint32 laps 0
+float64 duration 0.0
+# 分隔符以上为请求，以下为响应；accepted=False 时阅读 reason 获取拒绝原因。
+---
+bool accepted
+uint64 mission_id
+string reason

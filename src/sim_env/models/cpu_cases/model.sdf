@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
+<!-- Gazebo 模型 cpu_cases 的结构描述；碰撞体、外观和惯性分别定义，网格纹理仍由资源文件提供。 -->
 <sdf version="1.6">
   <model name="cpu_cases">
     <link name="cpu_cases_link">
+      <!-- 外观几何与材质只负责显示，不能据此认定物理碰撞尺寸。 -->
       <visual name="cpu_cases_visual">
         <pose>0.073 0 -1.53 0 0 0</pose>
         <geometry>
@@ -12,6 +14,7 @@
           </mesh>
         </geometry>
       </visual>
+      <!-- 碰撞几何参与物理接触检测，不一定与显示网格完全相同。 -->
       <collision name="cpu_case_1_collision">
         <pose>0.185 0 0 0 0 0</pose>
         <geometry>
@@ -24,6 +27,7 @@
           <box><size>0.375 0.64 0.28</size></box>
         </geometry>
       </collision>
+      <!-- 质量和惯性张量影响动力学；与仅用于显示的网格外观分别配置。 -->
       <inertial>
         <mass>20</mass>
         <inertia>

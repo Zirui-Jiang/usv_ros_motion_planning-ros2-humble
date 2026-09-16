@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Otter · 速度环调参台</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">跳到调参工作区</a>
+  <header class="topbar">
+    <div class="brand"><svg aria-hidden="true" viewBox="0 0 36 36"><path d="M18 4 29 24 18 31 7 24Z M18 4v27 M7 24l11-5 11 5"/></svg><div>OTTER <span>CONTROL LAB</span></div></div>
+    <div class="environment"><span class="dot"></span> 本地数值试验 <span class="divider">/</span> 无需 ROS · Gazebo</div>
+    <button class="top-link" id="helpOpen">使用说明 <span aria-hidden="true">↗</span></button>
+  </header>
+  <main id="workspace">
+    <div class="page-heading">
+      <div><p class="eyebrow">PARAMETER WORKBENCH / 01</p><h1>速度环调参台</h1><p class="subtitle">拖动参数，看清加速、误差与推力之间的取舍。</p></div>
+      <div class="heading-actions"><button id="reload" class="button secondary">重新读取配置</button><button id="export" class="button primary" disabled><svg aria-hidden="true" viewBox="0 0 20 20"><path d="M10 3v9m-4-4 4 4 4-4M4 13v4h12v-4"/></svg>导出候选 YAML</button></div>
+    </div>
+    <div class="notice"><span class="notice-label">模型边界</span> 使用当前 Otter 艇模与正式控制器；无风浪、传感器噪声及执行器延迟。数值候选仍需通过 Gazebo 验证。</div>
+    <div id="error" class="error" role="alert" tabindex="-1" hidden></div>
+    <div class="workbench">
+      <aside class="controls panel" aria-label="参数与试验设置">
+        <div class="panel-heading"><h2>调节参数</h2><span class="tag">PI · 速度环</span></div>
+        <form id="tuningForm">
+          <div class="gain-control">
+            <div class="field-title"><label for="kp">比例增益 <b>Kp</b></label><input id="kp" name="kp" type="number" min="0" max="300" step="any" value="8" required></div>
+            <input id="kpRange" type="range" min="0" max="300" step="0.1" value="8" aria-label="比例增益 Kp 滑块">
+            <div class="range-labels"><span>0</span><span>300</span></div>
+            <p class="hint">误差越大，推力响应越强。单位 N/(m/s)。</p>
+          </div>
+          <div class="gain-control">
+            <div class="field-title"><label for="ki">积分增益 <b>Ki</b></label><input id="ki" name="ki" type="number" min="0" max="100" step="any" value="0.8" required></div>
+            <input id="kiRange" type="range" min="0" max="100" step="0.1" value="0.8" aria-label="积分增益 Ki 滑块">
+            <div class="range-labels"><span>0</span><span>100</span></div>
+            <p class="hint">逐渐补足维持航速的推力。单位 N/m。</p>
+          </div>
+          <button id="reset" class="button subtle wide" type="button">恢复源配置参数</button>
+          <div class="section-label">试验条件</div>
+          <fieldset class="scenario-field"><legend>响应场景</legend><div class="scenario-options">
+            <label><input type="radio" name="scenario" value="step" checked><span>加速</span></label>
+            <label><input type="radio" name="scenario" value="down"><span>降速</span></label>
+            <label><input type="radio" name="scenario" value="coast"><span>到点停推</span></label>
+          </div></fieldset>
+          <p class="hint" id="scenarioHint">从静止开始，跟踪固定目标速度。</p>
+          <div class="two-fields"><div><label for="target">参考速度 <small>m/s</small></label><input id="target" type="number" min="0.1" max="1" step="0.1" value="1" required></div><div><label for="duration">总时长 <small>s</small></label><select id="duration"><option>30</option><option>60</option><option>90</option><option selected>120</option><option>180</option></select></div></div>
+          <button type="submit" class="button dark wide" id="run">重新计算响应 <span aria-hidden="true">→</span></button>
+          <p class="auto-note">参数停止变动后自动计算</p>
+        </form>
+        <details class="model-details"><summary>模型与固定限幅</summary><dl id="modelValues"></dl><p class="hint">本界面只调整 Kp / Ki，其他参数保留源配置值。</p></details>
+        <div class="source-box"><span class="eyebrow">BASELINE / 当前源配置</span><strong id="baselineLabel">正在读取…</strong><p id="sourceFile" title="配置文件">—</p></div>
+      </aside>
+      <section class="results" aria-label="数值试验结果">
+        <div class="result-bar"><div id="status" role="status" aria-live="polite"><span class="dot"></span><span id="statusText">正在读取模型与参数…</span></div><span id="runtime" class="mono">—</span></div>
+        <div class="metric-grid">
+          <article class="metric"><span id="t90Label">达到 90% 用时</span><strong id="metricT90">—</strong><small id="deltaT90">等待计算</small></article>
+          <article class="metric"><span>进入稳定误差带</span><strong id="metricSettling">—</strong><small id="settlingHint">保持至试验结束，至少 1 s</small></article>
+          <article class="metric"><span>超调量</span><strong id="metricOvershoot">—</strong><small id="deltaOvershoot">相对本阶段速度变化量</small></article>
+          <article class="metric"><span>末段平均绝对误差</span><strong id="metricError">—</strong><small>本阶段最后至多 10 s</small></article>
+        </div>
+        <article class="panel response-panel">
+          <div class="chart-heading"><div><p class="eyebrow">RESPONSE</p><h2>速度响应 <span>m/s</span></h2></div><div class="chart-actions"><select id="timeWindow" aria-label="图表时间范围"><option value="full">查看全程</option><option value="20">前 20 秒</option><option value="40">前 40 秒</option></select><button class="button compact secondary" id="pin" disabled>固定当前对照</button></div></div>
+          <div class="legend"><span class="legend-current">当前参数</span><span class="legend-base">源配置基准</span><span class="legend-target">参考速度</span><span class="legend-pin" id="pinLegend" hidden></span><button id="unpin" class="text-button" hidden>移除固定对照</button></div>
+          <div class="plot-wrap"><svg id="speedPlot" class="plot" viewBox="0 0 900 310" role="img" aria-label="速度响应折线图，可用下方时间滑块读取数值"></svg></div>
+          <div class="readout"><label for="cursor">读数时间</label><input id="cursor" type="range" min="0" max="1200" step="1" value="0"><output id="readout">—</output></div>
+          <p id="comparisonNote" class="chart-note">源配置基准和当前参数采用相同的模型与试验条件。</p>
+        </article>
+        <article class="panel force-panel">
+          <div class="chart-heading"><div><p class="eyebrow">CONTROL EFFORT</p><h2>推力与积分 <span>N</span></h2></div><label class="check-label"><input id="components" type="checkbox">显示 P / I 分量</label></div>
+          <div class="legend"><span class="legend-current">当前总推力</span><span class="legend-base">基准总推力</span><span class="legend-p component-legend" hidden>P 比例项</span><span class="legend-i component-legend" hidden>I 积分项</span></div>
+          <div class="plot-wrap"><svg id="forcePlot" class="plot short" viewBox="0 0 900 235" role="img" aria-label="总纵向力和积分分量随时间变化图"></svg></div>
+          <div class="effort-stats"><span>总力峰值 <b id="peakForce">—</b></span><span>输出触及限幅 <b id="saturation">—</b></span><span>最大加减速度 <b id="acceleration">—</b></span></div>
+        </article>
+        <article class="panel search-panel">
+          <div class="chart-heading"><div><p class="eyebrow">PARAMETER SEARCH</p><h2>让模型先筛一轮</h2></div><span class="tag neutral">5 × 5 网格</span></div>
+          <p class="section-description">在指定范围计算 25 组参数，按响应速度、误差、超调与饱和程度排序。点击候选值查看完整曲线。</p>
+          <form id="sweepForm" class="sweep-form"><div><label for="kpMin">Kp 下限</label><input id="kpMin" type="number" min="0" max="300" step="any" value="8" required></div><div><label for="kpMax">Kp 上限</label><input id="kpMax" type="number" min="0" max="300" step="any" value="120" required></div><div><label for="kiMin">Ki 下限</label><input id="kiMin" type="number" min="0" max="100" step="any" value="0.8" required></div><div><label for="kiMax">Ki 上限</label><input id="kiMax" type="number" min="0" max="100" step="any" value="30" required></div><button class="button primary" id="sweep" type="submit" disabled>开始筛选 25 组</button></form>
+          <p id="sweepStatus" class="hint" role="status">只在当前数值场景内比较，不自动覆盖正式配置。</p>
+          <div class="table-wrap" id="candidateTable" hidden><table><caption class="sr-only">按评分由低到高排列的候选参数</caption><thead><tr><th>排名</th><th>Kp / Ki</th><th>90% 用时</th><th>超调</th><th>末段误差</th><th>评分 ↓</th><th>操作</th></tr></thead><tbody id="candidates"></tbody></table></div>
+          <details class="method"><summary>评分和指标怎么算？</summary><p>评分 = IAE/(总时长 × 参考速度) + 0.5 × 超调比例 + 0.25 × T90/阶段时长 + 0.1 × 饱和比例。越低越靠前；未达到 90% 时，评分中的 T90 取阶段时长。</p><p>降速、停推场景的响应指标从中途切换时开始，按切换时实际速度与最终参考速度计算。稳定带为两者差值的 5% 与 0.02 m/s 中较大者；末段误差取切换后最后至多 10 s。IAE 和限幅比例统计整场试验。分数只用于本次网格筛选，不代表全局最优或鲁棒性结论。</p></details>
+        </article>
+      </section>
+    </div>
+    <footer><span>OTTER · 从数值试验到闭环验证</span><span>原始配置保持不变 · 导出为独立候选文件</span></footer>
+  </main>
+  <dialog id="helpDialog"><div class="dialog-heading"><h2>一次调参，四个步骤</h2><button class="button secondary close-dialog">关闭</button></div><ol class="help-steps"><li><strong>先看基准</strong><p>首次打开读取项目 YAML。灰色虚线始终表示该配置在同一场景下的响应。</p></li><li><strong>调 Kp 和 Ki</strong><p>拖动滑块或输入数值，曲线自动更新。也可筛选 25 组参数，点击“采用”后继续微调。</p></li><li><strong>换场景检查</strong><p>加速：静止 → 参考速度；降速：试验中点将参考改为 30%；到点停推：中点切断推力并清积分，模拟系统 SETTLING，不进行主动倒桨制动。</p></li><li><strong>导出后再跑 Gazebo</strong><p>导出完整 YAML、数值 JSON 和 CSV。使用弹窗里的命令启动验证，原文件不会被覆盖。模型没有风浪、执行器延迟或传感器噪声，数值响应好不等于实艇已调好。</p></li></ol><p class="hint">快捷读图：鼠标移动到曲线上，或用读数时间滑块的方向键查看对应数值。</p></dialog>
+  <dialog id="exportDialog"><div class="dialog-heading"><div><p class="eyebrow">EXPORT COMPLETE</p><h2>候选参数已保存</h2></div><button class="button secondary close-dialog">关闭</button></div><p class="export-notice">这组参数完成了当前数值试验，尚未进行 Gazebo 验证。</p><dl class="export-files"><dt>完整控制器 YAML</dt><dd id="exportPath"></dd><dt>数值报告 / 曲线数据</dt><dd id="exportEvidence"></dd></dl><label for="launchCommand">停止旧仿真，在已加载新安装区的 WSL 终端运行：</label><textarea id="launchCommand" rows="5" readonly></textarea><div class="dialog-actions"><span id="copyStatus" role="status"></span><button class="button primary" id="copyCommand">复制启动命令</button></div></dialog>
+</body>
+</html>

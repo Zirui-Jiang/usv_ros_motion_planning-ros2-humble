@@ -1,0 +1,283 @@
+{
+  "summary": {
+    "counts": {
+      "reference": 87,
+      "global_path": 8,
+      "navigation": 7,
+      "odom": 70
+    },
+    "navigation": {
+      "state": "TIMEOUT",
+      "reason": "collision checking time budget exceeded",
+      "version": 3,
+      "stamp": 235.50000000000003,
+      "request_id": "",
+      "task_id": 0,
+      "current_task_id": 3,
+      "desired_speed_mps": 1.0,
+      "controller": "adrc",
+      "goal": [
+        32.08304214477539,
+        56.356727600097656,
+        1.6286308393493947
+      ],
+      "metrics": {
+        "costmap_conversion_ms": {
+          "count": 237,
+          "p50": 0.1626129960641265,
+          "p95": 0.2516801992896944,
+          "p99": 0.4236052697524427,
+          "max": 0.6553230050485581
+        },
+        "planning_ms": {
+          "count": 602,
+          "p50": 55.87439250666648,
+          "p95": 1002.1218362599029,
+          "p99": 1003.4358997287927,
+          "max": 1010.9510610054713
+        },
+        "control_ms": {
+          "count": 2394,
+          "p50": 0.1970390003407374,
+          "p95": 0.3623252458055503,
+          "p99": 0.46195911068934953,
+          "max": 0.8511169871781021
+        }
+      },
+      "counters": {
+        "stale_control_reports": 1,
+        "pending_replacements": 548,
+        "global_searches": 602,
+        "odom_tf_waits": 14,
+        "wrong_session_references": 1,
+        "stale_references": 2391
+      },
+      "process": {
+        "pid": 39479,
+        "cpu_seconds": 16.351309,
+        "peak_rss_kib": 76620,
+        "monotonic": 133629.376406659
+      },
+      "modules": {
+        "decision": "83ae5c69158f4e2397458ed6c1dcba63",
+        "control": "509221028c214716a99ffdee69cdda30",
+        "perception": "54baf0eb40c74cdc9d49671032c6c7dc",
+        "control_process": {
+          "pid": 39481,
+          "cpu_seconds": 13.954331,
+          "peak_rss_kib": 71252,
+          "monotonic": 133629.273638866
+        }
+      }
+    },
+    "global_path": {
+      "received": true,
+      "header": {
+        "stamp": {
+          "sec": 236,
+          "nanosec": 600000000
+        },
+        "frame_id": "otter/map"
+      },
+      "points": 0,
+      "length_m": 0,
+      "start": null,
+      "end": null
+    },
+    "local_trajectory": {
+      "received": false,
+      "header": null,
+      "points": null,
+      "length_m": null,
+      "start": null,
+      "end": null
+    },
+    "reference": {
+      "active": true,
+      "state": "TIMEOUT",
+      "reason": "collision checking time budget exceeded",
+      "goal": {
+        "x": 32.08304214477539,
+        "y": 56.356727600097656,
+        "theta": 1.6286308393493947
+      },
+      "task_id": 3,
+      "trajectory_stamp": 0.0,
+      "received": true,
+      "point_count": 0,
+      "horizon_s": null,
+      "max_speed_mps": 0.0
+    },
+    "odom": {
+      "position": {
+        "x": 38.24478267879908,
+        "y": -27.090864446167156,
+        "z": 0.0
+      },
+      "orientation": {
+        "x": 0.0024787584078780085,
+        "y": -0.0067620984397601365,
+        "z": -0.7370912410232998,
+        "w": 0.6757548610170543
+      }
+    }
+  },
+  "messages": {
+    "reference": {
+      "header": {
+        "stamp": {
+          "sec": 236,
+          "nanosec": 500000000
+        },
+        "frame_id": "otter/map"
+      },
+      "planner_session": "83ae5c69158f4e2397458ed6c1dcba63",
+      "control_session": "509221028c214716a99ffdee69cdda30",
+      "perception_session": "54baf0eb40c74cdc9d49671032c6c7dc",
+      "task_id": 3,
+      "revision": 3,
+      "sequence": 607,
+      "active": true,
+      "pass_through": false,
+      "goal": {
+        "x": 32.08304214477539,
+        "y": 56.356727600097656,
+        "theta": 1.6286308393493947
+      },
+      "state": "TIMEOUT",
+      "reason": "collision checking time budget exceeded",
+      "parameters_json": "{\"dynamics.D\": 0.395, \"dynamics.L\": 1.35, \"dynamics.W\": 1.0, \"dynamics.acceleration_max\": 1.0, \"dynamics.acceleration_min\": -1.0, \"dynamics.cruising_speed\": 1.0, \"dynamics.i_z\": 10.03, \"dynamics.jerk_max\": 2.0, \"dynamics.jerk_min\": -2.0, \"dynamics.mass\": 29.84, \"dynamics.max_force\": 50.0, \"dynamics.n_dot_r\": 1.0, \"dynamics.n_dot_u\": 0.0, \"dynamics.n_dot_v\": 0.0, \"dynamics.n_r\": -20.0, \"dynamics.n_r_r\": 0.0, \"dynamics.n_u\": 0.0, \"dynamics.n_v\": 0.0, \"dynamics.name\": \"otter\", \"dynamics.ns\": \"otter\", \"dynamics.type\": \"Differential\", \"dynamics.velocity_max\": 2.1, \"dynamics.velocity_min\": 0.0, \"dynamics.x_dot_r\": 0.0, \"dynamics.x_dot_u\": 5.0, \"dynamics.x_dot_v\": 0.0, \"dynamics.x_r\": 0.0, \"dynamics.x_u\": -20.0, \"dynamics.x_u_u\": 0.0, \"dynamics.x_v\": 0.0, \"dynamics.y_dot_r\": 0.0, \"dynamics.y_dot_u\": 0.0, \"dynamics.y_dot_v\": 5.0, \"dynamics.y_r\": 0.0, \"dynamics.y_u\": 0.0, \"dynamics.y_v\": -20.0, \"dynamics.y_v_v\": 0.0, \"navigation.costmap_topic\": \"costmap_raw\", \"navigation.footprint_length\": 2.2, \"navigation.footprint_width\": 1.2, \"navigation.map_timeout\": 1.5, \"navigation.max_expansions\": 200000, \"navigation.planning_frequency\": 5.0, \"navigation.planning_timeout\": 1.0, \"navigation.state_timeout\": 0.5, \"navigation.trajectory_timeout\": 1.0, \"obstacle_factor\": 0.25, \"path_planner.analytic_expansion_max_length\": 20.0, \"path_planner.angle_bins\": 72, \"path_planner.change_penalty\": 0.2, \"path_planner.collision_step\": 0.2, \"path_planner.convert_offset\": 0.0, \"path_planner.cost_penalty\": 0.0, \"path_planner.default_tolerance\": 0.0, \"path_planner.enable_resample\": true, \"path_planner.expand_zone\": true, \"path_planner.footprint_padding\": 0.0, \"path_planner.minimum_turning_radius\": 4.0, \"path_planner.motion_step\": 1.0, \"path_planner.non_straight_penalty\": 1.05, \"path_planner.outline_map\": true, \"path_planner.resample_ratio\": 0.5, \"path_planner.show_safety_corridor\": false, \"planner_name\": \"hybrid_astar\", \"usv_simulation.controller.adrc_controller.acceleration_gain\": 0.0, \"usv_simulation.controller.adrc_controller.command_limit\": 1.0, \"usv_simulation.controller.adrc_controller.error_reset_deg\": 20.0, \"usv_simulation.controller.adrc_controller.filter_history_length\": 50, \"usv_simulation.controller.adrc_controller.filter_window_length\": 10, \"usv_simulation.controller.adrc_controller.force_max\": 40.0, \"usv_simulation.controller.adrc_controller.force_min\": -40.0, \"usv_simulation.controller.adrc_controller.goal_distance_tolerance\": 1.5, \"usv_simulation.controller.adrc_controller.goal_speed_tolerance\": 0.25, \"usv_simulation.controller.adrc_controller.heading_integral_max\": 10.0, \"usv_simulation.controller.adrc_controller.heading_integral_min\": -10.0, \"usv_simulation.controller.adrc_controller.k_d_heading\": 4.0, \"usv_simulation.controller.adrc_controller.k_i_heading\": 0.03, \"usv_simulation.controller.adrc_controller.k_i_speed\": 4.0, \"usv_simulation.controller.adrc_controller.k_p_heading\": 8.0, \"usv_simulation.controller.adrc_controller.k_p_speed\": 8.0, \"usv_simulation.controller.adrc_controller.lookahead_time\": 2.6, \"usv_simulation.controller.adrc_controller.max_sample_gap\": 0.5, \"usv_simulation.controller.adrc_controller.moment_max\": 10.0, \"usv_simulation.controller.adrc_controller.moment_min\": -10.0, \"usv_simulation.controller.adrc_controller.sample_time\": 0.1, \"usv_simulation.controller.adrc_controller.speed_integral_max\": 30.0, \"usv_simulation.controller.adrc_controller.speed_integral_min\": -30.0, \"usv_simulation.controller.control_frequency\": 10.0, \"usv_simulation.controller.controller_name\": \"adrc\", \"usv_simulation.controller.lqr_controller.Q_matrix_diag\": [1.0, 1.0, 100.0, 10.0, 10.0, 10.0], \"usv_simulation.controller.lqr_controller.R_matrix_diag\": [20.0, 20.0], \"usv_simulation.controller.lqr_controller.discrete_dt\": 0.1, \"usv_simulation.controller.lqr_controller.goal_distance_tolerance\": 1.0, \"usv_simulation.controller.lqr_controller.goal_speed_tolerance\": 0.25, \"usv_simulation.controller.lqr_controller.lookahead_time\": 2.0, \"usv_simulation.controller.lqr_controller.max_iterations\": 5000, \"usv_simulation.controller.lqr_controller.solve_eps\": 0.1, \"usv_simulation.controller.lqr_controller.solve_timeout\": 0.08, \"usv_simulation.controller.pid_controller.goal_distance_tolerance\": 1.5, \"usv_simulation.controller.pid_controller.goal_speed_tolerance\": 0.25, \"usv_simulation.controller.pid_controller.k_d_course\": 0.0, \"usv_simulation.controller.pid_controller.k_d_speed\": 0.0, \"usv_simulation.controller.pid_controller.k_i_course\": 0.0, \"usv_simulation.controller.pid_controller.k_i_speed\": 0.5, \"usv_simulation.controller.pid_controller.k_p_course\": 2.0, \"usv_simulation.controller.pid_controller.k_p_speed\": 2.0, \"usv_simulation.controller.pid_controller.lookahead_time\": 2.6, \"usv_simulation.trajectory_planner.los.goal_tolerance\": 1.0, \"usv_simulation.trajectory_planner.los.kp_yaw\": 1.0, \"usv_simulation.trajectory_planner.los.lookahead_distance\": 1.0, \"usv_simulation.trajectory_planner.los.slowdown_distance\": 3.0, \"usv_simulation.trajectory_planner.los.switch_dist\": 5.0, \"usv_simulation.trajectory_planner.los.trajectory_time\": 10.0, \"usv_simulation.trajectory_planner.los.trajectory_time_interval\": 0.5, \"usv_simulation.trajectory_planner.los.yaw_rate_max\": 0.3, \"usv_simulation.trajectory_planner.planner_name\": \"los\"}",
+      "trajectory_stamp": 0.0,
+      "trajectory_frame": "",
+      "points": []
+    },
+    "global_path": {
+      "header": {
+        "stamp": {
+          "sec": 236,
+          "nanosec": 600000000
+        },
+        "frame_id": "otter/map"
+      },
+      "poses": []
+    },
+    "navigation": {
+      "data": "{\"state\": \"TIMEOUT\", \"reason\": \"collision checking time budget exceeded\", \"version\": 3, \"stamp\": 235.50000000000003, \"request_id\": \"\", \"task_id\": 0, \"current_task_id\": 3, \"desired_speed_mps\": 1.0, \"controller\": \"adrc\", \"goal\": [32.08304214477539, 56.356727600097656, 1.6286308393493947], \"metrics\": {\"costmap_conversion_ms\": {\"count\": 237, \"p50\": 0.1626129960641265, \"p95\": 0.2516801992896944, \"p99\": 0.4236052697524427, \"max\": 0.6553230050485581}, \"planning_ms\": {\"count\": 602, \"p50\": 55.87439250666648, \"p95\": 1002.1218362599029, \"p99\": 1003.4358997287927, \"max\": 1010.9510610054713}, \"control_ms\": {\"count\": 2394, \"p50\": 0.1970390003407374, \"p95\": 0.3623252458055503, \"p99\": 0.46195911068934953, \"max\": 0.8511169871781021}}, \"counters\": {\"stale_control_reports\": 1, \"pending_replacements\": 548, \"global_searches\": 602, \"odom_tf_waits\": 14, \"wrong_session_references\": 1, \"stale_references\": 2391}, \"process\": {\"pid\": 39479, \"cpu_seconds\": 16.351309, \"peak_rss_kib\": 76620, \"monotonic\": 133629.376406659}, \"modules\": {\"decision\": \"83ae5c69158f4e2397458ed6c1dcba63\", \"control\": \"509221028c214716a99ffdee69cdda30\", \"perception\": \"54baf0eb40c74cdc9d49671032c6c7dc\", \"control_process\": {\"pid\": 39481, \"cpu_seconds\": 13.954331, \"peak_rss_kib\": 71252, \"monotonic\": 133629.273638866}}}"
+    },
+    "odom": {
+      "header": {
+        "stamp": {
+          "sec": 236,
+          "nanosec": 600000000
+        },
+        "frame_id": "otter/odom"
+      },
+      "child_frame_id": "otter/base_link",
+      "pose": {
+        "pose": {
+          "position": {
+            "x": 38.24478267879908,
+            "y": -27.090864446167156,
+            "z": 0.0
+          },
+          "orientation": {
+            "x": 0.0024787584078780085,
+            "y": -0.0067620984397601365,
+            "z": -0.7370912410232998,
+            "w": 0.6757548610170543
+          }
+        },
+        "covariance": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "twist": {
+        "twist": {
+          "linear": {
+            "x": 0.0022411093568338435,
+            "y": -0.0064530267466230504,
+            "z": 0.0
+          },
+          "angular": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": -0.0006577235333882465
+          }
+        },
+        "covariance": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    }
+  }
+}

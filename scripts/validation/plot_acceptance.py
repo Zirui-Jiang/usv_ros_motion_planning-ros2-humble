@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 从已完成试验的比较报告导出图表和 CSV，保留所选指标定义、原始来源与失败记录。
 """Export observed acceptance results after the live trials have stopped.
 
 Input is compare_results.py's report.json, with its selected raw summaries and
@@ -26,16 +27,19 @@ MARKERS = ("o", "s", "^")
 STYLES = ("-", "--", "-.")
 
 
+# 区分有效有限数值与缺失、NaN、无穷和布尔值，避免污染统计结果。
 def finite(value):
     return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
 
 
+# 安全读取嵌套结果字段；缺少字段时保留 None，而不补造零值。
 def nested(value, *keys):
     for key in keys:
         value = value.get(key) if isinstance(value, dict) else None
     return value
 
 
+# 流式计算输入文件 SHA-256，核对绘图数据仍是报告选中的同一份来源。
 def sha256(path):
     digest = hashlib.sha256()
     with path.open("rb") as stream:
@@ -44,6 +48,7 @@ def sha256(path):
     return digest.hexdigest()
 
 
+# 读取 JSON 并拒绝非有限数字标记，保持后续统计与序列化的输入契约。
 def read_json(path):
     def reject(value):
         raise ValueError(f"nonfinite JSON token {value}: {path}")
@@ -51,6 +56,7 @@ def read_json(path):
         return json.load(stream, parse_constant=reject)
 
 
+# 按明确的路径前缀映射定位归档数据，不修改原始记录中的路径。
 def map_path(value, mappings):
     value = str(value)
     for old, new in mappings:
@@ -60,20 +66,24 @@ def map_path(value, mappings):
     return Path(value).expanduser().resolve()
 
 
+# 仅把已完成且通过的记录识别为成功，保留其余记录用于解释失败。
 def successful(row):
     return row.get("result") == "completed" and row.get("passed") is True
 
 
+# 提取试验身份字段，让图表和导出数据可以追溯到具体重复试验。
 def identity(row):
     return {key: row.get(key) for key in ("trial", "mode", "controller", "scenario", "repeat")}
 
 
+# 按重复序号稳定分配颜色、标记与线型，便于跨图比较同一次试验。
 def style(row):
     repeat = row.get("repeat", 1)
     index = (repeat - 1) % len(COLORS)
     return COLORS[index], MARKERS[index], STYLES[index]
 
 
+# 核对来源哈希后载入轨迹与事件；观测间隔过大时分段显示，避免补画未观测运动。
 def load_trial(record, mappings, gap, issues):
     row, source = record["result"], record["source"]
     summary_path = map_path(source["summary_path"], mappings)
@@ -153,14 +163,17 @@ def load_trial(record, mappings, gap, issues):
     return trial
 
 
+# 兼容旧报告的指标字段，同时明确返回当前采用的 RMSE 定义。
 def rmse_metric_name(report):
     return report.get("method", {}).get("rmse_metric", "legacy_wall")
 
 
+# 在坐标轴标出误差单位和指标定义，避免混淆两种 RMSE。
 def rmse_axis_label(report):
     return "RMSE (m)\n" + rmse_metric_name(report)
 
 
+# 同时导出所选指标、墙钟指标和源时间指标，并保留源时间有效性。
 def rmse_export_values(trial, report):
     metric = rmse_metric_name(report)
     legacy = nested(trial["row"], "cross_track_initial_m", "rms")
@@ -177,6 +190,7 @@ def rmse_export_values(trial, report):
             "source_error_p95_m": source.get("error_p95_m"), "source_error_max_m": source.get("error_max_m")}
 
 
+# 按固定字段顺序写出 CSV，便于表格软件读取与后续复核。
 def write_csv(path, rows, fields):
     with path.open("w", encoding="utf-8-sig", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=fields, extrasaction="ignore")
@@ -184,6 +198,7 @@ def write_csv(path, rows, fields):
         writer.writerows(rows)
 
 
+# 筛选规定的 PID/LQR 场景与重复试验，显式记录跳过、缺失和来源问题。
 def prepare(report, mappings, gap):
     trials, issues, skipped, keys = [], [], [], set()
     for record in report["trials"]:
@@ -233,11 +248,13 @@ def prepare(report, mappings, gap):
     return trials, timing, issues, skipped
 
 
+# 选择同场景同控制器的试验，并按实现和重复序号稳定排序。
 def selected(trials, scenario, controller):
     return sorted((t for t in trials if t["row"]["scenario"] == scenario and t["row"]["controller"] == controller),
                   key=lambda t: (t["row"]["mode"] != "cpp", t["row"]["repeat"]))
 
 
+# 使用无界面绘图后端导出轨迹及指标图；只消费已有观测，不重跑仿真。
 def figures(trials, timing, report, output, dpi):
     import matplotlib
     matplotlib.use("Agg")
@@ -428,6 +445,7 @@ def figures(trials, timing, report, output, dpi):
     return exported, ratio_rows, matplotlib.__version__
 
 
+# 命令行入口：解析本脚本选项并执行上述流程，运行结果由退出码及输出记录共同说明。
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--report", required=True, type=Path, help="compare_results.py report.json")

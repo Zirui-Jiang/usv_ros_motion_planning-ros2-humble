@@ -15,6 +15,7 @@
  *
 */
 
+// 实现深水重力波色散关系 ω²=|g|k，供波谱参数在周期与波长之间转换。
 #include <cmath>
 
 #include "wave_gazebo_plugins/Physics.hh"
@@ -23,6 +24,7 @@
 namespace asv
 {
   /////////////////////////////////////////////////
+  // 输入波数 k，单位 rad/m，输出角频率 rad/s；平方根要求 k 非负。
   double Physics::DeepWaterDispersionToOmega(double _wavenumber)
   {
     const double g = std::fabs(PhysicalConstants::Gravity());
@@ -30,6 +32,7 @@ namespace asv
   }
 
   /////////////////////////////////////////////////
+  // 输入角频率 rad/s，返回波数 rad/m；使用重力绝对值以消除 Z 轴符号约定。
   double Physics::DeepWaterDispersionToWavenumber(double _omega)
   {
     const double g = std::fabs(PhysicalConstants::Gravity());

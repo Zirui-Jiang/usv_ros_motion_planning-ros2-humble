@@ -1,0 +1,2274 @@
+{
+  "trial": "python_pid_single_obstacle_01",
+  "mode": "python",
+  "controller": "pid",
+  "scenario": "single_obstacle",
+  "fault": null,
+  "repeat": 1,
+  "result": "completed",
+  "passed": true,
+  "reasons": [],
+  "arrived": true,
+  "duration_wall_s": 25.44071100500878,
+  "effective_arrival_distance_m": 1.5,
+  "duration_sim_s": 22.900000000000002,
+  "costmap_topic": "/otter/costmap_raw",
+  "cross_track_initial_m": {
+    "count": 243,
+    "mean": 0.14836229743079102,
+    "rms": 0.18616146189858354,
+    "p95": 0.3718607886086863,
+    "max": 0.535726739313442
+  },
+  "cross_track_live_m": {
+    "count": 232,
+    "mean": 0.22057283722009977,
+    "rms": 0.269175899248325,
+    "p95": 0.5176743330808531,
+    "max": 0.5397287221989959
+  },
+  "minimum_footprint_clearance_m": 0.856837279741881,
+  "goal_to_first_path_wall_s": 0.1440090239921119,
+  "goal_to_first_nonzero_command_wall_s": 0.15423552799620666,
+  "command_receipt_gap_ms": {
+    "count": 236,
+    "mean": 107.55471623306838,
+    "rms": 107.93301679467356,
+    "p95": 113.368576974608,
+    "max": 120.09111198130995
+  },
+  "observed_odom_receipt_to_command_receipt_ms": {
+    "count": 237,
+    "mean": 177.55355641556773,
+    "rms": 482.87642691139683,
+    "p95": 1362.0650469965767,
+    "max": 2553.5436540085357
+  },
+  "path_header_age_sim_ms": {
+    "count": 112,
+    "mean": 0.8928571428582261,
+    "rms": 9.449111825230815,
+    "p95": 3.552713678800501e-12,
+    "max": 100.00000000000142
+  },
+  "status": {
+    "state": "GOAL_REACHED",
+    "reason": "",
+    "version": 2,
+    "stamp": 28.1,
+    "controller": "pid",
+    "goal": null,
+    "mission": null,
+    "control_authority": {
+      "conflicted": false,
+      "reason": "",
+      "publishers": {
+        "/otter/thrusters/left_thrust_cmd": 1,
+        "/otter/thrusters/right_thrust_cmd": 1,
+        "/otter/thrusters/lateral_thrust_cmd": 1
+      },
+      "restart_required": false
+    },
+    "metrics": {
+      "control_ms": {
+        "count": 301,
+        "p50": 0.24936598492786288,
+        "p95": 4.096889984793961,
+        "p99": 5.637385998852551,
+        "max": 10.797315975651145
+      },
+      "costmap_conversion_ms": {
+        "count": 28,
+        "p50": 1.2029244826408103,
+        "p95": 3.471723551047034,
+        "p99": 3.6506485036807135,
+        "max": 3.666862001409754
+      },
+      "planning_ms": {
+        "count": 110,
+        "p50": 5.6887259997893125,
+        "p95": 11.850647395476699,
+        "p99": 13.709843998949506,
+        "max": 13.892353017581627
+      }
+    },
+    "counters": {
+      "pending_replacements": 0,
+      "global_searches": 3
+    },
+    "process": {
+      "pid": 186942,
+      "cpu_seconds": 1.777601,
+      "peak_rss_kib": 75840,
+      "monotonic": 216042.062668192
+    }
+  },
+  "mapping_status": {
+    "stamp": 27.900000000000002,
+    "queue_size": 0,
+    "integrated_scans": 413,
+    "scan_overruns": 0,
+    "queue_counters": {
+      "accepted": 415,
+      "processed": 413,
+      "overflow": 0,
+      "expired": 2,
+      "duplicate": 0,
+      "invalid": 0,
+      "invalid_consumed": 0,
+      "resets": 0
+    },
+    "invalid_scans": 0,
+    "queue_observation_window": {
+      "window_s": 5.0,
+      "sampling_phase": "after_drain",
+      "capacity": 5,
+      "tf_wait_timeout_s": 0.2,
+      "observation_count": 356,
+      "pending_observations": 250,
+      "empty_observations": 106,
+      "max_queue_size": 2,
+      "latest_queue_size": 0,
+      "latest_oldest_pending_age_ms": null,
+      "oldest_pending_age_ms": {
+        "count": 250,
+        "p50": 29.52643450407777,
+        "p95": 70.9155127973645,
+        "p99": 80.26875829906199,
+        "max": 93.11064399662428
+      },
+      "oldest_pending_distinct_count": 50,
+      "latest_oldest_pending": null,
+      "max_observation_gap_ms": 97.25122500094585,
+      "observed_span_s": 4.9978666880051605,
+      "first_observed_monotonic_s": 216036.860175463,
+      "last_observed_monotonic_s": 216041.858042151
+    },
+    "invalid_beams": 0,
+    "processing_ms": {
+      "count": 256,
+      "p50": 22.2585340088699,
+      "p95": 27.175354516657535,
+      "p99": 31.676043257175454,
+      "max": 46.62000900134444
+    },
+    "queue_ms": {
+      "count": 256,
+      "p50": 53.31982699863147,
+      "p95": 86.58322923292872,
+      "p99": 103.12859119439963,
+      "max": 107.64973101322539
+    },
+    "serialization_and_publish_ms": {
+      "count": 55,
+      "p50": 0.32096501672640443,
+      "p95": 0.589525993564166,
+      "p99": 0.9967065544333316,
+      "max": 1.41924899071455
+    },
+    "observed_scan_period_ms": {
+      "count": 256,
+      "p50": 67.0,
+      "p95": 67.0,
+      "p99": 67.0,
+      "max": 67.0
+    },
+    "process": {
+      "pid": 186935,
+      "cpu_seconds": 10.731448,
+      "peak_rss_kib": 68160,
+      "monotonic": 216041.859241077
+    }
+  },
+  "control_ownership_graph": {
+    "requirements": {
+      "node": "mission_manager",
+      "forbidden_node": "usv_simulation",
+      "required_thruster_axes": [
+        "left",
+        "right",
+        "lateral"
+      ],
+      "maximum_poll_interval_wall_s": 0.5,
+      "command_publishers_per_topic": 1
+    },
+    "observation_count": 61,
+    "passed": true,
+    "observations": [
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216012.098679976,
+        "sim_time_s": 0.8
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216012.617856901,
+        "sim_time_s": 1.3
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216013.121494165,
+        "sim_time_s": 1.8
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216013.622577724,
+        "sim_time_s": 2.3000000000000003
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216014.134779423,
+        "sim_time_s": 2.8000000000000003
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216014.654172319,
+        "sim_time_s": 3.3000000000000003
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216015.175108254,
+        "sim_time_s": 3.8000000000000003
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216015.691535988,
+        "sim_time_s": 4.300000000000001
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216016.192895401,
+        "sim_time_s": 4.800000000000001
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216016.699641599,
+        "sim_time_s": 5.300000000000001
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216017.205131808,
+        "sim_time_s": 5.800000000000001
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216017.709801283,
+        "sim_time_s": 6.300000000000001
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216018.220955423,
+        "sim_time_s": 6.800000000000001
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216018.724169997,
+        "sim_time_s": 7.4
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216019.225578265,
+        "sim_time_s": 7.9
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216019.726365697,
+        "sim_time_s": 8.4
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216020.227475633,
+        "sim_time_s": 8.8
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216020.731111294,
+        "sim_time_s": 9.4
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216021.232596886,
+        "sim_time_s": 9.9
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216021.73910813,
+        "sim_time_s": 10.3
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216022.259831127,
+        "sim_time_s": 10.3
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216022.779220119,
+        "sim_time_s": 10.3
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216023.300194032,
+        "sim_time_s": 10.3
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216023.820183627,
+        "sim_time_s": 10.3
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216024.322322867,
+        "sim_time_s": 10.4
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216024.823113395,
+        "sim_time_s": 10.9
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216025.336900328,
+        "sim_time_s": 11.4
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216025.839481425,
+        "sim_time_s": 12.0
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216026.340664007,
+        "sim_time_s": 12.5
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216026.842330085,
+        "sim_time_s": 13.0
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216027.343501857,
+        "sim_time_s": 13.5
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216027.845378515,
+        "sim_time_s": 14.0
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216028.346982637,
+        "sim_time_s": 14.500000000000002
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216028.848279005,
+        "sim_time_s": 15.000000000000002
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216029.349273289,
+        "sim_time_s": 15.500000000000002
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216029.850513201,
+        "sim_time_s": 16.0
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216030.351965507,
+        "sim_time_s": 16.5
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216030.853453586,
+        "sim_time_s": 17.0
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216031.354764492,
+        "sim_time_s": 17.5
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216031.855884878,
+        "sim_time_s": 18.0
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216032.357525796,
+        "sim_time_s": 18.5
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216032.858680276,
+        "sim_time_s": 19.0
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216033.359907924,
+        "sim_time_s": 19.5
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216033.861230369,
+        "sim_time_s": 20.0
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216034.361547811,
+        "sim_time_s": 20.400000000000002
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216034.863432907,
+        "sim_time_s": 21.0
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216035.364968431,
+        "sim_time_s": 21.5
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216035.86734238,
+        "sim_time_s": 22.0
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216036.368740486,
+        "sim_time_s": 22.5
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216036.869917091,
+        "sim_time_s": 23.0
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216037.371533982,
+        "sim_time_s": 23.5
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216037.873683822,
+        "sim_time_s": 24.0
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216038.379613631,
+        "sim_time_s": 24.400000000000002
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216038.880189196,
+        "sim_time_s": 24.900000000000002
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216039.393768897,
+        "sim_time_s": 25.5
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216039.895071714,
+        "sim_time_s": 26.0
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216040.396292308,
+        "sim_time_s": 26.5
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216040.896909272,
+        "sim_time_s": 26.900000000000002
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216041.398336888,
+        "sim_time_s": 27.5
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216041.89980779,
+        "sim_time_s": 28.0
+      },
+      {
+        "namespace": "/otter",
+        "expected_publisher": "/otter/mission_manager",
+        "nodes": [
+          "/acceptance_4233da33",
+          "/gazebo",
+          "/gazebo/gazebo_ros_state",
+          "/joint_state_publisher",
+          "/otter/costmap",
+          "/otter/fake_localization",
+          "/otter/lidar",
+          "/otter/mapping",
+          "/otter/mission_manager",
+          "/otter/otter_usv_gazebo_thrust_plugin",
+          "/otter/transform_listener_impl_59b678292640",
+          "/robot_state_publisher",
+          "/usv_gazebo_wind_plugin"
+        ],
+        "publishers": {
+          "/otter/thrusters/lateral_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/left_thrust_cmd": [
+            "/otter/mission_manager"
+          ],
+          "/otter/thrusters/right_thrust_cmd": [
+            "/otter/mission_manager"
+          ]
+        },
+        "passed": true,
+        "failures": [],
+        "wall_monotonic_s": 216042.400752826,
+        "sim_time_s": 28.5
+      }
+    ]
+  }
+}

@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
+<!-- Gazebo 模型 battery 的结构描述；碰撞体、外观和惯性分别定义，网格纹理仍由资源文件提供。 -->
 <sdf version="1.6">
   <model name="battery">
     <link name="battery_link">
+      <!-- 外观几何与材质只负责显示，不能据此认定物理碰撞尺寸。 -->
       <visual name="battery_visual">
         <pose>0 -1.03 -.45 0 0 0 </pose>
         <geometry>
@@ -10,12 +12,14 @@
           </mesh>
         </geometry>
       </visual>
+      <!-- 碰撞几何参与物理接触检测，不一定与显示网格完全相同。 -->
       <collision name="battery_collision">
         <pose>0 0 .15 0 0 0</pose>
         <geometry>
           <box><size>.6 .4 .31</size></box>
         </geometry>
       </collision>
+      <!-- 质量和惯性张量影响动力学；与仅用于显示的网格外观分别配置。 -->
       <inertial>
         <pose>0 0 .15 0 0 0</pose>
         <mass>23.5</mass>

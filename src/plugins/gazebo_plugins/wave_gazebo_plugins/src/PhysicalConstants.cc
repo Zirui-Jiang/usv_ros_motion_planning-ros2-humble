@@ -15,29 +15,34 @@
  *
 */
 
+// 集中提供固定物理常数；此处常数不随 Gazebo 世界参数或 SDF 自动变化。
 #include "wave_gazebo_plugins/PhysicalConstants.hh"
 
 namespace asv
 {
   /////////////////////////////////////////////////////////////////////////////
+  // 采用 Z 轴向上的约定，重力加速度为 -9.8 m/s²。
   double PhysicalConstants::Gravity()
   {
     return -9.8;
   }
 
   /////////////////////////////////////////////////////////////////////////////
+  // 万有引力常数单位为 m³/(kg·s²)，与地表重力加速度不同。
   double PhysicalConstants::G()
   {
     return 6.67408E-11;
   }
 
   /////////////////////////////////////////////////////////////////////////////
+  // 返回水密度 kg/m³。
   double PhysicalConstants::WaterDensity()
   {
     return 998.6;
   }
 
   /////////////////////////////////////////////////////////////////////////////
+  // 返回运动黏度 m²/s，原始参数对应 18 摄氏度水。
   double PhysicalConstants::WaterKinematicViscosity()
   {
     return 1.0533E-6;

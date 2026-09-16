@@ -1,3 +1,4 @@
+# 验证源时间误差积分、重复时间戳去重与覆盖边界；观测不完整时必须返回未知。
 """The source-time protocol is fixed before the next navigation matrix."""
 import importlib.util
 import math
@@ -26,6 +27,7 @@ def measure(events=None, contract="otter_fake_localization"):
     return tracking.source_time_trapezoid(source_events() if events is None else events, frame_contract=contract)
 
 
+# 非均匀源采样应按时间积分平方误差，不能对样本简单等权求均方根。
 def test_nonuniform_squared_error_trapezoids_not_equal_sample_rms():
     observed = measure()
     assert observed["status"] == "valid"
@@ -38,6 +40,7 @@ def test_nonuniform_squared_error_trapezoids_not_equal_sample_rms():
     assert observed["error_p95_m"] == observed["error_max_m"] == 2.
 
 
+# 重复源时间去重，墙钟暂停不能凭空增加同一状态的积分权重。
 def test_same_pose_stamp_deduplicated_and_wall_pause_cannot_change_integral():
     events = source_events()
     events[4:4] = [dict(events[3], wall_monotonic_s=10.3), dict(events[3], wall_monotonic_s=10.5)]
@@ -47,6 +50,7 @@ def test_same_pose_stamp_deduplicated_and_wall_pause_cannot_change_integral():
     assert answer["raw_odom_count"] == 5
 
 
+# 首条路径按接收顺序选取，同时保留路径到来前已经观测到的运动。
 def test_first_path_uses_receipt_order_and_all_prepath_motion_is_retained():
     events = source_events()
     events.insert(4, dict(events[2], wall_monotonic_s=10.4, sim_time_s=-200., points=[[0., 99.], [10., 99.]]))
@@ -56,6 +60,7 @@ def test_first_path_uses_receipt_order_and_all_prepath_motion_is_retained():
     assert answer["source_start_s"] == 0.
 
 
+# 无效或覆盖不足的证据返回未知，不补零或外推。
 @pytest.mark.parametrize("kind", ["conflicting_stamp", "rollback", "nonfinite_pose", "missing_stamp", "missing_pose", "missing_frame", "missing_child", "source_gap", "no_pregoal", "no_end", "no_goal_stamp", "start_coverage", "end_coverage", "no_span", "unknown_frame", "multiple_goal"])
 def test_bad_or_incomplete_evidence_is_unknown(kind):
     events = source_events()
@@ -82,6 +87,7 @@ def test_bad_or_incomplete_evidence_is_unknown(kind):
     assert answer["reasons"]
 
 
+# 未显式选择坐标系契约时，不能自动假定 map 与 odom 相同。
 def test_contract_is_never_implicitly_assumed():
     assert measure(contract=None)["status"] == "unknown"
     events = source_events()
@@ -90,6 +96,7 @@ def test_contract_is_never_implicitly_assumed():
     assert measure(events)["status"] == "unknown"
 
 
+# 恰好半秒的覆盖边界按协议接纳，积分区间仍不超出实际观测。
 def test_boundary_half_second_is_inclusive_and_no_extrapolation():
     events = source_events()
     events[1]["sim_time_s"] = .5
@@ -100,6 +107,7 @@ def test_boundary_half_second_is_inclusive_and_no_extrapolation():
     assert answer["start_coverage_gap_s"] == answer["end_coverage_gap_s"] == .5
 
 
+# 剔除采集结束后的观测和不属于本次目标窗口的旧样本。
 def test_observations_after_acquisition_and_older_pregoal_are_excluded():
     events = source_events()
     events.insert(0, dict(events[0], wall_monotonic_s=8., sim_time_s=-10., pose=[0., 100., 0.]))
@@ -107,6 +115,7 @@ def test_observations_after_acquisition_and_older_pregoal_are_excluded():
     assert measure(events)["rmse_m"] == measure()["rmse_m"]
 
 
+# 在线段延长线上的点应计算到端点的距离，而不是错误地得到零。
 def test_polyline_endpoint_distance_is_not_infinite_line_distance():
     events = source_events()
     for event in events:
@@ -114,6 +123,7 @@ def test_polyline_endpoint_distance_is_not_infinite_line_distance():
     assert measure(events)["rmse_m"] == 5.
 
 
+# 用有解析积分的平方误差函数检验非均匀梯形积分数值。
 def test_linear_squared_error_has_known_integral_on_nonuniform_grid():
     events = source_events()
     for event in events:
@@ -125,6 +135,7 @@ def test_linear_squared_error_has_known_integral_on_nonuniform_grid():
     assert answer["rmse_m"] == pytest.approx(math.sqrt(1.75))
 
 
+# 坐标系契约要同时保留历史源码和运行日志的身份哈希。
 def test_declared_frame_contract_contains_both_audited_source_and_log_hashes():
     evidence = tracking.frame_contract_description("otter_fake_localization")["verified_sources"]
     assert {entry["mode"] for entry in evidence} == {"cpp", "python"}

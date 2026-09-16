@@ -1,13 +1,16 @@
 <?xml version="1.0"?>
+<!-- Gazebo 模型 wavegauge 的结构描述；碰撞体、外观和惯性分别定义，网格纹理仍由资源文件提供。 -->
 <sdf version="1.6">
   <model name="wavegauge">
     <static>false</static>
     <pose>0 0 0 0 0 0</pose>
     <link name="base_link">
 			<gravity>0</gravity>
+      <!-- 质量和惯性张量影响动力学；与仅用于显示的网格外观分别配置。 -->
       <inertial>
         <mass>0.000001</mass>
       </inertial>
+      <!-- 外观几何与材质只负责显示，不能据此认定物理碰撞尺寸。 -->
       <visual name="visual">
         <geometry>
           <cylinder>
@@ -23,6 +26,7 @@
         </material>
       </visual>
     </link>
+    <!-- 加载指定动态库并传入参数；具体数值处理由对应插件源码完成。 -->
     <plugin name="wavegauge_plugin" filename="libwavegauge_plugin.so">
       <wave_model>ocean_waves</wave_model>
       <fluid_level>0.0</fluid_level>

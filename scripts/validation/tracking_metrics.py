@@ -1,3 +1,4 @@
+# 按真实源时间积分平方横向误差；不外推、不平滑，也不以重复墙钟采样代替新观测。
 """Finite-observation tracking scores; no ROS, clock extrapolation or smoothing.
 
 The 0.5 s source-gap and boundary tolerances are protocol constants, fixed before
@@ -19,6 +20,7 @@ MAX_BOUNDARY_GAP_S = .5
 FRAME_CONTRACTS = ("otter_fake_localization",)
 # Audited immutable source/log evidence, not a claim that arbitrary frames with
 # these names are identical. CLI selection is the caller's project assertion.
+# 以下哈希和行号属于列出的历史提交与日志，不应随当前文件新增注释而改写。
 FRAME_EVIDENCE = [
     {"mode": "cpp", "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3",
      "source": "src/sim_env/src/fake_localization_node.cpp", "source_lines": [89, 94],
@@ -37,10 +39,12 @@ FRAME_EVIDENCE = [
 ]
 
 
+# 区分有效有限数值与缺失、NaN、无穷和布尔值，避免污染统计结果。
 def finite(value):
     return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
 
 
+# 明确选择经过审计的 map/odom 恒等变换前提；仅帧名相同不足以证明坐标一致。
 def frame_contract_description(name):
     if name is None:
         return {"name": None, "status": "not_selected", "scope": "No map/odom identity is assumed."}
@@ -53,6 +57,7 @@ def frame_contract_description(name):
             "version_scope": "These are the audited baseline/e381 implementations and logs. For later source versions the explicit caller assertion requires confirming this unchanged transform contract; matching frame strings alone is not proof."}
 
 
+# 先按事件接收顺序选取观测，再按唯一源时间积分误差平方，并检查首尾与相邻覆盖。
 def source_time_trapezoid(events, *, frame_contract=None):
     """Integrate squared distances between consecutive unique source observations.
 
@@ -170,6 +175,7 @@ def source_time_trapezoid(events, *, frame_contract=None):
     return result
 
 
+# 并列保留旧墙钟和源时间误差结果，避免修改统计定义后覆盖历史值。
 def tracking_scores(events, summary, *, frame_contract=None):
     legacy = summary.get("cross_track_initial_m") or {}
     value = legacy.get("rms")

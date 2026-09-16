@@ -15,11 +15,13 @@
  *
 */
 
+// 将 SDF box/sphere/cylinder 几何配置转换为统一的浸没体积计算对象。
 #include "usv_gazebo_plugins/shape_volume.hh"
 
 using namespace buoyancy;
 
 /////////////////////////////////////////////////
+// 工厂函数解析尺寸并返回独占所有权指针；不支持的形状或缺失尺寸会抛 ParseException。
 ShapeVolumePtr ShapeVolume::makeShape(const sdf::ElementPtr sdf)
 {
   double epsilon = 1e-20;
@@ -76,6 +78,7 @@ ShapeVolumePtr ShapeVolume::makeShape(const sdf::ElementPtr sdf)
     {
       auto r = cylinderElem->GetElement("radius")->Get<double>();
       auto l = cylinderElem->GetElement("length")->Get<double>();
+      // 当前圆柱尺寸条件使用逻辑或；不能理解为半径与长度都已分别通过正值检查。
       if (r > epsilon || l > epsilon)
       {
         shape = dynamic_cast<ShapeVolume*>(new CylinderVolume(r, l));
@@ -117,6 +120,7 @@ std::string ShapeVolume::Display()
 }
 
 //////////////////////////////////////////////////
+// 保存全体积和平均长度供阻尼估计，浸没部分由长方体三角网格裁剪得到。
 BoxVolume::BoxVolume(double x, double y, double z)
     : x(x),
       y(y),
@@ -137,6 +141,7 @@ std::string BoxVolume::Display()
 }
 
 //////////////////////////////////////////////////
+// pose 是形状世界位姿，fluidLevel 是世界 Z 水位；裁剪结果的浮心也在世界系。
 Volume BoxVolume::CalculateVolume(const ignition::math::Pose3d &pose,
                                   double fluidLevel)
 {
@@ -146,6 +151,7 @@ Volume BoxVolume::CalculateVolume(const ignition::math::Pose3d &pose,
 }
 
 /////////////////////////////////////////////////
+// 圆柱全体积采用解析式，水下面积积分使用固定 20 段多面体近似，两者精度不同。
 CylinderVolume::CylinderVolume(double r, double h)
     : r(r),
       h(h),
@@ -165,6 +171,7 @@ std::string CylinderVolume::Display()
 }
 
 /////////////////////////////////////////////////
+// 用同一水平面裁剪旋转后的圆柱近似网格，因此允许圆柱任意姿态。
 Volume CylinderVolume::CalculateVolume(const ignition::math::Pose3d &pose,
                                        double fluidLevel)
 {
@@ -174,6 +181,7 @@ Volume CylinderVolume::CalculateVolume(const ignition::math::Pose3d &pose,
 }
 
 //////////////////////////////////////////////////
+// 球体以中心为局部原点，半径单位为 m，旋转不影响浸没体积。
 SphereVolume::SphereVolume(double r)
     : r(r)
 {
@@ -191,6 +199,7 @@ std::string SphereVolume::Display()
 }
 
 //////////////////////////////////////////////////
+// 以球底到水面的高度确定积分区间：出水返回零，完全浸没时上限限制在球顶。
 Volume SphereVolume::CalculateVolume(const ignition::math::Pose3d &pose,
                                      double fluidLevel)
 {
@@ -207,6 +216,7 @@ Volume SphereVolume::CalculateVolume(const ignition::math::Pose3d &pose,
   double intLimitUpper = (-r + h) > r ? r : (-r + h);
 
   // volume = integral of (R^2 - z^2) dz * pi
+  // 按圆截面积 π(r²-z²) 积分得到体积，再以体积一阶矩计算浮心 Z 并平移到世界系。
   output.volume = (pow(r, 2) * (intLimitUpper - intLimitLower)
       - (pow(intLimitUpper, 3)/3.0 - pow(intLimitLower, 3)/3.0)) * M_PI;
   output.centroid.X() = pose.Pos().X();

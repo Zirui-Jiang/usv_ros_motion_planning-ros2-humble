@@ -15,6 +15,7 @@
  *
 */
 
+// 为箱体、圆柱体和球体提供统一浸没体积接口，供浮力插件通过多态调用。
 #pragma once
 
 #include <cmath>
@@ -37,6 +38,7 @@ namespace buoyancy
   };
 
   /// \brief Parent shape object for volume objects
+  // 基类保存全体积 m³ 和阻尼估计长度 m；CalculateVolume 输入世界位姿及水位。
   struct ShapeVolume
   {
     /// \brief Default destructor
@@ -70,6 +72,7 @@ namespace buoyancy
   typedef std::unique_ptr<ShapeVolume> ShapeVolumePtr;
 
   /// \brief Box shape volume
+  // 箱体通过三角网格裁剪水下部分，返回世界坐标浮心。
   struct BoxVolume : public ShapeVolume
   {
     /// \brief Default constructor
@@ -100,6 +103,7 @@ namespace buoyancy
   };
 
   /// \brief Cylinder shape volume
+  // 圆柱采用离散多面体近似浸没部分，全体积仍由圆柱解析公式提供。
   struct CylinderVolume : public ShapeVolume
   {
     /// \brief Default constructor
@@ -126,6 +130,7 @@ namespace buoyancy
   };
 
   /// \brief Sphere shape volume
+  // 球体按水平截面积解析积分，出水返回零体积，旋转姿态不影响结果。
   struct SphereVolume : public ShapeVolume
   {
     /// \brief Default constructor
@@ -144,6 +149,7 @@ namespace buoyancy
   };
 
   /// \brief Custom exception for parsing errors
+  // 保存可被 std::exception::what 读取的解析错误，指出失败形状或缺失字段。
   struct ParseException : public std::exception
   {
     ParseException(const char* shape, const char* message)

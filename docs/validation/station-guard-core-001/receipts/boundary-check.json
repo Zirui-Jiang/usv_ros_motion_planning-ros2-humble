@@ -1,0 +1,711 @@
+{
+  "protected_pre_migration_files": [
+    {
+      "path": "conftest.py",
+      "sha256": "a19383b3e68676336b2d80bd373e443b40160fe6848e5b70336baca8f5aad5f9",
+      "unchanged": true
+    },
+    {
+      "path": "pytest.ini",
+      "sha256": "0ace91470b0ef9eca62ecceb9a69fa34affae6eeea3dd911267a64f97964d1b0",
+      "unchanged": true
+    },
+    {
+      "path": "src/core/common/common/dynamics.py",
+      "sha256": "5a003f2ee1f7eef583c7f268002dd3fcbca4b2f5fcc647538fdb9884387e7319",
+      "unchanged": true
+    },
+    {
+      "path": "src/core/common/common/geodesy.py",
+      "sha256": "e54850c3d3227fb90bd379b05fa314fe1fc230bd2ed54a30efb7d3eca2d916a3",
+      "unchanged": true
+    },
+    {
+      "path": "src/core/common/test/test_dynamics.py",
+      "sha256": "6950ee8b35246a0dbe435f1c78952cbf38f82c083f6806e5756e7e1a28b93917",
+      "unchanged": true
+    },
+    {
+      "path": "src/core/common/test/test_geodesy.py",
+      "sha256": "7fab0338374d390d92c083b8a07c1418a4b58ada272fea4c142cd22e59aa55e1",
+      "unchanged": true
+    },
+    {
+      "path": "src/core/controller/controller/controller/__init__.py",
+      "sha256": "a4c2fb34298b496fa3be302396cd3f61248c4437538e1828c1432dfeed00e197",
+      "unchanged": true
+    },
+    {
+      "path": "src/core/controller/controller/controller/station_keeping_controller.py",
+      "sha256": "82c9a5225bf0f8834c22717edaeca1c7cc6239b09ab45c136e75ccd0312918d8",
+      "unchanged": true
+    },
+    {
+      "path": "src/core/controller/controller/test/test_station_keeping.py",
+      "sha256": "180a5d4f48715881cfb41e1b76ec0577192a77c35b3c4834dbd7e7201f83fa02",
+      "unchanged": true
+    },
+    {
+      "path": "src/core/trajectory_planner/test/test_circle.py",
+      "sha256": "8120f38252fac7c48ccddd95a97946402f17d738762180faa834539f34cb18bf",
+      "unchanged": true
+    },
+    {
+      "path": "src/core/trajectory_planner/trajectory_planner/__init__.py",
+      "sha256": "6bc14a352f9e344993400271edfd80259a705846bc8be7e4ad10cae427a83f7f",
+      "unchanged": true
+    },
+    {
+      "path": "src/core/trajectory_planner/trajectory_planner/circle.py",
+      "sha256": "46d9f4ea8c591c5f040980af8afb53f7232605b2dc2e6253bfe6de408d92ed6e",
+      "unchanged": true
+    },
+    {
+      "path": "src/core/trajectory_planner/trajectory_planner/los_trajectory_planner.py",
+      "sha256": "401bf5a30a76850b2ff0042a3b1e7aee81957af15e86c49afd1cdea6c129bfca",
+      "unchanged": true
+    },
+    {
+      "path": "src/core/usv_mission_interfaces/CMakeLists.txt",
+      "sha256": "749055a67368e325c3678c520ec5a68b1b46970acba17b6cffe1a02fb23892bc",
+      "unchanged": true
+    },
+    {
+      "path": "src/core/usv_mission_interfaces/package.xml",
+      "sha256": "d5f950028b559281775e53f45f2c1c7da048663c48af1cf59a3eaaa740cc24a9",
+      "unchanged": true
+    },
+    {
+      "path": "src/core/usv_mission_interfaces/srv/SetMission.srv",
+      "sha256": "d78781a1b931b8b674369d97d0db99c4dd6e829ebc002fe9062deea8be0234ab",
+      "unchanged": true
+    },
+    {
+      "path": "src/sim_env/sim_env/sensor_configuration.py",
+      "sha256": "aa3439b41456616b6c9b573ba4f0cc217840ba30778d4f1524975efd3021d9d7",
+      "unchanged": true
+    }
+  ],
+  "restored_baseline_files": [
+    "src/sim_env/CMakeLists.txt",
+    "src/sim_env/rviz/sim_env.rviz",
+    "src/sim_env/sim_env/runtime.py",
+    "src/sim_env/test/test_configuration.py",
+    "scripts/validation/verify_install.py"
+  ],
+  "current_checkout_matches_validated_source": true,
+  "validated_source_files": 341,
+  "validated_source_sha256": "a44de962ec71c93ccf4f414a94951ae0318de4a3e187d72ecee8ef66d652c7ec",
+  "protected_tree_file_count": 152,
+  "protected_tree_files": [
+    {
+      "path": "src/sim_env/worlds/example_course.world",
+      "sha256": "d1fa5a0a062e3c98429ddbb8fc11ee9f7b81244c7c2f27d3547308921520499b"
+    },
+    {
+      "path": "src/sim_env/worlds/ocean.world",
+      "sha256": "43322bb3981ddde53fec8909095b7cee36025508e8bfed475bc6465f07108f0b"
+    },
+    {
+      "path": "src/sim_env/urdf/otter/dynamics/otter_gazebo_dynamics_plugin.xacro",
+      "sha256": "4f7cba242e3a75bf7ddf9364462e895526a1aae5366598e5e9d363e33fac6bda"
+    },
+    {
+      "path": "src/sim_env/urdf/otter/dynamics/otter_gazebo_wind_plugin.xacro",
+      "sha256": "29398277fc2b9c092c0b81544e8f793138f662cca1612a8ada7afb44f169f018"
+    },
+    {
+      "path": "src/sim_env/urdf/otter/materials.urdf.xacro",
+      "sha256": "114fbbfafadda4d135f8c53345937802eaf5435d300e758df5726f61b88ebf2d"
+    },
+    {
+      "path": "src/sim_env/urdf/otter/otter.urdf.xacro",
+      "sha256": "56f52e59cb24275a2558f61392a1227f4abf5ba43af9e058993d46866a922f49"
+    },
+    {
+      "path": "src/sim_env/urdf/otter/otter_base.urdf.xacro",
+      "sha256": "16af7e991491159801bfa36fb7eb32c53a762f3975c8fc53d015a5d166da7899"
+    },
+    {
+      "path": "src/sim_env/urdf/otter/parts.mininertia.urdf.xacro",
+      "sha256": "a16bda8d8b4296837190118653dccbcbd3a0cf9e8377491728d951a2d8d13bdd"
+    },
+    {
+      "path": "src/sim_env/urdf/otter/propeller.xacro",
+      "sha256": "16f8e2e958afa6a7a7fe2580d931311c1c87d4a3a0fdecbc3278f587c4ba33a2"
+    },
+    {
+      "path": "src/sim_env/urdf/otter/sensors/otter_gps.xacro",
+      "sha256": "05b83157cc357f4d53cc94270a1ae68f0eb14df805d6978513c3ec0af5941dea"
+    },
+    {
+      "path": "src/sim_env/urdf/otter/sensors/otter_imu.xacro",
+      "sha256": "da98231d4f0f3aca23f00c452e901f110c40c22eef60f40fd38ca153d46e4efc"
+    },
+    {
+      "path": "src/sim_env/urdf/otter/sensors/otter_lidar.xacro",
+      "sha256": "f44aa6d3e2bafbf38f10b83f8668baf6b0ba99c31b6fb49395e961176c668dd7"
+    },
+    {
+      "path": "src/sim_env/urdf/otter/sensors/otter_mmwave.xacro",
+      "sha256": "831352081d06285fa082d8ad96f898d86344ed8e577f95e10dedb21410ea2bbd"
+    },
+    {
+      "path": "src/sim_env/urdf/otter/thrusters/otter_gazebo_thruster_config.xacro",
+      "sha256": "27f2ebe46a59d2c36fa212c6b902e7300e9f20a4656e9eab808d665340caed6f"
+    },
+    {
+      "path": "src/sim_env/urdf/otter/thrusters/otter_gazebo_thruster_plugin.xacro",
+      "sha256": "ae681dc4c9a04c643fded043f1d5429ed00c1e9c42448de8278a63cb7ff96fc5"
+    },
+    {
+      "path": "src/sim_env/config/controller/apf_controller_params.yaml",
+      "sha256": "43fbca1edf0db49f3ba91f27ea4ec9110d968787afd3568a9847c34794df3f3d"
+    },
+    {
+      "path": "src/sim_env/config/controller/dwa_controller_params.yaml",
+      "sha256": "7055bf8d11cc6f87ccca47ba359f4d8f76c563a1182384a67810eb50ea84f4a5"
+    },
+    {
+      "path": "src/sim_env/config/controller/lqr_controller_params.yaml",
+      "sha256": "d588077479d659f0a22534770c9bf769fd74e18012c86d5157d0b65151203ba8"
+    },
+    {
+      "path": "src/sim_env/config/controller/mpc_controller_params.yaml",
+      "sha256": "885f7111e11cb6b69fd15321bdc385cbbd114bf58d7b17470c9cfad07696fd7c"
+    },
+    {
+      "path": "src/sim_env/config/controller/orca_controller_params.yaml",
+      "sha256": "d6f72ed20e490954696721cb3eea994fafc65bbf75cbd7a908355bed8cc4ea22"
+    },
+    {
+      "path": "src/sim_env/config/controller/pid_controller_params.yaml",
+      "sha256": "553d037cd8d9e80d30cd6606f7d4901040417ee37466e81799a818013c54ee02"
+    },
+    {
+      "path": "src/sim_env/config/controller/rpp_controller_params.yaml",
+      "sha256": "7fd5783e80f18e081b63f9275323c3cecc2e29e0276fe4e1e959d14ed25c1e87"
+    },
+    {
+      "path": "src/sim_env/config/costmap/mapping.yaml",
+      "sha256": "60a85e38dccd899b38ec5dc6e5e20e9ac876fc5698325ccc70956cd29139bb3a"
+    },
+    {
+      "path": "src/sim_env/config/custom_rosconsole.conf",
+      "sha256": "589b35b52d1839cf7a6960113c310a71098832cd6ccbdf5c5bb7dafe7f74a114"
+    },
+    {
+      "path": "src/sim_env/config/path_planner/common_planner_params.yaml",
+      "sha256": "2abb02489f7e2ddf75cd68047ec1f0752e8b513db4e4ade7ed95cd8252819984"
+    },
+    {
+      "path": "src/sim_env/config/path_planner/evolutionary_planner_params.yaml",
+      "sha256": "bae36b8e140c2fc2080e97310749a28c28920abb78e67bbe6b4fa2b48da623c1"
+    },
+    {
+      "path": "src/sim_env/config/path_planner/graph_planner_params.yaml",
+      "sha256": "e587c1de6a29d16f88b56e70a8608beb039800387db7cded744fc7ac8f6318f4"
+    },
+    {
+      "path": "src/sim_env/config/path_planner/sample_planner_params.yaml",
+      "sha256": "075156fe0667bcfcef823e6537c3187efac2ddbc6630beffa372f7aa7c766b38"
+    },
+    {
+      "path": "src/sim_env/config/robots/otter/controller_params_otter.yaml",
+      "sha256": "3e11175489dd7d32d06bd56c62e917a1285c47190f5d60276cebefa9deeb0e72"
+    },
+    {
+      "path": "src/sim_env/config/robots/otter/dynamics_otter.yaml",
+      "sha256": "4208159ef7769e30719a3c787deb77ab503be473f0774e5bcfe9cb7014d83565"
+    },
+    {
+      "path": "src/sim_env/config/robots/otter/ekf_params_otter.yaml",
+      "sha256": "099e5552b0b5c27a9ff538fa4c2d5cb2e8a28632622a2f7b4f42b122ca81b65c"
+    },
+    {
+      "path": "src/sim_env/config/robots/otter/global_costmap_params_otter.yaml",
+      "sha256": "1c06feb159a0571f42326c2b901676969801ee14611286ef76fa5a249adcc949"
+    },
+    {
+      "path": "src/sim_env/config/robots/otter/gps_params_otter.yaml",
+      "sha256": "338a76cafda3052b968f8ebace36472bd3d6923eb5612e04799f679d6b699db6"
+    },
+    {
+      "path": "src/sim_env/config/robots/otter/trajectory_params_otter.yaml",
+      "sha256": "8a7c53dacc1ab5965fcc4c33bb50c5e0bdde945fc5fcafae8e4955eca754d5e7"
+    },
+    {
+      "path": "src/sim_env/config/sensors/mmwave.yaml",
+      "sha256": "27b7980b339b2ffd856664c07f0eabab949cff2c5b8af48eb6b3506a87833e54"
+    },
+    {
+      "path": "src/sim_env/config/trajectory_planner/trajectory_planner_params.yaml",
+      "sha256": "f19e56ad2228fd0f7145fd6a6ae97f60aa7789ecc43b0b9c76bbafd98b15446e"
+    },
+    {
+      "path": "src/sim_env/config/velocity_planner/velocity_planner_params.yaml",
+      "sha256": "77005c14a824989663444d9d6bb7a638f1188895a8e2e3a3ba8c9d8d3b0e6f82"
+    },
+    {
+      "path": "src/core/controller/controller/controller/__init__.py",
+      "sha256": "a4c2fb34298b496fa3be302396cd3f61248c4437538e1828c1432dfeed00e197"
+    },
+    {
+      "path": "src/core/controller/controller/controller/controller.py",
+      "sha256": "b25e305f9375902a7b2b822e946fe714a727d963103071817e972e572db0e865"
+    },
+    {
+      "path": "src/core/controller/controller/controller/controller_factory.py",
+      "sha256": "5abb3753dae62f35be00ef05502fb8400e25212c6be0e4cc037e310513c0b937"
+    },
+    {
+      "path": "src/core/controller/controller/controller/lqr_controller.py",
+      "sha256": "d33d877dedd63653112f42937d0566202c223b20a29f7e0e51b703067dcca40a"
+    },
+    {
+      "path": "src/core/controller/controller/controller/pid_controller.py",
+      "sha256": "d34540b42cd68ec9fc2b89e002c6ef2b6619a2014440ee84a90e8f0ae54705ba"
+    },
+    {
+      "path": "src/core/controller/controller/controller/station_keeping_controller.py",
+      "sha256": "82c9a5225bf0f8834c22717edaeca1c7cc6239b09ab45c136e75ccd0312918d8"
+    },
+    {
+      "path": "src/core/controller/controller/package.xml",
+      "sha256": "e35b1004ec014848057d24a22c9443ce4db6617e499878503c806c74f29d3f5a"
+    },
+    {
+      "path": "src/core/controller/controller/resource/controller",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/core/controller/controller/setup.cfg",
+      "sha256": "b597b1bf63b00077421e6d232041aaf6fcc74d52c333a80533688ed2bf4283e0"
+    },
+    {
+      "path": "src/core/controller/controller/setup.py",
+      "sha256": "c7fb74db8cf39c0642f3e62409464f28ed62f803fbb0f91648a0205d3eda7529"
+    },
+    {
+      "path": "src/core/controller/controller/test/test_controllers.py",
+      "sha256": "7ec9655a3e47032c75c12cec21db0d109efb58477fe66c1970de95ff2ff43d17"
+    },
+    {
+      "path": "src/core/controller/controller/test/test_station_keeping.py",
+      "sha256": "180a5d4f48715881cfb41e1b76ec0577192a77c35b3c4834dbd7e7201f83fa02"
+    },
+    {
+      "path": "src/core/trajectory_planner/package.xml",
+      "sha256": "6301018f4fa60c2d6c29bcfbf91b37a848f71988a2a452f7b2b5e0cc23423f67"
+    },
+    {
+      "path": "src/core/trajectory_planner/resource/trajectory_planner",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/core/trajectory_planner/setup.cfg",
+      "sha256": "31b0c7e733cf513abd7d6256aac2dd7fd702d58eb3362cdc0925e3a87f5aa0d9"
+    },
+    {
+      "path": "src/core/trajectory_planner/setup.py",
+      "sha256": "9252d0a4ca00dce88abf45a9c3d34ff6269e67da2824b6eee2671aaf02f116fa"
+    },
+    {
+      "path": "src/core/trajectory_planner/test/test_circle.py",
+      "sha256": "8120f38252fac7c48ccddd95a97946402f17d738762180faa834539f34cb18bf"
+    },
+    {
+      "path": "src/core/trajectory_planner/test/test_los.py",
+      "sha256": "c752d9cf596381be67e1d00718f53958004f6eb6627fdff7a191fc8679c188b0"
+    },
+    {
+      "path": "src/core/trajectory_planner/test/test_trajectory.py",
+      "sha256": "ffc0d062b2dd0a47f4deeda255b1a392564aa09d627d757a12d4f714ffeab4a3"
+    },
+    {
+      "path": "src/core/trajectory_planner/trajectory_planner/__init__.py",
+      "sha256": "6bc14a352f9e344993400271edfd80259a705846bc8be7e4ad10cae427a83f7f"
+    },
+    {
+      "path": "src/core/trajectory_planner/trajectory_planner/circle.py",
+      "sha256": "46d9f4ea8c591c5f040980af8afb53f7232605b2dc2e6253bfe6de408d92ed6e"
+    },
+    {
+      "path": "src/core/trajectory_planner/trajectory_planner/los_trajectory_planner.py",
+      "sha256": "401bf5a30a76850b2ff0042a3b1e7aee81957af15e86c49afd1cdea6c129bfca"
+    },
+    {
+      "path": "src/core/trajectory_planner/trajectory_planner/trajectory.py",
+      "sha256": "cc5b2f0e3ba35397f6a37572c3f96c235a79f60a34b02f6ac5b29dc1ff8a86f7"
+    },
+    {
+      "path": "src/core/trajectory_planner/trajectory_planner/trajectory_planner_factory.py",
+      "sha256": "a4901296628492a8979f1b8b8c172a4f8607a68146e470c05500244247bb6609"
+    },
+    {
+      "path": "src/core/common/common/__init__.py",
+      "sha256": "d4700df005c935ef6cceaadbcdba1b7d0a3047c41169049d4ae09820bf517316"
+    },
+    {
+      "path": "src/core/common/common/collision.py",
+      "sha256": "0a5d9bb20ef06b7c2d623f76110e7466bae13945af4fecdc056e8c6b63b694e0"
+    },
+    {
+      "path": "src/core/common/common/dynamics.py",
+      "sha256": "5a003f2ee1f7eef583c7f268002dd3fcbca4b2f5fcc647538fdb9884387e7319"
+    },
+    {
+      "path": "src/core/common/common/geodesy.py",
+      "sha256": "e54850c3d3227fb90bd379b05fa314fe1fc230bd2ed54a30efb7d3eca2d916a3"
+    },
+    {
+      "path": "src/core/common/common/math_helper.py",
+      "sha256": "9d68927cb51ee686a03cbd5d4f7f7e3bf9ea50755ed537b8ea65ea38af223cc0"
+    },
+    {
+      "path": "src/core/common/common/models.py",
+      "sha256": "46f0b0196090347751223516df139920b4cee7317c1c27c394d63e5304058b74"
+    },
+    {
+      "path": "src/core/common/common/visualizer.py",
+      "sha256": "0947a9d79a84d4413a9c7246a252c635e0a978bf2090dcef27c301f2af25294b"
+    },
+    {
+      "path": "src/core/common/package.xml",
+      "sha256": "36cc289e2141601504fee99bafcded88036d12522b6515ec355c34bde6258a00"
+    },
+    {
+      "path": "src/core/common/resource/common",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/core/common/setup.cfg",
+      "sha256": "309265ae6c620404741471d706bf4a4416b79ab01f407c5f99cf66d8649df524"
+    },
+    {
+      "path": "src/core/common/setup.py",
+      "sha256": "6a7da9832a25e98e7b3d16fdda83155d34d296ec2b233c1db1d8336db0a59469"
+    },
+    {
+      "path": "src/core/common/test/test_collision.py",
+      "sha256": "efac7dfdb75257b8c4b9e7a7c6f7bb87b58b03763c7fecdc8fcec0773c45bc9a"
+    },
+    {
+      "path": "src/core/common/test/test_dynamics.py",
+      "sha256": "6950ee8b35246a0dbe435f1c78952cbf38f82c083f6806e5756e7e1a28b93917"
+    },
+    {
+      "path": "src/core/common/test/test_geodesy.py",
+      "sha256": "7fab0338374d390d92c083b8a07c1418a4b58ada272fea4c142cd22e59aa55e1"
+    },
+    {
+      "path": "src/core/common/test/test_models.py",
+      "sha256": "7445581eb762609791c27ae9889f3f65d94956dab26bcbb1a0af5e681845f853"
+    },
+    {
+      "path": "src/core/mmwave_perception/config/mmwave.yaml",
+      "sha256": "92be10d7a96441f423e5f58051104be18adaeb53475faac4ae60ef034b0eface"
+    },
+    {
+      "path": "src/core/mmwave_perception/mmwave_perception/__init__.py",
+      "sha256": "fb492f30e11084f8d0e1c18f2ec12a5cc76fbaf56f819237e1538a81866147c3"
+    },
+    {
+      "path": "src/core/mmwave_perception/mmwave_perception/geometry.py",
+      "sha256": "7df45cb13dc1dc8a9876e480011a84e4c2772de21594323b1fb91b08195b5a5f"
+    },
+    {
+      "path": "src/core/mmwave_perception/mmwave_perception/node.py",
+      "sha256": "d4d9b36c9d23156d820e8a98bf701c7d4540b8f8a5f727b72612483690370fb9"
+    },
+    {
+      "path": "src/core/mmwave_perception/mmwave_perception/timing.py",
+      "sha256": "d9548ba449023e38fac29711aad02a144b8f6e89ff43b61833762dc947e17ef2"
+    },
+    {
+      "path": "src/core/mmwave_perception/package.xml",
+      "sha256": "8892763ced47871f8c62f549bfa2c50abe51f27f5b94dec59de41df305329420"
+    },
+    {
+      "path": "src/core/mmwave_perception/README.md",
+      "sha256": "cfafbae621b2b73bdca4243bc75c4fc2502a73dddb20ef5af9a4da0f96055035"
+    },
+    {
+      "path": "src/core/mmwave_perception/resource/mmwave_perception",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/core/mmwave_perception/setup.cfg",
+      "sha256": "6f8fa714267fcd01fd57dc1ffda8ec5870d06c5f81994a4e75d04b59d4e55fa3"
+    },
+    {
+      "path": "src/core/mmwave_perception/setup.py",
+      "sha256": "e9e800fc52a4e7eec4b9ade5e7e4061b9606add50f65ad01aef6438910cf6b96"
+    },
+    {
+      "path": "src/core/mmwave_perception/test/test_fov_transform.py",
+      "sha256": "59c8033ae42702ae9f3bcfd79e021c5d8af663a8b1b104f88328d1259e83f831"
+    },
+    {
+      "path": "src/core/mmwave_perception/test/test_geometry.py",
+      "sha256": "3011e7e5df77386be3848586c381b2caa317285b4f1318c276e0a1b7dec6813c"
+    },
+    {
+      "path": "src/core/mmwave_perception/test/test_ros_observation.py",
+      "sha256": "af8e3b913f0169e99a338044646d7ef420acdf66175c00fc966ca40098da6c11"
+    },
+    {
+      "path": "src/core/usv_radar_costmap/CMakeLists.txt",
+      "sha256": "5400c331ee8a8bb798e8a93e32927184f0c63b2e896798264dcd30adf3e2fd54"
+    },
+    {
+      "path": "src/core/usv_radar_costmap/include/usv_radar_costmap/observation_memory.hpp",
+      "sha256": "0de004dcc68523d810ef3b135824a5bba3eaa8eca55ef4bda608324b4e0b7e03"
+    },
+    {
+      "path": "src/core/usv_radar_costmap/include/usv_radar_costmap/radar_layer.hpp",
+      "sha256": "690c256c01846646638579bd6385867abb37eaaf6d245816ed7a12631f1d26e2"
+    },
+    {
+      "path": "src/core/usv_radar_costmap/package.xml",
+      "sha256": "7d30f8ab6fd1be6f1a5f64172417417473bea8d0d9de2b6aec5089a69b7b9a46"
+    },
+    {
+      "path": "src/core/usv_radar_costmap/radar_plugins.xml",
+      "sha256": "70f09c96f8dc43c89186567f44737fa324609862aad6065c0163eaa499eb8843"
+    },
+    {
+      "path": "src/core/usv_radar_costmap/README.md",
+      "sha256": "65142f04f613ca785ada0f0624fd59721cc4735b015f87d259ca66124ae45dde"
+    },
+    {
+      "path": "src/core/usv_radar_costmap/src/radar_layer.cpp",
+      "sha256": "504f5b0f76ea986ba4fd4391d9121e62986c350f9517bc20fe487feeb25745aa"
+    },
+    {
+      "path": "src/core/usv_radar_costmap/test/test_observation_memory.cpp",
+      "sha256": "b716685c5ae7f2f70dbef206cf8a4e3c87a09e1d391a4663cab72718e82b7e5c"
+    },
+    {
+      "path": "src/core/usv_radar_costmap/test/test_radar_layer.cpp",
+      "sha256": "cd4fbdc14c2b558b0c2f2d40a3b3c2d8b4fdaa82174cfc6f958e98f507ab1ef2"
+    },
+    {
+      "path": "src/core/usv_radar_interfaces/CMakeLists.txt",
+      "sha256": "52c1534c1366c3cb405e7968ef380fff38f43048abdca3c5cff5bacac8baf0c8"
+    },
+    {
+      "path": "src/core/usv_radar_interfaces/msg/RadarDetection.msg",
+      "sha256": "3b0f415ff29bdfe129a2943437af46ac0f538f0749daadb1ecbfa97e22a91f8f"
+    },
+    {
+      "path": "src/core/usv_radar_interfaces/msg/RadarDetectionArray.msg",
+      "sha256": "b732ff487a7dd1c5f7de2f686a20d20ed70e0bd9e94c4644c6ef93628474ecb9"
+    },
+    {
+      "path": "src/core/usv_radar_interfaces/package.xml",
+      "sha256": "4852f3cb12d09edf355ca4f889b893792e8862dafd9a0fb691287e93569b4fc8"
+    },
+    {
+      "path": "deliverables/control_workspace/conftest.py",
+      "sha256": "e187ac3cce389080a4dae02d561fe31c40a4aad39aa1541f627f2d3394c63220"
+    },
+    {
+      "path": "deliverables/control_workspace/docs/control-autopilot-interface.md",
+      "sha256": "5c3cab0b21696f93c0823ca1961fd7da8ba05dbe8a392ca67aec6f00c96dcfd8"
+    },
+    {
+      "path": "deliverables/control_workspace/examples/control_demo.py",
+      "sha256": "2dab5f0ad308fe4fe128de0c921a70fe724d216fcab5c6f0ca6375185b1e2677"
+    },
+    {
+      "path": "deliverables/control_workspace/provenance.json",
+      "sha256": "099ca4460204deb45f7dae5e7bd622e96ab02862243fc412fb4170ffb3d06a74"
+    },
+    {
+      "path": "deliverables/control_workspace/pytest.ini",
+      "sha256": "a34632f85a45f49ba6f84bce58104ae84c3a4cba83fd2255070f360efb344521"
+    },
+    {
+      "path": "deliverables/control_workspace/README.md",
+      "sha256": "6fc08230889ae3bbf55fa5479f24438e9808f62facfb8ebc98c464ae0c94816b"
+    },
+    {
+      "path": "deliverables/control_workspace/requirements.txt",
+      "sha256": "a89575b0722e9293ed60e4ef24dda5deee325a7814b418899d6c0e9fdc532e86"
+    },
+    {
+      "path": "deliverables/control_workspace/src/common/common/__init__.py",
+      "sha256": "d4700df005c935ef6cceaadbcdba1b7d0a3047c41169049d4ae09820bf517316"
+    },
+    {
+      "path": "deliverables/control_workspace/src/common/common/collision.py",
+      "sha256": "0a5d9bb20ef06b7c2d623f76110e7466bae13945af4fecdc056e8c6b63b694e0"
+    },
+    {
+      "path": "deliverables/control_workspace/src/common/common/dynamics.py",
+      "sha256": "5a003f2ee1f7eef583c7f268002dd3fcbca4b2f5fcc647538fdb9884387e7319"
+    },
+    {
+      "path": "deliverables/control_workspace/src/common/common/geodesy.py",
+      "sha256": "e54850c3d3227fb90bd379b05fa314fe1fc230bd2ed54a30efb7d3eca2d916a3"
+    },
+    {
+      "path": "deliverables/control_workspace/src/common/common/math_helper.py",
+      "sha256": "9d68927cb51ee686a03cbd5d4f7f7e3bf9ea50755ed537b8ea65ea38af223cc0"
+    },
+    {
+      "path": "deliverables/control_workspace/src/common/common/models.py",
+      "sha256": "46f0b0196090347751223516df139920b4cee7317c1c27c394d63e5304058b74"
+    },
+    {
+      "path": "deliverables/control_workspace/src/common/common/visualizer.py",
+      "sha256": "0947a9d79a84d4413a9c7246a252c635e0a978bf2090dcef27c301f2af25294b"
+    },
+    {
+      "path": "deliverables/control_workspace/src/common/package.xml",
+      "sha256": "36cc289e2141601504fee99bafcded88036d12522b6515ec355c34bde6258a00"
+    },
+    {
+      "path": "deliverables/control_workspace/src/common/resource/common",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "deliverables/control_workspace/src/common/setup.cfg",
+      "sha256": "309265ae6c620404741471d706bf4a4416b79ab01f407c5f99cf66d8649df524"
+    },
+    {
+      "path": "deliverables/control_workspace/src/common/setup.py",
+      "sha256": "6a7da9832a25e98e7b3d16fdda83155d34d296ec2b233c1db1d8336db0a59469"
+    },
+    {
+      "path": "deliverables/control_workspace/src/common/test/test_collision.py",
+      "sha256": "efac7dfdb75257b8c4b9e7a7c6f7bb87b58b03763c7fecdc8fcec0773c45bc9a"
+    },
+    {
+      "path": "deliverables/control_workspace/src/common/test/test_dynamics.py",
+      "sha256": "6950ee8b35246a0dbe435f1c78952cbf38f82c083f6806e5756e7e1a28b93917"
+    },
+    {
+      "path": "deliverables/control_workspace/src/common/test/test_geodesy.py",
+      "sha256": "7fab0338374d390d92c083b8a07c1418a4b58ada272fea4c142cd22e59aa55e1"
+    },
+    {
+      "path": "deliverables/control_workspace/src/common/test/test_models.py",
+      "sha256": "7445581eb762609791c27ae9889f3f65d94956dab26bcbb1a0af5e681845f853"
+    },
+    {
+      "path": "deliverables/control_workspace/src/controller/controller/__init__.py",
+      "sha256": "a4c2fb34298b496fa3be302396cd3f61248c4437538e1828c1432dfeed00e197"
+    },
+    {
+      "path": "deliverables/control_workspace/src/controller/controller/controller.py",
+      "sha256": "b25e305f9375902a7b2b822e946fe714a727d963103071817e972e572db0e865"
+    },
+    {
+      "path": "deliverables/control_workspace/src/controller/controller/controller_factory.py",
+      "sha256": "5abb3753dae62f35be00ef05502fb8400e25212c6be0e4cc037e310513c0b937"
+    },
+    {
+      "path": "deliverables/control_workspace/src/controller/controller/lqr_controller.py",
+      "sha256": "d33d877dedd63653112f42937d0566202c223b20a29f7e0e51b703067dcca40a"
+    },
+    {
+      "path": "deliverables/control_workspace/src/controller/controller/pid_controller.py",
+      "sha256": "d34540b42cd68ec9fc2b89e002c6ef2b6619a2014440ee84a90e8f0ae54705ba"
+    },
+    {
+      "path": "deliverables/control_workspace/src/controller/controller/station_keeping_controller.py",
+      "sha256": "82c9a5225bf0f8834c22717edaeca1c7cc6239b09ab45c136e75ccd0312918d8"
+    },
+    {
+      "path": "deliverables/control_workspace/src/controller/package.xml",
+      "sha256": "e35b1004ec014848057d24a22c9443ce4db6617e499878503c806c74f29d3f5a"
+    },
+    {
+      "path": "deliverables/control_workspace/src/controller/resource/controller",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "deliverables/control_workspace/src/controller/setup.cfg",
+      "sha256": "b597b1bf63b00077421e6d232041aaf6fcc74d52c333a80533688ed2bf4283e0"
+    },
+    {
+      "path": "deliverables/control_workspace/src/controller/setup.py",
+      "sha256": "c7fb74db8cf39c0642f3e62409464f28ed62f803fbb0f91648a0205d3eda7529"
+    },
+    {
+      "path": "deliverables/control_workspace/src/controller/test/test_controllers.py",
+      "sha256": "7ec9655a3e47032c75c12cec21db0d109efb58477fe66c1970de95ff2ff43d17"
+    },
+    {
+      "path": "deliverables/control_workspace/src/controller/test/test_station_keeping.py",
+      "sha256": "180a5d4f48715881cfb41e1b76ec0577192a77c35b3c4834dbd7e7201f83fa02"
+    },
+    {
+      "path": "deliverables/control_workspace/src/trajectory_planner/package.xml",
+      "sha256": "6301018f4fa60c2d6c29bcfbf91b37a848f71988a2a452f7b2b5e0cc23423f67"
+    },
+    {
+      "path": "deliverables/control_workspace/src/trajectory_planner/resource/trajectory_planner",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "deliverables/control_workspace/src/trajectory_planner/setup.cfg",
+      "sha256": "31b0c7e733cf513abd7d6256aac2dd7fd702d58eb3362cdc0925e3a87f5aa0d9"
+    },
+    {
+      "path": "deliverables/control_workspace/src/trajectory_planner/setup.py",
+      "sha256": "9252d0a4ca00dce88abf45a9c3d34ff6269e67da2824b6eee2671aaf02f116fa"
+    },
+    {
+      "path": "deliverables/control_workspace/src/trajectory_planner/test/test_circle.py",
+      "sha256": "8120f38252fac7c48ccddd95a97946402f17d738762180faa834539f34cb18bf"
+    },
+    {
+      "path": "deliverables/control_workspace/src/trajectory_planner/test/test_los.py",
+      "sha256": "c752d9cf596381be67e1d00718f53958004f6eb6627fdff7a191fc8679c188b0"
+    },
+    {
+      "path": "deliverables/control_workspace/src/trajectory_planner/test/test_trajectory.py",
+      "sha256": "ffc0d062b2dd0a47f4deeda255b1a392564aa09d627d757a12d4f714ffeab4a3"
+    },
+    {
+      "path": "deliverables/control_workspace/src/trajectory_planner/trajectory_planner/__init__.py",
+      "sha256": "6bc14a352f9e344993400271edfd80259a705846bc8be7e4ad10cae427a83f7f"
+    },
+    {
+      "path": "deliverables/control_workspace/src/trajectory_planner/trajectory_planner/circle.py",
+      "sha256": "46d9f4ea8c591c5f040980af8afb53f7232605b2dc2e6253bfe6de408d92ed6e"
+    },
+    {
+      "path": "deliverables/control_workspace/src/trajectory_planner/trajectory_planner/los_trajectory_planner.py",
+      "sha256": "401bf5a30a76850b2ff0042a3b1e7aee81957af15e86c49afd1cdea6c129bfca"
+    },
+    {
+      "path": "deliverables/control_workspace/src/trajectory_planner/trajectory_planner/trajectory.py",
+      "sha256": "cc5b2f0e3ba35397f6a37572c3f96c235a79f60a34b02f6ac5b29dc1ff8a86f7"
+    },
+    {
+      "path": "deliverables/control_workspace/src/trajectory_planner/trajectory_planner/trajectory_planner_factory.py",
+      "sha256": "a4901296628492a8979f1b8b8c172a4f8607a68146e470c05500244247bb6609"
+    },
+    {
+      "path": "scripts/control/control_demo.py",
+      "sha256": "2dab5f0ad308fe4fe128de0c921a70fe724d216fcab5c6f0ca6375185b1e2677"
+    },
+    {
+      "path": "scripts/control/export_control_workspace.py",
+      "sha256": "32827920077638237c13ca3e5e416080fada4d55581a5a1385f3c123a12302bc"
+    },
+    {
+      "path": "scripts/control/README.md",
+      "sha256": "6fc08230889ae3bbf55fa5479f24438e9808f62facfb8ebc98c464ae0c94816b"
+    },
+    {
+      "path": "scripts/control/test_export_control_workspace.py",
+      "sha256": "2e10480c5867e1bdd87bf8e704d3b0b10e7b7bad7f7952e20e0ff922bb26ad59"
+    }
+  ],
+  "retained_simulator_diagnostic": "last_published_command assignment preserved because the existing radar regression uses it; no mission logic or physics calculation retained"
+}

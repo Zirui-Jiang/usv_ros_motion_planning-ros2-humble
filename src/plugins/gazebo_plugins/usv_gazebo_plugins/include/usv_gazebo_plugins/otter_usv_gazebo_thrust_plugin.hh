@@ -21,6 +21,7 @@ along with this package.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+// Otter 推进接口：ROS Float32 指令进入独立推进器状态，模型插件在物理步内统一处理施力。
 #ifndef USV_GAZEBO_PLUGINS_THRUST_HH
 #define USV_GAZEBO_PLUGINS_THRUST_HH
 
@@ -43,6 +44,7 @@ namespace gazebo
   class OtterUsvThrust;
 
   /// \brief OtterThruster class
+  // 每个推进器保存自己的订阅、最新指令、超时时间及力限幅参数；plugin 指回所属模型插件。
   class OtterThruster
   {
     /// \brief Constructor
@@ -139,6 +141,7 @@ namespace gazebo
   ///      </thruster>
   ///    </plugin>
 
+  // 现有 Load 实际解析 otter_thruster 标签；上方英文示例来自旧接口，使用时以实现和当前 xacro 为准。
   class OtterUsvThrust : public ModelPlugin
   {
     friend class OtterThruster;
@@ -168,6 +171,7 @@ namespace gazebo
     /// \brief Takes ROS Drive commands and scales them by max thrust.
     /// \param[in] _cmd ROS drive command.
     /// \return Value scaled and saturated.
+    // 将输入指令映射为 N，并分别按正反向上限饱和；线性、Logistic、二次模型由 mappingType 选择。
     private: double ScaleThrustCmd(const double _cmd,
                                    const double _max_cmd,
                                    const double _max_pos,
@@ -222,6 +226,7 @@ namespace gazebo
 
     /// \brief A mutex to protect member variables accessed during
     /// OnThustCmd() and Update().
+    // 互斥锁保护回调和物理更新共用的指令及时刻数据，避免读写交错。
     public: std::mutex mutex;
 
     /// \brief The ROS 2 node used for communications.
@@ -247,6 +252,7 @@ namespace gazebo
     private: rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr jointStatePub;
 
     /// \brief The propeller message state.
+    // 关节状态数组按 thrusters 顺序组织，角位置 rad、角速度 rad/s、effort 为施加的关节力矩。
     private: sensor_msgs::msg::JointState jointStateMsg;
   };
 }

@@ -1,0 +1,9 @@
+Host working directory:
+D:\ROS2轻量仿真系统\usv_ros_motion_planning-ros2-humble
+
+Actual PowerShell command:
+wsl.exe -d Ubuntu-22.04 -- bash -lc 'source /opt/ros/humble/setup.bash; source /home/usv/distributed-navigation-build-20260913/install/setup.bash; export ROS_DOMAIN_ID=184 ROS_LOCALHOST_ONLY=1 PYTHONDONTWRITEBYTECODE=1; unset PYTEST_ADDOPTS; python3 -m pytest src/core/usv_navigation/test/test_distributed_ros.py -q -k "overlapping_cancels or cancel_ack_after_replacement or superseded_cancel" -p no:cacheprovider > /tmp/distributed-cancel-ack-red.log 2>&1; result=$?; cat /tmp/distributed-cancel-ack-red.log; exit "$result"'
+
+Observed shell command exit code: 1.
+Pytest summary: 2 failed, 1 passed, 5 deselected in 12.30s.
+The shell wrapper additionally printed `bash: line 1: exit: : numeric argument required` after the pytest output. See README.md; the unchanged implementation's two assertion failures are preserved in red.log.

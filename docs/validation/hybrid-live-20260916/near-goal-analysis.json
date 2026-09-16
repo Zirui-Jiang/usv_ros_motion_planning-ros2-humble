@@ -1,0 +1,752 @@
+{
+  "created_at": "2026-09-16T07:56:04.329775+00:00",
+  "kind": "read-only offline near-goal diagnostic; no live ROS interaction",
+  "python_version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "capture_directory": "docs/validation/hybrid-live-20260916/capture-003",
+  "source_sha256": {
+    "snapshot.json": "c8505d29f18105d9d08e71004a84066d1a324e9ea4ae2e4ba27d751aa6b85fe3",
+    "map.npz": "9daf1f90910c34948c02fd342c75351a9f0543de6aa5d28cceff512bd5fcbaad",
+    "events.json": "a21234dc0e66a00a45f828a7dbca94dcc5523eee747631a9e3c3cfc44d6ca32d",
+    "last_global_path.npy": "392a23dbcf4d5b204760c4ae6cb5eb9882965a82f2a6c8bb00bcda73e57c0324"
+  },
+  "original_collision_code_sha256": {
+    "src/core/decision_module/path_planner/path_planner/graph_planner/hybrid_collision.py": "5635a6bc87803632709d3b3c573ac744f4460a53b114a25e2ad8c97abfe2850b",
+    "src/core/decision_module/path_planner/path_planner/graph_planner/hybrid_astar_planner.py": "739eae2ec61c6be53e9925edbc080339e08f18a8272e76cd4023a7d5e4a70d88",
+    "src/core/shared/common/common/collision.py": "5d9ae00f60384ec210bc3a353febaea9f573fbb7a81555f517f82a2dab4ff3cf"
+  },
+  "target_pose": [
+    -0.31566810607910156,
+    115.15884399414062,
+    1.9563101823441515
+  ],
+  "map_stamp": 2627.0,
+  "coordinate_transform": {
+    "map_from_odom_translation_xy": [
+      0.0,
+      0.0
+    ],
+    "map_from_odom_yaw_rad": 0.0,
+    "evidence": [
+      "snapshot state and odom at 2627.8 are numerically identical",
+      "src/sim_env/src/fake_localization_node.cpp:101-108 explicitly publishes an identity map-to-odom transform"
+    ],
+    "scope": "current fake-localization simulation only"
+  },
+  "replay_constraints": {
+    "minimum_turning_radius_m": 4.0,
+    "heuristic_weight": 1.2,
+    "planning_timeout_s": 1.0,
+    "analytic_expansion_max_length_m": 20.0,
+    "footprint_length_m": 2.2,
+    "footprint_width_m": 1.2,
+    "obstacle_factor": 0.25,
+    "other_parameters": "unchanged from capture snapshot"
+  },
+  "limitations": [
+    "All offline cases use the final captured costmap at stamp 2627.0; historical maps for individual poses were not recorded.",
+    "Captured odom poses reproduce the geometric discontinuity; empty failure references do not record the exact failed PlanningRequest source stamp, so these are candidate reproductions, not proof of every historical request input.",
+    "Wall-time measurements are one trial per case on the Windows Python runtime; CPU load and runtime differ from the ROS process. Expanded-node counts provide the more reproducible comparison.",
+    "The cap40 runs are diagnostic parameter controls only; they alter a user-specified analytic-connection limit and are not the selected fix.",
+    "accelerated_collision_cap20 remains null in all cases: no accelerated timing result is claimed in this diagnostic."
+  ],
+  "findings": [
+    "At source stamp 2609.9 the shortest Dubins curve is LSR 6.5641129556902875 m; at the next odom stamp 2610.0 the shortest becomes RSL 31.039334237838066 m. All candidates then exceed the configured 20 m analytic-connection cap.",
+    "At 2625.1 a short RSR 4.252650843145091 m connection reappears, matching the recorded recovery to 37 path points. The final snapshot at 2627.8 again has only longer connections.",
+    "The 20 m parameter limits each analytic completion, not the total final route length; a 29-31 m path after primitive expansion is consistent with the current configuration.",
+    "Forward-only motion, radius 4 m and exact terminal heading create a real short/long-path feasibility boundary; reducing CPU cost can fix timeouts but does not itself remove this geometric path-shape discontinuity.",
+    "The disappearing short LSR branch is an actual internal-tangent feasibility change: its two radius-4 circle centers cross the required 8 m separation; the recorded margins are many orders larger than floating-point tolerances."
+  ],
+  "selected_followup": "Preserve the existing 20 m analytic-connection cap, 1 s planning timeout, source-stamp freshness and exact endpoint geometry. The follow-up implementation separates reusable global routes from frequent local rollout updates; global path publication follows accepted route replacement and invalidation events.",
+  "cases": [
+    {
+      "source_stamp": 2609.9,
+      "odom_event_wall_seconds": 21.390779164998094,
+      "pose_map": [
+        5.175619964231285,
+        112.9975797619302,
+        -2.956781925198184
+      ],
+      "pose_source": "exact captured odom event; map/odom identity verified",
+      "is_confirmed_source_of_a_successful_published_reference": true,
+      "exact_failed_request_source_known": false,
+      "goal_distance_m": 5.901297124579078,
+      "dubins_candidates": [
+        {
+          "modes": "LSR",
+          "segments_m": [
+            0.4107677330636075,
+            0.2622046910140669,
+            5.8911405316126135
+          ],
+          "length_m": 6.5641129556902875
+        },
+        {
+          "modes": "RSL",
+          "segments_m": [
+            3.5795170049377387,
+            4.282616181809926,
+            23.231885435107078
+          ],
+          "length_m": 31.094018621854744
+        },
+        {
+          "modes": "RSR",
+          "segments_m": [
+            24.87765790633061,
+            1.083117260778121,
+            5.735456120936739
+          ],
+          "length_m": 31.69623128804547
+        },
+        {
+          "modes": "LRL",
+          "segments_m": [
+            7.0838453694968955,
+            19.108532583996137,
+            6.544314415950236
+          ],
+          "length_m": 32.73669236944327
+        },
+        {
+          "modes": "RLR",
+          "segments_m": [
+            12.040300737373167,
+            24.5907681195218,
+            18.03084018069764
+          ],
+          "length_m": 54.66190903759261
+        },
+        {
+          "modes": "LSL",
+          "segments_m": [
+            22.662320306217172,
+            10.941596563069565,
+            22.122789352670512
+          ],
+          "length_m": 55.72670622195725
+        }
+      ],
+      "all_analytic_candidates_exceed_20m": false,
+      "shortest_candidate_passed_full_motion_collision_check_on_fixed_map": true,
+      "observed_success_reference": {
+        "sequence": 1875,
+        "published_stamp": 2610.0,
+        "source_age_s": 0.1,
+        "path_points": 56,
+        "path_length_m": 6.5638705860041116
+      },
+      "original_collision_cap20": {
+        "status": "success",
+        "expanded": 1,
+        "elapsed_wall_s": 0.001737,
+        "points": 56,
+        "path_length_m": 6.563871
+      },
+      "diagnostic_only_cap40": {
+        "status": "success",
+        "expanded": 1,
+        "elapsed_wall_s": 0.001622,
+        "points": 56,
+        "path_length_m": 6.563871
+      },
+      "accelerated_collision_cap20": null
+    },
+    {
+      "source_stamp": 2610.0,
+      "odom_event_wall_seconds": 21.490791675983928,
+      "pose_map": [
+        5.101430866791105,
+        112.9831421688761,
+        -2.9621883378439606
+      ],
+      "pose_source": "exact captured odom event; map/odom identity verified",
+      "is_confirmed_source_of_a_successful_published_reference": false,
+      "exact_failed_request_source_known": false,
+      "goal_distance_m": 5.83769130002014,
+      "dubins_candidates": [
+        {
+          "modes": "RSL",
+          "segments_m": [
+            3.5982578443600586,
+            4.168824468365501,
+            23.272251925112506
+          ],
+          "length_m": 31.039334237838066
+        },
+        {
+          "modes": "RSR",
+          "segments_m": [
+            24.845063365314637,
+            1.0292382201787436,
+            5.74642501136961
+          ],
+          "length_m": 31.62072659686299
+        },
+        {
+          "modes": "LRL",
+          "segments_m": [
+            7.111512225109747,
+            19.162370480849397,
+            6.5921111077737535
+          ],
+          "length_m": 32.8659938137329
+        },
+        {
+          "modes": "RLR",
+          "segments_m": [
+            12.021205406270008,
+            24.617766539347436,
+            18.055308281043324
+          ],
+          "length_m": 54.694280226660766
+        },
+        {
+          "modes": "LSL",
+          "segments_m": [
+            22.663068213403395,
+            10.862786670928658,
+            22.143667096067396
+          ],
+          "length_m": 55.66952198039945
+        }
+      ],
+      "all_analytic_candidates_exceed_20m": true,
+      "shortest_candidate_passed_full_motion_collision_check_on_fixed_map": true,
+      "observed_success_reference": null,
+      "original_collision_cap20": {
+        "status": "timeout",
+        "expanded": 1923,
+        "elapsed_wall_s": 1.000888,
+        "points": 0,
+        "path_length_m": 0.0
+      },
+      "diagnostic_only_cap40": {
+        "status": "success",
+        "expanded": 1,
+        "elapsed_wall_s": 0.007507,
+        "points": 251,
+        "path_length_m": 31.038251
+      },
+      "accelerated_collision_cap20": null
+    },
+    {
+      "source_stamp": 2611.0,
+      "odom_event_wall_seconds": 22.501052579988027,
+      "pose_map": [
+        4.36004447462378,
+        112.84838852938155,
+        -3.046934304817829
+      ],
+      "pose_source": "exact captured odom event; map/odom identity verified",
+      "is_confirmed_source_of_a_successful_published_reference": false,
+      "exact_failed_request_source_known": false,
+      "goal_distance_m": 5.215409149048448,
+      "dubins_candidates": [
+        {
+          "modes": "RSL",
+          "segments_m": [
+            3.6349507991028545,
+            3.1860066695683384,
+            23.647928747750775
+          ],
+          "length_m": 30.468886216421968
+        },
+        {
+          "modes": "RSR",
+          "segments_m": [
+            24.40709305023674,
+            0.6144914034599344,
+            5.845411458552029
+          ],
+          "length_m": 30.8669959122487
+        },
+        {
+          "modes": "LRL",
+          "segments_m": [
+            7.49155239799047,
+            19.742261092593274,
+            7.130945414532377
+          ],
+          "length_m": 34.36475890511612
+        },
+        {
+          "modes": "RLR",
+          "segments_m": [
+            11.687061794337671,
+            24.825419945638558,
+            18.258121431371308
+          ],
+          "length_m": 54.77060317134754
+        },
+        {
+          "modes": "LSL",
+          "segments_m": [
+            22.75316308041218,
+            9.983485544215936,
+            22.392556096954088
+          ],
+          "length_m": 55.129204721582205
+        }
+      ],
+      "all_analytic_candidates_exceed_20m": true,
+      "shortest_candidate_passed_full_motion_collision_check_on_fixed_map": true,
+      "observed_success_reference": null,
+      "original_collision_cap20": {
+        "status": "success",
+        "expanded": 2382,
+        "elapsed_wall_s": 0.983038,
+        "points": 249,
+        "path_length_m": 30.865775
+      },
+      "diagnostic_only_cap40": {
+        "status": "success",
+        "expanded": 1,
+        "elapsed_wall_s": 0.005102,
+        "points": 247,
+        "path_length_m": 30.467793
+      },
+      "accelerated_collision_cap20": null
+    },
+    {
+      "source_stamp": 2614.0,
+      "odom_event_wall_seconds": 25.537373298982857,
+      "pose_map": [
+        3.2609986024826023,
+        112.68222731192829,
+        -3.128188817206191
+      ],
+      "pose_source": "exact captured odom event; map/odom identity verified",
+      "is_confirmed_source_of_a_successful_published_reference": false,
+      "exact_failed_request_source_known": false,
+      "goal_distance_m": 4.350422385785783,
+      "dubins_candidates": [
+        {
+          "modes": "RLR",
+          "segments_m": [
+            0.4179902734873693,
+            25.040570181670503,
+            4.284583909981766
+          ],
+          "length_m": 29.74314436513964
+        },
+        {
+          "modes": "RSR",
+          "segments_m": [
+            13.03044641137046,
+            0.184338015793031,
+            16.897040047864863
+          ],
+          "length_m": 30.111824475028353
+        },
+        {
+          "modes": "LRL",
+          "segments_m": [
+            7.782050651939347,
+            20.43617460296064,
+            7.859378720504317
+          ],
+          "length_m": 36.0776039754043
+        },
+        {
+          "modes": "LSL",
+          "segments_m": [
+            22.69670457917737,
+            8.862794745677093,
+            22.77403264774234
+          ],
+          "length_m": 54.3335319725968
+        }
+      ],
+      "all_analytic_candidates_exceed_20m": true,
+      "shortest_candidate_passed_full_motion_collision_check_on_fixed_map": true,
+      "observed_success_reference": null,
+      "original_collision_cap20": {
+        "status": "success",
+        "expanded": 2011,
+        "elapsed_wall_s": 0.778581,
+        "points": 250,
+        "path_length_m": 30.856369
+      },
+      "diagnostic_only_cap40": {
+        "status": "success",
+        "expanded": 1,
+        "elapsed_wall_s": 0.005169,
+        "points": 241,
+        "path_length_m": 29.741953
+      },
+      "accelerated_collision_cap20": null
+    },
+    {
+      "source_stamp": 2615.3,
+      "odom_event_wall_seconds": 26.925752812996507,
+      "pose_map": [
+        3.1373071970349518,
+        112.66383927532895,
+        -3.1294037142910067
+      ],
+      "pose_source": "exact captured odom event; map/odom identity verified",
+      "is_confirmed_source_of_a_successful_published_reference": true,
+      "exact_failed_request_source_known": false,
+      "goal_distance_m": 4.260057158162094,
+      "dubins_candidates": [
+        {
+          "modes": "LSR",
+          "segments_m": [
+            24.905037205170558,
+            0.15323902744498388,
+            4.562181618629928
+          ],
+          "length_m": 29.62045785124547
+        },
+        {
+          "modes": "RSR",
+          "segments_m": [
+            12.622496749913013,
+            0.302201068526945,
+            17.30013012098304
+          ],
+          "length_m": 30.224827939423
+        },
+        {
+          "modes": "LRL",
+          "segments_m": [
+            7.775684550806324,
+            20.49346883186086,
+            7.927898638876826
+          ],
+          "length_m": 36.19705202154401
+        },
+        {
+          "modes": "LSL",
+          "segments_m": [
+            22.66169136359424,
+            8.76716572670039,
+            22.813905451664738
+          ],
+          "length_m": 54.242762541959365
+        },
+        {
+          "modes": "RLR",
+          "segments_m": [
+            25.113312604449884,
+            24.981631709073742,
+            4.6582047468015695
+          ],
+          "length_m": 54.7531490603252
+        }
+      ],
+      "all_analytic_candidates_exceed_20m": true,
+      "shortest_candidate_passed_full_motion_collision_check_on_fixed_map": true,
+      "observed_success_reference": {
+        "sequence": 1881,
+        "published_stamp": 2616.3,
+        "source_age_s": 1.0,
+        "path_points": 242,
+        "path_length_m": 29.914582031539013
+      },
+      "original_collision_cap20": {
+        "status": "success",
+        "expanded": 1621,
+        "elapsed_wall_s": 0.684708,
+        "points": 242,
+        "path_length_m": 29.914582
+      },
+      "diagnostic_only_cap40": {
+        "status": "success",
+        "expanded": 1,
+        "elapsed_wall_s": 0.006037,
+        "points": 240,
+        "path_length_m": 29.619272
+      },
+      "accelerated_collision_cap20": null
+    },
+    {
+      "source_stamp": 2623.3,
+      "odom_event_wall_seconds": 35.20630132898805,
+      "pose_map": [
+        2.927093956191468,
+        112.64835221400074,
+        3.054434975742746
+      ],
+      "pose_source": "exact captured odom event; map/odom identity verified",
+      "is_confirmed_source_of_a_successful_published_reference": true,
+      "exact_failed_request_source_known": false,
+      "goal_distance_m": 4.100984609901775,
+      "dubins_candidates": [
+        {
+          "modes": "LSR",
+          "segments_m": [
+            24.674957798959184,
+            0.8064088402915716,
+            3.9347157438352163
+          ],
+          "length_m": 29.41608238308597
+        },
+        {
+          "modes": "RSR",
+          "segments_m": [
+            11.20694635964207,
+            0.11925721432825565,
+            18.318294042670654
+          ],
+          "length_m": 29.64449761664098
+        },
+        {
+          "modes": "LRL",
+          "segments_m": [
+            8.15095715429242,
+            20.783922468132612,
+            8.240466140245815
+          ],
+          "length_m": 37.175345762670844
+        },
+        {
+          "modes": "LSL",
+          "segments_m": [
+            22.891737148944458,
+            8.275558586777516,
+            22.98124613489785
+          ],
+          "length_m": 54.14854187061982
+        },
+        {
+          "modes": "RLR",
+          "segments_m": [
+            23.743502394352724,
+            25.073112069421313,
+            5.72210884866297
+          ],
+          "length_m": 54.53872331243701
+        }
+      ],
+      "all_analytic_candidates_exceed_20m": true,
+      "shortest_candidate_passed_full_motion_collision_check_on_fixed_map": true,
+      "observed_success_reference": {
+        "sequence": 1890,
+        "published_stamp": 2624.3,
+        "source_age_s": 1.0,
+        "path_points": 239,
+        "path_length_m": 29.643304164186482
+      },
+      "original_collision_cap20": {
+        "status": "success",
+        "expanded": 1413,
+        "elapsed_wall_s": 0.634372,
+        "points": 239,
+        "path_length_m": 29.643304
+      },
+      "diagnostic_only_cap40": {
+        "status": "success",
+        "expanded": 1,
+        "elapsed_wall_s": 0.00546,
+        "points": 238,
+        "path_length_m": 29.41493
+      },
+      "accelerated_collision_cap20": null
+    },
+    {
+      "source_stamp": 2625.1,
+      "odom_event_wall_seconds": 37.17583979200572,
+      "pose_map": [
+        2.878814198460211,
+        112.65189546889542,
+        3.0046189682123225
+      ],
+      "pose_source": "exact captured odom event; map/odom identity verified",
+      "is_confirmed_source_of_a_successful_published_reference": true,
+      "exact_failed_request_source_known": false,
+      "goal_distance_m": 4.060727533613147,
+      "dubins_candidates": [
+        {
+          "modes": "RSR",
+          "segments_m": [
+            3.2782816427987207,
+            0.059415699672406244,
+            0.9149535006739633
+          ],
+          "length_m": 4.252650843145091
+        },
+        {
+          "modes": "LSR",
+          "segments_m": [
+            24.73659145370301,
+            0.8356531611734929,
+            3.797085368457349
+          ],
+          "length_m": 29.369329983333852
+        },
+        {
+          "modes": "RSL",
+          "segments_m": [
+            3.9883516403569885,
+            0.4680698417725813,
+            24.92785772560265
+          ],
+          "length_m": 29.38427920773222
+        },
+        {
+          "modes": "LRL",
+          "segments_m": [
+            8.348116585331255,
+            20.906628013148136,
+            8.365276284344198
+          ],
+          "length_m": 37.62002088282359
+        },
+        {
+          "modes": "LSL",
+          "segments_m": [
+            23.02754380747553,
+            8.064558053672368,
+            23.044703506488474
+          ],
+          "length_m": 54.13680536763637
+        },
+        {
+          "modes": "RLR",
+          "segments_m": [
+            15.829798298100451,
+            25.10303331060346,
+            13.466470155975696
+          ],
+          "length_m": 54.399301764679606
+        }
+      ],
+      "all_analytic_candidates_exceed_20m": false,
+      "shortest_candidate_passed_full_motion_collision_check_on_fixed_map": true,
+      "observed_success_reference": {
+        "sequence": 1892,
+        "published_stamp": 2625.4,
+        "source_age_s": 0.3,
+        "path_points": 37,
+        "path_length_m": 4.252493820798241
+      },
+      "original_collision_cap20": {
+        "status": "success",
+        "expanded": 1,
+        "elapsed_wall_s": 0.002063,
+        "points": 37,
+        "path_length_m": 4.252494
+      },
+      "diagnostic_only_cap40": {
+        "status": "success",
+        "expanded": 1,
+        "elapsed_wall_s": 0.001839,
+        "points": 37,
+        "path_length_m": 4.252494
+      },
+      "accelerated_collision_cap20": null
+    },
+    {
+      "source_stamp": 2627.8,
+      "odom_event_wall_seconds": 39.93255969599704,
+      "pose_map": [
+        2.5923663043003846,
+        112.71652521003001,
+        2.7674544407215707
+      ],
+      "pose_source": "exact captured odom event; map/odom identity verified",
+      "is_confirmed_source_of_a_successful_published_reference": false,
+      "exact_failed_request_source_known": false,
+      "goal_distance_m": 3.7975762237472868,
+      "dubins_candidates": [
+        {
+          "modes": "RSL",
+          "segments_m": [
+            2.0243994527358575,
+            2.997347461618805,
+            23.912563647944527
+          ],
+          "length_m": 28.93431056229919
+        },
+        {
+          "modes": "RSR",
+          "segments_m": [
+            24.934050630998215,
+            0.700021319887314,
+            3.443267631229805
+          ],
+          "length_m": 29.077339582115332
+        },
+        {
+          "modes": "LRL",
+          "segments_m": [
+            9.324433928639237,
+            21.538953075314183,
+            8.969942113165274
+          ],
+          "length_m": 39.833329117118694
+        },
+        {
+          "modes": "RLR",
+          "segments_m": [
+            12.192618806595789,
+            24.782618808631838,
+            15.83457703554572
+          ],
+          "length_m": 52.80981465077335
+        },
+        {
+          "modes": "LSL",
+          "segments_m": [
+            23.68769861970049,
+            6.948259570365003,
+            23.333206804226524
+          ],
+          "length_m": 53.969164994292015
+        }
+      ],
+      "all_analytic_candidates_exceed_20m": true,
+      "shortest_candidate_passed_full_motion_collision_check_on_fixed_map": true,
+      "observed_success_reference": null,
+      "original_collision_cap20": {
+        "status": "success",
+        "expanded": 1472,
+        "elapsed_wall_s": 0.587757,
+        "points": 240,
+        "path_length_m": 29.679017
+      },
+      "diagnostic_only_cap40": {
+        "status": "success",
+        "expanded": 1,
+        "elapsed_wall_s": 0.005588,
+        "points": 234,
+        "path_length_m": 28.93327
+      },
+      "accelerated_collision_cap20": null
+    }
+  ],
+  "lsr_transition_geometry": [
+    {
+      "source_stamp": 2609.9,
+      "start_left_circle_center_m": [
+        5.910661917468177,
+        109.06569556640997
+      ],
+      "goal_right_circle_center_m": [
+        3.3907532026239893,
+        116.66298530478656
+      ],
+      "circle_distance_m": 8.00429580287922,
+      "required_circle_distance_m": 8.0,
+      "margin_m": 0.004295802879219934,
+      "lsr_internal_tangent_exists": true
+    },
+    {
+      "source_stamp": 2610.0,
+      "start_left_circle_center_m": [
+        5.81520479279401,
+        109.0473415155708
+      ],
+      "goal_right_circle_center_m": [
+        3.3907532026239893,
+        116.66298530478656
+      ],
+      "circle_distance_m": 7.992245982031484,
+      "required_circle_distance_m": 8.0,
+      "margin_m": -0.007754017968515825,
+      "lsr_internal_tangent_exists": false
+    }
+  ],
+  "analysis_status": "Captured-pose geometry and original cap20/cap40 controls completed. Accelerated repeated comparison was not run before the user redirected work to global-route caching and event-driven publication."
+}

@@ -1,4 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
+<!-- 仿真场景 example_course：定义环境、物理步进、模型实例及场景插件；不是规划算法输出。 -->
 <sdf version="1.6">
   <world name="robotx_example_course">
     <scene>
@@ -13,6 +14,7 @@
       <background>0.7 0.7 0.7 1</background>
       <shadows>1</shadows>
     </scene>
+    <!-- 定义场景地理参考；局部米制坐标与经纬度转换应采用同一参考。 -->
     <spherical_coordinates>
       <surface_model>EARTH_WGS84</surface_model>
       <world_frame_orientation>ENU</world_frame_orientation>
@@ -48,6 +50,7 @@
     </gui>
     <model name="ocean_waves">
       <static>true</static>
+      <!-- 加载指定动态库并传入参数；具体数值处理由对应插件源码完成。 -->
       <plugin filename="libWavefieldModelPlugin.so" name="wavefield_plugin">
         <static>false</static>
         <update_rate>30</update_rate>
@@ -68,6 +71,7 @@
         </wave>
       </plugin>
       <link name="ocean_waves_link">
+        <!-- 外观几何与材质只负责显示，不能据此认定物理碰撞尺寸。 -->
         <visual name="ocean_waves_visual">
           <plugin filename="libWavefieldVisualPlugin.so" name="ocean_waves_visual_plugin">
             <enableRtt>true</enableRtt>
@@ -160,6 +164,7 @@
             </script>
           </material>
         </visual>
+        <!-- 碰撞几何参与物理接触检测，不一定与显示网格完全相同。 -->
         <collision name="collision">
           <geometry>
             <box>
@@ -249,6 +254,7 @@
     </model>
   <model name="BOX_0">
 	<link name="BOX_0_link">
+		<!-- 质量和惯性张量影响动力学；与仅用于显示的网格外观分别配置。 -->
 		<inertial>
 			<pose>0.0 3.0 0.3 0 0 0</pose>
 			<mass>10.0</mass>

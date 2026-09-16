@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 单独启动真实 Nav2 代价地图支撑，区分激活失败、退出超时和异常退出；不启动 Gazebo。
 """Exercise real Costmap2DROS activation and SIGINT without Gazebo.
 
 Source ROS Humble, select an unused ROS_DOMAIN_ID, then supply --executable.
@@ -25,6 +26,7 @@ from sensor_msgs.msg import LaserScan
 from tf2_ros import StaticTransformBroadcaster
 
 
+# 只运行一次受控代价地图进程，记录生命周期激活和 SIGINT 退出的实际结果。
 def run_once(executable, directory, attempt, fixture, scenario, active_seconds, overrides, debugger):
     name = f"costmap_shutdown_{attempt}"
     config = directory / "costmap.yaml"
@@ -41,6 +43,7 @@ def run_once(executable, directory, attempt, fixture, scenario, active_seconds, 
     inflation_layer:
       plugin: nav2_costmap_2d::InflationLayer
 """)
+    # 流量与启动取消场景换用真实障碍层、大幅面滚动地图和仿真时间，覆盖有扫描回调的关闭路径。
     if scenario in ("traffic", "startup_cancel"):
         config.write_text("""/**:
   ros__parameters:
@@ -69,6 +72,7 @@ def run_once(executable, directory, attempt, fixture, scenario, active_seconds, 
     inflation_layer:
       plugin: nav2_costmap_2d::InflationLayer
 """)
+    # 在生成的 YAML 上应用命令行覆盖，并用 YAML 解析保留数字、布尔等参数类型。
     if overrides:
         content = yaml.safe_load(config.read_text())
         for override in overrides:
@@ -83,6 +87,7 @@ def run_once(executable, directory, attempt, fixture, scenario, active_seconds, 
     with log_path.open("w") as log:
         command = [str(executable), "--ros-args", "-r", f"__node:={name}",
                    "--params-file", str(config)]
+        # 调试器模式把 SIGINT 直接传给被调试节点，并在退出后采集有限深度线程栈。
         if debugger:
             command = ["gdb", "--batch", "-ex", "set pagination off",
                        "-ex", "set debuginfod enabled off",
@@ -95,6 +100,7 @@ def run_once(executable, directory, attempt, fixture, scenario, active_seconds, 
             deadline = time.monotonic() + 6.0
             while time.monotonic() < deadline and process.poll() is None:
                 rclpy.spin_once(fixture, timeout_sec=0.01)
+                # 启动取消场景等待 TF 超时日志作为已进入阻塞激活阶段的证据，不把尚未启动当作取消成功。
                 if scenario == "startup_cancel":
                     waiting_for_tf = "Timed out waiting for transform" in log_path.read_text()
                     if waiting_for_tf:
@@ -103,11 +109,13 @@ def run_once(executable, directory, attempt, fixture, scenario, active_seconds, 
                     request = client.call_async(GetState.Request())
                 if request is not None and request.done():
                     response = request.result()
+                    # 通过生命周期 GetState 的 ACTIVE 状态值三确认激活，避免仅以进程存活判断已开始工作。
                     active = bool(response and response.current_state.id == 3)
                     if active:
                         break
                     request = None
             # Leave the active update/publishing loop running before SIGINT.
+            # 激活后继续 spin 指定墙钟时长，让更新和发布回调实际运行再测试退出。
             deadline = time.monotonic() + active_seconds
             while active and time.monotonic() < deadline:
                 rclpy.spin_once(fixture, timeout_sec=0.01)
@@ -118,9 +126,11 @@ def run_once(executable, directory, attempt, fixture, scenario, active_seconds, 
                     if not children:
                         raise RuntimeError("GDB inferior was not created")
                     target = int(children[0])
+                # 普通模式向节点发信号；GDB 模式先定位 inferior 子进程，将中断送到业务节点。
                 os.kill(target, signal.SIGINT)
             try:
                 exit_code = process.wait(timeout=5.0)
+            # 五秒退出期限届满时记录 shutdown_timeout，再清理整组进程，区分超时与正常退出码。
             except subprocess.TimeoutExpired:
                 os.killpg(process.pid, signal.SIGKILL)
                 process.wait(timeout=2.0)
@@ -131,6 +141,7 @@ def run_once(executable, directory, attempt, fixture, scenario, active_seconds, 
                 process.wait(timeout=2.0)
             fixture.destroy_client(client)
     output = log_path.read_text(errors="replace")
+    # 同时检查操作系统退出码和 GDB 日志，防止调试器自身退出码掩盖节点段错误。
     crashed = exit_code == -signal.SIGSEGV or "received signal SIGSEGV" in output
     cleaned_up = "Cleaning up" in output
     deactivated = "Deactivating" in output
@@ -138,6 +149,7 @@ def run_once(executable, directory, attempt, fixture, scenario, active_seconds, 
         # Interrupted activation returns startup failure (1), not SIGABRT (-6).
         passed = waiting_for_tf and not active and exit_code == 1 and not crashed
     else:
+        # 正常场景要求激活、停用、清理日志和零退出全部满足；启动取消另要求等待 TF 且返回启动失败码一。
         passed = active and deactivated and cleaned_up and exit_code == 0 and not crashed
     return dict(attempt=attempt, scenario=scenario, active=active, exit_code=exit_code,
                 waiting_for_tf=waiting_for_tf,
@@ -146,6 +158,7 @@ def run_once(executable, directory, attempt, fixture, scenario, active_seconds, 
                 passed=passed)
 
 
+# 命令行入口：解析本脚本选项并执行上述流程，运行结果由退出码及输出记录共同说明。
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--executable", required=True, type=Path)
@@ -166,6 +179,7 @@ def main():
     transform.header.frame_id = "map"
     transform.child_frame_id = "base_link"
     transform.transform.rotation.w = 1.0
+    # 启动取消故意不发布 map 到 base_link 的静态 TF，制造等待变换的激活阶段。
     if args.scenario != "startup_cancel":
         broadcaster.sendTransform(transform)
     if args.scenario in ("traffic", "startup_cancel"):
@@ -176,6 +190,7 @@ def main():
         scan.angle_min, scan.angle_max = -3.14159265, 3.14159265
         scan.angle_increment = (scan.angle_max - scan.angle_min) / 1999
         scan.range_min, scan.range_max = 1.2, 25.0
+        # 以两千束十米命中和十五赫兹输入产生确定性扫描负载，--no-scan 可单独去掉扫描定时器。
         scan.ranges = [10.0] * 2000
 
         def publish_clock():

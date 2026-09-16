@@ -1,13 +1,17 @@
+# 独立对比试验配置 lqr_preview2_q1_r20，用于显式选择的参数诊断；不会自动替代主线默认配置。
 # Independent Gazebo candidate; production configuration is unchanged.
 # Copied from sim_env/config/robots/otter/controller_params_otter.yaml.
 # PID values and the original YAML hierarchy/spelling are preserved.
+# 以下层级沿用项目 YAML 格式；参数键的历史拼写保持兼容。
 controller:
   controller_name: lqr
+  # 控制频率，单位 Hz；保留原参数名的历史拼写。
   control_frequncy: 10.0
 
   pid_controller:
     goal_distance_tolerance: 1.5
     goal_speed_tolerance: 0.25
+    # 控制参考的时间前视量，单位秒，不能与 LOS 的米制前视距离混用。
     lookahead_time: 3.0
     k_p_speed: 2.0
     k_i_speed: 0.5
@@ -24,5 +28,7 @@ controller:
     solve_eps: 0.1
     max_iterations: 5000
     solve_timeout: 0.08
+    # LQR 状态误差权重对角项，排列必须与控制器的状态向量一致。
     Q_matrix_diag: [1, 1, 100, 10, 10, 10]
+    # LQR 输入代价权重对角项，影响控制输出大小与跟踪误差之间的折中。
     R_matrix_diag: [20, 20]

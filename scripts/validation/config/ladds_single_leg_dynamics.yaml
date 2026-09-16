@@ -1,0 +1,25 @@
+# LaDDS 0211 单航段仿真动力学 profile。
+# 与普通导航 dynamics_otter.yaml 保持一致，只把允许的速度上限提高到 2.1 m/s；
+# cruising_speed 仍为 1.0 m/s，4 节（约 2.058 m/s）由任务报文显式给出。
+dynamics:
+  name: otter
+  type: Differential
+  cruising_speed: 1.0
+  max_force: 50.0
+  mass: 29.84
+  i_z: 10.03
+  L: 1.35
+  W: 1.00
+  D: 0.395
+  x_dot_u: 5.0
+  y_dot_v: 5.0
+  n_dot_r: 1.0
+  x_u: -20.0
+  y_v: -20.0
+  n_r: -20.0
+  velocity_min: 0.0
+  velocity_max: 2.1
+  acceleration_min: -1.0
+  acceleration_max: 1.0
+  jerk_min: -2.0
+  jerk_max: 2.0

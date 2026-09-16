@@ -1,0 +1,125 @@
+[INFO] [launch]: All log files can be found below /home/usv/.ros/log/2026-09-12-23-46-36-768490-DESKTOP-SFCU4PM-182778
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [launch.user]: [usv_mission] dynamics_config: /home/usv/usv_migration/station-guard-core-001/install/sim_env/share/sim_env/config/robots/otter/dynamics_otter.yaml
+[INFO] [launch.user]: [usv_mission] controller_config: /home/usv/usv_migration/station-guard-core-001/install/sim_env/share/sim_env/config/robots/otter/controller_params_otter.yaml
+[INFO] [launch.user]: [usv_mission] trajectory_config: /home/usv/usv_migration/station-guard-core-001/install/sim_env/share/sim_env/config/trajectory_planner/trajectory_planner_params.yaml
+[INFO] [launch.user]: [usv_mission] planner_config: /home/usv/usv_migration/station-guard-core-001/install/sim_env/share/sim_env/config/path_planner/common_planner_params.yaml
+[INFO] [launch.user]: [usv_mission] mission_config: /home/usv/usv_migration/station-guard-core-001/install/usv_mission/share/usv_mission/config/mission/mission_params.yaml
+[INFO] [launch.user]: [usv_mission] Geographic reference enabled
+[INFO] [launch.user]: [usv_mission] Obstacle sensor: lidar
+[INFO] [launch.user]: [usv_mission] Geographic reference: /home/usv/usv_migration/station-guard-core-001/install/sim_env/share/sim_env/worlds/ocean.world
+[INFO] [gzserver-1]: process started with pid [182788]
+[INFO] [robot_state_publisher-2]: process started with pid [182790]
+[INFO] [joint_state_publisher-3]: process started with pid [182792]
+[INFO] [python3-4]: process started with pid [182794]
+[INFO] [fake_localization_node-5]: process started with pid [182796]
+[INFO] [perception_mapping_node-6]: process started with pid [182798]
+[INFO] [costmap_support_node-7]: process started with pid [182800]
+[INFO] [python3-8]: process started with pid [182802]
+[fake_localization_node-5] [INFO] [1789227997.123624202] [otter.fake_localization]: [fake_localization] model='otter' frames: otter/map -> otter/odom -> otter/base_link
+[costmap_support_node-7] [INFO] [1789227997.133423965] [otter.costmap]: 
+[costmap_support_node-7] 	costmap lifecycle node launched. 
+[costmap_support_node-7] 	Waiting on external lifecycle transitions to activate
+[costmap_support_node-7] 	See https://design.ros2.org/articles/node_lifecycle.html for more information.
+[costmap_support_node-7] [INFO] [1789227997.134067228] [otter.costmap]: Creating Costmap
+[costmap_support_node-7] [INFO] [1789227997.134378335] [otter.costmap]: Configuring
+[costmap_support_node-7] [INFO] [1789227997.141318532] [otter.costmap]: Using plugin "obstacle_layer"
+[costmap_support_node-7] [INFO] [1789227997.143917564] [otter.costmap]: Subscribed to Topics: scan
+[costmap_support_node-7] [INFO] [1789227997.145823769] [otter.costmap]: Initialized plugin "obstacle_layer"
+[costmap_support_node-7] [INFO] [1789227997.146745292] [otter.costmap]: Using plugin "inflation_layer"
+[costmap_support_node-7] [INFO] [1789227997.150457406] [otter.costmap]: Initialized plugin "inflation_layer"
+[robot_state_publisher-2] [WARN] [1789227997.150732518] [kdl_parser]: The root link base_link has an inertia specified in the URDF, but KDL does not support a root link with an inertia.  As a workaround, you can add an extra dummy link to your URDF.
+[robot_state_publisher-2] [INFO] [1789227997.150831092] [robot_state_publisher]: got segment base_footprint
+[robot_state_publisher-2] [INFO] [1789227997.150892605] [robot_state_publisher]: got segment base_link
+[robot_state_publisher-2] [INFO] [1789227997.150896516] [robot_state_publisher]: got segment left_propeller_link
+[robot_state_publisher-2] [INFO] [1789227997.150899322] [robot_state_publisher]: got segment lidar_link
+[robot_state_publisher-2] [INFO] [1789227997.150901911] [robot_state_publisher]: got segment right_propeller_link
+[costmap_support_node-7] [INFO] [1789227997.157890549] [otter.costmap]: Activating
+[costmap_support_node-7] [INFO] [1789227997.157923255] [otter.costmap]: Checking transform
+[costmap_support_node-7] [INFO] [1789227997.157936971] [otter.costmap]: Timed out waiting for transform from otter/base_link to otter/map to become available, tf error: Invalid frame ID "otter/map" passed to canTransform argument target_frame - frame does not exist
+[joint_state_publisher-3] [INFO] [1789227997.372188495] [joint_state_publisher]: Waiting for robot_description to be published on the robot_description topic...
+[python3-4] [INFO] [1789227997.424065007] [spawn_entity]: Spawn Entity started
+[python3-4] [INFO] [1789227997.424461915] [spawn_entity]: Loading entity published on topic robot_description
+[python3-4] [INFO] [1789227997.426366078] [spawn_entity]: Waiting for entity xml on robot_description
+[python3-4] [INFO] [1789227997.439938412] [spawn_entity]: Waiting for service /spawn_entity, timeout = 120
+[python3-4] [INFO] [1789227997.440191786] [spawn_entity]: Waiting for service /spawn_entity
+[perception_mapping_node-6] [INFO] [1789227997.452760469] [otter.mapping]: LiDAR mapping frame=otter/map, grid=1024x1024, resolution=0.5m, publication=2.0Hz, TF deadline=0.2s, backend=python
+[python3-8] [INFO] [1789227997.541580579] [otter.mission_manager]: Effective navigation parameters: {"dynamics.D": 0.395, "dynamics.L": 1.35, "dynamics.W": 1.0, "dynamics.acceleration_max": 1.0, "dynamics.acceleration_min": -1.0, "dynamics.cruising_speed": 1.0, "dynamics.i_z": 10.03, "dynamics.jerk_max": 2.0, "dynamics.jerk_min": -2.0, "dynamics.mass": 29.84, "dynamics.max_force": 50.0, "dynamics.n_dot_r": 1.0, "dynamics.n_dot_u": 0.0, "dynamics.n_dot_v": 0.0, "dynamics.n_r": -20.0, "dynamics.n_r_r": 0.0, "dynamics.n_u": 0.0, "dynamics.n_v": 0.0, "dynamics.name": "otter", "dynamics.ns": "otter", "dynamics.type": "Differential", "dynamics.velocity_max": 1.0, "dynamics.velocity_min": 0.0, "dynamics.x_dot_r": 0.0, "dynamics.x_dot_u": 5.0, "dynamics.x_dot_v": 0.0, "dynamics.x_r": 0.0, "dynamics.x_u": -20.0, "dynamics.x_u_u": 0.0, "dynamics.x_v": 0.0, "dynamics.y_dot_r": 0.0, "dynamics.y_dot_u": 0.0, "dynamics.y_dot_v": 5.0, "dynamics.y_r": 0.0, "dynamics.y_u": 0.0, "dynamics.y_v": -20.0, "dynamics.y_v_v": 0.0, "mission.geo.altitude": 0.0, "mission.geo.enabled": true, "mission.geo.latitude": -33.7242, "mission.geo.longitude": 150.68, "mission.heading_tolerance_deg": 5.0, "mission.safety_margin": 0.1, "navigation.costmap_topic": "costmap_raw", "navigation.footprint_length": 2.2, "navigation.footprint_width": 1.2, "navigation.map_timeout": 1.5, "navigation.max_expansions": 200000, "navigation.planning_frequency": 5.0, "navigation.planning_timeout": 1.0, "navigation.radar_timeout": 0.5, "navigation.require_radar": false, "navigation.state_timeout": 0.5, "navigation.trajectory_timeout": 1.0, "obstacle_factor": 0.25, "path_planner.convert_offset": 0.0, "path_planner.default_tolerance": 0.0, "path_planner.enable_resample": true, "path_planner.expand_zone": true, "path_planner.outline_map": true, "path_planner.resample_ratio": 0.5, "path_planner.show_safety_corridor": false, "planner_name": "astar", "usv_simulation.controller.control_frequency": 10.0, "usv_simulation.controller.controller_name": "pid", "usv_simulation.controller.lqr_controller.Q_matrix_diag": [1.0, 1.0, 100.0, 10.0, 10.0, 10.0], "usv_simulation.controller.lqr_controller.R_matrix_diag": [20.0, 20.0], "usv_simulation.controller.lqr_controller.discrete_dt": 0.1, "usv_simulation.controller.lqr_controller.goal_distance_tolerance": 1.0, "usv_simulation.controller.lqr_controller.goal_speed_tolerance": 0.25, "usv_simulation.controller.lqr_controller.lookahead_time": 2.0, "usv_simulation.controller.lqr_controller.max_iterations": 5000, "usv_simulation.controller.lqr_controller.solve_eps": 0.1, "usv_simulation.controller.lqr_controller.solve_timeout": 0.08, "usv_simulation.controller.pid_controller.goal_distance_tolerance": 1.5, "usv_simulation.controller.pid_controller.goal_speed_tolerance": 0.25, "usv_simulation.controller.pid_controller.k_d_course": 0.0, "usv_simulation.controller.pid_controller.k_d_speed": 0.0, "usv_simulation.controller.pid_controller.k_i_course": 0.0, "usv_simulation.controller.pid_controller.k_i_speed": 0.5, "usv_simulation.controller.pid_controller.k_p_course": 2.0, "usv_simulation.controller.pid_controller.k_p_speed": 2.0, "usv_simulation.controller.pid_controller.lookahead_time": 2.6, "usv_simulation.trajectory_planner.los.goal_tolerance": 1.0, "usv_simulation.trajectory_planner.los.kp_yaw": 1.0, "usv_simulation.trajectory_planner.los.lookahead_distance": 1.0, "usv_simulation.trajectory_planner.los.slowdown_distance": 3.0, "usv_simulation.trajectory_planner.los.switch_dist": 5.0, "usv_simulation.trajectory_planner.los.trajectory_time": 20.0, "usv_simulation.trajectory_planner.los.trajectory_time_interval": 0.5, "usv_simulation.trajectory_planner.los.yaw_rate_max": 0.3, "usv_simulation.trajectory_planner.planner_name": "los"}
+[costmap_support_node-7] [INFO] [1789227997.658038030] [otter.costmap]: Timed out waiting for transform from otter/base_link to otter/map to become available, tf error: Invalid frame ID "otter/map" passed to canTransform argument target_frame - frame does not exist
+[costmap_support_node-7] [INFO] [1789227998.158079342] [otter.costmap]: Timed out waiting for transform from otter/base_link to otter/map to become available, tf error: Invalid frame ID "otter/map" passed to canTransform argument target_frame - frame does not exist
+[gzserver-1] ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+[gzserver-1] ALSA lib conf.c:5182:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+[gzserver-1] ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+[gzserver-1] ALSA lib conf.c:5182:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+[gzserver-1] ALSA lib confmisc.c:1334:(snd_func_refer) error evaluating name
+[gzserver-1] ALSA lib conf.c:5182:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+[gzserver-1] ALSA lib conf.c:5705:(snd_config_expand) Evaluate error: No such file or directory
+[gzserver-1] ALSA lib pcm.c:2664:(snd_pcm_open_noupdate) Unknown PCM default
+[gzserver-1] AL lib: (EE) ALCplaybackAlsa_open: Could not open playback device 'default': No such file or directory
+[costmap_support_node-7] [INFO] [1789227998.658078317] [otter.costmap]: Timed out waiting for transform from otter/base_link to otter/map to become available, tf error: Invalid frame ID "otter/map" passed to canTransform argument target_frame - frame does not exist
+[gzserver-1] [INFO] [1789227998.840500260] [gazebo.gazebo_ros_state]: Publishing states of gazebo models at [/gazebo/model_states]
+[gzserver-1] [INFO] [1789227998.841766696] [gazebo.gazebo_ros_state]: Publishing states of gazebo links at [/gazebo/link_states]
+[python3-4] [INFO] [1789227998.949948330] [spawn_entity]: Calling service /spawn_entity
+[costmap_support_node-7] [INFO] [1789227999.158221539] [otter.costmap]: Timed out waiting for transform from otter/base_link to otter/map to become available, tf error: Invalid frame ID "otter/map" passed to canTransform argument target_frame - frame does not exist
+[python3-4] [INFO] [1789227999.426589331] [spawn_entity]: Spawn status: SpawnEntity: Successfully spawned entity [otter]
+[INFO] [python3-4]: process has finished cleanly [pid 182794]
+[costmap_support_node-7] [INFO] [1789227999.658161371] [otter.costmap]: start
+[perception_mapping_node-6] [INFO] [1789228002.851917628] [otter.mapping]: mapping queue=2 integrated=47 drops(tf=1, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=26.18, p95=31.58) queue_ms_p95=101.56
+[perception_mapping_node-6] [INFO] [1789228008.268430991] [otter.mapping]: mapping queue=1 integrated=128 drops(tf=1, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=27.22, p95=31.62) queue_ms_p95=86.54
+[perception_mapping_node-6] [INFO] [1789228013.685009702] [otter.mapping]: mapping queue=1 integrated=209 drops(tf=1, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=27.24, p95=31.81) queue_ms_p95=86.66
+[perception_mapping_node-6] [INFO] [1789228019.101781329] [otter.mapping]: mapping queue=1 integrated=289 drops(tf=1, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=27.56, p95=32.02) queue_ms_p95=99.34
+[perception_mapping_node-6] [INFO] [1789228022.010525075] [otter.mapping]: mapping queue=1 integrated=332 drops(tf=2, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=27.63, p95=31.98) queue_ms_p95=80.87
+[perception_mapping_node-6] [INFO] [1789228027.427150790] [otter.mapping]: mapping queue=1 integrated=412 drops(tf=2, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=27.39, p95=31.88) queue_ms_p95=82.68
+[perception_mapping_node-6] [INFO] [1789228032.846804753] [otter.mapping]: mapping queue=0 integrated=493 drops(tf=2, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=27.95, p95=32.62) queue_ms_p95=99.28
+[perception_mapping_node-6] [INFO] [1789228038.268081099] [otter.mapping]: mapping queue=1 integrated=573 drops(tf=2, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=28.33, p95=33.20) queue_ms_p95=99.36
+[perception_mapping_node-6] [INFO] [1789228043.697383613] [otter.mapping]: mapping queue=0 integrated=654 drops(tf=2, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=28.53, p95=34.28) queue_ms_p95=99.52
+[perception_mapping_node-6] [INFO] [1789228049.093920407] [otter.mapping]: mapping queue=1 integrated=734 drops(tf=2, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=28.02, p95=33.48) queue_ms_p95=95.22
+[perception_mapping_node-6] [INFO] [1789228052.051816259] [otter.mapping]: mapping queue=0 integrated=763 drops(tf=4, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=27.61, p95=33.20) queue_ms_p95=99.33
+[perception_mapping_node-6] [INFO] [1789228057.490204940] [otter.mapping]: mapping queue=0 integrated=818 drops(tf=7, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=27.43, p95=32.90) queue_ms_p95=96.30
+[perception_mapping_node-6] [INFO] [1789228062.885142074] [otter.mapping]: mapping queue=1 integrated=898 drops(tf=7, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=26.92, p95=31.72) queue_ms_p95=98.38
+[perception_mapping_node-6] [INFO] [1789228068.322003278] [otter.mapping]: mapping queue=0 integrated=979 drops(tf=7, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=27.10, p95=30.86) queue_ms_p95=99.71
+[perception_mapping_node-6] [INFO] [1789228073.726162400] [otter.mapping]: mapping queue=0 integrated=1059 drops(tf=7, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=26.76, p95=31.72) queue_ms_p95=100.08
+[perception_mapping_node-6] [INFO] [1789228079.186368671] [otter.mapping]: mapping queue=0 integrated=1140 drops(tf=7, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=25.94, p95=31.44) queue_ms_p95=100.08
+[perception_mapping_node-6] [INFO] [1789228082.050861591] [otter.mapping]: mapping queue=1 integrated=1165 drops(tf=8, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=25.49, p95=31.00) queue_ms_p95=101.26
+[perception_mapping_node-6] [INFO] [1789228087.483902886] [otter.mapping]: mapping queue=0 integrated=1223 drops(tf=11, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=25.05, p95=30.64) queue_ms_p95=98.58
+[perception_mapping_node-6] [INFO] [1789228092.884050271] [otter.mapping]: mapping queue=1 integrated=1303 drops(tf=11, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=25.07, p95=30.05) queue_ms_p95=99.37
+[perception_mapping_node-6] [INFO] [1789228098.316516608] [otter.mapping]: mapping queue=0 integrated=1384 drops(tf=11, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=24.96, p95=29.91) queue_ms_p95=100.58
+[perception_mapping_node-6] [INFO] [1789228103.720689913] [otter.mapping]: mapping queue=0 integrated=1464 drops(tf=11, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=25.28, p95=30.21) queue_ms_p95=98.97
+[perception_mapping_node-6] [INFO] [1789228109.161177375] [otter.mapping]: mapping queue=0 integrated=1545 drops(tf=11, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=24.58, p95=29.10) queue_ms_p95=98.04
+[perception_mapping_node-6] [INFO] [1789228112.065851008] [otter.mapping]: mapping queue=1 integrated=1588 drops(tf=11, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=24.63, p95=29.77) queue_ms_p95=95.45
+[perception_mapping_node-6] [INFO] [1789228117.506130403] [otter.mapping]: mapping queue=0 integrated=1669 drops(tf=11, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=24.30, p95=29.40) queue_ms_p95=97.90
+[perception_mapping_node-6] [INFO] [1789228122.899227980] [otter.mapping]: mapping queue=1 integrated=1749 drops(tf=11, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=24.01, p95=29.28) queue_ms_p95=98.04
+[perception_mapping_node-6] [INFO] [1789228128.339094522] [otter.mapping]: mapping queue=0 integrated=1830 drops(tf=11, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=24.59, p95=30.70) queue_ms_p95=88.76
+[perception_mapping_node-6] [INFO] [1789228133.748666513] [otter.mapping]: mapping queue=0 integrated=1911 drops(tf=11, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=24.12, p95=30.74) queue_ms_p95=85.54
+[perception_mapping_node-6] [INFO] [1789228139.149527903] [otter.mapping]: mapping queue=1 integrated=1991 drops(tf=11, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=23.96, p95=30.17) queue_ms_p95=97.92
+[perception_mapping_node-6] [INFO] [1789228142.084164996] [otter.mapping]: mapping queue=1 integrated=2033 drops(tf=12, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=23.84, p95=29.49) queue_ms_p95=98.53
+[perception_mapping_node-6] [INFO] [1789228147.500629872] [otter.mapping]: mapping queue=1 integrated=2114 drops(tf=12, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=23.49, p95=29.21) queue_ms_p95=89.62
+[perception_mapping_node-6] [INFO] [1789228152.933708711] [otter.mapping]: mapping queue=0 integrated=2195 drops(tf=12, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=24.13, p95=30.14) queue_ms_p95=96.47
+[perception_mapping_node-6] [INFO] [1789228158.346949965] [otter.mapping]: mapping queue=1 integrated=2275 drops(tf=12, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=24.26, p95=30.30) queue_ms_p95=98.69
+[perception_mapping_node-6] [INFO] [1789228163.765809439] [otter.mapping]: mapping queue=0 integrated=2356 drops(tf=12, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=24.50, p95=30.26) queue_ms_p95=98.36
+[perception_mapping_node-6] [INFO] [1789228169.194019917] [otter.mapping]: mapping queue=0 integrated=2436 drops(tf=12, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=24.09, p95=30.44) queue_ms_p95=98.72
+[perception_mapping_node-6] [INFO] [1789228172.081356435] [otter.mapping]: mapping queue=0 integrated=2450 drops(tf=14, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=24.09, p95=30.75) queue_ms_p95=98.86
+[perception_mapping_node-6] [INFO] [1789228177.497979273] [otter.mapping]: mapping queue=2 integrated=2515 drops(tf=15, overflow=0, duplicate_or_old=0, invalid=0) invalid_beams=0 resets=0 processing_ms(p50=24.31, p95=30.60) queue_ms_p95=95.09
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [python3-8]: sending signal 'SIGINT' to process[python3-8]
+[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]
+[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]
+[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]
+[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]
+[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]
+[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]
+[costmap_support_node-7] [INFO] [1789228181.944866590] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[costmap_support_node-7] [INFO] [1789228181.944933368] [otter.costmap]: Running Nav2 LifecycleNode rcl preshutdown (costmap)
+[costmap_support_node-7] [INFO] [1789228181.944999225] [otter.costmap]: Deactivating
+[fake_localization_node-5] [INFO] [1789228181.945814395] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[robot_state_publisher-2] [INFO] [1789228181.947183170] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [fake_localization_node-5]: process has finished cleanly [pid 182796]
+[INFO] [robot_state_publisher-2]: process has finished cleanly [pid 182790]
+[INFO] [joint_state_publisher-3]: process has finished cleanly [pid 182792]
+[INFO] [perception_mapping_node-6]: process has finished cleanly [pid 182798]
+[INFO] [python3-8]: process has finished cleanly [pid 182802]
+[INFO] [gzserver-1]: process has finished cleanly [pid 182788]
+[costmap_support_node-7] [INFO] [1789228182.221555962] [otter.costmap]: Cleaning up
+[costmap_support_node-7] [INFO] [1789228182.222922159] [otter.costmap]: Destroying bond (costmap) to lifecycle manager.
+[costmap_support_node-7] [INFO] [1789228182.224409647] [otter.costmap]: Destroying
+[INFO] [costmap_support_node-7]: process has finished cleanly [pid 182800]

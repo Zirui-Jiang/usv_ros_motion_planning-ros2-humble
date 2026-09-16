@@ -1,3 +1,4 @@
+# 使用真实 ROS 通信和规划子进程，验证旧参照的超时停推、船体检查、取消与时钟重置。
 """Real rclpy/process-worker integration without Gazebo; isolated ROS domain."""
 import time
 import json
@@ -14,10 +15,11 @@ from nav2_msgs.msg import Costmap
 from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import Float32, String
 from std_srvs.srv import Trigger
-from sim_env.simulation import Simulator
+from legacy_reference import Simulator
 from sim_env.configuration import C, T
 
 
+# 控制计算超时既要计入诊断，也要实际发布零推力。
 def test_transient_controller_timeout_is_counted_and_publishes_zero(monkeypatch):
     import numpy as np
     from common.models import AlgorithmStatus, ControlCommand, GridSnapshot, VesselState
@@ -48,6 +50,7 @@ def test_transient_controller_timeout_is_counted_and_publishes_zero(monkeypatch)
             rclpy.shutdown()
 
 
+# 轨迹和中心点可通行时，当前船角占据障碍仍必须阻止控制输出。
 def test_current_hull_blocks_control_even_when_reference_and_centre_are_clear(monkeypatch):
     import numpy as np
     from common.models import GridSnapshot, VesselState
@@ -82,6 +85,7 @@ def test_current_hull_blocks_control_even_when_reference_and_centre_are_clear(mo
             rclpy.shutdown()
 
 
+# 通过真实工作进程覆盖规划、参数更新、输入过期、取消和时钟回退的连续过程。
 def test_process_planning_parameters_stale_inputs_cancel_and_clock_reset():
     rclpy.init(args=['--ros-args', '-r', '__ns:=/navigation_smoke', '-p', 'use_sim_time:=true'])
     simulator = driver = executor = None

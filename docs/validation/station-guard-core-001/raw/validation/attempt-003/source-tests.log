@@ -1,0 +1,53 @@
+........................................................................ [  8%]
+........................................................................ [ 17%]
+........................................................................ [ 25%]
+........................................................................ [ 34%]
+........................................................................ [ 42%]
+........................................................................ [ 51%]
+........................................................................ [ 59%]
+........................................................................ [ 68%]
+........................................................................ [ 76%]
+.........F.............................................................. [ 85%]
+........................................................................ [ 93%]
+......................................................                   [100%]
+=================================== FAILURES ===================================
+_______ test_standalone_collection_skips_only_known_world_fixture_cases ________
+
+source_tree = PosixPath('/tmp/pytest-of-usv/pytest-111/test_standalone_collection_ski0/source')
+tmp_path = PosixPath('/tmp/pytest-of-usv/pytest-111/test_standalone_collection_ski0')
+
+    def test_standalone_collection_skips_only_known_world_fixture_cases(source_tree, tmp_path):
+        common_test = source_tree / "src/core/common/test/test_geodesy.py"
+        common_test.write_text('''import pytest
+    def test_world_reference_matches_current_world_and_example_point():
+        raise AssertionError("sim_env world is not exported")
+    @pytest.mark.parametrize("change", ["absent", "NED", "heading", "surface", "latitude", "elevation"])
+    def test_unsupported_or_incomplete_world_rejected(change):
+        raise AssertionError("sim_env world is not exported")
+    def test_unrelated_geodesy_failure_is_not_hidden():
+        assert False
+    ''', encoding="utf-8")
+        other_test = source_tree / "src/core/common/test/test_other.py"
+        other_test.write_text('''def test_world_reference_matches_current_world_and_example_point():
+        assert False
+    ''', encoding="utf-8")
+        output, archive = tmp_path / "kit", tmp_path / "kit.zip"
+        result = run_export(source_tree, output, archive)
+        assert result.returncode == 0, result.stderr
+        check = subprocess.run(
+            [sys.executable, "-I", "-B", "-m", "pytest", "--confcutdir=.", "-q", "-p", "no:cacheprovider"],
+            cwd=output, capture_output=True, encoding="utf-8", errors="replace",
+        )
+>       assert check.returncode == 1, check.stdout + check.stderr
+E       AssertionError: 
+E         no tests ran in 0.00s
+E         ERROR: file or directory not found: src/trajectory_planner/test
+E         
+E         
+E       assert 4 == 1
+E        +  where 4 = CompletedProcess(args=['/usr/bin/python3', '-I', '-B', '-m', 'pytest', '--confcutdir=.', '-q', '-p', 'no:cacheprovider...de=4, stdout='\nno tests ran in 0.00s\n', stderr='ERROR: file or directory not found: src/trajectory_planner/test\n\n').returncode
+
+scripts/control/test_export_control_workspace.py:172: AssertionError
+=========================== short test summary info ============================
+FAILED scripts/control/test_export_control_workspace.py::test_standalone_collection_skips_only_known_world_fixture_cases
+1 failed, 845 passed in 21.25s

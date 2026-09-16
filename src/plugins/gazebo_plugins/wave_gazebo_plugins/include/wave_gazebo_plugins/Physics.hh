@@ -18,6 +18,7 @@
 /// \file Physics.hh
 /// \brief This file contains definitions for the physics models.
 
+// 深水重力波色散关系接口，连接波数与角频率。
 #ifndef _WAVE_GAZEBO_PLUGINS_PHYSICS_HH_
 #define _WAVE_GAZEBO_PLUGINS_PHYSICS_HH_
 
@@ -26,6 +27,7 @@ namespace asv
 ///////////////////////////////////////////////////////////////////////////////
 // Physics
   /// \brief A collection of static methods for various physics calculations.
+  // 按 ω²=|g|k 相互转换，k 单位 rad/m、ω 单位 rad/s，未加入有限水深修正。
   class Physics
   {
     /// \brief Compute the deep water dispersion.

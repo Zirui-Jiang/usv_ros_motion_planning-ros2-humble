@@ -11,6 +11,7 @@
  * --------------------------------------------------------
  *
  **********************************************************/
+// 声明可配置名称与话题的 RViz PoseTool 子类，发布 ROS 2 目标位姿消息。
 #include <QObject>
 
 #include <memory>
@@ -33,8 +34,10 @@ namespace plugins
 {
 namespace goal_set_plugin
 {
+// 继承 PoseTool 复用鼠标拖拽选择位置和航向的交互，只重写目标发布处理。
 class GoalSetPlugin : public rviz_default_plugins::tools::PoseTool
 {
+  // 启用 Qt 元对象能力，配合 CMake AUTOMOC 生成属性变化到槽函数的连接支持。
   Q_OBJECT
 public:
   GoalSetPlugin();
@@ -46,6 +49,7 @@ public:
 protected:
   virtual void onPoseSet(double x, double y, double theta);
 
+// 两个槽分别响应 Topic 与 Name 属性编辑，发布话题和显示名称可以独立调整。
 private Q_SLOTS:
   void updateTopic();
   void updateName();

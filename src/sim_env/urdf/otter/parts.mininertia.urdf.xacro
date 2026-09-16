@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+<!-- 为艇体附属部件定义小惯量宏，供主船模组合时引用。 -->
 
 <robot name="otter_part" xmlns:xacro="http://ros.org/wiki/xacro">
 	
@@ -21,6 +22,7 @@
 	<xacro:property name="iyz_com_cs" value="0.00" /> <!-- at center of mass aligned with coordinate system, kg*m^2-->
 	<xacro:property name="izz_com_cs" value="${min_inertia}" /> <!-- at center of mass aligned with coordinate system, kg*m^2-->
 	
+	<!-- 定义可复用宏；调用时替换参数并展开为实际 URDF/SDF 元素。 -->
 	<xacro:macro name="otter_part" params="parent name mesh translateX translateY translateZ rotateX rotateY rotateZ color">
 		<joint name="${parent}_${name}_joint" type="fixed">
 			<origin xyz="${translateX} ${translateY} ${translateZ}" 
@@ -30,12 +32,14 @@
 		</joint>
 		
 		<link name="${parent}_${name}_part">
+			<!-- 质量和惯性张量影响动力学；与仅用于显示的网格外观分别配置。 -->
 			<inertial>
 				<mass value="${mass}" />
 				<origin xyz="${x_com} ${y_com} ${z_com}" />
 				<inertia ixx="${ixx_com_cs}" ixy="${ixy_com_cs}" ixz="${ixz_com_cs}"
 					iyy="${iyy_com_cs}" iyz="${iyz_com_cs}" izz="${izz_com_cs}" />
 			</inertial>
+			<!-- 外观几何与材质只负责显示，不能据此认定物理碰撞尺寸。 -->
 			<visual>
 				<origin xyz="0 0 0" rpy="0 0 0" />
 				<geometry>
@@ -43,6 +47,7 @@
 				</geometry>
         <material name="${color}" />
 			</visual>
+			<!-- 碰撞几何参与物理接触检测，不一定与显示网格完全相同。 -->
 			<collision>
 				<origin xyz="0 0 0" rpy="0 0 0"/>
 				<geometry>

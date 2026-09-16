@@ -1,0 +1,408 @@
+diff --git a/README.md b/README.md
+index bb922af..cccc3e6 100644
+--- a/README.md
++++ b/README.md
+@@ -2,7 +2,8 @@
+ 
+ 本分支在原 ROS 功能包内实现 Python 导航、控制、轨迹与 LiDAR 栅格建图。
+ Gazebo、水动力、推进器、传感器及 RViz 插件继续复用原 C++ 工程。
+-原作者代码保存在 `main` / `cpp-baseline`；当前开发分支为 `refactor/python-navigation`。
++原作者代码保存在 `main` / `cpp-baseline`；Python 导航基线为 `refactor/python-navigation`。
++`function/station-guard-and-keeping` 增加定点值守、圆形巡航与固定艏向阵位保持，操作入口见下表。
+ 
+ 当前默认算法为 **A* → LOS → PID**，也可选择 Dijkstra、GBFS 和 LQR。
+ 算法类通过 Python 导入和对象调用连接；ROS 节点负责输入、参数、TF、调度及发布。
+@@ -10,6 +11,10 @@ LiDAR 累积地图与 Nav2 实时代价地图分别工作，当前没有启用 s
+ 
+ | 文档 | 内容 |
+ | --- | --- |
++| [规划层与航控接口](docs/planning-control-interface.md) | 航控即 controller；换艇时的统一运动参考、共享状态、运动能力、跟踪反馈与当前耦合点 |
++| [虚拟毫米波雷达](docs/mmwave-simulation.md) | 船艏传感器、LiDAR/毫米波切换、自定义检测消息、点迹障碍层与断流验证 |
++| [值守与阵位保持使用说明](docs/station-guard-guide.md) | `core/usv_mission` 任务下发与执行协调、新 CLI／启动入口；迁移后验证见[迁移记录](docs/station-guard-migration.md) |
++| [值守功能实施记录](docs/station-guard-implementation.md) | 功能分支、任务分工、集成决策及本轮证据位置 |
+ | [工程使用指南](docs/python-navigation-guide.md) | WSL 构建、原包分工、launch、YAML 兼容与在线调参、回退 |
+ | [实施与验收状态](docs/python-migration-status.md) | 区分静态检查、单元测试、ROS 集成与闭环验收 |
+ | [验收报告](docs/python-migration-validation.md) | 固定版本、对照协议、实际证据与适用范围 |
+diff --git a/conftest.py b/conftest.py
+index c5bd501..6dda77f 100644
+--- a/conftest.py
++++ b/conftest.py
+@@ -5,5 +5,6 @@ import sys
+ ROOT = Path(__file__).resolve().parent
+ for relative in ('src/core/common', 'src/core/path_planner/path_planner',
+                  'src/core/path_planner/path_processor', 'src/core/trajectory_planner',
+-                 'src/core/controller/controller', 'src/core/perception', 'src/sim_env'):
++                 'src/core/controller/controller', 'src/core/perception',
++                 'src/core/mmwave_perception', 'src/sim_env'):
+     sys.path.insert(0, str(ROOT / relative))
+diff --git a/pytest.ini b/pytest.ini
+index 43f5e42..3ffda00 100644
+--- a/pytest.ini
++++ b/pytest.ini
+@@ -1,3 +1,3 @@
+ [pytest]
+-testpaths = src/core/common/test src/core/path_planner/path_planner/test src/core/path_planner/path_processor/test src/core/trajectory_planner/test src/core/controller/controller/test src/core/perception/test src/sim_env/test scripts/validation
++testpaths = src/core/common/test src/core/path_planner/path_planner/test src/core/path_planner/path_processor/test src/core/trajectory_planner/test src/core/controller/controller/test src/core/perception/test src/core/mmwave_perception/test src/sim_env/test scripts/validation
+ addopts = --import-mode=importlib
+diff --git a/src/core/controller/controller/controller/__init__.py b/src/core/controller/controller/controller/__init__.py
+index 65f73bb..2d3dc3a 100644
+--- a/src/core/controller/controller/controller/__init__.py
++++ b/src/core/controller/controller/controller/__init__.py
+@@ -2,6 +2,7 @@
+ 
+ from .pid_controller import PIDController, PIDControllerOtter
+ from .lqr_controller import LQRController, LQRControllerOtter
++from .station_keeping_controller import StationKeepingController
+ from .controller_factory import create_controller
+ 
+-__all__ = ["PIDController", "PIDControllerOtter", "LQRController", "LQRControllerOtter", "create_controller"]
++__all__ = ["PIDController", "PIDControllerOtter", "LQRController", "LQRControllerOtter", "StationKeepingController", "create_controller"]
+diff --git a/src/core/trajectory_planner/trajectory_planner/__init__.py b/src/core/trajectory_planner/trajectory_planner/__init__.py
+index a73a090..e2f1348 100644
+--- a/src/core/trajectory_planner/trajectory_planner/__init__.py
++++ b/src/core/trajectory_planner/trajectory_planner/__init__.py
+@@ -3,5 +3,6 @@
+ from .trajectory import Trajectory, TrajectoryCell, TrajectoryResult
+ from .los_trajectory_planner import LosTrajectoryPlanner
+ from .trajectory_planner_factory import create_trajectory_planner
++from .circle import CircleReference
+ 
+-__all__ = ["Trajectory", "TrajectoryCell", "TrajectoryResult", "LosTrajectoryPlanner", "create_trajectory_planner"]
++__all__ = ["Trajectory", "TrajectoryCell", "TrajectoryResult", "LosTrajectoryPlanner", "CircleReference", "create_trajectory_planner"]
+diff --git a/src/core/trajectory_planner/trajectory_planner/los_trajectory_planner.py b/src/core/trajectory_planner/trajectory_planner/los_trajectory_planner.py
+index 3d02212..cf66bda 100644
+--- a/src/core/trajectory_planner/trajectory_planner/los_trajectory_planner.py
++++ b/src/core/trajectory_planner/trajectory_planner/los_trajectory_planner.py
+@@ -14,6 +14,7 @@ import numpy as np
+ from common.math_helper import wrap_angle
+ from common.models import AlgorithmStatus, USVModel, VesselState
+ from .trajectory import Trajectory, TrajectoryResult
++from .circle import CircleReference
+ 
+ 
+ class LosTrajectoryPlanner:
+@@ -42,6 +43,61 @@ class LosTrajectoryPlanner:
+         if sample_count > 100000 or self.config["trajectory_time"] / 0.1 > 1000000:
+             raise ValueError("trajectory discretization exceeds the rollout limit")
+ 
++    def plan_circle(self, circle: CircleReference, state: VesselState):
++        """Roll out a continuous circle vector field, with curvature feedforward.
++
++        The reference has no terminal goal or speed ramp. The normal correction
++        is analytic; the yaw actuator bound remains the same as ordinary LOS.
++        Midpoint integration avoids a numerical radius bias on small circles.
++        """
++        begun = time.perf_counter()
++        try:
++            if not state.is_finite() or circle.speed > self.model.velocity_max:
++                raise ValueError('invalid circle state or speed beyond model limit')
++            cfg = self.config
++            if circle.speed / circle.radius > cfg['yaw_rate_max'] + 1e-12:
++                raise ValueError('circle speed/radius exceeds yaw_rate_max')
++            dt, horizon = cfg['trajectory_time_interval'], cfg['trajectory_time']
++            xy = np.array([state.x, state.y], dtype=float)
++            yaw, elapsed = float(wrap_angle(state.psi)), 0.
++            sign, speed = circle.direction, circle.speed
++            center = np.asarray(circle.center)
++
++            def turn_rate(position, heading):
++                delta = position-center
++                radial = float(np.linalg.norm(delta))
++                theta = math.atan2(delta[1], delta[0])
++                error = radial-circle.radius
++                desired = theta+sign*(math.pi/2+math.atan2(error, cfg['lookahead_distance']))
++                # d(theta)/dt and d(arctan(error/L))/dt are the vector-field
++                # heading's feedforward derivative, including off-circle flow.
++                relative = wrap_angle(heading-theta)
++                theta_dot = speed*math.sin(relative)/max(radial, 1e-6)
++                radial_dot = speed*math.cos(relative)
++                feedforward = theta_dot+sign*cfg['lookahead_distance']*radial_dot/(cfg['lookahead_distance']**2+error**2)
++                return float(np.clip(feedforward+cfg['kp_yaw']*wrap_angle(desired-heading),
++                                     -cfg['yaw_rate_max'], cfg['yaw_rate_max']))
++
++            rate = turn_rate(xy, yaw)
++            rows = [[0., 0., *xy, yaw, rate/speed, speed, 0.]]
++            for n in range(1, int(math.ceil(horizon/dt))+1):
++                output_time = min(n*dt, horizon)
++                while elapsed < output_time-1e-12:
++                    step = min(.05, output_time-elapsed)
++                    initial_rate = turn_rate(xy, yaw)
++                    middle_yaw = yaw+.5*initial_rate*step
++                    middle_xy = xy+.5*speed*step*np.array([math.cos(yaw), math.sin(yaw)])
++                    rate = turn_rate(middle_xy, middle_yaw)
++                    xy += speed*step*np.array([math.cos(middle_yaw), math.sin(middle_yaw)])
++                    yaw = wrap_angle(yaw+rate*step)
++                    elapsed += step
++                rows.append([output_time, speed*output_time, *xy, yaw, rate/speed, speed, 0.])
++            return TrajectoryResult(AlgorithmStatus.SUCCESS,
++                                    Trajectory(rows, state.stamp, state.frame_id, None),
++                                    elapsed=time.perf_counter()-begun)
++        except (ValueError, TypeError, ArithmeticError, AttributeError) as error:
++            return TrajectoryResult(AlgorithmStatus.INVALID_INPUT, Trajectory(), str(error), time.perf_counter()-begun)
++
+     def plan(self, path, state: VesselState):
+         started = time.perf_counter()
+ 
+diff --git a/src/sim_env/launch/main.launch.py b/src/sim_env/launch/main.launch.py
+index 14c66f1..51516be 100644
+--- a/src/sim_env/launch/main.launch.py
++++ b/src/sim_env/launch/main.launch.py
+@@ -13,6 +13,7 @@ from launch_ros.actions import Node
+ from launch_ros.parameter_descriptions import ParameterValue
+ 
+ from sim_env.configuration import load_project_parameters, load_yaml, resolve_parameters
++from sim_env.sensor_configuration import sensor_settings
+ 
+ 
+ def load_user_config():
+@@ -64,9 +65,19 @@ def _launch_setup(context):
+     navigation_params["dynamics.ns"] = namespace
+     navigation_params = resolve_parameters(navigation_params)
+ 
++    obstacle_sensor = value("obstacle_sensor")
++    costmap_params = load_yaml(os.path.join(
++        share, "config", "robots", "otter", "global_costmap_params_otter.yaml"))["costmap"]
++    radar_config = load_yaml(value("mmwave_config")) if obstacle_sensor == "mmwave" else None
++    selected_sensor = sensor_settings(obstacle_sensor, namespace, costmap_params, radar_config)
++    costmap_params = selected_sensor["costmap"]
++    navigation_params.update(selected_sensor["navigation"])
++    configuration_logs.append(LogInfo(msg=f"[sim_env] obstacle sensor: {obstacle_sensor}"))
++
+     robot_description = Command([
+         "xacro ", os.path.join(share, "urdf", "otter", "otter.urdf.xacro"),
+         " namespace:=", namespace, " imu_enabled:=false gps_enabled:=false",
++        *[f" {key}:={setting}" for key, setting in selected_sensor["xacro"].items()],
+     ])
+     robot_state_publisher = Node(
+         package="robot_state_publisher", executable="robot_state_publisher",
+@@ -108,9 +119,7 @@ def _launch_setup(context):
+         parameters=[{"model_name": namespace, "use_sim_time": use_sim_time}])
+ 
+     # Extract the existing wrapper for the independent Costmap2DROS lifecycle
+-    # node. The live-LiDAR policy is retained: static_layer stays disabled.
+-    costmap_params = load_yaml(os.path.join(
+-        share, "config", "robots", "otter", "global_costmap_params_otter.yaml"))["costmap"]
++    # node. Both sensor modes use live observations; static_layer stays disabled.
+     plugins = costmap_params.get("plugins")
+     if not isinstance(plugins, list) or not plugins or not all(isinstance(name, str) for name in plugins):
+         raise ValueError("Costmap YAML must provide an explicit nonempty plugins list")
+@@ -122,9 +131,10 @@ def _launch_setup(context):
+     costmap_params["global_frame"] = namespace + "/map"
+     costmap_params["robot_base_frame"] = namespace + "/base_link"
+     costmap_params["use_sim_time"] = use_sim_time
+-    scan = costmap_params["obstacle_layer"]["scan"]
+-    scan["topic"] = prefix + "/sensors/lidars/lidar/scan"
+-    scan["sensor_frame"] = namespace + "/lidar_link"
++    if obstacle_sensor == "lidar":
++        scan = costmap_params["obstacle_layer"]["scan"]
++        scan["topic"] = prefix + "/sensors/lidars/lidar/scan"
++        scan["sensor_frame"] = namespace + "/lidar_link"
+     costmap = Node(
+         package="sim_env", executable="costmap_support_node", name="costmap",
+         namespace=namespace, output="screen", parameters=[costmap_params],
+@@ -137,12 +147,17 @@ def _launch_setup(context):
+         prefix=[sys.executable],
+         namespace=namespace, output="screen",
+         parameters=[navigation_params, {"use_sim_time": use_sim_time}])
++    sensor_nodes = [mapping] if obstacle_sensor == "lidar" else [Node(
++        package="mmwave_perception", executable="mmwave_perception_node", name="mmwave_perception",
++        namespace=namespace, output="screen",
++        parameters=[selected_sensor["perception"], {"use_sim_time": use_sim_time}])]
+     actions = [*configuration_logs, gazebo, robot_state_publisher, joint_state_publisher, spawn,
+-               fake_localization, mapping, costmap, navigation]
++               fake_localization, *sensor_nodes, costmap, navigation]
+     if show_rviz:
+         actions.append(Node(
+             package="rviz2", executable="rviz2", name="rviz2",
+-            arguments=["-d", os.path.join(share, "rviz", "sim_env.rviz")],
++            arguments=["-d", os.path.join(share, "rviz",
++                "sim_env_mmwave.rviz" if obstacle_sensor == "mmwave" else "sim_env.rviz")],
+             parameters=[{"use_sim_time": use_sim_time}], output="screen"))
+     return actions
+ 
+@@ -152,6 +167,9 @@ def generate_launch_description():
+     user_cfg = load_user_config()
+     arguments = [
+         DeclareLaunchArgument("world", default_value=str(user_cfg.get("world", "ocean"))),
++        DeclareLaunchArgument("obstacle_sensor", default_value="lidar", choices=["lidar", "mmwave"],
++                              description="Select the obstacle sensor; mmwave replaces the LiDAR chain"),
++        DeclareLaunchArgument("mmwave_config", default_value=os.path.join(share, "config", "sensors", "mmwave.yaml")),
+         DeclareLaunchArgument("robot_namespace", default_value="otter"),
+         DeclareLaunchArgument("robot_x", default_value="23.0"),
+         DeclareLaunchArgument("robot_y", default_value="-10.0"),
+diff --git a/src/sim_env/package.xml b/src/sim_env/package.xml
+index 15d2760..535c36b 100644
+--- a/src/sim_env/package.xml
++++ b/src/sim_env/package.xml
+@@ -50,6 +50,8 @@
+   <exec_depend>topic_tools</exec_depend>
+   <exec_depend>rviz2</exec_depend>
+   <exec_depend>perception</exec_depend>
++  <exec_depend>mmwave_perception</exec_depend>
++  <exec_depend>usv_radar_costmap</exec_depend>
+   <exec_depend>usv_gazebo_plugins</exec_depend>
+ 
+   <test_depend>python3-pytest</test_depend>
+diff --git a/src/sim_env/sim_env/configuration.py b/src/sim_env/sim_env/configuration.py
+index ada5844..b079118 100644
+--- a/src/sim_env/sim_env/configuration.py
++++ b/src/sim_env/sim_env/configuration.py
+@@ -20,6 +20,7 @@ DEFAULTS = {
+     "navigation.map_timeout": 1.5, "navigation.trajectory_timeout": 1.0,
+     "navigation.planning_timeout": 1.0, "navigation.max_expansions": 200000,
+     "navigation.costmap_topic": "costmap_raw",
++    "navigation.require_radar": False, "navigation.radar_timeout": 0.5,
+     "navigation.footprint_length": 2.2, "navigation.footprint_width": 1.2,
+     C + "control_frequency": 10.0, C + "controller_name": "pid",
+     C + "pid_controller.goal_distance_tolerance": 1.5,
+diff --git a/src/sim_env/sim_env/simulation.py b/src/sim_env/sim_env/simulation.py
+index 6b8ed88..79fffbe 100644
+--- a/src/sim_env/sim_env/simulation.py
++++ b/src/sim_env/sim_env/simulation.py
+@@ -18,6 +18,7 @@ from rcl_interfaces.msg import ParameterDescriptor, SetParametersResult
+ from geometry_msgs.msg import PoseStamped
+ from nav_msgs.msg import Odometry, Path
+ from nav2_msgs.msg import Costmap
++from sensor_msgs.msg import PointCloud2
+ from std_msgs.msg import Float32, String
+ from std_srvs.srv import Trigger
+ from tf2_ros import Buffer, TransformListener, TransformException
+@@ -30,6 +31,7 @@ from common.visualizer import make_path
+ from controller.controller_factory import create_controller
+ from .configuration import DEFAULTS, HOT_PARAMETERS, C, T, resolve_parameters, section, validate_update
+ from .runtime import LatestPlanWorker, PlanningRequest, fresh, readiness
++from .sensor_configuration import ObservationHealth
+ 
+ 
+ def seconds(stamp):
+@@ -50,6 +52,8 @@ class Simulator(Node):
+         prefix = self.get_namespace().strip('/')
+         self.frame = (prefix + '/' if prefix else '') + 'map'
+         self.base_frame = (prefix + '/' if prefix else '') + 'base_link'
++        self.radar_frame = (prefix + '/' if prefix else '') + 'mmwave_link'
++        self.radar_health = ObservationHealth(self.config['navigation.radar_timeout'])
+         self.model = USVModel.from_mapping(section(self.config, 'dynamics.'))
+         self.controller_name = self.config[C + 'controller_name']
+         self.controller = create_controller(self.controller_name, self.model,
+@@ -77,6 +81,9 @@ class Simulator(Node):
+         self.create_subscription(Costmap, self.config['navigation.costmap_topic'], self._on_map,
+                                  QoSProfile(depth=1, reliability=ReliabilityPolicy.RELIABLE,
+                                             durability=DurabilityPolicy.TRANSIENT_LOCAL))
++        if self.config['navigation.require_radar']:
++            self.create_subscription(PointCloud2, 'sensors/mmwave/front/points', self._on_radar,
++                                     QoSProfile(depth=5, reliability=ReliabilityPolicy.RELIABLE))
+         self.create_service(Trigger, 'cancel_navigation', self._cancel)
+         self.create_service(Trigger, 'export_parameters', self._export)
+         # A steady timer also emits zero commands while simulation time is paused.
+@@ -151,17 +158,35 @@ class Simulator(Node):
+             self.counters['invalid_odom'] += 1
+             self.reason = str(error)
+ 
++    def _on_radar(self, message):
++        # Complete empty clouds are valid heartbeats; old samples never refresh age.
++        if message.header.frame_id != self.radar_frame:
++            self.counters['invalid_radar_frame'] += 1
++            return
++        if not self.radar_health.accept(seconds(message.header.stamp), self.now_seconds(), time.monotonic()):
++            self.counters['invalid_radar_stamp'] += 1
++
++    def _radar_ready(self):
++        return (not self.config['navigation.require_radar']
++                or self.radar_health.fresh(self.now_seconds(), time.monotonic()))
++
+     def _on_map(self, message):
+         begun = time.perf_counter()
+         try:
++            if not self._radar_ready():
++                self.counters['costmaps_without_fresh_radar'] += 1
++                return
+             meta = message.metadata
+             if message.header.frame_id != self.frame:
+                 raise ValueError('costmap frame mismatch')
+             if abs(yaw(meta.origin.orientation)) > 1e-8:
+                 raise ValueError('rotated costmap origins are unsupported')
+             data = np.asarray(message.data, dtype=np.uint8).reshape(meta.size_y, meta.size_x)
++            map_stamp = seconds(message.header.stamp)
++            if self.config['navigation.require_radar']:
++                map_stamp = min(map_stamp, self.radar_health.stamp)
+             self.grid = GridSnapshot(data, meta.resolution, meta.origin.position.x,
+-                                     meta.origin.position.y, seconds(message.header.stamp), message.header.frame_id)
++                                     meta.origin.position.y, map_stamp, message.header.frame_id)
+             if self.trajectory is not None and not self._trajectory_clear(self.trajectory):
+                 self.trajectory = None
+                 self.route = np.empty((0, 3))
+@@ -193,6 +218,7 @@ class Simulator(Node):
+         if clear_inputs:
+             self.state = self.grid = self.pending_odom = None
+             self.tf.clear()
++            self.radar_health.reset()
+         self._publish_command(ControlCommand())
+         stamp = self.get_clock().now().to_msg()
+         self.path_pub.publish(make_path(self.route, self.frame, stamp))
+@@ -269,6 +295,7 @@ class Simulator(Node):
+     def _publish_command(self, command):
+         for publisher, value in zip(self.thrust_pubs, (command.left, command.right, command.lateral)):
+             publisher.publish(Float32(data=float(value)))
++        self.last_published_command = command
+ 
+     def _control(self):
+         begun = time.perf_counter()
+@@ -283,7 +310,9 @@ class Simulator(Node):
+             self._apply_parameters()
+             self._consume_odom()
+             self._consume_plan()
+-            if self.goal is not None:
++            if not self._radar_ready():
++                self.mode, self.reason = 'WAITING_SENSOR', 'Waiting for a fresh mmwave observation'
++            elif self.goal is not None:
+                 ready = readiness(now, self.state, self.grid, self.trajectory, self.config)
+                 # Tracking errors can put the actual hull outside the safe
+                 # reference. Recheck it every control tick, even when planning
+@@ -313,6 +342,8 @@ class Simulator(Node):
+                     # Keep the explicit planning failure reason until a new plan exists.
+                     if ready != 'WAITING_REFERENCE' or self.trajectory is not None or not self.reason:
+                         self.mode = ready
++            elif self.mode == 'WAITING_SENSOR':
++                self.mode, self.reason = 'IDLE', ''
+             elapsed = (time.perf_counter() - begun) * 1000
+             if elapsed >= 1000 / self.config[C + 'control_frequency']:
+                 self.counters['control_overruns'] += 1
+diff --git a/src/sim_env/urdf/otter/otter.urdf.xacro b/src/sim_env/urdf/otter/otter.urdf.xacro
+index c9e1766..25c9328 100644
+--- a/src/sim_env/urdf/otter/otter.urdf.xacro
++++ b/src/sim_env/urdf/otter/otter.urdf.xacro
+@@ -7,6 +7,16 @@
+   <xacro:arg name="gps_enabled"           default="true" />
+   <xacro:arg name="imu_enabled"           default="true" />
+   <xacro:arg name="lidar_enabled"         default="true" />
++  <xacro:arg name="mmwave_enabled"        default="false" />
++  <xacro:arg name="mmwave_range_min" default="0.2" />
++  <xacro:arg name="mmwave_range_max" default="40.0" />
++  <xacro:arg name="mmwave_fov_deg" default="120.0" />
++  <xacro:arg name="mmwave_samples" default="241" />
++  <xacro:arg name="mmwave_rate_hz" default="30.0" />
++  <xacro:arg name="mmwave_x" default="0.8" />
++  <xacro:arg name="mmwave_y" default="0.0" />
++  <xacro:arg name="mmwave_z" default="0.5" />
++  <xacro:arg name="mmwave_yaw" default="0.0" />
+   <xacro:arg name="thruster_namespace"    default="thrusters/"/>
+   <xacro:arg name="sensor_namespace"      default="sensors/"/>
+ 
+@@ -32,6 +42,7 @@
+   <xacro:include filename="$(find sim_env)/urdf/otter/sensors/otter_gps.xacro" />
+   <xacro:include filename="$(find sim_env)/urdf/otter/sensors/otter_imu.xacro" />
+   <xacro:include filename="$(find sim_env)/urdf/otter/sensors/otter_lidar.xacro" />
++  <xacro:include filename="$(find sim_env)/urdf/otter/sensors/otter_mmwave.xacro" />
+ 
+   <!-- Call the macros defined above -->
+ 
+@@ -62,4 +73,9 @@
+     <xacro:otter_lidar name="lidar" x="0" y="0.0" z="0.40" min_range="1.2" max_range="25" visualize="false" />
+   </xacro:if>
+ 
++  <xacro:if value="$(arg mmwave_enabled)">
++    <xacro:otter_mmwave x="$(arg mmwave_x)" y="$(arg mmwave_y)" z="$(arg mmwave_z)"
++      yaw="$(arg mmwave_yaw)" range_min="$(arg mmwave_range_min)" range_max="$(arg mmwave_range_max)"
++      fov_deg="$(arg mmwave_fov_deg)" samples="$(arg mmwave_samples)" rate_hz="$(arg mmwave_rate_hz)" />
++  </xacro:if>
+ </robot>

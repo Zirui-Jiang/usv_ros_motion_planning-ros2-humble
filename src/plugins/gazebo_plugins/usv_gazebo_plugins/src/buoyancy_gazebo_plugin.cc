@@ -15,6 +15,7 @@
  *
 */
 
+// 根据各浮力几何体的浸没体积计算浮力与阻尼，并将合力施加到对应 Gazebo link。
 #include <functional>
 #include <string>
 #include <gazebo/common/Assert.hh>
@@ -47,6 +48,7 @@ BuoyancyObject::BuoyancyObject(BuoyancyObject &&obj) noexcept // NOLINT
 }
 
 ///////////////////////////////////////////////////
+// 从单个 buoyancy 配置读取 link、相对位姿和形状；缺少必要项时抛异常，由插件逐项捕获。
 void BuoyancyObject::Load(const physics::ModelPtr model,
     const sdf::ElementPtr elem)
 {
@@ -115,6 +117,7 @@ BuoyancyPlugin::BuoyancyPlugin()
 }
 
 /////////////////////////////////////////////////
+// 读取流体密度 kg/m³、平均水面高度 m 和阻尼系数；同一 link 可关联多个浮力几何体。
 void BuoyancyPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 {
   GZ_ASSERT(_model != nullptr, "Received NULL model pointer");
@@ -206,6 +209,7 @@ void BuoyancyPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
+// 保存物理更新事件连接，使 OnUpdate 在每个仿真步被调用。
 void BuoyancyPlugin::Init()
 {
   this->updateConnection = event::Events::ConnectWorldUpdateBegin(
@@ -213,6 +217,7 @@ void BuoyancyPlugin::Init()
 }
 
 /////////////////////////////////////////////////
+// 先更新各 link 所在位置的波高，再逐形状求浸没体积；这里用局部水平水面近似波面。
 void BuoyancyPlugin::OnUpdate()
 {
   // update wave height if wave model specified
@@ -233,6 +238,7 @@ void BuoyancyPlugin::OnUpdate()
       double simTime = this->world->GetSimTime().Double();
     #endif
 
+    // 时间差单位为秒；后面的波高差分要求 dt 非零，当前实现未在此作零步长检查。
     double dt = simTime - this->lastSimTime;
     this->lastSimTime = simTime;
 
@@ -248,6 +254,7 @@ void BuoyancyPlugin::OnUpdate()
 
       // Compute the wave displacement at the centre of the link frame.
       // Wave field height at the link, relative to the mean water level.
+      // 返回相对平均水面的波高 m；配置了波场时，这里要求 waveParams 已成功获取。
       double waveHeight = WavefieldSampler::ComputeDepthSimply(
           *waveParams, linkFrame.Pos(), simTime);
 
@@ -265,6 +272,7 @@ void BuoyancyPlugin::OnUpdate()
     #else
         ignition::math::Pose3d linkFrame = link->GetWorldPose().Ign();
     #endif
+    // 将 link 的世界位姿与浮力形状相对位姿相乘，得到形状在世界坐标系中的位姿。
     linkFrame = linkFrame * buoyancyObj.pose;
 
     auto submergedVolume = buoyancyObj.shape->CalculateVolume(linkFrame,
@@ -274,11 +282,13 @@ void BuoyancyPlugin::OnUpdate()
         "Non-positive volume found in volume properties!");
 
     // calculate buoyancy and drag forces
+    // 忽略小于阈值的浸没体积，避免很薄水下切片引起不稳定的力与质心计算。
     if (submergedVolume.volume > 1e-6)
     {
       // By Archimedes' principle,
       // buoyancy = -(mass*gravity)*fluid_density/object_density
       // object_density = mass/volume, so the mass term cancels.
+      // 阿基米德浮力为 -ρVg，体积 m³、密度 kg/m³，输出世界坐标系力 N。
       ignition::math::Vector3d buoyancy = -this->fluidDensity
           * submergedVolume.volume * model->GetWorld()->Gravity();
 
@@ -291,6 +301,7 @@ void BuoyancyPlugin::OnUpdate()
       #endif
 
       // partial mass = total_mass * submerged_vol / total_vol
+      // 以浸没体积分数估计参与阻尼的质量；平动阻尼比较水面垂向速度和 link 世界速度。
       float partialMass = buoyancyObj.mass * submergedVolume.volume
           / buoyancyObj.shape->volume;
 
@@ -300,6 +311,7 @@ void BuoyancyPlugin::OnUpdate()
           ignition::math::Vector3d(0, 0, this->linkHeightDots[link]) - linVel;
       ignition::math::Vector3d dragForce = linearDrag * partialMass * relVel;
       buoyancy += dragForce;
+      // 浮力叠加平动阻尼后只截断向下的 Z 分量，水平阻尼分量仍保留。
       if (buoyancy.Z() < 0.0)
       {
         buoyancy.Z() = 0.0;
@@ -308,6 +320,7 @@ void BuoyancyPlugin::OnUpdate()
       link->AddForceAtWorldPosition(buoyancy, submergedVolume.centroid);
 
       // drag torque
+      // 角阻尼使用 link 本体系角速度和形状平均长度平方，最终以本体系力矩施加。
       double averageLength2 = ::pow(buoyancyObj.shape->averageLength, 2);
       ignition::math::Vector3d dragTorque = (-partialMass * angularDrag
           * averageLength2) * angVel;

@@ -15,6 +15,7 @@
  *
  */
 
+// 船体水动力插件：附加质量、速度阻尼及双浮筒分段浮力共同驱动 Gazebo 刚体。
 #include <gazebo/common/Console.hh>
 #include <tf2/LinearMath/Transform.h>
 
@@ -38,6 +39,7 @@ UsvDynamicsPlugin::UsvDynamicsPlugin()
 }
 
 //////////////////////////////////////////////////
+// 读取插件 SDF 数值参数；未配置时记录日志并采用调用点给出的默认值。
 double UsvDynamicsPlugin::SdfParamDouble(sdf::ElementPtr _sdfPtr, const std::string& _paramName,
                                          const double _defaultVal) const
 {
@@ -56,6 +58,7 @@ double UsvDynamicsPlugin::SdfParamDouble(sdf::ElementPtr _sdfPtr, const std::str
 }
 
 //////////////////////////////////////////////////
+// 绑定承受水动力的 bodyName link，并从模型配置读取尺寸、流体参数及六自由度系数。
 void UsvDynamicsPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 {
   gzdbg << "Loading usv_gazebo_dynamics_plugin";
@@ -86,6 +89,7 @@ void UsvDynamicsPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     gzdbg << "USV Dynamics Model Link Name = " << linkName;
   }
 
+  // 水位和船体尺寸单位为 m，密度为 kg/m³；Dot 系数对应加速度项，单字母/双字母系数对应线性/二次阻尼。
   this->waterLevel = this->SdfParamDouble(_sdf, "waterLevel", 0.5);
   this->waterDensity = this->SdfParamDouble(_sdf, "waterDensity", 997.7735);
   this->paramXdotU = this->SdfParamDouble(_sdf, "xDotU", 5);
@@ -157,17 +161,20 @@ void UsvDynamicsPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   this->updateConnection = event::Events::ConnectWorldUpdateBegin(std::bind(&UsvDynamicsPlugin::Update, this));
 
   // Initialize Added Mass Matrix
+  // 附加质量采用六维对角矩阵，分量顺序为纵荡、横荡、垂荡、横摇、纵摇、艏摇。
   this->Ma = Eigen::MatrixXd(6, 6);
   this->Ma << this->paramXdotU, 0, 0, 0, 0, 0, 0, this->paramYdotV, 0, 0, 0, 0, 0, 0, this->paramZdotW, 0, 0, 0, 0, 0,
       0, this->paramKdotP, 0, 0, 0, 0, 0, 0, this->paramMdotQ, 0, 0, 0, 0, 0, 0, this->paramNdotR;
 }
 
+// 圆弓形截面积，R 和浸深 h 单位为 m，结果为 m²；调用方把 h 限制在零到半径之间。
 double UsvDynamicsPlugin::CircleSegment(double R, double h)
 {
   return R * R * acos((R - h) / R) - (R - h) * sqrt(2 * R * h - h * h);
 }
 
 //////////////////////////////////////////////////
+// 每步读取本体系速度、差分估计加速度，再施加本体系水动力和世界竖直方向浮力。
 void UsvDynamicsPlugin::Update()
 {
   // If we haven't yet, retrieve the wave parameters from ocean model plugin.
@@ -183,6 +190,7 @@ void UsvDynamicsPlugin::Update()
 #else
   const common::Time kTimeNow = this->world->GetSimTime();
 #endif
+  // 使用仿真时间差 s 进行加速度差分；当前路径要求非零 dt，未在本函数内跳过零步长。
   double dt = (kTimeNow - this->prevUpdateTime).Double();
   this->prevUpdateTime = kTimeNow;
 
@@ -225,6 +233,7 @@ void UsvDynamicsPlugin::Update()
   Eigen::MatrixXd Cmat = Eigen::MatrixXd::Zero(6, 6);
   Eigen::MatrixXd Dmat = Eigen::MatrixXd::Zero(6, 6);
 
+  // state 为 [u,v,w,p,q,r]，前三项 m/s、后三项 rad/s；stateDot 对应其每秒变化率。
   stateDot << kAccelLinearBody.X(), kAccelLinearBody.Y(), kAccelLinearBody.Z(), kAccelAngularBody.X(),
       kAccelAngularBody.Y(), kAccelAngularBody.Z();
 
@@ -237,12 +246,14 @@ void UsvDynamicsPlugin::Update()
   gzdbg << "amassVec :\n" << kAmassVec;
 
   // Coriolis - added mass components
+  // 此处构造部分附加质量科氏项；当前实现的 kForceSum 未使用 Cmat，不应把它计入实际施力模型。
   Cmat(0, 5) = this->paramYdotV * kVelLinearBody.Y();
   Cmat(1, 5) = this->paramXdotU * kVelLinearBody.X();
   Cmat(5, 0) = this->paramYdotV * kVelLinearBody.Y();
   Cmat(5, 1) = this->paramXdotU * kVelLinearBody.X();
 
   // Drag
+  // 对角阻尼写成线性系数加二次系数乘速度绝对值，再乘 -state 产生阻力。
   Dmat(0, 0) = this->paramXu + this->paramXuu * std::abs(kVelLinearBody.X());
   Dmat(1, 1) = this->paramYv + this->paramYvv * std::abs(kVelLinearBody.Y());
   Dmat(2, 2) = this->paramZw + this->paramZww * std::abs(kVelLinearBody.Z());
@@ -277,6 +288,7 @@ void UsvDynamicsPlugin::Update()
   // Grid point location in world frame
   tf2::Vector3 bpntW(0, 0, 0);
   // For each hull
+  // 左右浮筒位于本体系 y=±船宽/2，各自沿船长均匀取 length_n 个分段中心。
   for (int ii = 0; ii < 2; ii++)
   {
     // Grid point in boat frame
@@ -310,6 +322,7 @@ void UsvDynamicsPlugin::Update()
       // double depth = WavefieldSampler::ComputeDepthDirectly(
       //  *waveParams, X, simTime);
       double depth = 0.0;
+      // 未找到波场时深度扰动保持零，浮力仍按平均水位计算。
       if (waveParams)
       {
         depth = WavefieldSampler::ComputeDepthSimply(*waveParams, X, simTime);
@@ -320,6 +333,7 @@ void UsvDynamicsPlugin::Update()
 
       // Total z location of boat grid point relative to water surface
       double deltaZ = (this->waterLevel + dz) - kDdz;
+      // 截断出水和过大浸深；分段浮力等于浸水截面积×段长×重力加速度×水密度。
       deltaZ = std::max(deltaZ, 0.0);  // enforce only upward buoy force
       deltaZ = std::min(deltaZ, this->paramHullRadius);
       // Buoyancy force at grid point
@@ -330,6 +344,7 @@ void UsvDynamicsPlugin::Update()
       // Apply force at grid point
       // From web, Appears that position is in the link frame
       // and force is in world frame
+      // 力向量沿世界 Z 轴，作用点使用 link 本地坐标；偏离重心的浮力会同时产生力矩。
       this->link->AddForceAtRelativePosition(ignition::math::Vector3d(0, 0, kBuoyForce),
                                              ignition::math::Vector3d(bpnt.x(), bpnt.y(), bpnt.z()));
     }

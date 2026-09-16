@@ -1,0 +1,82 @@
+[1.725s] WARNING:colcon.colcon_core.package_selection:Some selected packages are already built in one or more underlay workspaces:
+	'usv_perception' is in: /home/usv/module-layout-20260914/install/usv_perception
+If a package in a merged underlay workspace is overridden and it installs headers, then all packages in the overlay must sort their include directories by workspace order. Failure to do so may result in build failures or undefined behavior at run time.
+If the overridden package is used by another package in any underlay, then the overriding package in the overlay must be API and ABI compatible or undefined behavior at run time may occur.
+
+If you understand the risks and want to override a package anyways, add the following to the command line:
+	--allow-overriding usv_perception
+
+This may be promoted to an error in a future release of colcon-override-check.
+Starting >>> usv_perception
+-- Found ament_cmake: 1.3.14 (/opt/ros/humble/share/ament_cmake/cmake)
+-- Found rclcpp: 16.0.19 (/opt/ros/humble/share/rclcpp/cmake)
+-- Found rosidl_generator_c: 3.1.8 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+-- Found rosidl_adapter: 3.1.8 (/opt/ros/humble/share/rosidl_adapter/cmake)
+-- Found rosidl_generator_cpp: 3.1.8 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 6.1.2 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 6.2.10 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found nav2_costmap_2d: 1.1.20 (/opt/ros/humble/share/nav2_costmap_2d/cmake)
+-- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/usv/module-layout-20260914/build/usv_perception
+Consolidate compiler generated dependencies of target costmap_support_node
+[100%] Built target costmap_support_node
+[100%] Built target ament_cmake_python_copy_usv_perception
+running egg_info
+writing usv_perception.egg-info/PKG-INFO
+writing dependency_links to usv_perception.egg-info/dependency_links.txt
+writing top-level names to usv_perception.egg-info/top_level.txt
+reading manifest file 'usv_perception.egg-info/SOURCES.txt'
+writing manifest file 'usv_perception.egg-info/SOURCES.txt'
+[100%] Built target ament_cmake_python_build_usv_perception_egg
+-- Install configuration: "Release"
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/environment/pythonpath.sh
+-- Installing: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/environment/pythonpath.dsv
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/local/lib/python3.10/dist-packages/usv_perception-0.1.0-py3.10.egg-info
+-- Installing: /home/usv/module-layout-20260914/install/usv_perception/local/lib/python3.10/dist-packages/usv_perception-0.1.0-py3.10.egg-info/dependency_links.txt
+-- Installing: /home/usv/module-layout-20260914/install/usv_perception/local/lib/python3.10/dist-packages/usv_perception-0.1.0-py3.10.egg-info/top_level.txt
+-- Installing: /home/usv/module-layout-20260914/install/usv_perception/local/lib/python3.10/dist-packages/usv_perception-0.1.0-py3.10.egg-info/SOURCES.txt
+-- Installing: /home/usv/module-layout-20260914/install/usv_perception/local/lib/python3.10/dist-packages/usv_perception-0.1.0-py3.10.egg-info/PKG-INFO
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/local/lib/python3.10/dist-packages/usv_perception
+-- Installing: /home/usv/module-layout-20260914/install/usv_perception/local/lib/python3.10/dist-packages/usv_perception/launch_support.py
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/local/lib/python3.10/dist-packages/usv_perception/mapping_node.py
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/local/lib/python3.10/dist-packages/usv_perception/perception_monitor.py
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/local/lib/python3.10/dist-packages/usv_perception/__init__.py
+Listing '/home/usv/module-layout-20260914/install/usv_perception/local/lib/python3.10/dist-packages/usv_perception'...
+Compiling '/home/usv/module-layout-20260914/install/usv_perception/local/lib/python3.10/dist-packages/usv_perception/launch_support.py'...
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/lib/usv_perception/perception_mapping_node
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/lib/usv_perception/perception_monitor
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/lib/usv_perception/usv_tf_expander.py
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/lib/usv_perception/costmap_support_node
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/launch
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/launch/perception.launch.py
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/launch/__pycache__
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/launch/__pycache__/perception.launch.cpython-310.pyc
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/config
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/config/costmap
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/config/costmap/mapping.yaml
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/config/robots
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/config/robots/otter
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/config/robots/otter/global_costmap_params_otter.yaml
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/ament_index/resource_index/package_run_dependencies/usv_perception
+-- Installing: /home/usv/module-layout-20260914/install/usv_perception/share/ament_index/resource_index/parent_prefix_path/usv_perception
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/environment/ament_prefix_path.sh
+-- Installing: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/environment/ament_prefix_path.dsv
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/environment/path.sh
+-- Installing: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/environment/path.dsv
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/local_setup.bash
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/local_setup.sh
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/local_setup.zsh
+-- Installing: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/local_setup.dsv
+-- Installing: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/package.dsv
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/ament_index/resource_index/packages/usv_perception
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/cmake/usv_perceptionConfig.cmake
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/cmake/usv_perceptionConfig-version.cmake
+-- Up-to-date: /home/usv/module-layout-20260914/install/usv_perception/share/usv_perception/package.xml
+Finished <<< usv_perception [14.8s]
+
+Summary: 1 package finished [16.3s]

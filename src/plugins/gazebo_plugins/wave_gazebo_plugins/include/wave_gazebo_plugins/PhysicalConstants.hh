@@ -19,6 +19,7 @@
 /// \brief This file contains definitions of some physical constants used
 /// in the physics calculations.
 
+// 波场计算使用的固定物理常数声明，单位统一采用 SI。
 #ifndef _WAVE_GAZEBO_PLUGINS_PHYSICAL_CONSTANTS_HH_
 #define _WAVE_GAZEBO_PLUGINS_PHYSICAL_CONSTANTS_HH_
 
@@ -28,6 +29,7 @@ namespace asv
 // PhysicalConstants
 
   /// \brief A collection of static methods to retrieve physical constants.
+  // Gravity 返回 Z 向上约定下的负加速度；G 为万有引力常数，水密度/运动黏度分别用 kg/m³、m²/s。
   class PhysicalConstants
   {
     /// \brief Uniform acceleration due to gravity

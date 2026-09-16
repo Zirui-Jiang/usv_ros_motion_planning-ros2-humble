@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
+<!-- 船体基础连杆、质量惯量与外观/碰撞模型；这些决定 Gazebo 刚体结构。 -->
 
 <robot name="otter" xmlns:xacro="http://ros.org/wiki/xacro">
 
+  <!-- 定义可复用宏；调用时替换参数并展开为实际 URDF/SDF 元素。 -->
   <xacro:macro name="otter_base">
 
     <!-- Included URDF/XACRO Files -->
@@ -16,11 +18,13 @@
 
     <!-- base_footprint is a fictitious link(frame) that is on the ground right below base_link origin, navigation stack depends on this frame -->
     <link name="base_footprint">
+      <!-- 质量和惯性张量影响动力学；与仅用于显示的网格外观分别配置。 -->
       <inertial>
         <mass value="0.00001" />
         <origin xyz="0 0 ${HH}" />
         <inertia ixx="0.000001" ixy="0.0" ixz="0.0" iyy="0.000001" iyz="0.0" izz="0.000001" />
       </inertial>
+      <!-- 外观几何与材质只负责显示，不能据此认定物理碰撞尺寸。 -->
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
@@ -45,6 +49,7 @@
           <mesh filename="package://sim_env/meshes/otter/otter.dae"/>
         </geometry>
       </visual>
+      <!-- 碰撞几何参与物理接触检测，不一定与显示网格完全相同。 -->
       <collision>
         <origin xyz="-0.3 0 ${HH}" rpy="-${M_PI/2} 0 ${M_PI/2}" />
         <geometry>

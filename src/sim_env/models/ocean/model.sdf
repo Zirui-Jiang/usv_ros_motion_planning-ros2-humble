@@ -1,4 +1,5 @@
 <?xml version="1.0" ?>
+<!-- Gazebo 模型 ocean 的结构描述；碰撞体、外观和惯性分别定义，网格纹理仍由资源文件提供。 -->
 <!-- Copyright (c) 2016 The UUV Simulator Authors.
      All rights reserved.
 
@@ -20,6 +21,7 @@
 <model name="ocean">
   <static>true</static>
   <link name="ocean_link">
+    <!-- 外观几何与材质只负责显示，不能据此认定物理碰撞尺寸。 -->
     <visual name="ocean_visual1">
       <pose>0 0 0 0 0 0</pose>
       <geometry>
