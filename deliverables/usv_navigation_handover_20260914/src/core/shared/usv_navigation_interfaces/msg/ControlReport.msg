@@ -1,0 +1,16 @@
+std_msgs/Header header
+string control_session
+string planner_session
+uint64 task_id
+uint64 reference_sequence
+string state
+string reason
+bool revoke_reference
+bool task_finished
+bool clock_reset
+float64 left
+float64 right
+float64 lateral
+string metrics_json
+string counters_json
+string process_json

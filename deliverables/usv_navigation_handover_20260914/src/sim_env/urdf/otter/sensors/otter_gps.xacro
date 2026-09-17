@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:macro name="otter_gps" params="name:=gps x:=0 y:=0 z:=0 R:=0 P:=0 Y:=0">
+    <link name="${name}_link">
+      <visual name="${name}_visual_base">
+        <geometry>
+          <box size="0.1 0.1 0.025" />
+        </geometry>
+        <material name="${name}_visual_base_material">
+          <color rgba="1.0 1.0 1.0 1.0" />
+        </material>
+      </visual>
+      <visual name="${name}_visual_antenna">
+        <origin xyz="0 0 0.025" />
+        <geometry>
+          <sphere radius="0.03" />
+        </geometry>
+        <material name="${name}_visual_antenna_material">
+          <color rgba="0.7 0.7 0.7 1.0" />
+        </material>
+      </visual>
+    </link>
+    <joint name="${name}_joint" type="fixed">
+      <origin xyz="${x} ${y} ${z}" rpy="${R} ${P} ${Y}" />
+      <parent link="base_link" />
+      <child link="${name}_link" />
+    </joint>
+    <gazebo reference="${name}_link">
+      <!-- ROS 2 gazebo_ros_pkgs GPS sensor (navsat) -->
+      <plugin name="gps_plugin_${name}" filename="libgazebo_ros_gps_sensor.so">
+        <ros>
+          <namespace>/${namespace}</namespace>
+          <remapping>~/out:=${sensor_namespace}gps/gps/fix</remapping>
+        </ros>
+        <update_rate>15.0</update_rate>
+        <gaussian_noise>0.0</gaussian_noise>
+        <frame_name>${namespace}/${name}_link</frame_name>
+      </plugin>
+    </gazebo>
+  </xacro:macro>
+</robot>

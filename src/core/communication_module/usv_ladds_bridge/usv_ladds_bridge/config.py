@@ -21,6 +21,7 @@ class BridgeConfig:
     qos: str = "best_effort"
     send_topic: str = "0211"
     receive_topic: str = "0211"
+    stop_receive_topic: str = ""
     src: int = 0
     dst: int = 0
     encryption: bool = False
@@ -59,6 +60,7 @@ class BridgeConfig:
             qos=str(values.get("qos", "best_effort")),
             send_topic=str(values.get("send_topic", "0211")),
             receive_topic=str(values.get("receive_topic", "0211")),
+            stop_receive_topic=str(values.get("stop_receive_topic", "")),
             src=int(values.get("src", 0)),
             dst=int(values.get("dst", 0)),
             encryption=bool(values.get("encryption", False)),
@@ -88,6 +90,10 @@ class BridgeConfig:
             raise ValueError("send_topic must not be empty")
         if not self.receive_topic.strip():
             raise ValueError("receive_topic must not be empty")
+        if self.stop_receive_topic and self.stop_receive_topic == self.receive_topic:
+            raise ValueError('stop_receive_topic must be different from receive_topic')
+        if self.stop_receive_topic and not self.stop_receive_topic.strip():
+            raise ValueError('stop_receive_topic must be empty or a non-blank topic')
         if self.src < 0:
             raise ValueError("src must be non-negative")
         if self.dst < 0:
@@ -106,6 +112,17 @@ def decode_utf8(payload: bytes) -> Optional[str]:
         return payload.decode("utf-8", errors="strict")
     except UnicodeDecodeError:
         return None
+
+
+def receive_channel(topic: str, receive_topic: str, stop_topic: str) -> Optional[str]:
+    """Route by transport metadata; preserve generic bridge when stop is disabled."""
+    if not stop_topic:
+        return 'route'
+    if topic == stop_topic:
+        return 'stop'
+    if topic == receive_topic:
+        return 'route'
+    return None
 
 
 def drain_received(client: Any, limit: int) -> List[Any]:

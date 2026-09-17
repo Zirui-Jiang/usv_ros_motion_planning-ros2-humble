@@ -1,0 +1,244 @@
+{
+  "run_directory": "/home/usv/usv_migration/results/python-single-step-candidate-001",
+  "classification": "candidate_stopped_after_transient_safety_gate_review; not a completed six-trial acceptance",
+  "completed_and_passed": 5,
+  "interrupted": 1,
+  "stop_reason": "PID circle transient NO_PATH was discovered in status audit after its eventual arrival. Supervisor interrupted the ongoing LQR circle; prior completed outcomes are retained. LQR circle is not counted as passed or completed.",
+  "trials": [
+    {
+      "trial": "python_lqr_single_obstacle_01",
+      "result": "interrupted",
+      "passed": false,
+      "duration_sim_s": null,
+      "cross_track_initial_m": null,
+      "minimum_footprint_clearance_m": null,
+      "counters": null,
+      "non_nominal_statuses": [],
+      "clean_exit_markers": 8,
+      "abnormal_exit_lines": []
+    },
+    {
+      "trial": "python_lqr_straight_01",
+      "result": "completed",
+      "passed": true,
+      "duration_sim_s": 15.700000000000003,
+      "cross_track_initial_m": {
+        "count": 175,
+        "mean": 0.06654047992768772,
+        "rms": 0.10537064037581628,
+        "p95": 0.24308622745435216,
+        "max": 0.35248273392145874
+      },
+      "minimum_footprint_clearance_m": null,
+      "counters": {
+        "pending_replacements": 0,
+        "global_searches": 1
+      },
+      "non_nominal_statuses": [],
+      "clean_exit_markers": 8,
+      "abnormal_exit_lines": []
+    },
+    {
+      "trial": "python_lqr_turn_01",
+      "result": "completed",
+      "passed": true,
+      "duration_sim_s": 17.000000000000004,
+      "cross_track_initial_m": {
+        "count": 189,
+        "mean": 0.6237545878002363,
+        "rms": 0.9048092019533949,
+        "p95": 2.032105443849776,
+        "max": 2.102728911018346
+      },
+      "minimum_footprint_clearance_m": null,
+      "counters": {
+        "pending_replacements": 0,
+        "global_searches": 1
+      },
+      "non_nominal_statuses": [],
+      "clean_exit_markers": 7,
+      "abnormal_exit_lines": [
+        {
+          "line": 76,
+          "text": "[gzserver-1] terminate called after throwing an instance of 'boost::wrapexcept<boost::thread_resource_error>'"
+        },
+        {
+          "line": 77,
+          "text": "[gzserver-1]   what():  boost thread: trying joining itself: Resource deadlock avoided"
+        },
+        {
+          "line": 83,
+          "text": "[ERROR] [gzserver-1]: process has died [pid 87988, exit code -6, cmd 'gzserver /home/usv/usv_migration/python/install/sim_env/share/sim_env/worlds/ocean.world -slibgazebo_ros_init.so -slibgazebo_ros_factory.so -slibgazebo_ros_force_system.so']."
+        }
+      ]
+    },
+    {
+      "trial": "python_pid_single_obstacle_01",
+      "result": "completed",
+      "passed": true,
+      "duration_sim_s": 23.1,
+      "cross_track_initial_m": {
+        "count": 249,
+        "mean": 0.2602442333246359,
+        "rms": 0.30276486734969305,
+        "p95": 0.5359729124906121,
+        "max": 0.5868787663041246
+      },
+      "minimum_footprint_clearance_m": 0.305366585542123,
+      "counters": {
+        "pending_replacements": 0,
+        "global_searches": 19,
+        "map_invalidations": 1,
+        "current_footprint_blocks": 5
+      },
+      "non_nominal_statuses": [
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 69497.960855577,
+          "payload": {
+            "state": "NO_PATH",
+            "reason": "start or goal is blocked",
+            "version": 1,
+            "stamp": 14.0,
+            "controller": "pid",
+            "goal": [
+              35.0,
+              -10.0,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 151,
+                "p50": 0.13688000035472214,
+                "p95": 4.469892504857853,
+                "p99": 5.170861499209423,
+                "max": 10.544727992964908
+              },
+              "costmap_conversion_ms": {
+                "count": 14,
+                "p50": 0.45516000682255253,
+                "p95": 7.506890504009789,
+                "p99": 8.00684450470726,
+                "max": 8.131833004881628
+              },
+              "planning_ms": {
+                "count": 41,
+                "p50": 9.09716599562671,
+                "p95": 11.756635998608544,
+                "p99": 12.808014190522954,
+                "max": 12.859824986662716
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 5,
+              "map_invalidations": 1,
+              "current_footprint_blocks": 5
+            },
+            "process": {
+              "pid": 87590,
+              "cpu_seconds": 0.945235,
+              "peak_rss_kib": 70848,
+              "monotonic": 69497.960613317
+            }
+          }
+        },
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 69499.008793273,
+          "payload": {
+            "state": "NO_PATH",
+            "reason": "start or goal is blocked",
+            "version": 1,
+            "stamp": 15.000000000000002,
+            "controller": "pid",
+            "goal": [
+              35.0,
+              -10.0,
+              0.0
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 161,
+                "p50": 0.13688000035472214,
+                "p95": 4.46579500567168,
+                "p99": 5.1585312001407155,
+                "max": 10.544727992964908
+              },
+              "costmap_conversion_ms": {
+                "count": 15,
+                "p50": 0.2137280098395422,
+                "p95": 7.458818003942723,
+                "p99": 7.997230004693846,
+                "max": 8.131833004881628
+              },
+              "planning_ms": {
+                "count": 46,
+                "p50": 8.821059491310734,
+                "p95": 11.64521399550722,
+                "p99": 12.801537841005484,
+                "max": 12.859824986662716
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 10,
+              "map_invalidations": 1,
+              "current_footprint_blocks": 5
+            },
+            "process": {
+              "pid": 87590,
+              "cpu_seconds": 0.976192,
+              "peak_rss_kib": 70848,
+              "monotonic": 69499.008560069
+            }
+          }
+        }
+      ],
+      "clean_exit_markers": 8,
+      "abnormal_exit_lines": []
+    },
+    {
+      "trial": "python_pid_straight_01",
+      "result": "completed",
+      "passed": true,
+      "duration_sim_s": 20.4,
+      "cross_track_initial_m": {
+        "count": 210,
+        "mean": 0.15869380576054695,
+        "rms": 0.17306246248312027,
+        "p95": 0.30212759382312093,
+        "max": 0.3528913861213607
+      },
+      "minimum_footprint_clearance_m": null,
+      "counters": {
+        "pending_replacements": 1,
+        "global_searches": 1
+      },
+      "non_nominal_statuses": [],
+      "clean_exit_markers": 8,
+      "abnormal_exit_lines": []
+    },
+    {
+      "trial": "python_pid_turn_01",
+      "result": "completed",
+      "passed": true,
+      "duration_sim_s": 20.6,
+      "cross_track_initial_m": {
+        "count": 212,
+        "mean": 0.17818820177215225,
+        "rms": 0.19433209205571483,
+        "p95": 0.33606669817271606,
+        "max": 0.3524791484416927
+      },
+      "minimum_footprint_clearance_m": null,
+      "counters": {
+        "pending_replacements": 0,
+        "global_searches": 1
+      },
+      "non_nominal_statuses": [],
+      "clean_exit_markers": 8,
+      "abnormal_exit_lines": []
+    }
+  ]
+}

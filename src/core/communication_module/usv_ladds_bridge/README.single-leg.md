@@ -1,5 +1,11 @@
 # 0211 单段航渡联调
 
+当前新增的 `taskType: 80` 终点值守与 0331 主动刹停见
+[停船与终点值守](README.stop-guard.md)。类型 80 在到达最终点并进入值守时回一次
+0052，表示航路终点到达，不表示定点微控任务退出；微控保持活动，周期值守状态
+不重复反馈。0331 不回 0052。下文保留早期类型 16 单段联调说明与历史记录，
+普通航渡的到点完成语义不变。
+
 ## 航线编号与执行约定（2026-09-15）
 
 《东湖游艇_协议整理》在0211和0052中均将`travelId`定义为**观光航线编号**。它标识航线，不能据此要求同一航线每执行一次就更换编号。此前“修改坐标、速度或重新执行必须换travelId”的指引撤回。
@@ -49,12 +55,21 @@ unset PYTHONHOME
 source /home/usv/module-layout-20260914/install/setup.bash
 colcon --log-base /tmp/usv_ladds_single_leg_20260915/log build \
   --base-paths src/core \
-  --packages-select common usv_navigation_interfaces usv_navigation usv_decision usv_ladds_bridge \
+  --packages-select common usv_navigation_interfaces usv_navigation path_processor path_planner usv_decision usv_ladds_bridge \
   --build-base /tmp/usv_ladds_single_leg_20260915/build \
   --install-base /tmp/usv_ladds_single_leg_20260915/install \
-  --allow-overriding common usv_navigation_interfaces usv_navigation usv_decision \
+  --allow-overriding common usv_navigation_interfaces usv_navigation path_processor path_planner usv_decision \
   --symlink-install
+source /tmp/usv_ladds_single_leg_20260915/install/setup.bash
+/usr/bin/python3 -B -c 'from path_processor import ShortcutPathProcessor; from usv_decision.decision import DecisionNode; print("DecisionNode import OK")'
 ```
+
+`--packages-select`只构建列出的包，不会自动补齐新依赖。普通A*剪枝引入了
+`path_planner/usv_decision → path_processor`依赖，必须把这三个包更新到同一overlay。
+`--symlink-install`会让已有规划器随源码更新，但不会自动安装新依赖；混用旧版
+`path_processor`会导致决策节点导入失败，Gazebo/RViz仍可能正常显示，却没有全局路径。
+启动前应先通过上面的导入检查。已存在的本机`build_python`安装修复命令及验证记录见
+[2026-09-17启动故障排查](../../../../docs/validation/astar-startup-fix-20260917/README.md)。
 
 `/tmp`安装区可能被系统清理，可重新构建；长期使用可选固定安装路径，并设置`LADDS_INSTALL_BASE`和仿真脚本`--install`。
 

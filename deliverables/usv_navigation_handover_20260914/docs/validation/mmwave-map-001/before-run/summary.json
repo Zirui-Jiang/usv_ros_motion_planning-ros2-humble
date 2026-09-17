@@ -1,0 +1,306 @@
+{
+  "probe": "mmwave_isolated_map_rviz_smoke",
+  "passed": true,
+  "started_at_utc": "2026-09-12T09:48:14.468256+00:00",
+  "domain_id": 195,
+  "requested_duration_seconds": 75.0,
+  "output": "/home/usv/usv_migration/mmwave-map-view-001",
+  "limitation": "Data and TF checks only; RViz rendering/log errors require separate inspection.",
+  "domain_guard": {
+    "passed": true,
+    "observation_seconds": 3.0
+  },
+  "scenario": {
+    "world": "ocean",
+    "robot_x": 23.0,
+    "robot_y": -10.0,
+    "robot_yaw": 0.0,
+    "fixture": false
+  },
+  "command": [
+    "ros2",
+    "launch",
+    "sim_env",
+    "main.launch.py",
+    "obstacle_sensor:=mmwave",
+    "gui:=false",
+    "rviz:=true",
+    "headless:=false",
+    "world:=ocean",
+    "robot_x:=23.0",
+    "robot_y:=-10.0",
+    "robot_yaw:=0.0"
+  ],
+  "gazebo_master_uri": "http://127.0.0.1:36805",
+  "sim_env_share": "/home/usv/usv_migration/mmwave-sim-001/install/sim_env/share/sim_env",
+  "launch_pid": 168151,
+  "gui_ready_after_seconds": 3.5119472059886903,
+  "publisher_counts_at_end": {
+    "/otter/map": 0,
+    "/otter/costmap": 1,
+    "/otter/costmap_raw": 1,
+    "/otter/sensors/mmwave/front/points": 1,
+    "/otter/odom": 1
+  },
+  "legacy_otter_map_has_no_publisher": true,
+  "assertions": {
+    "more_than_three_occupancy_maps": true,
+    "base_and_sensor_tf_available_at_end": true,
+    "odometry_received": true,
+    "radar_point_messages_received": true,
+    "map_dimensions_consistent": true
+  },
+  "counts": {
+    "maps": 64,
+    "raw_maps": 64,
+    "points": 974,
+    "nonempty_points": 974,
+    "odom": 636,
+    "maps_with_obstacles": 64,
+    "maps_with_unknown": 0,
+    "base_latest_tf_checks": 367,
+    "base_latest_tf_success": 354,
+    "sensor_latest_tf_checks": 367,
+    "sensor_latest_tf_success": 354
+  },
+  "latest": {
+    "base_tf_error": "\"otter/map\" passed to lookupTransform argument target_frame does not exist. ",
+    "sensor_tf_error": "\"otter/map\" passed to lookupTransform argument target_frame does not exist. ",
+    "points": {
+      "frame": "otter/mmwave_link",
+      "stamp_ns": 63742000000,
+      "count": 28
+    },
+    "odom": {
+      "frame": "otter/odom",
+      "stamp_ns": 63700000000,
+      "x": 22.974187093962612,
+      "y": -10.004223144834997
+    },
+    "base_tf": {
+      "parent": "otter/map",
+      "child": "otter/base_link",
+      "stamp_ns": 63500000000
+    },
+    "sensor_tf": {
+      "parent": "otter/map",
+      "child": "otter/mmwave_link",
+      "stamp_ns": 63500000000
+    },
+    "raw_map": {
+      "frame": "otter/map",
+      "stamp_ns": 63200000000,
+      "width": 800,
+      "height": 800,
+      "resolution": 0.5,
+      "origin": {
+        "x": -176.5,
+        "y": -209.5,
+        "z": 0.0
+      },
+      "data_length": 640000,
+      "expected_length": 640000,
+      "distribution": {
+        "free_0": 639139,
+        "graded_1_to_252": 627,
+        "inscribed_253": 181,
+        "lethal_254": 53,
+        "unknown_255": 0
+      }
+    },
+    "map": {
+      "frame": "otter/map",
+      "stamp_ns": 63200000000,
+      "width": 800,
+      "height": 800,
+      "resolution": 0.5,
+      "origin": {
+        "x": -176.5,
+        "y": -209.5,
+        "z": 0.0
+      },
+      "data_length": 640000,
+      "expected_length": 640000,
+      "distribution": {
+        "free_0": 639139,
+        "occupied_1_to_99": 808,
+        "lethal_100": 53,
+        "unknown_minus_1": 0
+      }
+    }
+  },
+  "map_frames": {
+    "otter/map": 64
+  },
+  "map_samples": [
+    {
+      "frame": "otter/map",
+      "stamp_ns": 900000000,
+      "width": 800,
+      "height": 800,
+      "resolution": 0.5,
+      "origin": {
+        "x": -176.5,
+        "y": -209.5,
+        "z": 0.0
+      },
+      "data_length": 640000,
+      "expected_length": 640000,
+      "distribution": {
+        "free_0": 639148,
+        "occupied_1_to_99": 808,
+        "lethal_100": 44,
+        "unknown_minus_1": 0
+      }
+    },
+    {
+      "frame": "otter/map",
+      "stamp_ns": 1900000000,
+      "width": 800,
+      "height": 800,
+      "resolution": 0.5,
+      "origin": {
+        "x": -176.5,
+        "y": -209.5,
+        "z": 0.0
+      },
+      "data_length": 640000,
+      "expected_length": 640000,
+      "distribution": {
+        "free_0": 639139,
+        "occupied_1_to_99": 808,
+        "lethal_100": 53,
+        "unknown_minus_1": 0
+      }
+    },
+    {
+      "frame": "otter/map",
+      "stamp_ns": 2900000000,
+      "width": 800,
+      "height": 800,
+      "resolution": 0.5,
+      "origin": {
+        "x": -176.5,
+        "y": -209.5,
+        "z": 0.0
+      },
+      "data_length": 640000,
+      "expected_length": 640000,
+      "distribution": {
+        "free_0": 639139,
+        "occupied_1_to_99": 808,
+        "lethal_100": 53,
+        "unknown_minus_1": 0
+      }
+    },
+    {
+      "frame": "otter/map",
+      "stamp_ns": 3900000000,
+      "width": 800,
+      "height": 800,
+      "resolution": 0.5,
+      "origin": {
+        "x": -176.5,
+        "y": -209.5,
+        "z": 0.0
+      },
+      "data_length": 640000,
+      "expected_length": 640000,
+      "distribution": {
+        "free_0": 639140,
+        "occupied_1_to_99": 808,
+        "lethal_100": 52,
+        "unknown_minus_1": 0
+      }
+    },
+    {
+      "frame": "otter/map",
+      "stamp_ns": 4900000000,
+      "width": 800,
+      "height": 800,
+      "resolution": 0.5,
+      "origin": {
+        "x": -176.5,
+        "y": -209.5,
+        "z": 0.0
+      },
+      "data_length": 640000,
+      "expected_length": 640000,
+      "distribution": {
+        "free_0": 639137,
+        "occupied_1_to_99": 808,
+        "lethal_100": 55,
+        "unknown_minus_1": 0
+      }
+    },
+    {
+      "frame": "otter/map",
+      "stamp_ns": 19300000000,
+      "width": 800,
+      "height": 800,
+      "resolution": 0.5,
+      "origin": {
+        "x": -176.5,
+        "y": -209.5,
+        "z": 0.0
+      },
+      "data_length": 640000,
+      "expected_length": 640000,
+      "distribution": {
+        "free_0": 639134,
+        "occupied_1_to_99": 808,
+        "lethal_100": 58,
+        "unknown_minus_1": 0
+      }
+    },
+    {
+      "frame": "otter/map",
+      "stamp_ns": 39200000000,
+      "width": 800,
+      "height": 800,
+      "resolution": 0.5,
+      "origin": {
+        "x": -176.5,
+        "y": -209.5,
+        "z": 0.0
+      },
+      "data_length": 640000,
+      "expected_length": 640000,
+      "distribution": {
+        "free_0": 639136,
+        "occupied_1_to_99": 808,
+        "lethal_100": 56,
+        "unknown_minus_1": 0
+      }
+    },
+    {
+      "frame": "otter/map",
+      "stamp_ns": 59200000000,
+      "width": 800,
+      "height": 800,
+      "resolution": 0.5,
+      "origin": {
+        "x": -176.5,
+        "y": -209.5,
+        "z": 0.0
+      },
+      "data_length": 640000,
+      "expected_length": 640000,
+      "distribution": {
+        "free_0": 639134,
+        "occupied_1_to_99": 808,
+        "lethal_100": 58,
+        "unknown_minus_1": 0
+      }
+    }
+  ],
+  "violations": [],
+  "max_map_gap_wall_seconds": 5.523459257994546,
+  "gui_ready": true,
+  "tf_available_at_end": {
+    "base": true,
+    "sensor": true
+  },
+  "elapsed_after_launch_seconds": 75.00265847999253,
+  "launch_returncode_after_cleanup": 0
+}

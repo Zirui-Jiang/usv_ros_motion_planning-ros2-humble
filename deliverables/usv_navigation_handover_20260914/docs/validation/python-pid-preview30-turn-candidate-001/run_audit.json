@@ -1,0 +1,374 @@
+{
+  "installed_commit": "3afb25f84232e560c62599a721dc0bfbe1a21657",
+  "classification": "Predeclared PID preview3.0 / k_d_course0 turn3 candidate. Later groups depend on the fixed staged gates; this is not a formal release run.",
+  "source_run": "/home/usv/usv_migration/results/python-pid-preview30-turn-candidate-001",
+  "status_sampling_limit": "1 Hz observations cannot resolve sub-second transitions. Next-observation gaps are not exact state durations.",
+  "thresholds_unchanged": true,
+  "navigation_online_overrides": {},
+  "harness_exit_code": 0,
+  "residual_process_check": [],
+  "trials": [
+    {
+      "trial": "python_pid_turn_01",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "turn",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 20.6,
+      "duration_wall_s": 20.64801856300619,
+      "legacy_fixed_cte": {
+        "count": 198,
+        "mean": 0.07293893971557051,
+        "rms": 0.08641637302303384,
+        "p95": 0.16949675535388983,
+        "max": 0.17618110304586398
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 82823.377866515,
+        "goal": [
+          23.125,
+          -22.125,
+          -1.5707963267948966
+        ],
+        "sim_time_s": 2.9000000000000004
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 82844.025856968,
+        "sim_time_s": 23.5,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 17,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-pid-preview30-turn-candidate-001/python_pid_turn_01/launch.log",
+            "bytes": 14297,
+            "sha256": "8006b7d145162a31191da6e9dcbaef2919cbe20e160d16b4f281ee7ab2aba87a"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 70,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 76,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 77,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-pid-preview30-turn-candidate-001/python_pid_turn_01/events.jsonl",
+        "bytes": 754698,
+        "sha256": "6ed0f93bb8b4e2edaeddd7a423bca2bdffa0886b98c102420ba0a010e8f154a4"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_pid_turn_02",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "turn",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 20.5,
+      "duration_wall_s": 24.757419715999276,
+      "legacy_fixed_cte": {
+        "count": 234,
+        "mean": 0.09276084429311368,
+        "rms": 0.10493451784389018,
+        "p95": 0.16628396782592278,
+        "max": 0.17577739717690619
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 82851.077341187,
+        "goal": [
+          23.125,
+          -22.125,
+          -1.5707963267948966
+        ],
+        "sim_time_s": 3.0
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 82875.834690714,
+        "sim_time_s": 23.5,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 16,
+        "SIMULATION_PAUSED": 4,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 82852.853529834,
+          "next_observation_monotonic_s": 82853.920263185,
+          "next_observation_gap_s": 1.0667333510064054
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 82853.920263185,
+          "next_observation_monotonic_s": 82854.986568711,
+          "next_observation_gap_s": 1.066305525993812
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 82854.986568711,
+          "next_observation_monotonic_s": 82856.053082641,
+          "next_observation_gap_s": 1.0665139299962902
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 82856.053082641,
+          "next_observation_monotonic_s": 82857.122349176,
+          "next_observation_gap_s": 1.0692665350070456
+        }
+      ],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-pid-preview30-turn-candidate-001/python_pid_turn_02/launch.log",
+            "bytes": 14004,
+            "sha256": "ec6f88937c2e4ff40c6eac2b96c8859a653a0e0afa418483134fb6404c404ee9"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 69,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 70,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 76,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-pid-preview30-turn-candidate-001/python_pid_turn_02/events.jsonl",
+        "bytes": 811706,
+        "sha256": "2962ec2bdf1ad6b3522b6d9a9973805ab8c9d45fedec24a98ce981c3f25212ef"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_pid_turn_03",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "turn",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 20.5,
+      "duration_wall_s": 22.62686936199316,
+      "legacy_fixed_cte": {
+        "count": 216,
+        "mean": 0.06975584850529903,
+        "rms": 0.0822488200703143,
+        "p95": 0.15362696473926268,
+        "max": 0.17578773920043486
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 82882.857765888,
+        "goal": [
+          23.125,
+          -22.125,
+          -1.5707963267948966
+        ],
+        "sim_time_s": 3.0
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 82905.48459683,
+        "sim_time_s": 23.5,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 16,
+        "SIMULATION_PAUSED": 2,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 82884.619246692,
+          "next_observation_monotonic_s": 82885.686764903,
+          "next_observation_gap_s": 1.0675182109989692
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 82885.686764903,
+          "next_observation_monotonic_s": 82886.757587612,
+          "next_observation_gap_s": 1.0708227089926368
+        }
+      ],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-pid-preview30-turn-candidate-001/python_pid_turn_03/launch.log",
+            "bytes": 14004,
+            "sha256": "c31ba729f385c139755f9f7daf983f2a82b182d000519d454018d40cf4ef72aa"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 69,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 70,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 76,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-pid-preview30-turn-candidate-001/python_pid_turn_03/events.jsonl",
+        "bytes": 784124,
+        "sha256": "22b1ff0ff29abf8a374da5e1c42782aefb7def8e7149c87f45f30be388aa3cfd"
+      },
+      "observed_control_result_counters_max": {}
+    }
+  ],
+  "staged_execution": {
+    "completed": [
+      "turn 01",
+      "turn 02",
+      "turn 03"
+    ],
+    "not_run": [
+      "straight x3",
+      "single_obstacle x3"
+    ],
+    "termination_reason": "User clarified final acceptance as same-scenario means across three repeats, retaining individual/worst results; further default calibration canceled before straight stage start. Existing candidate per-repeat evaluation remains unchanged and is not merged into the formal 3afb matrix.",
+    "completed_turn_original_protocol": {
+      "functional_passed": 3,
+      "source_valid_pairs": 3,
+      "source_passed_pairs": 3,
+      "performance_passed": 3,
+      "comparison_report_sha256": "6814453ddd12b24b1d490126d7e45bac13073bdc7e50215de0dbe63c89641ad8"
+    }
+  }
+}

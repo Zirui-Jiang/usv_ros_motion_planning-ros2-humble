@@ -1,0 +1,94 @@
+{
+  "trial": "python_pid_odom_dropout",
+  "mode": "python",
+  "fault": "odom_dropout",
+  "passed": true,
+  "result": "completed",
+  "zero_command_latency_wall_s": 0.43344637495465577,
+  "nonzero_after_deadline": false,
+  "tested_state_timeout_s": 0.4,
+  "deadline_wall_s": 0.7,
+  "sustained_zero_output": {
+    "passed": true,
+    "since": 303882.47149325203,
+    "until": 303883.477272705,
+    "max_gap_s": 0.35,
+    "minimum_samples": 3,
+    "axes": {
+      "left": {
+        "passed": true,
+        "samples": 9,
+        "maximum_observed_gap_s": 0.10844805301167071
+      },
+      "right": {
+        "passed": true,
+        "samples": 9,
+        "maximum_observed_gap_s": 0.10841616900870577
+      },
+      "lateral": {
+        "passed": true,
+        "samples": 9,
+        "maximum_observed_gap_s": 0.10863232600968331
+      }
+    }
+  },
+  "status": {
+    "state": "WAITING_STATE",
+    "reason": "",
+    "version": 1,
+    "stamp": 1789312258.3457441,
+    "controller": "pid",
+    "goal": [
+      20.0,
+      10.0,
+      0.0
+    ],
+    "metrics": {
+      "costmap_conversion_ms": {
+        "count": 88,
+        "p50": 0.09530302486382425,
+        "p95": 0.11839154758490619,
+        "p99": 0.12768302694894373,
+        "max": 0.12890802463516593
+      },
+      "planning_ms": {
+        "count": 4,
+        "p50": 8.64860147703439,
+        "p95": 8.92100760829635,
+        "p99": 8.94152233027853,
+        "max": 8.946651010774076
+      },
+      "control_ms": {
+        "count": 50,
+        "p50": 0.050072005251422524,
+        "p95": 0.20836563489865506,
+        "p99": 0.27747135260142375,
+        "max": 0.30946003971621394
+      }
+    },
+    "counters": {
+      "pending_replacements": 0,
+      "stale_control_reports": 1,
+      "global_searches": 1,
+      "wrong_session_references": 2,
+      "stale_references": 49
+    },
+    "process": {
+      "pid": 212445,
+      "cpu_seconds": 0.6190389999999999,
+      "peak_rss_kib": 66616,
+      "monotonic": 303883.177526561
+    },
+    "modules": {
+      "decision": "35b79dace3cd47bc8f5d6a14ada5a689",
+      "control": "a817ff8a81744e1abeaad85fbd488de2",
+      "perception": "ad39a15d9f9a482484178546ed506cfd",
+      "control_process": {
+        "pid": 212446,
+        "cpu_seconds": 0.5971789999999999,
+        "peak_rss_kib": 65480,
+        "monotonic": 303883.071200387
+      }
+    }
+  }
+}

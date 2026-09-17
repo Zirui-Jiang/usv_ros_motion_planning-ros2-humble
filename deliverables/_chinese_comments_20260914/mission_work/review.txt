@@ -1,0 +1,536 @@
+
+FILE src/core/mission_module/usv_mission/test/test_control_authority.py
+test_every_remapped_output_must_be_exclusive_and_discovered
+assert not gate.observe({}) | assert not gate.observe({'/robot/motor_a': 1, '/robot/motor_b': 0}) | assert not gate.conflicted | assert gate.observe({'/robot/motor_a': 1, '/robot/motor_b': 1}) | assert gate.status()['restart_required'] is False
+test_second_publisher_latches_even_when_the_competitor_disappears
+assert not gate.observe({'/robot/motor_a': 1, '/robot/motor_b': 2}) | assert gate.conflicted and '/robot/motor_b' in reason and ('restart' in reason) | assert not gate.observe({'/robot/motor_a': 1, '/robot/motor_b': 1}) | assert gate.reason == reason | assert gate.status()['restart_required'] is True
+test_graph_failure_inhibits_output_and_cannot_clear_conflict
+assert not gate.unavailable('DDS graph unavailable') | assert gate.observe({'/left': 1, '/right': 1}) | assert not gate.observe({'/left': 2, '/right': 1}) | assert not gate.unavailable('DDS graph unavailable') | assert gate.reason == reason and gate.conflicted
+test_runtime_imports_do_not_cross_back_into_simulation
+assert all((name.name.split('.')[0] != 'sim_env' for name in node.names)), path | assert (node.module or '').split('.')[0] != 'sim_env', path
+
+FILE src/core/mission_module/usv_mission/test/test_missions.py
+grid
+
+manager
+
+test_spec_rejects_invalid_parameters
+
+test_spec_respects_nonzero_model_minimum_speed
+
+test_standby_requires_low_speed_dwell_and_returns_only_beyond_outer_radius
+assert m.tick(VesselState(u=0.2), grid(), 0.0).kind == 'navigate' | assert m.tick(VesselState(stamp=0.9), grid(0.9), 0.9).kind == 'navigate' | assert m.tick(VesselState(stamp=1.2), grid(1.2), 1.2).kind == 'stop' | assert m.tick(VesselState(x=8.0, stamp=2.0), grid(2.0), 2.0).kind == 'stop' | assert m.revision == revision | assert returned.kind == 'navigate' and returned.goal[:2] == (0.0, 0.0)
+test_orbit_counts_signed_progress_across_wrap_and_finishes_at_requested_laps
+assert intent.kind == 'navigate' and intent.goal[:2] == (0.0, 0.0) | assert m.status(state, t)['completed_laps'] == pytest.approx(1.0)
+test_orbit_does_not_count_reverse_jitter_or_excursions_outside_precision_band
+assert m.status(state, 0.3)['completed_laps'] == pytest.approx(0.1 / (2 * math.pi)) | assert m.status(rejoin, 0.5)['completed_laps'] == pytest.approx(0.1 / (2 * math.pi))
+test_orbit_duration_includes_entry_and_clock_pause_but_not_rewind
+assert m.tick(state, grid(2.0), 2.0).kind == 'orbit_entry' | assert m.tick(state, grid(2.0), 2.0).kind == 'orbit_entry' | assert m.status(state, 2.0)['elapsed_time'] == 2.0 | assert m.tick(replace(state, stamp=1.0), grid(1.0), 1.0).kind == 'stop' | assert m.tick(replace(state, stamp=5.0), grid(5.0), 5.0).phase == 'RETURN_CENTER'
+test_idle_mission_detects_intrusion_without_allowing_hull_escape
+assert m.tick(VesselState(), grid(), 0.0).kind == 'hold' | assert intent.kind == 'escape' and len(intent.candidates) > 0 | assert m.tick(VesselState(), grid(0.0, (0.0, 0.0)), 0.0).kind == 'stop' | assert m.status(VesselState(), 0.0)['blocked_reason'] == 'HULL_COLLISION'
+test_safety_release_requires_fresh_distinct_maps_and_original_target_clear
+assert intent.kind == 'escape' | assert m.tick(state, grid(0.5, (0.0, 0.0)), 0.5).kind == 'stop' | assert m.tick(replace(state, stamp=2.7), same, 2.7).kind == 'stop' | assert restored.kind == 'navigate' and restored.phase == 'APPROACH_STATION' | assert m.spec.mode == 'station_keep' and m.target_pose == (0.0, 0.0, 0.0)
+test_active_mission_rejects_stale_and_mismatched_input
+assert m.tick(VesselState(stamp=0.0), grid(0.0), 2.0).kind == 'stop' | assert m.tick(VesselState(frame_id='wrong'), grid(), 0.0).kind == 'stop'
+test_distant_station_uses_global_navigation_then_latches_direct_holding
+assert first.kind == 'navigate' and first.phase == 'APPROACH_STATION' | assert m.tick(VesselState(x=1.0, stamp=0.1), grid(0.1), 0.1).kind == 'hold' | assert m.tick(VesselState(x=2.2, stamp=0.2), grid(0.2), 0.2).kind == 'hold'
+test_circle_entry_alignment_locks_pose_under_small_position_noise
+assert first.kind == 'hold' | assert second.signature == first.signature
+test_explicit_controller_safety_preemption_requests_safe_exit
+assert m.tick(VesselState(stamp=0.1), grid(0.1), 0.1).kind == 'escape'
+test_escape_selection_reserves_the_position_tolerance_disk
+assert intent.kind == 'escape' and intent.candidates | assert not any((np.allclose(pose[:2], excluded_goal) for pose in intent.candidates))
+test_position_teleport_cannot_increment_laps
+assert m.status(state, 0.1)['completed_laps'] == 0.0
+test_station_safety_recovery_returns_using_navigation_after_previously_holding
+assert intent.kind == 'navigate' and intent.phase == 'APPROACH_STATION'
+test_safety_release_does_not_count_unobserved_map_gap
+assert m.tick(VesselState(x=-8.0, stamp=3.0), grid(3.0), 3.0).kind == 'stop'
+test_small_known_region_reports_no_safe_exit_instead_of_unknown_escape
+assert intent.kind == 'stop' and intent.phase == 'AVOIDANCE_BLOCKED' | assert m.blocked_reason == 'NO_SAFE_EXIT'
+departure_response
+
+departure_manager
+assert m.tick(VesselState(u=0.2), grid(), 0.0).kind == 'escape'
+test_escape_departure_cannot_turn_before_measured_translation_and_yaw_stop
+assert intent.kind == 'brake' and intent.phase == 'BRAKING_ESCAPE' | assert m._departure_pose is None | assert m.temporary_goal == (8.0, 0.0, 0.0)
+test_escape_alignment_freezes_measured_stop_xy_not_worker_geometry_and_holds_it
+assert first.kind == 'hold' and first.phase == 'ALIGN_ESCAPE' | assert first.goal == pytest.approx((0.3, 0.1, math.pi / 2)) | assert first.goal[:2] != (99.0, 99.0) | assert second.signature == first.signature | assert m.temporary_goal == (8.0, 0.0, 0.0)
+test_escape_alignment_does_not_release_until_all_pose_and_speed_constraints_hold
+assert m.tick(VesselState(stamp=0.1), grid(0.1), 0.1).phase == 'ALIGN_ESCAPE' | assert released.kind == 'escape' and released.goal == (8.0, 0.0, 0.0) | assert m._departure_heading is None and m._departure_pose is None | assert m.tick(state, grid(now), now).phase == 'ALIGN_ESCAPE' | assert m.tick(VesselState(stamp=now), grid(now), now).phase == 'ALIGN_ESCAPE'
+test_escape_alignment_scales_position_threshold_with_requested_tolerance
+assert m.tick(VesselState(x=0.11, stamp=now), grid(now), now).phase == 'ALIGN_ESCAPE'
+test_escape_alignment_requires_distinct_fresh_state_samples_not_repeated_stamp
+assert m.tick(VesselState(stamp=0.8), grid(0.8), 0.8).phase == 'ALIGN_ESCAPE' | assert m.tick(VesselState(stamp=1.3), grid(1.3), 1.3).kind == 'escape' | assert m.tick(fixed, grid(now), now).phase == 'ALIGN_ESCAPE' | assert m.tick(VesselState(stamp=now), grid(now), now).phase == 'ALIGN_ESCAPE'
+test_escape_alignment_stale_input_resets_dwell_without_changing_frozen_pose
+assert m.tick(VesselState(stamp=0.3), grid(0.9), 0.9).phase == 'WAITING_INPUT' | assert m._departure_since is None and m._departure_pose == pose | assert m.tick(VesselState(stamp=1.5), grid(1.5), 1.5).kind == 'escape' | assert m.tick(VesselState(stamp=now), grid(now), now).phase == 'ALIGN_ESCAPE'
+test_repeated_departure_metadata_does_not_restart_completed_or_active_prelude
+assert m.tick(VesselState(stamp=0.2), grid(0.2), 0.2).signature == first.signature | assert intent.kind == 'escape' | assert m.tick(VesselState(stamp=0.7), grid(0.7), 0.7).kind == 'escape' | assert m._departure_heading is None | assert m.tick(VesselState(stamp=0.9), grid(0.9), 0.9).phase == 'ALIGN_ESCAPE'
+test_departure_prelude_preserves_original_circle_and_completed_progress
+assert intent.kind == 'escape' and intent.goal == (-10.0, 0.0, -math.pi / 2) | assert m._circle is circle and m.spec is spec and (m._net_angle == progress) | assert m.target_pose == (0.0, 0.0, 0.0)
+test_departure_state_is_cleared_when_its_escape_reference_is_invalidated
+assert m._departure_heading is None and m._departure_pose is None | assert m._departure_since is None and (not m._departure_seen)
+test_malformed_departure_pose_cannot_activate_rotation_target
+assert m._departure_pose is None and m._departure_heading is None | assert m.temporary_goal is None and m.blocked_reason == 'INVALID_DEPARTURE_POSE'
+test_backoff_freezes_measured_stopped_heading_and_then_aligns_at_actual_arrival
+assert m.tick(VesselState(x=0.2, u=0.1, stamp=0.1), grid(0.1), 0.1).phase == 'BRAKING_ESCAPE' | assert first.kind == 'hold' and first.phase == 'BACKING_ESCAPE' | assert first.goal == pytest.approx((0.3, -0.4, math.pi / 2)) | assert same.signature == first.signature | assert aligned.phase == 'ALIGN_ESCAPE' | assert aligned.goal == pytest.approx((0.32, -0.39, -math.pi)) | assert released.kind == 'escape' and released.goal == (8.0, 0.0, 0.0) | assert m.status(VesselState(), 2.1)['backoff_pose'] is None | assert m.tick(VesselState(x=0.3, y=-0.3, psi=math.pi / 2, stamp=now), grid(now), now).phase == 'BACKING_ESCAPE' | assert m.tick(VesselState(x=0.32, y=-0.39, psi=math.pi / 2, stamp=now), grid(now), now).phase == 'BACKING_ESCAPE' | assert m.tick(VesselState(x=0.32, y=-0.39, psi=math.pi, stamp=now), grid(now), now).phase == 'ALIGN_ESCAPE'
+test_backoff_requires_precise_position_heading_and_stopped_motion_for_full_dwell
+assert m.tick(VesselState(stamp=0.1), grid(0.1), 0.1).phase == 'BACKING_ESCAPE' | assert m.tick(VesselState(x=-0.5, stamp=1.3), grid(1.3), 1.3).phase == 'ALIGN_ESCAPE' | assert m.tick(state, grid(now), now).phase == 'BACKING_ESCAPE' | assert m.tick(VesselState(x=-0.5, stamp=now), grid(now), now).phase == 'BACKING_ESCAPE'
+test_backoff_uses_requested_precision_divided_by_ten_and_distinct_odometry
+assert m.tick(VesselState(x=-0.49, stamp=1.9), grid(1.9), 1.9).phase == 'ALIGN_ESCAPE' | assert m.tick(VesselState(x=-0.47, stamp=now), grid(now), now).phase == 'BACKING_ESCAPE' | assert m.tick(fixed, grid(now), now).phase == 'BACKING_ESCAPE' | assert m.tick(VesselState(x=-0.49, stamp=now), grid(now), now).phase == 'BACKING_ESCAPE'
+test_backoff_evidence_is_discarded_after_input_or_reference_invalidation
+assert m.tick(VesselState(stamp=0.1), grid(0.1), 0.1).phase == 'BACKING_ESCAPE' | assert m.temporary_goal is None | assert m._departure_heading is None and m._departure_pose is None | assert m.status(VesselState(), 2.0)['backoff_pose'] is None | assert m.tick(VesselState(stamp=0.1), grid(0.7), 0.7).phase == 'WAITING_INPUT' | assert m.tick(VesselState(stamp=2.0), grid(0.1), 2.0).phase == 'WAITING_INPUT'
+test_backoff_rejects_malformed_or_out_of_bounds_distance
+assert m.temporary_goal is None and m._departure_heading is None | assert m.blocked_reason == 'INVALID_BACKOFF_DISTANCE'
+test_backoff_accepts_planner_distances_without_changing_forward_goal
+assert intent.phase == 'BACKING_ESCAPE' | assert intent.goal == pytest.approx((0.2 - distance, 0.0, 0.0)) | assert m.temporary_goal == (8.0, 0.0, 0.0)
+test_backoff_then_alignment_completes_with_real_holding_controller_and_dynamics
+assert rearward_target is not None and rotation_target is not None | assert intent.goal == (8.0, 0.0, 0.0) | assert abs(state.psi - math.pi / 2) <= math.radians(5.0) | assert clear_control(state, command, current_map, model, 0.1) | assert math.hypot(state.x - rearward_target[0], state.y - rearward_target[1]) <= 0.05 | assert math.hypot(state.u, state.v) <= 0.04 and abs(state.r) <= 0.02
+
+FILE src/core/mission_module/usv_mission/test/test_mission_adapter.py
+adapter
+
+conditional_response
+
+test_repeated_conditional_result_blocks_candidate_until_new_map
+assert adapter.intent.kind == 'brake' and node.trajectory is None | assert adapter.intent.kind == 'escape' | assert node.trajectory is None | assert not len(node.route) | assert adapter.intent.phase == 'AVOIDANCE_BLOCKED' | assert adapter.manager.temporary_goal is None | assert command.left < 0 and command.right < 0 | assert not node.offered | assert adapter.intent.kind == 'escape' | assert node.offered[-1].mission_intent.candidates
+test_conditional_replan_flag_without_departure_pose_cannot_be_executed
+assert adapter.node.trajectory is None | assert not len(adapter.node.route) | assert adapter.intent.phase == 'AVOIDANCE_BLOCKED'
+
+FILE src/core/mission_module/usv_mission/test/test_mission_cli.py
+test_station_keep_minimal_request_uses_interface_defaults
+assert values['heading_deg'] == 0.0 | assert values['position_tolerance'] == 0.5 | assert values['speed'] == 0.5 | assert values['clockwise'] is True | assert values['laps'] == 0
+test_bad_requests_rejected_locally
+
+test_mission_yaml_duplicate_or_missing_keys_rejected
+
+test_all_installed_examples_validate_and_reference_the_selected_world
+assert modes == {'standby', 'orbit', 'station_keep'} | assert geo.to_local(request['latitude'], request['longitude'])[:2] == pytest.approx((23, -10), abs=1e-06)
+test_cli_commands_and_namespace_are_unambiguous
+assert start.namespace == 'boat' and start.yaml == Path('mission.yaml') | assert parser.parse_args(['status']).command == 'status' | assert parser.parse_args(['cancel']).command == 'cancel'
+test_invalid_yaml_reports_cli_error_before_ros_import
+assert error.value.code == 2 | assert 'error:' in capsys.readouterr().err
+
+FILE src/core/mission_module/usv_mission/test/test_mission_launch.py
+test_missing_reference_does_not_enable_zero_origin
+assert geographic_parameters() == {'mission.geo.enabled': False}
+test_explicit_world_supplies_actual_origin
+assert parameters == {'mission.geo.enabled': True, 'mission.geo.latitude': -33.7242, 'mission.geo.longitude': 150.68, 'mission.geo.altitude': 0.0}
+test_explicit_zero_origin_is_valid_and_different_from_missing_reference
+assert geographic_parameters(str(path)) == {'mission.geo.enabled': True, 'mission.geo.latitude': 0.0, 'mission.geo.longitude': 0.0, 'mission.geo.altitude': 2.0}
+test_invalid_explicit_reference_is_rejected
+
+test_ambiguous_reference_sources_are_rejected
+
+test_missing_explicit_world_fails_closed
+
+test_package_declares_runtime_and_launch_dependencies
+assert tree.findtext('name') == 'usv_mission' | assert tree.findtext('export/build_type') == 'ament_python' | assert {'rclpy', 'tf2_ros', 'sensor_msgs', 'nav2_msgs', 'usv_mission_interfaces', 'controller', 'trajectory_planner', 'path_planner', 'common', 'sim_env', 'usv_navigation', 'usv_perception', 'launch', 'launch_ros'}.issubset(dependencies)
+_launch_graph
+
+_nodes
+
+test_standalone_launch_starts_only_mission_node
+assert _nodes(context, actions) == [('usv_mission', 'mission_node')] | assert not any((isinstance(action, IncludeLaunchDescription) for action in actions))
+test_simulation_launch_has_one_task_controller_and_public_support_nodes
+assert nodes.count(('usv_mission', 'mission_node')) == 1 | assert ('sim_env', 'sim_env_node') not in nodes | assert {('sim_env', 'fake_localization_node'), ('usv_perception', 'costmap_support_node'), ('gazebo_ros', 'spawn_entity.py')}.issubset(nodes) | assert ('usv_perception', 'perception_mapping_node') in nodes | assert not any((package == 'rviz2' for package, _ in nodes)) | assert sum((isinstance(action, IncludeLaunchDescription) for action in actions)) == 1
+test_standalone_launch_rejects_invalid_origin_before_starting_node
+
+
+FILE src/core/mission_module/usv_mission/test/test_mission_planning.py
+scenario
+
+test_geometric_circle_entries_include_two_exact_tangencies_and_all_quadrants
+assert len(points) >= 24 | assert any((np.allclose(p[:2], [5.0, math.sqrt(75.0)]) for p in points)) | assert any((np.allclose(p[:2], [5.0, -math.sqrt(75.0)]) for p in points)) | assert np.linalg.norm(p[:2]) == pytest.approx(10.0)
+test_forward_recovery_covers_the_remaining_circle_without_the_current_point
+assert len(points) == 23 | assert not any((np.allclose(pose[:2], state.pose[:2]) for pose in points)) | assert min(progress) == pytest.approx(math.radians(15)) | assert max(progress) == pytest.approx(math.radians(345))
+test_recovery_finds_safe_arc_when_the_first_half_circle_is_blocked
+assert intent.kind == 'escape' and intent.candidates | assert all((direction * pose[1] < 0.0 for pose in intent.candidates)) | assert response.status == AlgorithmStatus.SUCCESS, response.message | assert np.linalg.norm(response.selected_goal[:2]) == pytest.approx(8.0) | assert 1 <= response.metadata['candidates_checked'] <= 4 | assert not response.metadata['budget_exhausted'] | assert manager.spec.clockwise == clockwise | assert manager.spec.orbit_radius == 8.0 | assert manager.target_pose == (0.0, 0.0, 0.0)
+test_recovery_keeps_nearer_upstream_arc_out_of_a_nonempty_primary_group
+assert response.status == AlgorithmStatus.SUCCESS, response.message | assert 0.0 < progress <= math.pi + 1e-09 | assert all((direction * math.atan2(p[1], p[0]) % (2 * math.pi) <= math.pi + 1e-09 for p in intent.candidates)) | assert response.metadata['candidates_checked'] <= 4
+test_primary_recovery_includes_pi_boundary_for_either_direction
+assert len(intent.candidates) == 12 | assert any((np.allclose(pose[:2], (-state.x, -state.y)) for pose in intent.candidates)) | assert not any((np.allclose(pose[:2], state.pose[:2]) for pose in intent.candidates))
+test_entry_selects_verified_tangent_route_from_inside_center_and_outside
+assert response.status == AlgorithmStatus.SUCCESS, response.message | assert response.selected_goal is not None | assert np.linalg.norm(response.selected_goal[:2]) == pytest.approx(10.0) | assert response.metadata['candidates_checked'] >= 1 | assert response.metadata['candidate_cost'] >= 0.0 | assert manager.temporary_goal == response.selected_goal | assert np.max(response.trajectory.points[:, 6]) <= 0.5 + 1e-12 | assert job.parameters['dynamics.cruising_speed'] == 1.0
+test_circle_runtime_does_not_reuse_prune_or_slow_for_old_finite_route
+assert response.status == AlgorithmStatus.SUCCESS, response.message | assert response.trajectory.goal is None | assert response.route.shape == (0, 3) | assert not response.searched
+test_circle_obstacle_on_future_sweep_preempts_into_escape
+assert result.status == AlgorithmStatus.NO_PATH | assert manager.tick(job.state, blocked.grid, 0.0).kind == 'escape'
+test_exit_search_checks_at_most_four_candidates_and_preserves_map_stamp
+assert response.status == AlgorithmStatus.SUCCESS, response.message | assert 1 <= response.metadata['candidates_checked'] <= 4 | assert response.metadata['map_stamp'] == 0.0 | assert response.selected_goal is not None
+test_pending_circle_request_does_not_inherit_route_from_worker_result
+assert len(executor.jobs[1][0].route) == 0
+test_selected_circle_goal_keeps_requested_tangent_when_route_heading_differs
+assert response.status == AlgorithmStatus.SUCCESS | assert yaw == pytest.approx(tangent) | assert response.route[-1, 2] != pytest.approx(yaw)
+test_exit_candidate_requires_clearance_for_arbitrary_heading
+assert pose_is_clear(grid, goal, cfg, margin=5.0) | assert not any((np.allclose(pose[:2], goal[:2]) for pose in candidates))
+test_turning_envelope_contains_rotated_release_rectangle_corners
+assert not pose_is_clear(grid, goal, cfg, margin=5.0) | assert not turning_envelope_is_clear(grid, goal, cfg)
+test_turning_envelope_covers_arrival_position_error
+assert turning_envelope_is_clear(grid, goal, cfg) | assert not pose_is_clear(grid, (0.4, 0.0, goal[2]), cfg, margin=5.0) | assert not turning_envelope_is_clear(grid, goal, cfg, arrival_tolerance=0.5)
+test_worker_rejects_escape_goal_with_unsafe_arrival_disk
+assert result.status == AlgorithmStatus.NO_PATH | assert result.selected_goal is None
+near_obstacle_escape
+
+test_escape_can_offer_braking_then_alignment_when_forward_los_is_unsafe
+assert response.status == AlgorithmStatus.SUCCESS, response.message | assert stopped | assert footprint_path_is_clear(job.grid, stopping, 2.4, 1.4) | assert np.linalg.norm(np.asarray(departure[:2]) - np.asarray(job.state.pose[:2])) > 0.1 | assert footprint_path_is_clear(job.grid, [stopping[-1], departure], 2.4, 1.4) | assert footprint_path_is_clear(job.grid, response.trajectory.points[:, [2, 3, 4]], 2.2, 1.2) | assert response.metadata['departure_requires_replan'] | assert response.selected_goal in job.mission_intent.candidates | assert response.metadata['candidates_checked'] <= 4 | assert job.mission_intent.spec.speed == 0.5
+test_escape_does_not_offer_rotation_when_dynamic_braking_tail_is_unsafe
+assert response.status == AlgorithmStatus.NO_PATH | assert 'departure_pose' not in response.metadata | assert response.trajectory.empty()
+test_aligned_escape_uses_normal_los_without_repeating_alignment
+assert response.status == AlgorithmStatus.SUCCESS, response.message | assert 'departure_pose' not in response.metadata
+test_selected_goal_is_replanned_after_measured_alignment_without_reusing_departure
+assert result.status == AlgorithmStatus.SUCCESS | assert result.selected_goal == first.selected_goal | assert 'departure_pose' not in result.metadata
+test_escape_backs_away_before_turning_when_stopped_hull_has_no_rotation_room
+assert response.status == AlgorithmStatus.SUCCESS, response.message | assert response.metadata['backoff_distance'] == 0.5 | assert not footprint_path_is_clear(job.grid, [stopped, (*stopped[:2], departure[2])], 2.4, 1.4) | assert footprint_path_is_clear(job.grid, [stopped, backed], 2.4, 1.4) | assert footprint_path_is_clear(job.grid, [backed, departure], 2.4, 1.4) | assert footprint_path_is_clear(job.grid, response.trajectory.points[:, [2, 3, 4]], 2.2, 1.2) | assert response.metadata['departure_requires_replan'] | assert response.selected_goal in job.mission_intent.candidates | assert response.metadata['candidates_checked'] <= 4
+test_escape_does_not_offer_backoff_through_a_rear_obstacle
+assert response.status == AlgorithmStatus.NO_PATH | assert 'backoff_distance' not in response.metadata | assert 'departure_pose' not in response.metadata
+test_escape_prefers_original_position_alignment_over_unnecessary_backoff
+assert response.status == AlgorithmStatus.SUCCESS | assert 'departure_pose' in response.metadata | assert 'backoff_distance' not in response.metadata
+
+FILE src/core/mission_module/usv_mission/test/test_mission_ros.py
+simulator
+
+request
+
+start
+assert response.accepted, response.reason
+test_typed_service_accepts_geographic_target
+assert client.wait_for_service(timeout_sec=3.0) | assert future.done() and future.result().accepted | assert target == pytest.approx((23.0, -10.0, 0.0), abs=1e-05) | assert simulator.mission.active
+test_invalid_replacement_preserves_running_task
+assert not response.accepted | assert simulator.version == version and response.mission_id == first.mission_id | assert simulator.mission.active | assert second.mission_id == first.mission_id + 1
+test_stationary_hold_remains_active_and_outputs_finite_commands
+assert simulator.mission.active | assert commands and commands[-1].is_valid() | assert commands[-1].lateral == 0.0 | assert abs(commands[-1].left) + abs(commands[-1].right) > 0.0
+test_holding_obeys_input_timeout
+assert command.left == command.right == 0.0 and simulator.mode == expected
+test_navigation_to_holding_preserves_actual_command_slew
+assert simulator.mission.intent.kind == 'navigate' | assert simulator.mission.intent.kind == 'hold' | assert abs(command.left - previous.left) <= 0.06 + 1e-09 | assert abs(command.right - previous.right) <= 0.06 + 1e-09
+test_pending_escape_brakes_moving_vessel_with_clear_stop_path
+assert simulator.mission.intent.kind == 'escape' | assert command.left < 0 and command.right < 0 | assert simulator.trajectory is None
+test_pending_escape_never_uses_unverified_braking
+assert command.left == command.right == command.lateral == 0.0
+test_escape_selects_stronger_verified_brake_without_relaxing_margin
+assert -0.4 <= command.left < -0.2 and -0.4 <= command.right < -0.2 | assert margins == [0.1, 0.1]
+test_conditional_departure_plan_waits_for_measured_stop_before_adoption
+assert simulator.mission.intent.kind == 'brake' | assert simulator.trajectory is None | assert command.left < 0 and command.right < 0
+test_unsafe_detour_command_uses_separately_verified_braking
+assert simulator.mode == 'ESCAPE_CONTROL_BLOCKED' | assert len(checked) == 2 and checked[0].left == 0.2 | assert command.left < 0 and command.right < 0
+test_cancel_does_not_allow_old_mission_to_restart
+assert not simulator.mission.active and simulator.goal is None | assert all((c.left == c.right == c.lateral == 0.0 for c in commands))
+test_occupied_hull_stops_hold_without_escape_exemption
+assert simulator.mode == 'CURRENT_FOOTPRINT_BLOCKED' | assert command.left == command.right == 0.0
+test_standby_without_goal_monitors_intrusion
+assert simulator.mission.intent.kind == 'stop' | assert simulator.mission.intent.kind == 'escape'
+test_selected_tangent_route_survives_reference_generation_change
+assert simulator.version > old_version | assert simulator.trajectory is trajectory | assert simulator.counters['stale_results'] == 1
+test_hot_gain_update_reaches_mission_controller_without_overwriting_precision
+assert result.successful | assert controller.config['k_p_speed'] == 3.0 | assert controller.config['goal_distance_tolerance'] == 0.5 | assert controller.integral_speed == 0.12 | assert not result.successful | assert simulator.get_parameter(T + 'los.yaw_rate_max').value == old_limit
+test_another_publisher_blocks_commands_tasks_and_cancel_output
+assert simulator.count_publishers(competitor.topic_name) == 2 | assert simulator.mode == 'CONTROL_CONFLICT' | assert simulator.version == version + 1 | assert simulator.trajectory is None | assert not rejected.accepted and rejected.mission_id == first.mission_id | assert 'restart' in rejected.reason | assert simulator.mode == 'CONTROL_CONFLICT' | assert result.success and 'inhibited' in result.message | assert not simulator.mission.active | assert not received | assert statuses and statuses[-1]['state'] == 'CONTROL_CONFLICT' | assert statuses[-1]['control_authority']['restart_required'] is True | assert simulator.counters['control_conflicts'] == 1
+test_node_uses_actual_remapped_topic_names_and_inhibits_unknown_graph
+assert simulator.command_authority_ready() | assert seen == [publisher.topic_name for publisher in simulator.thrust_pubs] | assert not simulator.command_authority_ready() | assert simulator.mode == 'WAITING_CONTROL_AUTHORITY' | assert not simulator.control_authority.conflicted | assert simulator.command_authority_ready() | assert simulator.mode == 'IDLE'
+test_conflict_discovered_during_handover_zero_does_not_accept_new_task
+assert not result.accepted and result.mission_id == first.mission_id | assert simulator.mode == 'CONTROL_CONFLICT' | assert not simulator.mission.active | assert simulator.goal is None
+
+FILE src/core/mission_module/usv_mission/test/test_task_configuration.py
+test_original_configuration_loads_and_aliases_work
+assert p[C + 'control_frequency'] == 10.0 | assert p[C + 'pid_controller.k_p_speed'] == 2.0 | assert p['obstacle_factor'] == 0.25 | assert all((type(v) is float for v in p[C + 'lqr_controller.Q_matrix_diag']))
+test_alias_conflicts_rejected
+
+test_invalid_update_is_transactional
+assert p[C + 'pid_controller.k_p_speed'] == 2.0 | assert updated[C + 'pid_controller.k_p_speed'] == 4.0
+test_invalid_startup
+
+test_current_time_lqr_reference_is_valid_but_not_hot_mutable
+assert values[key] == 0.0
+test_startup_goal_distance_tolerance_rejects_unresolvable_los_radius
+
+test_startup_preserves_smallest_admitted_goal_radius
+assert resolve_parameters({key: tolerance})[key] == tolerance
+test_project_yaml_rejects_goal_radius_below_los_precision
+
+test_mission_coordinates_accept_signed_values_and_reject_invalid_ranges
+assert values['mission.geo.latitude'] == -33.7242 | assert values['mission.geo.altitude'] == -10.0
+test_mission_yaml_is_optional_and_cannot_override_world_reference
+assert values['mission.heading_tolerance_deg'] == 5.0 | assert values['mission.geo.enabled'] is False
+
+FILE src/core/mission_module/usv_mission/test/test_task_navigation_ros.py
+test_transient_controller_timeout_is_counted_and_publishes_zero
+assert simulator.mode == 'CONTROL_ERROR' and simulator.goal is not None | assert simulator.counters['control_result_timeout'] == 1 | assert commands[-1].left == commands[-1].right == 0.0
+test_current_hull_blocks_control_even_when_reference_and_centre_are_clear
+assert simulator.grid.data[42, 40] == 0 | assert footprint_path_is_clear(simulator.grid, simulator.trajectory.points[:, [2, 3, 4]]) | assert not simulator.trajectory_clear(simulator.trajectory) | assert simulator.mode == 'CURRENT_FOOTPRINT_BLOCKED' | assert simulator.trajectory is None and simulator.goal is not None | assert commands and commands[-1].left == commands[-1].right == 0.0
+test_process_planning_parameters_stale_inputs_cancel_and_clock_reset
+assert simulator.worker.future is not None or simulator.counters['global_searches'] >= 1 | assert simulator.trajectory.frame_id == 'navigation_smoke/map' | assert not simulator.timings['control_ms'] or max(simulator.timings['control_ms']) < 100.0 | assert response.successful and simulator.controller.config['k_p_speed'] == 2.0 | assert simulator.controller.integral_speed == 0.123 | assert simulator.counters['parameter_updates'] == 1 | assert not simulator.set_parameters_atomically([Parameter(T + 'los.lookahead_distance', value=-1.0)]).successful | assert not simulator.set_parameters_atomically([Parameter(C + 'control_frequency', value=20.0)]).successful | assert simulator.trajectory is None and left and all((m.data == 0.0 for m in left)) | assert left and all((m.data == 0.0 for m in left)) | assert left and all((m.data == 0.0 for m in left)) | assert simulator.mode == 'SIMULATION_PAUSED' | assert left and all((m.data == 0.0 for m in left)) | assert simulator.version > old_version and simulator.goal is None | assert left and all((m.data == 0.0 for m in left)) | assert simulator.goal is not None | assert simulator.goal is not None and left and all((m.data == 0.0 for m in left)) | assert simulator.goal is None | assert future.result().success and simulator.goal is None | assert left and all((m.data == 0.0 for m in left)) | assert future.result().success and 'k_p_speed: 4.0' in future.result().message | assert simulator.goal is None and simulator.trajectory is None and (simulator.grid is None) | assert statuses | assert predicate(), (simulator.mode, simulator.reason, dict(simulator.counters))
+
+FILE src/core/mission_module/usv_mission/test/test_task_runtime.py
+request
+
+test_complete_offline_chain_and_route_reuse
+assert result.status == AlgorithmStatus.SUCCESS, result.message | assert result.searched and len(result.route) and len(result.trajectory) | assert result.trajectory.stamp == 10.0 | assert result.trajectory.goal == job.goal[:2] | assert repeated.status == AlgorithmStatus.SUCCESS | assert not repeated.searched
+soft_escape_request
+
+test_legal_soft_escape_route_is_reused_without_a_second_global_search
+assert first.status == AlgorithmStatus.SUCCESS and first.searched | assert second.status == AlgorithmStatus.SUCCESS | assert not second.searched and second.expanded == 0
+test_reused_escape_route_rechecks_latest_map_plateau_uphill_hard_and_unknown
+assert first.status == AlgorithmStatus.SUCCESS | assert repeated.searched | assert repeated.status == AlgorithmStatus.NO_PATH | assert repeated.trajectory.empty()
+test_reused_escape_route_checks_connection_from_the_latest_vessel_position
+assert repeated.searched and repeated.status == AlgorithmStatus.NO_PATH
+test_failure_is_explicit_and_has_no_reference
+assert response.status == AlgorithmStatus.NO_PATH | assert response.trajectory.empty()
+test_default_pid_keeps_straight_grid_endpoint_without_a_goal_kink
+assert response.status == AlgorithmStatus.SUCCESS | assert response.trajectory.goal == job.goal[:2] | assert 0.9 < np.linalg.norm(terminal - [18.25, 10.25]) <= 1.0 | assert np.linalg.norm(terminal - job.goal[:2]) <= 1.5
+test_los_stop_disk_does_not_stop_lqr_outside_the_requested_goal
+assert response.status == AlgorithmStatus.SUCCESS | assert np.any(response.trajectory.points[:, 6] > 0.0) | assert response.trajectory.goal == job.goal[:2] | assert np.linalg.norm(terminal - job.goal[:2]) <= 1.0 | assert response.trajectory.points[-1, 6] == 0.0
+test_small_or_equal_tolerance_appends_goal_without_losing_grid_endpoint
+assert response.status == AlgorithmStatus.SUCCESS | assert response.trajectory.goal == job.goal[:2] | assert np.linalg.norm(response.trajectory.points[-1, 2:4] - job.goal[:2]) <= tolerance | assert repeated.status == AlgorithmStatus.SUCCESS and (not repeated.searched)
+test_required_goal_connection_checks_soft_hard_and_unknown_cells
+assert response.status == AlgorithmStatus.NO_PATH | assert response.trajectory.empty() | assert 'goal connection' in response.message
+test_freshness
+assert fresh(stamp, now, timeout) == expected
+test_input_gate_does_not_reuse_stale_trajectory
+assert readiness(10.1, job.state, job.grid, plan.trajectory, job.parameters) == 'NAVIGATING' | assert readiness(11.0, job.state, job.grid, plan.trajectory, job.parameters) == 'WAITING_STATE' | assert readiness(10.1, job.state, None, plan.trajectory, job.parameters) == 'WAITING_MAP' | assert readiness(10.1, job.state, job.grid, None, job.parameters) == 'WAITING_REFERENCE'
+test_worker_keeps_only_latest_pending_and_invalidates
+assert len(executor.jobs) == 1 and worker.pending.version == 3 and (worker.replaced == 1) | assert worker.poll() is old_result | assert len(executor.jobs) == 2 and executor.jobs[1][0].version == 3 | assert not len(executor.jobs[1][0].route) | assert worker.pending is None | assert worker.poll() is cancelled_result
+test_first_search_refreshes_pending_route_but_keeps_latest_inputs
+assert worker.poll() is completed | assert dispatched.state is latest.state and dispatched.grid is latest.grid | assert dispatched.parameters is latest.parameters | assert not np.shares_memory(dispatched.route, completed.route) | assert repeated.status == AlgorithmStatus.SUCCESS | assert not repeated.searched
+test_pending_route_is_rechecked_against_latest_obstacles
+assert response.searched and response.status == AlgorithmStatus.NO_PATH
+
+FILE src/core/mission_module/usv_mission/validation/test_migration_validation.py
+load
+
+clean_graph
+
+test_valid_task_node_owns_all_command_topics
+assert guard.evaluate_graph('/otter/', nodes, publishers)['passed'] | assert guard.evaluate_graph('otter', nodes, publishers)['passed']
+test_ownership_violations_are_explicit_failures
+assert not result['passed'] and result['failures']
+test_runtime_graph_guard_latches_failure_and_records_observations
+assert probe.graph_guard is counter and counter.evidence()['passed'] | assert len(rows) == 3 and rows[-1]['passed'] | assert not counter.evidence()['passed']
+test_source_root_is_discovered_at_variable_depth
+assert finder.find_source_root(location) == tmp_path
+test_fingerprints_include_task_validation_once_and_installed_task
+assert len(before['files']) == 4 and len(before['installed_files']) == 3 | assert before['source_sha256'] == hashlib.sha256(json.dumps(before['files'], sort_keys=True).encode()).hexdigest() | assert before['source_sha256'] != after['source_sha256'] | assert before['install_sha256'] == after['install_sha256'] | assert acceptance.fingerprint(tmp_path)['install_sha256'] != before['install_sha256']
+test_root_validation_module_cache_cannot_redirect_task_harness
+assert acceptance.make_probe.__module__ == 'task_ros_acceptance' | assert acceptance.distribution.__module__ == 'task_metrics' | assert Path(matrix._acceptance.__file__).resolve() == DIRECTORY / 'mission_acceptance.py' | assert matrix.SCENARIOS == acceptance.SCENARIOS
+test_matrix_cannot_promote_old_success_without_graph_evidence
+assert result['result'] == 'failed' and (not result['passed']) | assert 'ROS graph ownership' in result['reason']
+test_navigation_entry_targets_core_and_keeps_parameter_contract
+assert args.launch_file == 'mission_sim.launch.py' | assert 'prefix = "usv_simulation.controller."' in text | assert '"ros2", "run", "usv_mission", "mission_node"' in text
+
+FILE src/core/mission_module/usv_mission/validation/test_mission_acceptance.py
+sample
+
+test_fixed_window_cannot_restart_after_an_excursion
+assert score['complete'] | assert score['sample_count'] == 601 | assert score['joint_fraction'] < 0.95 | assert not score['passed'] | assert acceptance.fixed_window_metrics(rows, 60)['passed']
+test_joint_position_heading_threshold_is_not_two_marginal_rates
+assert result['joint_fraction'] == pytest.approx(561 / 601) | assert not result['passed']
+test_missing_odom_interval_invalidates_fixed_window
+assert result['joint_fraction'] == 1 | assert not result['complete'] and (not result['passed'])
+test_settle_requires_continuous_five_seconds_and_low_speed
+assert detector.reached is None | assert detector.reached is None | assert detector.reached == pytest.approx(10.1)
+test_settle_does_not_count_missing_observations
+assert detector.reached is None
+test_standby_label_alone_cannot_satisfy_measured_centre_return
+assert detector.reached is None | assert detector.reached is None | assert detector.reached == pytest.approx(4.1)
+test_safe_wait_requires_selected_goal_low_speed_and_full_hull_gap
+assert acceptance.at_safe_waiting_point(row, 0.5) | assert not acceptance.at_safe_waiting_point(dict(row, temporary_goal=[4, 4, 0]), 0.5) | assert not acceptance.at_safe_waiting_point(dict(row, speed_mps=0.11), 0.5) | assert not acceptance.at_safe_waiting_point(dict(row, phase='AVOIDING'), 0.5) | assert not acceptance.at_safe_waiting_point(dict(row, controlled_obstacle_clearance_m=0.19), 0.5)
+orbit_fixture
+
+test_independent_raw_odometry_verifies_full_signed_circle
+assert result['passed'] | assert result['net_laps'] == pytest.approx(1.0) | assert result['boundary_angle_tolerance_rad'] == pytest.approx(0.15) | assert result['maximum_boundary_interval_s'] == 1.0
+test_same_phase_same_stamp_status_repeats_do_not_change_circle_score_or_tolerance
+assert result['passed'] | assert result['duplicate_status_count'] == 6 | assert result['status_observation_count'] == len(statuses) | assert not result['invalid_status_intervals'] | assert result['net_laps'] == baseline['net_laps'] | assert result['boundary_angle_tolerance_rad'] == baseline['boundary_angle_tolerance_rad'] == 0.15 | assert result['boundary_intervals'] == baseline['boundary_intervals']
+test_duplicate_status_snapshots_cannot_make_stationary_vessel_complete_a_lap
+assert result['duplicate_status_count'] > 0 | assert result['net_laps'] == 0.0 | assert not result['invalid_status_intervals'] | assert not result['passed']
+test_status_duplicate_folding_preserves_invalid_time_or_phase_transitions
+assert result['duplicate_status_count'] == 1 | assert result['invalid_status_intervals'] | assert not result['passed'] | assert result['boundary_angle_tolerance_rad'] <= 0.15
+test_orbit_early_return_stationary_and_wrong_way_never_pass
+assert not result['passed']
+test_orbit_missing_odometry_does_not_inflate_boundary_allowance
+assert result['invalid_odom_segments'] | assert not result['passed'] | assert result['boundary_angle_tolerance_rad'] <= 0.15
+test_orbit_position_teleport_and_status_dropout_fail_closed
+assert not result['passed'] and result['invalid_odom_segments'] | assert not result['passed'] and result['invalid_status_intervals']
+test_orbit_avoidance_and_radial_excursions_are_excluded_from_net_laps
+assert result['net_laps'] < 0.8 | assert not result['passed']
+test_orbit_obstacle_cannot_be_deleted_after_only_one_metre_motion
+assert not acceptance.orbit_rejoined_after_obstacle(rows, config, obstacle, spawn)['passed'] | assert evidence['passed'] | assert not acceptance.orbit_rejoined_after_obstacle(rows, config, obstacle, spawn)['passed']
+attach_obstacle_clearances
+
+interior_detour
+
+test_rejoin_accepts_downstream_circle_after_opposite_polar_motion_near_centre
+assert evidence['directed_progress_rad'] < 0 | assert evidence['passed'] | assert evidence['minimum_footprint_downstream_projection_m'] > 0
+test_rejoin_rejects_spawn_and_small_upstream_backtrack
+assert not evidence['passed'] | assert evidence['downstream_projection_m'] < 0
+test_downstream_rejoin_keeps_original_on_circle_motion_requirements
+assert not acceptance.orbit_rejoined_after_obstacle(rows, config, obstacle, spawn)['passed']
+test_downstream_centre_does_not_suffice_when_hull_straddles_passage_plane
+assert evidence['downstream_projection_m'] > 0 | assert evidence['minimum_footprint_downstream_projection_m'] < 0 | assert not evidence['passed']
+test_downstream_rejoin_still_needs_one_second_of_fresh_measured_dwell
+assert detector.reached == pytest.approx(start + 1.0) | assert detector.reached is None | assert detector.reached is None
+test_observed_passage_is_not_revoked_when_rejoin_continues_past_opposite_half_circle
+assert evidence['downstream_projection_m'] < 0 | assert evidence['first_downstream_passage']['sim_time_s'] < first_time | assert evidence['passed']
+test_rejoin_does_not_discard_unsafe_or_unobserved_earlier_detour
+assert not acceptance.orbit_rejoined_after_obstacle(rows, config, obstacle, spawn)['passed']
+test_lateral_impulse_requires_fresh_observed_velocity_not_displacement
+assert acceptance.observed_lateral_impulse(rows, 10.0)['observed'] | assert not acceptance.observed_lateral_impulse(rows, 11.0)['observed'] | assert not acceptance.observed_lateral_impulse(rows, 10.0)['observed']
+test_delayed_impulse_window_covers_service_interval_and_post_response_samples
+assert evidence['observed'] | assert evidence['observation_interval_sim_s'] == pytest.approx([10.0, 11.3]) | assert evidence['observed_sample']['sim_time_s'] == 11.1
+delayed_impulse_probe
+
+test_lateral_impulse_accepts_observation_during_delayed_service_and_logs_timing
+assert evidence['observed'] | assert evidence['service_request_sim_s'] == 10.0 | assert evidence['service_response_sim_s'] == pytest.approx(10.8) | assert evidence['service_delay_sim_s'] == pytest.approx(0.8) | assert response['service_request_sim_s'] == 10.0 | assert response['service_response_sim_s'] == pytest.approx(10.8)
+test_delayed_service_without_pulse_does_not_reuse_earlier_high_velocity
+assert not evidence['observed'] | assert evidence['peak_observed_body_lateral_mps'] == 0.0 | assert evidence['observation_interval_sim_s'] == pytest.approx([10.0, 11.3])
+test_lateral_impulse_excessive_service_delay_is_independently_blocked
+assert not evidence['service_delay_within_limit'] | assert evidence['service_delay_sim_s'] == pytest.approx(2.1)
+test_heading_error_wrap_and_scenario_targets
+assert values['heading_error_deg'] == pytest.approx(2) | assert acceptance.scenario_config('station')['target'] == (25, -8, math.pi / 2) | assert acceptance.scenario_config('orbit_cw')['clockwise'] is True | assert acceptance.scenario_config('orbit_ccw')['clockwise'] is False
+test_preflight_rejects_existing_lethal_unknown_and_unobserved_envelope
+assert not acceptance.preflight_failures(costmap, config) | assert acceptance.preflight_failures(costmap, config) | assert acceptance.preflight_failures(costmap, config) | assert acceptance.preflight_failures((10, 10, 1.0, 20, -12, [0] * 100, 'raw'), config)
+test_invalid_command_is_recorded_then_stops_acquisition
+assert json.loads((tmp_path / 'events.jsonl').read_text())['normalized_command'] == 1.1 | assert recorder.invalid_command
+test_raw_logs_keep_each_orbit_sample_and_phase
+assert recorder.samples[0]['radial_error_m'] == 0 | assert recorder.samples[0]['phase'] == 'ORBITING'
+test_controlled_obstacle_requires_lethal_observation_not_unknown
+assert not acceptance.obstacle_observed(costmap, obstacle) | assert not acceptance.obstacle_observed(costmap, obstacle) | assert acceptance.obstacle_observed(costmap, obstacle)
+test_dry_run_never_reports_an_experiment_pass
+assert acceptance.main(['--workspace', str(tmp_path), '--output', str(output), '--scenarios', 'station', '--repeats', '1', '--dry-run']) == 0 | assert summary['result'] == 'not_run' | assert summary['all_passed'] is False and summary['results'] == []
+test_plotter_does_not_create_figures_for_blocked_trials_without_measurements
+assert result['plots'] == [] | assert not list(tmp_path.glob('*.png'))
+test_plotter_exports_only_logged_samples_with_separate_command_timebase
+assert len(result['plots']) == 2 | assert (tmp_path / 'mission_plots.png').read_bytes().startswith(b'\x89PNG') | assert (tmp_path / 'mission_plots.pdf').read_bytes().startswith(b'%PDF')
+
+FILE src/core/mission_module/usv_mission/validation/test_mission_matrix.py
+module
+assert path.is_file(), 'matrix scheduler must exist'
+test_dry_run_plans_21_unique_domains_without_creating_child_directories
+assert scheduler.main(['--workspace', str(tmp_path), '--output', str(output), '--dry-run']) == 0 | assert len(manifest['matrix']) == 21 | assert {t['domain_id'] for t in manifest['matrix']} == set(range(170, 191)) | assert progress['counts']['not_run'] == 21 and progress['counts']['running'] == 0 | assert all((t['result'] == 'not_run' and (not Path(t['output']).exists()) for t in manifest['matrix'])) | assert not progress['all_passed']
+test_domain_overflow_rejected_before_making_output
+assert not output.exists()
+write_child
+
+test_failure_stops_pending_trials_and_running_child_finishes
+assert [t['result'] for t in tasks] == ['failed', 'passed', 'not_run', 'not_run'] | assert summary['completed_trials'] == 2 and (not summary['all_passed']) | assert tasks[1]['measurement']['matrix_repeat'] == 1 | assert 'synthetic child completed' in Path(tasks[1]['stdout_log']).read_text() | assert progress['counts'] == {'passed': 1, 'failed': 1, 'blocked': 0, 'not_run': 2, 'running': 0}
+test_child_cannot_pass_with_changed_or_unverifiable_installation
+assert result['result'] == 'failed' and (not result['passed']) | assert 'fingerprint' in result['reason']
+test_success_matrix_respects_job_bound_and_retains_matrix_repeat
+assert summary['all_passed'] and summary['completed_trials'] == 4 | assert tasks[2]['measurement']['repeat'] == 1 | assert tasks[2]['measurement']['matrix_repeat'] == 3 | assert maximum == 2 and running == 0
+test_missing_summary_is_blocked_and_interrupt_signals_only_owned_children
+assert scheduler.read_child_result(task, 1, {})['result'] == 'blocked' | assert all((child.signals == [signal.SIGINT] for child in children)) | assert 0 < timeout <= 60
+test_malformed_child_manifest_is_blocked_without_crashing_scheduler
+assert scheduler.read_child_result(task, 0, {})['result'] == 'blocked'
+
+FILE src/core/perception_module/perception/test/test_mapping.py
+mapper
+
+scan
+
+test_metadata_unknown_and_reset
+assert grid.data.shape == (1024, 1024) | assert grid.data.dtype == np.int8 | assert grid.origin_x == grid.origin_y == -256.0 | assert np.all(grid.data == -1) | assert np.all(grid.data == -1)
+test_first_hit_saturation_and_clearing_keep_sequential_evidence
+assert grid.data[4, :].tolist() == [-1, -1, -1, -1, 0, 0, 54, -1] | assert grid.data[4, 6] == 100 | assert grid.data[4, 6] == 0 | assert grid.data[4, 7] == 100
+test_shared_cells_are_updated_in_beam_order
+assert first.data[4, 6] == 29 | assert second.data[4, 6] == 55
+test_bad_ranges_do_not_clear_the_map
+assert result.invalid_beams == 5 | assert result.valid_beams == 0
+test_valid_no_return_clears_without_marking
+assert grid.data[4].tolist() == [-1, -1, -1, -1, 0, 0, 0, 0] | assert not np.any(grid.data > 0)
+test_clear_range_is_capped_at_30_m_and_excludes_unclipped_endpoint
+assert grid.data[50, 79] == 0 | assert grid.data[50, 80] == -1
+test_two_dimensional_clipping_never_wraps_a_row_or_marks_border_hit
+assert np.count_nonzero(grid.data != -1) == 4 | assert grid.data[4, 7] == 0 | assert grid.data[5, 0] == -1 | assert grid.data[7, 7] == -1
+test_ray_entering_from_outside_and_ray_missing_map
+assert grid.data[4].tolist() == [0, 0, 0, 0, 0, 0, 54, -1]
+test_floor_coordinates_use_actual_origin_with_fractional_offset
+assert grid.world_to_grid(0.0, 0.0) == (3, 4) | assert grid.data[4, 3] == 0 | assert grid.data[4, 4] == 54
+test_yaw_rotation_and_map_boundary_are_consistent
+assert grid.data[6, 4] == 54 | assert grid.data[5, 4] == 0
+test_huge_valid_range_is_clipped_before_integer_conversion
+assert np.count_nonzero(grid.data == 0) == 4 | assert not np.any(grid.data > 0)
+test_invalid_map_geometry_is_rejected
+
+test_bad_scan_metadata_is_rejected_and_empty_scan_is_noop
+assert np.all(grid.data == -1)
+test_diagonal_bresenham_visits_expected_cells
+
+
+FILE src/core/perception_module/perception/test/test_scan_queue.py
+put
+
+test_fifo_integrates_each_scan_once_and_rejects_older_duplicates
+assert put(queue, 10) | assert not put(queue, 10) | assert not put(queue, 9) | assert queue.drain(0.1, lambda entry: processed.append(entry.payload) or True) == 1 | assert queue.drain(0.15, lambda entry: processed.append(entry.payload) or True) == 0 | assert not put(queue, 10) | assert processed == [10] | assert queue.counters.duplicate == 3
+test_queue_keeps_latest_five_and_counts_overflow
+assert processed == [4, 5, 6, 7, 8] | assert queue.counters.overflow == 3
+test_missing_tf_waits_without_reordering_and_expires_by_wall_time
+assert queue.drain(1.15, lambda entry: False) == 0 | assert processed == [2] | assert queue.counters.expired == 1
+test_zero_timestamp_or_empty_frame_never_requests_latest_tf
+assert not put(queue, 0) | assert not put(queue, -1) | assert not put(queue, 1, frame='') | assert len(queue) == 0 | assert queue.counters.invalid == 3
+test_rollback_clears_pending_and_duplicate_history
+assert len(queue) == 0 | assert put(queue, 10) | assert queue.counters.resets == 1
+test_same_stamp_in_different_frames_is_not_a_duplicate
+assert put(queue, 10, frame='one') | assert put(queue, 10, frame='two')
+test_clock_guard_tolerates_pauses_and_detects_any_backward_jump
+assert not clock.observe(0) | assert not clock.observe(100) | assert not clock.observe(100) | assert clock.observe(10) | assert not clock.observe(20)
+test_deadline_is_rechecked_after_slow_processing
+assert queue.drain(lambda: next(times), lambda entry: True) == 1 | assert queue.counters.expired == 1
+test_failed_tf_crossing_deadline_expires_without_another_poll
+assert queue.drain(lambda: next(clock), lambda entry: False) == 0 | assert len(queue) == 0 | assert queue.counters.expired == 1 | assert queue.counters.processed == 0
+test_explicit_expiry_invalid_consumption_and_processing_are_distinct
+assert queue.drain(0.1, lambda entry: outcomes[entry.stamp_ns]) == 1 | assert (counts.processed, counts.expired, counts.invalid_consumed) == (1, 1, 1) | assert counts.invalid == 0 | assert counts.accepted == len(queue) + counts.processed + counts.expired + counts.overflow + counts.invalid_consumed
+test_final_expiry_checkpoint_keeps_observations_and_consumption_conserved
+assert queue.expire_pending(checkpoint) == 1 | assert report['latest_oldest_pending']['stamp_ns'] == 2 | assert report['latest_oldest_pending_age_ms'] == pytest.approx(100.04235) | assert report['observation_count'] == report['pending_observations'] + report['empty_observations'] == 1 | assert queue.counters.accepted == len(queue) + queue.counters.expired == 2 | assert queue.expire_pending(0.301) == 1 | assert report['empty_observations'] == 1 | assert report['oldest_pending_age_ms']['count'] == 1 | assert report['observation_count'] == report['pending_observations'] + report['empty_observations'] == 2
+test_exact_deadline_never_invokes_processing
+assert queue.drain(0.2, forbidden) == 0 | assert queue.counters.expired == 1
+test_single_frame_pipeline_is_distinguished_from_one_stuck_scan
+assert report['sampling_phase'] == 'after_drain' | assert report['max_queue_size'] == report['latest_queue_size'] == 1 | assert report['empty_observations'] == 0 | assert report['oldest_pending_distinct_count'] == 10 | assert report['oldest_pending_age_ms']['max'] == pytest.approx(10.0) | assert report['latest_oldest_pending']['stamp_ns'] == 10 | assert queue.counters.processed == 9 | assert queue.counters.expired == queue.counters.overflow == 0
+test_post_drain_age_does_not_hide_expiry_counter_or_change_deadlines
+assert report['capacity'] == 5 | assert report['tf_wait_timeout_s'] == 0.2 | assert report['max_queue_size'] == 3 | assert report['latest_queue_size'] == 0 | assert report['latest_oldest_pending_age_ms'] is None | assert report['empty_observations'] == 1 | assert report['oldest_pending_age_ms']['max'] == 100.0 | assert queue.counters.expired == 3 | assert queue.counters.processed == 0
+test_observations_expire_by_wall_window_and_reset_has_no_fake_zero_sample
+assert queue.observation_summary(0.0)['max_queue_size'] is None | assert report['observation_count'] == 2 | assert report['max_queue_size'] == 0 | assert report['oldest_pending_age_ms'] == {'count': 0} | assert report['max_observation_gap_ms'] == pytest.approx(4900.0) | assert report['observed_span_s'] == pytest.approx(4.9) | assert queue.observation_summary(10.21)['observation_count'] == 0 | assert queue.observation_summary(10.3)['observation_count'] == 0
+test_observation_clock_contract_rejects_nonfinite_and_backward_values
+
+
+FILE src/core/perception_module/usv_perception/test/test_launch.py
+_launch_graph
+assert path.is_file(), 'Independent perception launch entry is missing' | assert name == 'usv_perception', 'The standalone perception launch must use its own package resources'
+_value
+
+_nodes
+
+_parameters
+
+test_standalone_perception_starts_only_its_three_business_nodes
+assert not any((isinstance(action, IncludeLaunchDescription) for action in actions)) | assert set(nodes) == {('usv_perception', 'perception_mapping_node'), ('usv_perception', 'costmap_support_node'), ('usv_perception', 'perception_monitor')} | assert (mapping['width'], mapping['resolution'], mapping['offset_x'], mapping['offset_y']) == (1024, 0.5, 23.0, -10.0) | assert set(monitor) == {'watched_topics', 'use_sim_time'} | assert list(monitor['watched_topics']) == ['odom', 'costmap_raw', 'map'] | assert _value(context, node._Node__node_name) == name | assert _value(context, node._Node__node_namespace) == 'otter' | assert _parameters(context, node)['use_sim_time'] is True
+test_python_nodes_start_with_incompatible_python_on_path
+assert result.returncode == 0, result.stderr | assert result.stdout.strip() == sys.executable
+test_custom_yaml_and_namespace_reach_lidar_mapping_and_costmap
+assert (mapping['width'], mapping['resolution'], mapping['tf_wait_timeout']) == (256, 0.25, 0.15) | assert (mapping['offset_x'], mapping['offset_y']) == (41.0, -17.0) | assert [(_value(context, source), _value(context, target)) for source, target in mapper._Node__remappings] == [('scan', 'sensors/lidars/lidar/scan')] | assert costmap['update_frequency'] == 3.0 | assert (costmap['global_frame'], costmap['robot_base_frame']) == ('boat_two/map', 'boat_two/base_link') | assert list(costmap['plugins']) == ['obstacle_layer', 'inflation_layer'] | assert costmap['obstacle_layer.scan.topic'] == '/boat_two/sensors/lidars/lidar/scan' | assert costmap['obstacle_layer.scan.sensor_frame'] == 'boat_two/lidar_link' | assert [(_value(context, source), _value(context, target)) for source, target in costmap_node._Node__remappings] == [('costmap_raw', '/boat_two/costmap_raw'), ('costmap', '/boat_two/costmap'), ('costmap_updates', '/boat_two/costmap_updates')] | assert _value(context, node._Node__node_namespace) == 'boat_two' | assert _parameters(context, node)['use_sim_time'] is False
+test_empty_namespace_fails_before_returning_nodes
+
+test_costmap_requires_explicit_nonempty_plugin_list
+
+test_costmap_cannot_enable_static_layer
+
+test_config_rejects_ambiguous_yaml_or_parameter_dump
+
+
+FILE src/core/perception_module/usv_perception/test/test_mapping_deadline_ros.py
+adapter_with_tf
+assert (target, source) == ('map', 'lidar') | assert stamp.nanoseconds == 1000000000 | assert timeout.nanoseconds == 0
+test_successful_tf_at_or_after_deadline_cannot_modify_map
+assert adapter.pending.drain(lambda: clock[0], lambda pending: MappingNode._try_process(adapter, pending)) == 0 | assert adapter.integrated_scans == adapter.pending.counters.processed == 0 | assert adapter.pending.counters.expired == 1 | assert adapter.pending.counters.invalid_consumed == 0 | assert not adapter.waiting_ms
+test_invalid_consumed_scan_is_not_reported_as_processed
+assert adapter.pending.drain(lambda: clock[0], lambda pending: MappingNode._try_process(adapter, pending)) == 0 | assert adapter.invalid_scans == adapter.pending.counters.invalid_consumed == 1 | assert adapter.integrated_scans == adapter.pending.counters.processed == 0 | assert adapter.pending.counters.expired == 0
+test_timely_tf_keeps_original_integer_evidence
+assert adapter.pending.drain(lambda: clock[0], lambda pending: MappingNode._try_process(adapter, pending)) == 1 | assert adapter.mapper.data[4, 6] == 54 | assert adapter.integrated_scans == adapter.pending.counters.processed == 1 | assert adapter.waiting_ms[-1] == pytest.approx(199.99)
+test_node_final_expiry_and_observation_use_one_checkpoint
+assert queue.counters.expired == 1 | assert report['last_observed_monotonic_s'] == 0.20004235 | assert report['latest_queue_size'] == 0 | assert report['observation_count'] == report['empty_observations'] == 1 | assert report['oldest_pending_age_ms'] == {'count': 0}
+
+FILE src/core/perception_module/usv_perception/test/test_mapping_ros.py
+test_exact_tf_duplicate_expiry_clock_rollback_and_map_publication
+assert mapper.mapper.data[4, 6] == 54 | assert observation['sampling_phase'] == 'after_drain' | assert observation['capacity'] == 5 | assert observation['tf_wait_timeout_s'] == 0.2 | assert observation['observation_count'] > 0 | assert observation['max_queue_size'] >= 1 | assert observation['oldest_pending_age_ms']['count'] >= 1 | assert observation['latest_oldest_pending']['stamp_ns'] == 10100000000 | assert mapper.integrated_scans == 1 | assert mapper.pending.counters.resets == 1 | assert len(mapper.pending) == 0 | assert np.all(mapper.mapper.data == -1) | assert mapper.mapper.data[4, 6] == 54 | assert maps[-1].header.frame_id == 'perception_smoke/map' | assert maps[-1].info.width == 8 | assert maps[-1].data[4 * 8 + 6] == 54 | assert not result[0].successful | assert predicate()
+
+FILE src/core/perception_module/usv_perception/test/test_perception_monitor_ros.py
+test_perception_publisher_restart_rotates_identity
+assert importlib.util.find_spec('usv_perception.perception_monitor') is not None, 'Perception monitor is missing' | assert predicate() | assert monitor.session == original | assert monitor.session == original | assert monitor.ready

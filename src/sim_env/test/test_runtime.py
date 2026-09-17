@@ -28,6 +28,26 @@ def test_complete_offline_chain_and_route_reuse():
     assert not repeated.searched
 
 
+@pytest.mark.parametrize('shortcut', [False, True])
+@pytest.mark.parametrize('resampling', [False, True])
+def test_shortcut_and_resampling_combinations_keep_single_goal_route_reuse(shortcut, resampling):
+    job = request()
+    job.parameters['path_planner.enable_shortcut'] = shortcut
+    job.parameters['path_planner.enable_resample'] = resampling
+    job = replace(job, goal=(18.5, 18.5, .3))
+    first = plan_navigation(job)
+    assert first.status == AlgorithmStatus.SUCCESS, first.message
+    assert first.trajectory.goal == job.goal[:2]
+    if shortcut and not resampling:
+        assert len(first.route) == 2
+    latest = replace(job, route=first.route, state=replace(job.state, x=4.5, y=11.5, stamp=10.2))
+    second = plan_navigation(latest)
+    assert second.status == AlgorithmStatus.SUCCESS, second.message
+    assert not second.searched
+    assert second.trajectory.stamp == 10.2
+    assert second.trajectory.goal == job.goal[:2]
+
+
 def soft_escape_request():
     job = request()
     data = job.grid.data.copy()

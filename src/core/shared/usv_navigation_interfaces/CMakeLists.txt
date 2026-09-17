@@ -14,6 +14,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ControlReport.msg"
   "srv/NavigateTo.srv"
   "srv/NavigateRoute.srv"
+  "srv/StopNavigation.srv"
   DEPENDENCIES std_msgs geometry_msgs)
 ament_export_dependencies(rosidl_default_runtime)
 ament_package()

@@ -1,0 +1,18 @@
+velocity_planner:
+  pjso:
+    # Weight for reference position tracking in cost function
+    w_x: 10.0
+    # Weight for terminal position tracking in cost function
+    w_x_end: 10.0
+    # Allowed position tolerance for reaching the final goal
+    x_end_slack: 0.07
+    # Weight for velocity tracking in cost function
+    w_dx: 5.0
+    # Weight for terminal velocity tracking in cost function
+    w_dx_end: 5.0
+    # Weight for acceleration tracking in cost function
+    w_ddx: 2.0
+    # Weight for terminal acceleration tracking in cost function
+    w_ddx_end: 2.0
+    # Weight for jerk (acceleration derivative) minimization in cost function
+    w_dddx: 3.0

@@ -214,6 +214,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--qos", choices=("reliable", "best_effort"), default="best_effort")
     parser.add_argument("--send-topic", default="0211")
     parser.add_argument("--receive-topic", default="0211")
+    parser.add_argument('--stop-receive-topic', default='', help='optional extra stop subscription, e.g. 0331')
     parser.add_argument("--src", type=int, default=0)
     parser.add_argument("--dst", type=int, default=0)
     parser.add_argument("--max-payload-bytes", type=int, default=1_048_576)
@@ -232,6 +233,7 @@ def main() -> None:
         qos=args.qos,
         send_topic=args.send_topic,
         receive_topic=args.receive_topic,
+        stop_receive_topic=args.stop_receive_topic,
         src=args.src,
         dst=args.dst,
         max_payload_bytes=args.max_payload_bytes,

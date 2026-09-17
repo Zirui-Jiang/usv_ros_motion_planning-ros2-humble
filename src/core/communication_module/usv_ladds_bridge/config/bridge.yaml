@@ -14,6 +14,8 @@ usv_ladds_bridge:
     # 字符串引号不可去掉，否则 YAML 会丢失前导零。
     send_topic: "0211"
     receive_topic: "0211"
+    # 通用透传默认不启用；航路/停船联调使用 single_leg.yaml 中的 "0331"。
+    stop_receive_topic: ""
     src: 0
     dst: 0
     encryption: false

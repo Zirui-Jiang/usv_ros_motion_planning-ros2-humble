@@ -2,6 +2,11 @@ string request_id
 std_msgs/Header header
 usv_navigation_interfaces/RouteWaypoint[] waypoints
 float64 waypoint_radius
+# 最后一个必经点到达后持续位置保持，不将整项任务报为完成。
+bool guard_on_arrival
+bool guard_heading_enabled
+# header.frame_id 坐标系下的 ROS yaw 弧度，不是海事艏向度。
+float64 guard_heading
 ---
 bool accepted
 string reason

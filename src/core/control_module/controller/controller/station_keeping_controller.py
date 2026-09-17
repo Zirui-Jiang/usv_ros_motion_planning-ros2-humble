@@ -69,12 +69,16 @@ class StationKeepingController:
     def compute(self, state, target_pose, dt):
         """Return normalized thrust; target_pose is (world x, y, ROS yaw rad).
 
+        A None yaw requests position-only control: recovery may steer, but near
+        the target only yaw-rate damping remains. No measured yaw is latched.
+
         Successful holding never emits GOAL_REACHED. A runtime cancellation or
         stale-data gate must bypass this controller and publish zero immediately.
         """
         try:
-            target = tuple(float(v) for v in target_pose)
-            valid = len(target) == 3 and all(math.isfinite(v) for v in target)
+            target = tuple(None if v is None else float(v) for v in target_pose)
+            valid = (len(target) == 3 and all(v is not None and math.isfinite(v) for v in target[:2])
+                     and (target[2] is None or math.isfinite(target[2])))
             valid = valid and state.is_finite() and math.isfinite(dt) and dt > 0
         except (TypeError, ValueError, AttributeError):
             valid = False
@@ -89,14 +93,15 @@ class StationKeepingController:
         ex, ey = c * dx + s * dy, -s * dx + c * dy
         distance, speed = math.hypot(dx, dy), math.hypot(state.u, state.v)
         tolerance = cfg["position_tolerance"]
-        heading_error = wrap_angle(target[2] - state.psi)
+        heading_enabled = target[2] is not None
+        heading_error = wrap_angle(target[2] - state.psi) if heading_enabled else 0.
 
         # 进入对准使用更小距离门限，重新恢复使用较大门限，形成滞回以减少边界来回切换。
         if self.phase != "RECOVER" and (distance > .7 * tolerance or abs(ey) > .5 * tolerance):
             self.phase = "RECOVER"
             self._aligned_duration = 0.
         if self.phase == "RECOVER" and distance <= .3 * tolerance and speed <= cfg["recover_speed_tolerance"]:
-            self.phase = "ALIGN"
+            self.phase = "ALIGN" if heading_enabled else "HOLD"
             self._aligned_duration = 0.
         if self.phase == "ALIGN":
             aligned = (abs(heading_error) <= math.radians(.4 * cfg["heading_tolerance_deg"])

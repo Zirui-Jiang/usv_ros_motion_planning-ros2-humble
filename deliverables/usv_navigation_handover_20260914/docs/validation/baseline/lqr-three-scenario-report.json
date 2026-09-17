@@ -1,0 +1,278 @@
+{
+  "baseline_commit": "632734ba31478bdb833e15949287b53ae9334cf3",
+  "harness_commit": "8ebb23e89b51f2dbc908d3bd6c3049c8e1dd5ec2",
+  "configuration": {
+    "lookahead_distance_m": 1.0,
+    "switch_dist_m": 5.0,
+    "controller": "lqr",
+    "raw_costmap": "/otter/costmap_raw",
+    "domain_id": 183
+  },
+  "interpretation": "All three scenarios have actual initialized runs with trajectories and commands. Each violated an observed acceptance or diagnostic stopping condition; all are retained as interrupted, not completed timeout trials. Unrun repetitions are not labelled failures.",
+  "cases": [
+    {
+      "scenario": "straight",
+      "events": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_lqr_straight_01/events.jsonl",
+      "pause_source": "/home/usv/usv_migration/results/baseline-matrix-002-provenance/pause.json",
+      "harness_result": "interrupted",
+      "pause_reason": "20s_zero_command_stall",
+      "sample": {
+        "event": "sample",
+        "wall_monotonic_s": 39317.902007109,
+        "sim_time_s": 30.1,
+        "pose": [
+          37.712216631608236,
+          -10.347764089340002,
+          0.8972043258781071
+        ],
+        "body_velocity": [
+          0.005182599148512104,
+          -0.002745806509477648,
+          -6.33937112471578e-05
+        ],
+        "command": {
+          "left": 0.0,
+          "right": 0.0,
+          "lateral": 0.0
+        },
+        "goal_distance_m": 2.7344211304418353,
+        "cross_track_initial_m": 2.5337388672617167,
+        "cross_track_live_m": 2.5337388672617167,
+        "minimum_footprint_clearance_m": null,
+        "arrived": false,
+        "status": null
+      },
+      "goal_to_pause_wall_s": 30.73863514199911,
+      "actual_controller": "lqr",
+      "parameters": {
+        "usv_simulation.controller.controller_name": "lqr",
+        "usv_simulation.controller.controller_frequncy": 10.0,
+        "usv_simulation.controller.lqr_controller.goal_distance_tolerance": 1.0,
+        "usv_simulation.controller.lqr_controller.lookahead_time": 2.0,
+        "usv_simulation.controller.lqr_controller.discrete_dt": 0.1,
+        "usv_simulation.controller.lqr_controller.solve_eps": 0.1,
+        "usv_simulation.controller.lqr_controller.max_iterations": 1000,
+        "usv_simulation.controller.lqr_controller.Q_matrix_diag": [
+          100.0,
+          100.0,
+          100.0,
+          10.0,
+          10.0,
+          0.0
+        ],
+        "usv_simulation.controller.lqr_controller.R_matrix_diag": [
+          1.0,
+          1.0
+        ],
+        "usv_simulation.trajectory_planner.los.lookahead_distance": 1.0,
+        "usv_simulation.trajectory_planner.los.switch_dist": 5.0,
+        "usv_simulation.trajectory_planner.los.kp_yaw": 1.0,
+        "usv_simulation.trajectory_planner.los.yaw_rate_max": 0.3,
+        "usv_simulation.trajectory_planner.los.trajectory_time": 20.0,
+        "usv_simulation.trajectory_planner.los.trajectory_time_interval": 0.5,
+        "usv_simulation.trajectory_planner.los.goal_tolerance": 1.0,
+        "obstacle_factor": 0.5,
+        "dynamics.mass": 29.84,
+        "dynamics.max_force": 50.0,
+        "dynamics.D": 0.395,
+        "dynamics.cruising_speed": 1.0
+      },
+      "preflight_passed": true,
+      "reference_messages": 45,
+      "trajectory_messages": 45,
+      "command_values_recorded": 126,
+      "command_values_finite_and_in_range": true,
+      "closest_observed_goal_distance_m": 0.318682599301397,
+      "failed_processes": [
+        {
+          "process": "sim_env_node-7",
+          "pid": 78775,
+          "exit_code": -6
+        }
+      ],
+      "artifact_sha256": {
+        "events.jsonl": "3ef9c9bc5e145f6152c7182b9671d669df7744cc287f8846ef2f97167e4e7f27",
+        "launch.log": "3b024ba011318ab793bb1dc4ccc462e51a010c85989a75621ba31d8fa3ef9dfa",
+        "summary.json": "0ad1c443c5c71e611d39f6cf416f9cd7ec9b990231df89bba41f07e9eeb3523f"
+      }
+    },
+    {
+      "scenario": "turn",
+      "events": "/home/usv/usv_migration/results/baseline-lqr-diagnostics-003/turn/cpp_lqr_turn_01/events.jsonl",
+      "pause_source": "/home/usv/usv_migration/results/baseline-lqr-diagnostics-003/turn-supervision/pause.json",
+      "harness_result": "interrupted",
+      "pause_reason": "cross_track_limit",
+      "sample": {
+        "event": "sample",
+        "wall_monotonic_s": 66622.893211939,
+        "sim_time_s": 5.5,
+        "pose": [
+          27.60341382139358,
+          -10.178417909089593,
+          -0.43289086668481447
+        ],
+        "body_velocity": [
+          2.730993363898856,
+          0.764216726264273,
+          -0.5781707849912011
+        ],
+        "command": {
+          "left": 1.0,
+          "lateral": 0.0,
+          "right": 0.28395161032676697
+        },
+        "goal_distance_m": 12.686261149098703,
+        "cross_track_initial_m": 4.354002284799557,
+        "cross_track_live_m": 4.354002284799557,
+        "minimum_footprint_clearance_m": null,
+        "arrived": false,
+        "status": null
+      },
+      "goal_to_pause_wall_s": 2.454566577987862,
+      "actual_controller": "lqr",
+      "parameters": {
+        "usv_simulation.controller.controller_name": "lqr",
+        "usv_simulation.controller.controller_frequncy": 10.0,
+        "usv_simulation.controller.lqr_controller.goal_distance_tolerance": 1.0,
+        "usv_simulation.controller.lqr_controller.lookahead_time": 2.0,
+        "usv_simulation.controller.lqr_controller.discrete_dt": 0.1,
+        "usv_simulation.controller.lqr_controller.solve_eps": 0.1,
+        "usv_simulation.controller.lqr_controller.max_iterations": 1000,
+        "usv_simulation.controller.lqr_controller.Q_matrix_diag": [
+          100.0,
+          100.0,
+          100.0,
+          10.0,
+          10.0,
+          0.0
+        ],
+        "usv_simulation.controller.lqr_controller.R_matrix_diag": [
+          1.0,
+          1.0
+        ],
+        "usv_simulation.trajectory_planner.los.lookahead_distance": 1.0,
+        "usv_simulation.trajectory_planner.los.switch_dist": 5.0,
+        "usv_simulation.trajectory_planner.los.kp_yaw": 1.0,
+        "usv_simulation.trajectory_planner.los.yaw_rate_max": 0.3,
+        "usv_simulation.trajectory_planner.los.trajectory_time": 20.0,
+        "usv_simulation.trajectory_planner.los.trajectory_time_interval": 0.5,
+        "usv_simulation.trajectory_planner.los.goal_tolerance": 1.0,
+        "obstacle_factor": 0.5,
+        "dynamics.mass": 29.84,
+        "dynamics.max_force": 50.0,
+        "dynamics.D": 0.395,
+        "dynamics.cruising_speed": 1.0
+      },
+      "preflight_passed": true,
+      "reference_messages": 25,
+      "trajectory_messages": 25,
+      "command_values_recorded": 72,
+      "command_values_finite_and_in_range": true,
+      "closest_observed_goal_distance_m": 11.998954884872408,
+      "failed_processes": [
+        {
+          "process": "sim_env_node-7",
+          "pid": 80592,
+          "exit_code": -6
+        },
+        {
+          "process": "gzserver-1",
+          "pid": 80580,
+          "exit_code": -6
+        }
+      ],
+      "artifact_sha256": {
+        "events.jsonl": "ff4606b9e5d4addbaa2d9496cf6b9f3eb3573e4c85a409ac58b4c223fb45b2eb",
+        "launch.log": "3b33fb7d3403b7378c873d7ddf57361e57a4194544ff6df8f4375a8b54829e4a",
+        "summary.json": "c1c8421fdb8298172d501e3156613ba42e9f19b6d7752b412abe47284792dffe"
+      }
+    },
+    {
+      "scenario": "single_obstacle",
+      "events": "/home/usv/usv_migration/results/baseline-lqr-diagnostics-003/single_obstacle/cpp_lqr_single_obstacle_01/events.jsonl",
+      "pause_source": "/home/usv/usv_migration/results/baseline-lqr-diagnostics-003/single_obstacle-supervision/pause.json",
+      "harness_result": "interrupted",
+      "pause_reason": "footprint_clearance_limit",
+      "sample": {
+        "event": "sample",
+        "wall_monotonic_s": 66638.182096209,
+        "sim_time_s": 8.4,
+        "pose": [
+          26.979734237652174,
+          -9.840045138113865,
+          0.4732089994643823
+        ],
+        "body_velocity": [
+          2.4813215099105417,
+          -0.7798168508632979,
+          0.6602752018067728
+        ],
+        "command": {
+          "left": 0.14909015595912933,
+          "right": 1.0,
+          "lateral": 0.0
+        },
+        "goal_distance_m": 8.021860660503258,
+        "cross_track_initial_m": 1.5900451381138652,
+        "cross_track_live_m": 0.24675077881856955,
+        "minimum_footprint_clearance_m": -0.25014150187628864,
+        "arrived": false,
+        "status": null
+      },
+      "goal_to_pause_wall_s": 2.3225128109916113,
+      "actual_controller": "lqr",
+      "parameters": {
+        "usv_simulation.controller.controller_name": "lqr",
+        "usv_simulation.controller.controller_frequncy": 10.0,
+        "usv_simulation.controller.lqr_controller.goal_distance_tolerance": 1.0,
+        "usv_simulation.controller.lqr_controller.lookahead_time": 2.0,
+        "usv_simulation.controller.lqr_controller.discrete_dt": 0.1,
+        "usv_simulation.controller.lqr_controller.solve_eps": 0.1,
+        "usv_simulation.controller.lqr_controller.max_iterations": 1000,
+        "usv_simulation.controller.lqr_controller.Q_matrix_diag": [
+          100.0,
+          100.0,
+          100.0,
+          10.0,
+          10.0,
+          0.0
+        ],
+        "usv_simulation.controller.lqr_controller.R_matrix_diag": [
+          1.0,
+          1.0
+        ],
+        "usv_simulation.trajectory_planner.los.lookahead_distance": 1.0,
+        "usv_simulation.trajectory_planner.los.switch_dist": 5.0,
+        "usv_simulation.trajectory_planner.los.kp_yaw": 1.0,
+        "usv_simulation.trajectory_planner.los.yaw_rate_max": 0.3,
+        "usv_simulation.trajectory_planner.los.trajectory_time": 20.0,
+        "usv_simulation.trajectory_planner.los.trajectory_time_interval": 0.5,
+        "usv_simulation.trajectory_planner.los.goal_tolerance": 1.0,
+        "obstacle_factor": 0.5,
+        "dynamics.mass": 29.84,
+        "dynamics.max_force": 50.0,
+        "dynamics.D": 0.395,
+        "dynamics.cruising_speed": 1.0
+      },
+      "preflight_passed": true,
+      "reference_messages": 24,
+      "trajectory_messages": 24,
+      "command_values_recorded": 66,
+      "command_values_finite_and_in_range": true,
+      "closest_observed_goal_distance_m": 8.021860660503258,
+      "failed_processes": [
+        {
+          "process": "sim_env_node-7",
+          "pid": 80792,
+          "exit_code": -6
+        }
+      ],
+      "artifact_sha256": {
+        "events.jsonl": "16ba6bd51b8c0cb6938e08ffe1a770b7e762e4e6216cf0649f9d686502cda620",
+        "launch.log": "d3847bbf964b9a52cdb58c3db1c0458c2ad96886bfe9fc5638fe110636fe1cd1",
+        "summary.json": "4d4a6cd1962b75cbeec7c4cbc01d0811e40d0926141763fffdf1e44bc51082ce"
+      },
+      "instantaneous_rectangle_circle_clearance_at_pause_m": -0.22183477817540975
+    }
+  ]
+}

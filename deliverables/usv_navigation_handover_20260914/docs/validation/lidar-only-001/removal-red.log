@@ -1,0 +1,32 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_removed_sensor_parameters_are_rejected_instead_of_silently_accepted[removed0] _
+
+removed = {'navigation.require_radar': True}
+
+    @pytest.mark.parametrize("removed", [
+        {"navigation.require_radar": True},
+        {"navigation.radar_timeout": 0.5},
+    ])
+    def test_removed_sensor_parameters_are_rejected_instead_of_silently_accepted(removed):
+>       with pytest.raises(ValueError, match="Unsupported navigation parameters"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+src/sim_env/test/test_configuration.py:21: Failed
+_ test_removed_sensor_parameters_are_rejected_instead_of_silently_accepted[removed1] _
+
+removed = {'navigation.radar_timeout': 0.5}
+
+    @pytest.mark.parametrize("removed", [
+        {"navigation.require_radar": True},
+        {"navigation.radar_timeout": 0.5},
+    ])
+    def test_removed_sensor_parameters_are_rejected_instead_of_silently_accepted(removed):
+>       with pytest.raises(ValueError, match="Unsupported navigation parameters"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+src/sim_env/test/test_configuration.py:21: Failed
+=========================== short test summary info ============================
+FAILED src/sim_env/test/test_configuration.py::test_removed_sensor_parameters_are_rejected_instead_of_silently_accepted[removed0]
+FAILED src/sim_env/test/test_configuration.py::test_removed_sensor_parameters_are_rejected_instead_of_silently_accepted[removed1]
+2 failed, 19 deselected in 0.63s

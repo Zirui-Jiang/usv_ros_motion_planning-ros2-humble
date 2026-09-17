@@ -1,5 +1,5 @@
 # 共享全局规划配置：选择全局算法、设置规划预算/输入超时，并配置膨胀阈值及重采样。
-# 通过 planner_name:=hybrid_astar 切换；默认仍为原 A*。
+# 当前使用 Hybrid A*；可通过 planner_name:=astar 临时切换普通 A*。
 planner_name: hybrid_astar
 navigation:
   # 规划投递频率为 Hz；其后的 state/map/trajectory/planning_timeout 单位均为秒。
@@ -28,6 +28,9 @@ path_planner:
   expand_zone: true
   # safety corridor
   show_safety_corridor: false
+  # 仅对普通 A* 执行带碰撞检查的冗余点剪枝；false 可关闭作对照。
+  # 不修改 Hybrid A* 的圆弧路径，也不改 Dijkstra/GBFS 的既有行为。
+  enable_shortcut: true
   # resample path [m]
   enable_resample: true
   # 历史键名 ratio 在当前实现中表示弧长采样间距，单位米。

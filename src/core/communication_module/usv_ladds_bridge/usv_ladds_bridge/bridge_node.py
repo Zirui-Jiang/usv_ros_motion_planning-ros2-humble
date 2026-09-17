@@ -11,7 +11,7 @@ from rcl_interfaces.msg import ParameterDescriptor
 from rclpy.node import Node
 from std_msgs.msg import String, UInt8MultiArray
 
-from .config import BridgeConfig, decode_utf8, drain_received, packet_info_json
+from .config import BridgeConfig, decode_utf8, drain_received, packet_info_json, receive_channel
 from .ladds_client import LaDDSClient
 
 
@@ -37,6 +37,8 @@ class LaDDSBridgeNode(Node):
 
         try:
             config = self._read_config()
+            self._receive_topic = config.receive_topic
+            self._stop_receive_topic = config.stop_receive_topic
             if config.backend == "tcp":
                 if tcp_client_factory is None:
                     from .tcp_client import TcpRelayClient
@@ -58,6 +60,7 @@ class LaDDSBridgeNode(Node):
                     qos=config.qos,
                     send_topic=config.send_topic,
                     receive_topic=config.receive_topic,
+                    stop_receive_topic=config.stop_receive_topic,
                     src=config.src,
                     dst=config.dst,
                     max_payload_bytes=config.max_payload_bytes,
@@ -68,6 +71,9 @@ class LaDDSBridgeNode(Node):
 
             self._text_rx_publisher = self.create_publisher(
                 String, "/ladds/rx", config.queue_depth
+            )
+            self._stop_rx_publisher = self.create_publisher(
+                String, '/ladds/stop_rx', config.queue_depth
             )
             self._bytes_rx_publisher = self.create_publisher(
                 UInt8MultiArray, "/ladds/rx_bytes", config.queue_depth
@@ -178,7 +184,13 @@ class LaDDSBridgeNode(Node):
 
             text_message = String()
             text_message.data = decoded
-            self._text_rx_publisher.publish(text_message)
+            channel = receive_channel(packet.topic, self._receive_topic, self._stop_receive_topic)
+            if channel == 'stop':
+                self._stop_rx_publisher.publish(text_message)
+            elif channel == 'route':
+                self._text_rx_publisher.publish(text_message)
+            else:
+                self.get_logger().warning(f'Ignoring unconfigured DDS text topic: {packet.topic!r}')
 
     def _report_dropped_messages(self, client: Any) -> None:
         try:

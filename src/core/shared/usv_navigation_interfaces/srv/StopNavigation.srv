@@ -1,0 +1,9 @@
+# 同次停止重试必须使用同一 ID；接收成功不等于实船已停止。
+string request_id
+# 同时撤销在途航渡请求，防止它们在停止以后才被服务端接受。
+string[] superseded_request_ids
+---
+bool accepted
+string reason
+string planner_session
+uint64 task_id

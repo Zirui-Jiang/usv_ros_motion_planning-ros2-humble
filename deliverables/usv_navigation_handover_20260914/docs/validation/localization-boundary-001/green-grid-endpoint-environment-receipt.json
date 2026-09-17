@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "verified_utc": "2026-09-11T04:05:36.095893+00:00",
+  "workspace_commit": "3afb25f84232e560c62599a721dc0bfbe1a21657",
+  "workspace_kind": "ordinary installed workspace; not the pending final clean clone/build",
+  "source_path": "/home/usv/usv_migration/python/src/sim_env/src/fake_localization_node.cpp",
+  "source_sha256": "ec5f0d59cc35e6f76066add8cd0e3531d422ae3d7b6f5edfc6566bf800a36068",
+  "binary_path": "/home/usv/usv_migration/python/install/sim_env/lib/sim_env/fake_localization_node",
+  "binary_sha256": "85999f583f4da714a83bc5650d7bdc449770f30e5985ee691784b53f6b8eead0",
+  "install_audit_path": "/home/usv/usv_migration/results/python-grid-endpoint.install-audit.json",
+  "install_audit_sha256": "81b5f542a2be68e9af6d63a3a16939669eaa35636c7ea7773564a2b1ec901bfd",
+  "actual_frame_chain": [
+    "localization_smoke_62066bd65379/map",
+    "localization_smoke_62066bd65379/odom",
+    "localization_smoke_62066bd65379/base_link"
+  ],
+  "frame_log_lines": [
+    {
+      "line": 1,
+      "text": "[INFO] [1789099482.538861849] [localization_smoke_62066bd65379.fake_localization]: [fake_localization] model='otter' frames: localization_smoke_62066bd65379/map -> localization_smoke_62066bd65379/odom -> localization_smoke_62066bd65379/base_link"
+    }
+  ],
+  "normal_launch_expected_frames": [
+    "otter/map",
+    "otter/odom",
+    "otter/base_link"
+  ],
+  "normal_launch_frame_evidence": "Pending the next ordinary candidate launch log; this isolated test used a random namespace.",
+  "identity_source_lines": [
+    97,
+    102
+  ],
+  "owned_pid_absent_after_test": true,
+  "signals": [
+    {
+      "pid": 112410,
+      "starttime_ticks": 7887932,
+      "signal": "SIGINT",
+      "monotonic_s": 78880.613477624
+    }
+  ],
+  "original_receipt_sha256": "b73a7492c37b1f78d1ca2f12a065220d9c4869fdf04353434023ac8783367759",
+  "log_sha256": "0ea8cd95a152e931bcebc1f6ecf5377302f4cb4d18dcaa38f304ebec3539abd4",
+  "limitations": [
+    "This verifies array-boundary rejection and one legal-stream SIGINT exit; it does not establish the cause or elimination of the earlier sporadic shutdown -11."
+  ]
+}

@@ -13,6 +13,13 @@ uint64 sequence
 bool active
 # 中间必经点为 true，控制器不得应用终点停车判定；缺省 false 保持单目标语义。
 bool pass_through
+# 空值与 NAVIGATE 均表示普通导航；BRAKE 不要求位置目标，HOLD 持续保持 goal。
+string motion_mode
+# 仅最终航段允许转入持续保持；艏向启用标志与零度艏向必须分开。
+bool guard_on_arrival
+bool guard_heading_enabled
+# 当前 header.frame_id 下的 ROS yaw，单位弧度；disabled 时忽略。
+float64 guard_heading
 # 真实导航目标 (x米, y米, theta弧度)，完成判定不使用量化后的栅格终点。
 geometry_msgs/Pose2D goal
 string state

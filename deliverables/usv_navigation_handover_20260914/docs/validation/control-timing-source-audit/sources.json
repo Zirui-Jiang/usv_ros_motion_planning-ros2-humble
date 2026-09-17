@@ -1,0 +1,358 @@
+{
+  "schema_version": 1,
+  "recorded_utc": "2026-09-11T05:03:46.763551+00:00",
+  "scope": "Read-only callback/source timing audit; no tests, ROS nodes or Gazebo launched; only this new documentation directory written.",
+  "baseline_head": "632734ba31478bdb833e15949287b53ae9334cf3",
+  "original_cpp_baseline_tag": "ed4ed1803b1d520e19712df82f54ffac6ff313b3",
+  "windows_head_at_collection": "dbef058f754fe1f26d1337cbde4a874ddf384fb8",
+  "python_scope_note": "Current Windows source bytes identified by the per-file SHA; this audit is not an installed-runtime measurement.",
+  "cpp_sources": [
+    {
+      "absolute_path": "/home/usv/usv_migration/baseline/src/sim_env/src/simulation.cpp",
+      "sha256": "9e8ba2de7d0d125a58fee810fa583e7beddcf2f4b13da896c1c9c86b0de014dd",
+      "bytes": 11046,
+      "excerpts": [
+        {
+          "start_line": 111,
+          "end_line": 122,
+          "text": "111:   controller_timer_ = node_->create_wall_timer(\n112:       std::chrono::duration<double>(1.0 / controller_->control_frequency()),\n113:       std::bind(&Simulator::onControlCallBack, this));\n114: \n115:   // start FSM\n116:   cur_fsm_state_ = FSM_STATE::PENDING;\n117: \n118:   // ROS related\n119:   goal_sub_ = node_->create_subscription<geometry_msgs::msg::PoseStamped>(\n120:       \"goal\", 1, std::bind(&Simulator::onGoalCallback, this, std::placeholders::_1));\n121:   odom_sub_ = node_->create_subscription<nav_msgs::msg::Odometry>(\n122:       \"odom\", 1, std::bind(&Simulator::onOdomCallback, this, std::placeholders::_1));"
+        },
+        {
+          "start_line": 153,
+          "end_line": 161,
+          "text": "153:     R_ERROR << \"Trajectory planning failed!\";\n154:     return;\n155:   }\n156: \n157:   // controller prepare\n158:   controller_->setGlobalPlan(global_path_);\n159:   controller_->setLocalPlan(local_traj_);\n160: \n161:   cur_fsm_state_ = FSM_STATE::NAVIGATING;"
+        },
+        {
+          "start_line": 164,
+          "end_line": 179,
+          "text": "164: void Simulator::onOdomCallback(const nav_msgs::msg::Odometry::SharedPtr odom)\n165: {\n166:   odom_ = *odom;\n167:   if (cur_fsm_state_ == FSM_STATE::PENDING)\n168:   {\n169:     return;\n170:   }\n171: \n172:   // update USV state\n173:   common::structure::USV_STATE usv_state;\n174:   usv_state.x = odom_.pose.pose.position.x;\n175:   usv_state.y = odom_.pose.pose.position.y;\n176:   usv_state.psi = tf2::getYaw(odom_.pose.pose.orientation);\n177:   usv_state.x_dot = odom_.twist.twist.linear.x;\n178:   usv_state.y_dot = odom_.twist.twist.linear.y;\n179:   usv_state.psi_dot = odom_.twist.twist.angular.z;"
+        },
+        {
+          "start_line": 188,
+          "end_line": 223,
+          "text": "188:   if (global_path_.empty())\n189:   {\n190:     R_WARN << \"No global path found!\";\n191:     return;\n192:   }\n193: \n194:   if (local_traj_.empty())\n195:   {\n196:     R_WARN << \"No local trajectory found!\";\n197:     return;\n198:   }\n199: \n200:   // collision detection\n201:   for (const auto& traj_pt : local_traj_)\n202:   {\n203:     if (_isCollision(traj_pt.x, traj_pt.y))\n204:     {\n205:       // path replan\n206:       path_planner_->makePlan(start_point, goal_point, global_path_);\n207:       break;\n208:     }\n209:   }\n210: \n211:   // prune\n212:   path_planner::PathPlannerCore::prune(start_point, global_path_);\n213: \n214:   // trajectory generation\n215:   if (!traj_planner_->plan(global_path_, usv_state, local_traj_))\n216:   {\n217:     R_WARN << \"Trajectory planning failed, using the old plan.\";\n218:   }\n219: \n220:   // controller prepare\n221:   controller_->setGlobalPlan(global_path_);\n222:   controller_->setLocalPlan(local_traj_);\n223:   controller_->setState(usv_state);"
+        },
+        {
+          "start_line": 236,
+          "end_line": 256,
+          "text": "236: void Simulator::onControlCallBack()\n237: {\n238:   if (local_traj_.size() < 2 || cur_fsm_state_ == FSM_STATE::PENDING)\n239:   {\n240:     return;\n241:   }\n242: \n243:   if (cur_fsm_state_ != FSM_STATE::PENDING && controller_->isGoalReached())\n244:   {\n245:     cur_fsm_state_ = FSM_STATE::PENDING;\n246:   }\n247: \n248:   controller::ControlCommand cmd_vel;\n249:   controller_->computeControlCommand(cmd_vel);\n250:   std_msgs::msg::Float32 thrust_cmd_left, thrust_cmd_lateral, thrust_cmd_right;\n251:   thrust_cmd_left.data = static_cast<float>(cmd_vel.thrust_cmd_left());\n252:   thrust_cmd_lateral.data = static_cast<float>(cmd_vel.thrust_cmd_lateral());\n253:   thrust_cmd_right.data = static_cast<float>(cmd_vel.thrust_cmd_right());\n254:   left_thrust_cmd_pub_->publish(thrust_cmd_left);\n255:   lateral_thrust_cmd_pub_->publish(thrust_cmd_lateral);\n256:   right_thrust_cmd_pub_->publish(thrust_cmd_right);"
+        }
+      ],
+      "original_cpp_baseline_blob_sha256": "9e8ba2de7d0d125a58fee810fa583e7beddcf2f4b13da896c1c9c86b0de014dd",
+      "matches_original_cpp_baseline_blob": true
+    },
+    {
+      "absolute_path": "/home/usv/usv_migration/baseline/src/sim_env/src/simulation_node.cpp",
+      "sha256": "590e1ad66bda6842d9135e3bc3277738de789079725a6444c448e1af102cfdb3",
+      "bytes": 2441,
+      "excerpts": [
+        {
+          "start_line": 64,
+          "end_line": 68,
+          "text": "64:   rmp::Simulator sim_env(node, tf_buffer.get(), costmap_ros.get());\n65: \n66:   rclcpp::spin(node);\n67:   rclcpp::shutdown();\n68:   return 0;"
+        }
+      ],
+      "original_cpp_baseline_blob_sha256": "590e1ad66bda6842d9135e3bc3277738de789079725a6444c448e1af102cfdb3",
+      "matches_original_cpp_baseline_blob": true
+    },
+    {
+      "absolute_path": "/home/usv/usv_migration/baseline/src/core/controller/controller/src/controller_factory.cpp",
+      "sha256": "1209e15dd2046ebe0343ee0b368461bde95bc329b28759257e987ca3f979bfa7",
+      "bytes": 4872,
+      "excerpts": [
+        {
+          "start_line": 43,
+          "end_line": 46,
+          "text": "43:   // controller related parameters\n44:   const std::string controller_namespace = \"usv_simulation.controller.\";\n45:   double controller_frequncy = nh->declare_parameter<double>(controller_namespace + \"controller_frequncy\", 10.0);\n46:   std::string controller_name = nh->declare_parameter<std::string>(controller_namespace + \"controller_name\", \"pid\");"
+        }
+      ],
+      "original_cpp_baseline_blob_sha256": "1209e15dd2046ebe0343ee0b368461bde95bc329b28759257e987ca3f979bfa7",
+      "matches_original_cpp_baseline_blob": true
+    },
+    {
+      "absolute_path": "/home/usv/usv_migration/baseline/src/core/controller/controller/src/controller.cpp",
+      "sha256": "e4fd56a6f4a4928e6906990535178c6943d1eb137102b0f788033948c3f0f2f9",
+      "bytes": 3696,
+      "excerpts": [
+        {
+          "start_line": 38,
+          "end_line": 42,
+          "text": "38: Controller::Controller(double control_frequency, rmp::common::structure::USV_MODEL usv_model,\n39:                        nav2_costmap_2d::Costmap2DROS* costmap_ros, tf2_ros::Buffer* tf)\n40:   : control_frequency_(control_frequency)\n41:   , control_dt_(1.0 / control_frequency)\n42:   , usv_model_(usv_model)"
+        },
+        {
+          "start_line": 113,
+          "end_line": 133,
+          "text": "113:   {\n114:     R_ERROR << \"controller has not been initialized.\";\n115:     return false;\n116:   }\n117: \n118:   R_DEBUG << \"Got new local plan\";\n119: \n120:   // set new plan\n121:   local_plan_.clear();\n122:   local_plan_ = local_plan;\n123:   return true;\n124: }\n125: \n126: /**\n127:  * @brief Sets the current state of the USV\n128:  * @param state the current state of the USV\n129:  */\n130: void Controller::setState(const rmp::common::structure::USV_STATE& state)\n131: {\n132:   usv_state_ = state;\n133: }"
+        }
+      ],
+      "original_cpp_baseline_blob_sha256": "e4fd56a6f4a4928e6906990535178c6943d1eb137102b0f788033948c3f0f2f9",
+      "matches_original_cpp_baseline_blob": true
+    },
+    {
+      "absolute_path": "/home/usv/usv_migration/baseline/src/core/controller/controller/src/pid_controller/otter_pid_controller.cpp",
+      "sha256": "5d7fbf528e2f49289bd272d26c88e827902534d8da108c1adba053d5f2945cd8",
+      "bytes": 5877,
+      "excerpts": [
+        {
+          "start_line": 90,
+          "end_line": 94,
+          "text": "90: \n91:   // lookahead\n92:   TrajectoryCell desired_pt;\n93:   local_plan_.getReferencWithTime(lookahead_time_, desired_pt);\n94: "
+        },
+        {
+          "start_line": 128,
+          "end_line": 131,
+          "text": "128:   speed_error_ = desired_speed - vel_b.norm();\n129:   double p_term = k_p_speed_ * speed_error_;\n130:   i_speed_term_ += k_i_speed_ * speed_error_ * control_dt_;\n131:   d_speed_term_ = k_d_speed_ * (speed_error_ - last_speed_error_) / control_dt_;"
+        },
+        {
+          "start_line": 143,
+          "end_line": 146,
+          "text": "143:   course_error_ = pi2pi(desired_heading - usv_state_.psi);\n144:   double p_term = k_p_course_ * course_error_;\n145:   i_course_term_ += k_i_course_ * course_error_ * control_dt_;\n146:   d_course_term_ = k_d_course_ * (course_error_ - last_course_error_) / control_dt_;"
+        }
+      ],
+      "original_cpp_baseline_blob_sha256": "5d7fbf528e2f49289bd272d26c88e827902534d8da108c1adba053d5f2945cd8",
+      "matches_original_cpp_baseline_blob": true
+    },
+    {
+      "absolute_path": "/home/usv/usv_migration/baseline/src/core/controller/controller/src/lqr_controller/otter_lqr_controller.cpp",
+      "sha256": "816f8e6060d294314e1e49232f2312c3f9bdd351db8a61cf6fd44939c885c2a6",
+      "bytes": 7711,
+      "excerpts": [
+        {
+          "start_line": 98,
+          "end_line": 101,
+          "text": "98:   // lookahead\n99:   TrajectoryCell desired_pt;\n100:   local_plan_.getReferencWithTime(lookahead_time_, desired_pt);\n101: "
+        }
+      ],
+      "original_cpp_baseline_blob_sha256": "816f8e6060d294314e1e49232f2312c3f9bdd351db8a61cf6fd44939c885c2a6",
+      "matches_original_cpp_baseline_blob": true
+    }
+  ],
+  "cpp_localization_source": {
+    "absolute_path": "/home/usv/usv_migration/baseline/src/sim_env/src/fake_localization_node.cpp",
+    "sha256": "b3f0e7a47b1328787c9fba138b0ec04701b679e6951828ed4a653df176789a4e",
+    "bytes": 5168,
+    "excerpts": [
+      {
+        "start_line": 54,
+        "end_line": 57,
+        "text": "54:     odom_pub_ = create_publisher<nav_msgs::msg::Odometry>(\"odom\", 1);\n55:     model_states_sub_ = create_subscription<gazebo_msgs::msg::ModelStates>(\n56:         \"/gazebo/model_states\", 1,\n57:         std::bind(&FakeLocalizationNode::modelStatesCallback, this, std::placeholders::_1));"
+      },
+      {
+        "start_line": 77,
+        "end_line": 80,
+        "text": "77: \n78:       const rclcpp::Time stamp = now();\n79:       // Skip stale/duplicate stamps: keeps the TF stream strictly monotonic\n80:       // even if the sim clock stalls between messages."
+      },
+      {
+        "start_line": 80,
+        "end_line": 83,
+        "text": "80:       // even if the sim clock stalls between messages.\n81:       if (have_last_ && stamp <= last_stamp_)\n82:       {\n83:         return;"
+      },
+      {
+        "start_line": 84,
+        "end_line": 87,
+        "text": "84:       }\n85:       have_last_ = true;\n86:       last_stamp_ = stamp;\n87: "
+      },
+      {
+        "start_line": 122,
+        "end_line": 125,
+        "text": "122:       odom.twist.twist.angular.z = twist_world.angular.z;\n123:       odom_pub_->publish(odom);\n124:       return;\n125:     }"
+      },
+      {
+        "start_line": 136,
+        "end_line": 139,
+        "text": "136: \n137:   bool have_last_{ false };\n138:   rclcpp::Time last_stamp_;\n139: };"
+      }
+    ]
+  },
+  "python_sources": [
+    {
+      "absolute_path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/src/sim_env/sim_env/simulation.py",
+      "sha256": "96f701a8c2b48f90f7a34effb349e73bf7a93780f522c8310b8824d0d07f1718",
+      "bytes": 18177,
+      "excerpts": [
+        {
+          "start_line": 82,
+          "end_line": 85,
+          "text": "82:         # A steady timer also emits zero commands while simulation time is paused.\n83:         self.steady_clock = Clock(clock_type=ClockType.STEADY_TIME)\n84:         self.create_timer(1.0 / self.config[C + 'control_frequency'], self._control, clock=self.steady_clock)\n85:         self.create_timer(1.0 / self.config['navigation.planning_frequency'], self._planning)"
+        },
+        {
+          "start_line": 128,
+          "end_line": 151,
+          "text": "128:     def _on_odom(self, message):\n129:         self.pending_odom = message\n130:         self._consume_odom()\n131: \n132:     def _consume_odom(self):\n133:         message = self.pending_odom\n134:         if message is None:\n135:             return\n136:         try:\n137:             if message.child_frame_id != self.base_frame:\n138:                 raise ValueError('odometry twist must use ' + self.base_frame)\n139:             pose = self._pose(message.pose.pose, message.header.frame_id, message.header.stamp)\n140:             twist = message.twist.twist\n141:             state = VesselState(*pose, twist.linear.x, twist.linear.y, twist.angular.z,\n142:                                 seconds(message.header.stamp), self.frame)\n143:             if not state.is_finite():\n144:                 raise ValueError('odometry contains nonfinite state')\n145:             self.state = state\n146:             self.pending_odom = None\n147:         except TransformException:\n148:             self.counters['odom_tf_waits'] += 1\n149:         except ValueError as error:\n150:             self.pending_odom = None\n151:             self.counters['invalid_odom'] += 1"
+        },
+        {
+          "start_line": 221,
+          "end_line": 230,
+          "text": "221:     def _planning(self):\n222:         now = self.now_seconds()\n223:         if self.goal is None or self.state is None or self.grid is None:\n224:             return\n225:         if not fresh(self.state.stamp, now, self.config['navigation.state_timeout']) or not fresh(\n226:                 self.grid.stamp, now, self.config['navigation.map_timeout']):\n227:             return\n228:         try:\n229:             self.worker.offer(PlanningRequest(self.version, self.goal, self.state, self.grid,\n230:                                                self.route.copy(), dict(self.config)))"
+        },
+        {
+          "start_line": 237,
+          "end_line": 249,
+          "text": "237:     def _consume_plan(self):\n238:         try:\n239:             result = self.worker.poll()\n240:         except Exception as error:\n241:             self.trajectory = None\n242:             self.mode, self.reason = 'PLANNING_ERROR', str(error)\n243:             self.counters['worker_errors'] += 1\n244:             return\n245:         if result is None:\n246:             return\n247:         self.timings['planning_ms'].append(result.elapsed * 1000)\n248:         if result.version != self.version or self.goal is None:\n249:             self.counters['stale_results'] += 1"
+        },
+        {
+          "start_line": 260,
+          "end_line": 267,
+          "text": "260:         if not self._trajectory_clear(result.trajectory):\n261:             self.trajectory = None\n262:             self.route = np.empty((0, 3))\n263:             self.mode, self.reason = 'WAITING_REFERENCE', 'Worker reference conflicts with latest map'\n264:             self.counters['unsafe_results'] += 1\n265:             return\n266:         self.trajectory = result.trajectory\n267:         self.trajectory_pub.publish(make_path(self.trajectory.points[:, [2, 3, 4]], self.frame, stamp))"
+        },
+        {
+          "start_line": 273,
+          "end_line": 287,
+          "text": "273:     def _control(self):\n274:         begun = time.perf_counter()\n275:         now = self.now_seconds()\n276:         if now < self.last_clock - 1e-6:\n277:             self._reset_task('CLOCK_RESET', 'Simulation clock moved backwards', clear_inputs=True)\n278:             self.counters['clock_resets'] += 1\n279:         dt = now - self.last_control\n280:         self.last_clock = self.last_control = now\n281:         command = ControlCommand()\n282:         try:\n283:             self._apply_parameters()\n284:             self._consume_odom()\n285:             self._consume_plan()\n286:             if self.goal is not None:\n287:                 ready = readiness(now, self.state, self.grid, self.trajectory, self.config)"
+        },
+        {
+          "start_line": 297,
+          "end_line": 310,
+          "text": "297:                 if ready == 'NAVIGATING' and dt > 0:\n298:                     self.mode = ready\n299:                     command = self.controller.compute(self.state, self.trajectory, dt)\n300:                     if command.status == AlgorithmStatus.GOAL_REACHED:\n301:                         self._reset_task('GOAL_REACHED')\n302:                     elif command.status == AlgorithmStatus.SETTLING:\n303:                         self.mode, self.reason = 'SETTLING', command.message\n304:                     elif command.status != AlgorithmStatus.SUCCESS or not command.is_valid():\n305:                         self.mode, self.reason = 'CONTROL_ERROR', command.message\n306:                         # Count every control-step failure; one-second status\n307:                         # snapshots alone can miss a transient solver timeout.\n308:                         self.counters['control_result_' + command.status.value] += 1\n309:                         command = ControlCommand()\n310:                 elif dt <= 0:"
+        },
+        {
+          "start_line": 356,
+          "end_line": 358,
+          "text": "356:     try:\n357:         node = Simulator()\n358:         rclpy.spin(node)"
+        }
+      ]
+    },
+    {
+      "absolute_path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/src/sim_env/sim_env/runtime.py",
+      "sha256": "0725b4bb4bf8f2648c3c9e27eca6d6c13c69fbe3e4ef1b6942dea9e61ebab1a8",
+      "bytes": 8821,
+      "excerpts": [
+        {
+          "start_line": 134,
+          "end_line": 159,
+          "text": "134: class LatestPlanWorker:\n135:     \"\"\"One executing job and one replaceable pending snapshot, no unbounded queue.\"\"\"\n136:     def __init__(self, executor=None):\n137:         if executor is None:\n138:             import multiprocessing\n139:             from concurrent.futures import ProcessPoolExecutor\n140:             executor = ProcessPoolExecutor(1, mp_context=multiprocessing.get_context('spawn'))\n141:         self.executor = executor\n142:         self.future = None\n143:         self.pending = None\n144:         self.replaced = 0\n145: \n146:     def offer(self, request):\n147:         if self.pending is not None:\n148:             self.replaced += 1\n149:         self.pending = request\n150:         self._start()\n151: \n152:     def _start(self):\n153:         if self.future is None and self.pending is not None:\n154:             request, self.pending = self.pending, None\n155:             self.future = self.executor.submit(plan_navigation, request)\n156: \n157:     def poll(self):\n158:         if self.future is None or not self.future.done():\n159:             return None"
+        },
+        {
+          "start_line": 169,
+          "end_line": 174,
+          "text": "169:             if (self.pending is not None and self.pending.version == result.version\n170:                     and result.status in (AlgorithmStatus.SUCCESS, AlgorithmStatus.GOAL_REACHED)):\n171:                 self.pending = replace(self.pending, route=result.route.copy())\n172:             return result\n173:         finally:\n174:             self._start()"
+        }
+      ]
+    },
+    {
+      "absolute_path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/src/sim_env/sim_env/configuration.py",
+      "sha256": "f3ba4925fb0814978890a9775a509549191c5db44899f5ed178a506f984534de",
+      "bytes": 9547,
+      "excerpts": [
+        {
+          "start_line": 19,
+          "end_line": 24,
+          "text": "19:     \"navigation.planning_frequency\": 5.0, \"navigation.state_timeout\": 0.5,\n20:     \"navigation.map_timeout\": 1.5, \"navigation.trajectory_timeout\": 1.0,\n21:     \"navigation.planning_timeout\": 1.0, \"navigation.max_expansions\": 200000,\n22:     \"navigation.costmap_topic\": \"costmap_raw\",\n23:     \"navigation.footprint_length\": 2.2, \"navigation.footprint_width\": 1.2,\n24:     C + \"control_frequency\": 10.0, C + \"controller_name\": \"pid\","
+        },
+        {
+          "start_line": 79,
+          "end_line": 90,
+          "text": "79: \n80: def normalize_parameters(values):\n81:     result = deepcopy(values)\n82:     for canonical, aliases in (\n83:         (C + \"control_frequency\", (C + \"control_frequncy\", C + \"controller_frequncy\")),\n84:         (\"obstacle_factor\", (\"path_planner.obstacle_factor\",)),\n85:     ):\n86:         present = [(key, result[key]) for key in (canonical, *aliases) if key in result]\n87:         if present:\n88:             if any(value != present[0][1] for _, value in present):\n89:                 raise ValueError(f\"Conflicting aliases for {canonical}: {present}\")\n90:             for key, _ in present:"
+        }
+      ]
+    },
+    {
+      "absolute_path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/src/core/controller/controller/controller/controller.py",
+      "sha256": "b25e305f9375902a7b2b822e946fe714a727d963103071817e972e572db0e865",
+      "bytes": 4812,
+      "excerpts": [
+        {
+          "start_line": 61,
+          "end_line": 62,
+          "text": "61:             age = max(0.0, state.stamp - trajectory.stamp)\n62:             reference = trajectory.reference_at_time(age + self.config[\"lookahead_time\"])"
+        },
+        {
+          "start_line": 75,
+          "end_line": 78,
+          "text": "75:                 current_speed = trajectory.reference_at_time(age).velocity\n76:                 if current_speed <= 1e-9:\n77:                     positive = np.flatnonzero(trajectory.points[:, 6] > 1e-9)\n78:                     current_speed = float(trajectory.points[positive[-1], 6]) if positive.size else 0.0"
+        }
+      ]
+    },
+    {
+      "absolute_path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/src/core/controller/controller/controller/pid_controller.py",
+      "sha256": "d34540b42cd68ec9fc2b89e002c6ef2b6619a2014440ee84a90e8f0ae54705ba",
+      "bytes": 3398,
+      "excerpts": [
+        {
+          "start_line": 48,
+          "end_line": 58,
+          "text": "48:         if failure is not None:\n49:             return failure\n50:         cfg = self.config\n51:         speed_error = reference.velocity - math.hypot(state.u, state.v)\n52:         course_error = wrap_angle(reference.theta - state.psi)\n53:         integral_speed = self.integral_speed + cfg[\"k_i_speed\"] * speed_error * dt\n54:         integral_course = self.integral_course + cfg[\"k_i_course\"] * course_error * dt\n55:         surge = (cfg[\"k_p_speed\"] * speed_error + integral_speed\n56:                  + cfg[\"k_d_speed\"] * (speed_error - self.last_speed_error) / dt)\n57:         yaw = (cfg[\"k_p_course\"] * course_error + integral_course\n58:                + cfg[\"k_d_course\"] * wrap_angle(course_error - self.last_course_error) / dt)"
+        }
+      ]
+    },
+    {
+      "absolute_path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/src/core/trajectory_planner/trajectory_planner/los_trajectory_planner.py",
+      "sha256": "cc309fc7eae86d458d846974d3719ee78790ae4a5222cd96c96dfc8619db3f58",
+      "bytes": 8151,
+      "excerpts": [
+        {
+          "start_line": 72,
+          "end_line": 74,
+          "text": "72:             rows = [[0, 0, *xy, yaw, 0, 0, 0], [min(dt, horizon), 0, *xy, yaw, 0, 0, 0]]\n73:             return result(AlgorithmStatus.GOAL_REACHED, Trajectory(rows, state.stamp, state.frame_id, goal))\n74:         if self.model.cruising_speed == 0:"
+        },
+        {
+          "start_line": 148,
+          "end_line": 150,
+          "text": "148:         trajectory = Trajectory(rows, state.stamp, state.frame_id, goal)\n149:         # GOAL_REACHED describes the current vessel, not a predicted future point.\n150:         return result(AlgorithmStatus.SUCCESS, trajectory)"
+        }
+      ]
+    },
+    {
+      "absolute_path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/src/core/trajectory_planner/trajectory_planner/trajectory.py",
+      "sha256": "cc5b2f0e3ba35397f6a37572c3f96c235a79f60a34b02f6ac5b29dc1ff8a86f7",
+      "bytes": 3775,
+      "excerpts": [
+        {
+          "start_line": 69,
+          "end_line": 95,
+          "text": "69:     def reference_at_time(self, time):\n70:         return self._reference(time, 0)\n71: \n72:     def reference_at_distance(self, distance):\n73:         return self._reference(distance, 1)\n74: \n75:     def _reference(self, value, column):\n76:         if not np.isfinite(value) or value < 0:\n77:             raise ValueError(\"reference must be finite and nonnegative\")\n78:         if self.empty():\n79:             raise ValueError(\"cannot query an empty trajectory\")\n80:         axis = self.points[:, column]\n81:         if value <= axis[0]:\n82:             return self[0]\n83:         if value >= axis[-1]:\n84:             return self[-1]\n85:         # The lower bracket is i-1, not i (the C++ lower_bound bug).\n86:         upper = int(np.searchsorted(axis, value, side=\"right\"))\n87:         lower = upper - 1\n88:         if value == axis[lower]:\n89:             return self[lower]\n90:         fraction = (value - axis[lower]) / (axis[upper] - axis[lower])\n91:         row = self.points[lower] + fraction * (self.points[upper] - self.points[lower])\n92:         row[4] = wrap_angle(self.points[lower, 4] + fraction * wrap_angle(\n93:             self.points[upper, 4] - self.points[lower, 4]))\n94:         row[column] = value\n95:         return TrajectoryCell(*row)"
+        }
+      ]
+    }
+  ],
+  "ros_default_executor_sources": [
+    {
+      "absolute_path": "/opt/ros/humble/include/rclcpp/rclcpp/executors.hpp",
+      "sha256": "022a133cae25d20d51a6939c092df79e26fd76696c40705b6c0a045af27bd8a1",
+      "bytes": 4640,
+      "excerpts": [
+        {
+          "start_line": 41,
+          "end_line": 49,
+          "text": "41: /// Create a default single-threaded executor and spin the specified node.\n42: /** \\param[in] node_ptr Shared pointer to the node to spin. */\n43: RCLCPP_PUBLIC\n44: void\n45: spin(rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_ptr);\n46: \n47: RCLCPP_PUBLIC\n48: void\n49: spin(rclcpp::Node::SharedPtr node_ptr);"
+        }
+      ]
+    },
+    {
+      "absolute_path": "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py",
+      "sha256": "9badf7f55c7db661545c294cc38974076bb3208d30a921b165200ecf749084cd",
+      "bytes": 10379,
+      "excerpts": [
+        {
+          "start_line": 101,
+          "end_line": 106,
+          "text": "101: def get_global_executor() -> 'Executor':\n102:     global __executor\n103:     if __executor is None:\n104:         # imported locally to avoid loading extensions on module import\n105:         from rclpy.executors import SingleThreadedExecutor\n106:         __executor = SingleThreadedExecutor()"
+        },
+        {
+          "start_line": 223,
+          "end_line": 229,
+          "text": "223:     :param executor: The executor to use, or the global executor if ``None``.\n224:     \"\"\"\n225:     executor = get_global_executor() if executor is None else executor\n226:     try:\n227:         executor.add_node(node)\n228:         while executor.context.ok():\n229:             executor.spin_once()"
+        }
+      ]
+    }
+  ],
+  "confirmed": {
+    "cpp_on_plan_callback_or_5hz_planning_timer_present": false,
+    "cpp_state_written_in_on_odom_after_synchronous_plan": true,
+    "cpp_control_callback_refreshes_state": false,
+    "cpp_declared_controller_parameter": "usv_simulation.controller.controller_frequncy",
+    "cpp_default_control_wall_hz": 10.0,
+    "python_default_control_steady_hz": 10.0,
+    "python_default_planning_node_clock_hz": 5.0,
+    "python_reference_query": "max(0, state.stamp - trajectory.stamp) + lookahead_time",
+    "python_trajectory_stamp_origin": "planning request VesselState.stamp, preserved through worker completion",
+    "cpp_reference_query": "lookahead_time relative to cached local plan; no source-stamp age correction"
+  },
+  "limitations": [
+    "Timer periods specify requested callback cadence, not actual execution intervals or a deterministic ordering with odom.",
+    "No fixed 5 Hz C++ state/trajectory refresh can be inferred: the refresh is gated by odom callback execution and early returns.",
+    "Python latest state means latest successfully consumed odom available to the node, not necessarily the latest physical or DDS-queued state.",
+    "Default single-threaded node executors serialize callbacks, but do not fix timer/odom order or guarantee wall-time deadlines. Python planning additionally runs in a spawned process.",
+    "No measured command latency, exact repeated-state count, scheduling jitter or causal attribution for tracking RMSE is provided."
+  ]
+}

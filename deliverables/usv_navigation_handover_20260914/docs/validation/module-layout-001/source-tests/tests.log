@@ -1,0 +1,110 @@
+........................................................................ [  7%]
+........................................................................ [ 15%]
+........................................................................ [ 23%]
+........................................................................ [ 31%]
+........................................................................ [ 38%]
+........................................................................ [ 46%]
+........................................................................ [ 54%]
+........................................................................ [ 62%]
+.......................................................................F [ 69%]
+........................................................................ [ 77%]
+........................................................................ [ 85%]
+........................................................................ [ 93%]
+..............................................................           [100%]
+=================================== FAILURES ===================================
+_____ test_process_planning_parameters_stale_inputs_cancel_and_clock_reset _____
+
+    def test_process_planning_parameters_stale_inputs_cancel_and_clock_reset():
+        rclpy.init(args=['--ros-args', '-r', '__ns:=/navigation_smoke', '-p', 'use_sim_time:=true'])
+        simulator = driver = executor = None
+        try:
+            simulator = Simulator()
+            driver = Node('navigation_test_driver')
+            executor = SingleThreadedExecutor()
+            executor.add_node(simulator)
+            executor.add_node(driver)
+            clock_pub = driver.create_publisher(Clock, '/clock', 10)
+            odom_pub = driver.create_publisher(Odometry, 'odom', 1)
+            map_pub = driver.create_publisher(Costmap, 'costmap_raw',
+                                              QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
+            goal_pub = driver.create_publisher(PoseStamped, 'goal', 1)
+            left, statuses = [], []
+            subscriptions = [driver.create_subscription(Float32, 'thrusters/left_thrust_cmd', left.append, 10),
+                             driver.create_subscription(String, 'navigation_status', lambda m: statuses.append(json.loads(m.data)), 10)]
+            simulated_time = 10.0
+            block_grid = False
+    
+            def spin(duration=.04):
+                deadline = time.monotonic() + duration
+                while time.monotonic() < deadline:
+                    executor.spin_once(timeout_sec=.002)
+    
+            def inputs(odom=True, grid=True, speed=0.):
+                nonlocal simulated_time
+                simulated_time += .05
+                clock = Clock()
+                clock.clock.sec = int(simulated_time)
+                clock.clock.nanosec = round((simulated_time - int(simulated_time)) * 1e9)
+                clock_pub.publish(clock)
+                if odom:
+                    message = Odometry()
+                    message.header.stamp = clock.clock
+                    message.header.frame_id = 'navigation_smoke/map'
+                    message.child_frame_id = 'navigation_smoke/base_link'
+                    message.pose.pose.position.x, message.pose.pose.position.y = 2.5, 10.5
+                    message.pose.pose.orientation.w = 1.
+                    message.twist.twist.linear.x = speed
+                    odom_pub.publish(message)
+                if grid:
+                    message = Costmap()
+                    # Humble's topic publisher leaves metadata.update_time zero;
+                    # only the GetCostmap service fills it. Freshness uses header.
+                    message.header.stamp = clock.clock
+                    message.header.frame_id = 'navigation_smoke/map'
+                    message.metadata.size_x = message.metadata.size_y = 30
+                    message.metadata.resolution = 1.
+                    message.metadata.origin.orientation.w = 1.
+                    message.data = [0] * 900
+                    if block_grid:
+                        for row in range(30):
+                            message.data[row * 30 + 10] = 254
+                    map_pub.publish(message)
+                spin()
+    
+            def until(predicate, timeout=5, **kwargs):
+                deadline = time.monotonic() + timeout
+                while not predicate() and time.monotonic() < deadline:
+                    inputs(**kwargs)
+                assert predicate(), (simulator.mode, simulator.reason, dict(simulator.counters))
+    
+            until(lambda: simulator.state is not None and simulator.grid is not None)
+            goal = PoseStamped()
+            goal.header.frame_id = 'navigation_smoke/map'
+            goal.pose.position.x, goal.pose.position.y = 18.5, 10.5
+            goal.pose.orientation.w = 1.
+            goal_pub.publish(goal)
+>           until(lambda: simulator.trajectory is not None and any(m.data > .01 for m in left), timeout=10)
+
+src/sim_env/test/test_navigation_ros.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+predicate = <function test_process_planning_parameters_stale_inputs_cancel_and_clock_reset.<locals>.<lambda> at 0x77d92d743130>
+timeout = 10, kwargs = {}, deadline = 312577.037592831, @py_assert1 = False
+@py_format3 = "('WAITING_REFERENCE', '', {'pending_replacements': 58})\n>assert False\n{False = <function test_process_planning_parameters_stale_inputs_cancel_and_clock_reset.<locals>.<lambda> at 0x77d92d743130>()\n}"
+
+    def until(predicate, timeout=5, **kwargs):
+        deadline = time.monotonic() + timeout
+        while not predicate() and time.monotonic() < deadline:
+            inputs(**kwargs)
+>       assert predicate(), (simulator.mode, simulator.reason, dict(simulator.counters))
+E       AssertionError: ('WAITING_REFERENCE', '', {'pending_replacements': 58})
+E       assert False
+E        +  where False = <function test_process_planning_parameters_stale_inputs_cancel_and_clock_reset.<locals>.<lambda> at 0x77d92d743130>()
+
+src/sim_env/test/test_navigation_ros.py:146: AssertionError
+----------------------------- Captured stderr call -----------------------------
+[INFO] [1789320285.292553447] [navigation_smoke.usv_simulation]: Effective navigation parameters: {"dynamics.D": 0.395, "dynamics.L": 1.35, "dynamics.W": 1.0, "dynamics.acceleration_max": 1.0, "dynamics.acceleration_min": -1.0, "dynamics.cruising_speed": 1.0, "dynamics.i_z": 10.03, "dynamics.jerk_max": 2.0, "dynamics.jerk_min": -2.0, "dynamics.mass": 29.84, "dynamics.max_force": 50.0, "dynamics.n_dot_r": 1.0, "dynamics.n_dot_u": 0.0, "dynamics.n_dot_v": 0.0, "dynamics.n_r": -20.0, "dynamics.n_r_r": 0.0, "dynamics.n_u": 0.0, "dynamics.n_v": 0.0, "dynamics.name": "otter", "dynamics.ns": "otter", "dynamics.type": "Differential", "dynamics.velocity_max": 1.0, "dynamics.velocity_min": 0.0, "dynamics.x_dot_r": 0.0, "dynamics.x_dot_u": 5.0, "dynamics.x_dot_v": 0.0, "dynamics.x_r": 0.0, "dynamics.x_u": -20.0, "dynamics.x_u_u": 0.0, "dynamics.x_v": 0.0, "dynamics.y_dot_r": 0.0, "dynamics.y_dot_u": 0.0, "dynamics.y_dot_v": 5.0, "dynamics.y_r": 0.0, "dynamics.y_u": 0.0, "dynamics.y_v": -20.0, "dynamics.y_v_v": 0.0, "navigation.costmap_topic": "costmap_raw", "navigation.footprint_length": 2.2, "navigation.footprint_width": 1.2, "navigation.map_timeout": 1.5, "navigation.max_expansions": 200000, "navigation.planning_frequency": 5.0, "navigation.planning_timeout": 1.0, "navigation.state_timeout": 0.5, "navigation.trajectory_timeout": 1.0, "obstacle_factor": 0.25, "path_planner.convert_offset": 0.0, "path_planner.default_tolerance": 0.0, "path_planner.enable_resample": true, "path_planner.expand_zone": true, "path_planner.outline_map": true, "path_planner.resample_ratio": 0.5, "path_planner.show_safety_corridor": false, "planner_name": "astar", "usv_simulation.controller.control_frequency": 10.0, "usv_simulation.controller.controller_name": "pid", "usv_simulation.controller.lqr_controller.Q_matrix_diag": [1.0, 1.0, 100.0, 10.0, 10.0, 10.0], "usv_simulation.controller.lqr_controller.R_matrix_diag": [20.0, 20.0], "usv_simulation.controller.lqr_controller.discrete_dt": 0.1, "usv_simulation.controller.lqr_controller.goal_distance_tolerance": 1.0, "usv_simulation.controller.lqr_controller.goal_speed_tolerance": 0.25, "usv_simulation.controller.lqr_controller.lookahead_time": 2.0, "usv_simulation.controller.lqr_controller.max_iterations": 5000, "usv_simulation.controller.lqr_controller.solve_eps": 0.1, "usv_simulation.controller.lqr_controller.solve_timeout": 0.08, "usv_simulation.controller.pid_controller.goal_distance_tolerance": 1.5, "usv_simulation.controller.pid_controller.goal_speed_tolerance": 0.25, "usv_simulation.controller.pid_controller.k_d_course": 0.0, "usv_simulation.controller.pid_controller.k_d_speed": 0.0, "usv_simulation.controller.pid_controller.k_i_course": 0.0, "usv_simulation.controller.pid_controller.k_i_speed": 0.5, "usv_simulation.controller.pid_controller.k_p_course": 2.0, "usv_simulation.controller.pid_controller.k_p_speed": 2.0, "usv_simulation.controller.pid_controller.lookahead_time": 2.6, "usv_simulation.trajectory_planner.los.goal_tolerance": 1.0, "usv_simulation.trajectory_planner.los.kp_yaw": 1.0, "usv_simulation.trajectory_planner.los.lookahead_distance": 1.0, "usv_simulation.trajectory_planner.los.slowdown_distance": 3.0, "usv_simulation.trajectory_planner.los.switch_dist": 5.0, "usv_simulation.trajectory_planner.los.trajectory_time": 20.0, "usv_simulation.trajectory_planner.los.trajectory_time_interval": 0.5, "usv_simulation.trajectory_planner.los.yaw_rate_max": 0.3, "usv_simulation.trajectory_planner.planner_name": "los"}
+- generated xml file: /mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/docs/validation/module-layout-001/source-tests/tests.xml -
+=========================== short test summary info ============================
+FAILED src/sim_env/test/test_navigation_ros.py::test_process_planning_parameters_stale_inputs_cancel_and_clock_reset
+1 failed, 925 passed in 127.35s (0:02:07)

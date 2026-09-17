@@ -18,7 +18,7 @@ from common.models import AlgorithmStatus
 from common.collision import footprint_path_is_clear
 from common.visualizer import make_path
 from usv_navigation_interfaces.msg import NavigationReference, ControlReport
-from usv_navigation_interfaces.srv import NavigateTo, NavigateRoute
+from usv_navigation_interfaces.srv import NavigateTo, NavigateRoute, StopNavigation
 from usv_navigation.configuration import DEFAULTS, HOT_PARAMETERS, C, T, validate_update
 from .runtime import LatestPlanWorker, PlanningRequest
 from .route_progress import RouteProgress
@@ -36,6 +36,9 @@ class DecisionNode(NavigationInputs):
         self.worker = LatestPlanWorker()
         self.version = self.task_id = self.sequence = 0
         self.goal = self.trajectory = None
+        self.motion_mode = 'NAVIGATE'
+        self.guard_on_arrival = self.guard_heading_enabled = False
+        self.guard_heading = 0.
         self.route_progress = None
         self.route_summary = {}
         self._terminal_reference_sequence = None
@@ -45,6 +48,10 @@ class DecisionNode(NavigationInputs):
         # Keep a bounded in-process replay window. Idempotency intentionally
         # does not survive a process restart or eviction of very old tasks.
         self._accepted_requests = OrderedDict()
+        # Stop fences must not expire while a delayed service request may exist.
+        # Like the other task identities, these are scoped to this process session.
+        self._superseded_requests = set()
+        self._stop_requests = {}
         self.route = np.empty((0, 3))
         # 全局搜索按需触发；已验收的剩余航路变化及时显示，相同路线去重。
         self._published_global_path = np.empty((0, 3))
@@ -69,6 +76,8 @@ class DecisionNode(NavigationInputs):
         self.create_service(NavigateRoute, 'navigation/navigate_route', self._navigate_route,
                             callback_group=self.service_group)
         self.create_service(Trigger, 'cancel_navigation', self._cancel, callback_group=self.service_group)
+        self.create_service(StopNavigation, 'navigation/stop', self._stop,
+                            callback_group=self.service_group)
         self.create_service(Trigger, 'export_parameters', self._export)
         self.create_timer(1. / self.config['navigation.planning_frequency'], self._planning)
         self.create_timer(1. / self.config[C + 'control_frequency'], self._tick, clock=self.steady_clock)
@@ -121,6 +130,9 @@ class DecisionNode(NavigationInputs):
         self.task_id += 1
         self.worker.invalidate()
         self.goal = self.trajectory = None
+        self.motion_mode = 'NAVIGATE'
+        self.guard_on_arrival = self.guard_heading_enabled = False
+        self.guard_heading = 0.
         self.route = np.empty((0, 3))
         self.mode, self.reason = mode, reason
         self.control_report = None
@@ -134,6 +146,9 @@ class DecisionNode(NavigationInputs):
 
     # 替换目标先清理旧任务，新目标验证后一次性发布；同一任务号不能先发停止再发活动参考。
     def _on_goal(self, message):
+        if self.motion_mode == 'BRAKE':
+            self.counters['goals_rejected_while_braking'] += 1
+            return
         # Publish the replacement once after validation. An inactive snapshot
         # closes its task ID at the controller and must never precede an active
         # snapshot with that same ID.
@@ -155,6 +170,9 @@ class DecisionNode(NavigationInputs):
         response.planner_session = self.session
         response.task_id = 0
         request_id = request.request_id
+        if self._request_is_stopped(request_id):
+            response.accepted, response.reason = False, 'Request superseded by an active stop'
+            return response
         if not request_id.strip():
             response.accepted, response.reason = False, 'request_id must not be empty'
             return response
@@ -183,7 +201,7 @@ class DecisionNode(NavigationInputs):
                 response.accepted = False
                 response.reason = 'request_id was already accepted with different parameters'
             return response
-        if self.goal is not None:
+        if self.goal is not None or self.motion_mode == 'BRAKE':
             response.accepted, response.reason = False, 'BUSY: an active navigation goal already exists'
             return response
 
@@ -206,6 +224,9 @@ class DecisionNode(NavigationInputs):
     def _navigate_route(self, request, response):
         """Validate the complete ordered route before changing the active task."""
         response.planner_session, response.task_id = self.session, 0
+        if self._request_is_stopped(request.request_id):
+            response.accepted, response.reason = False, 'Request superseded by an active stop'
+            return response
         try:
             if not request.request_id.strip():
                 raise ValueError('request_id must not be empty')
@@ -225,10 +246,23 @@ class DecisionNode(NavigationInputs):
                 points.append((*target, values[3]))
             progress = RouteProgress(points, request.waypoint_radius,
                                      max_speed=self.model.velocity_max, frame_id=self.frame)
+            guard = bool(request.guard_on_arrival)
+            heading_enabled = bool(request.guard_heading_enabled)
+            if heading_enabled and not guard:
+                raise ValueError('guard_heading_enabled requires guard_on_arrival')
+            heading = 0.
+            if heading_enabled:
+                if not math.isfinite(request.guard_heading):
+                    raise ValueError('guard_heading must be finite')
+                # Transform the requested terminal yaw with the route frame,
+                # rather than silently treating a non-map yaw as map yaw.
+                pose.orientation.z = math.sin(request.guard_heading / 2.)
+                pose.orientation.w = math.cos(request.guard_heading / 2.)
+                heading = self._pose(pose, request.header.frame_id, request.header.stamp)[2]
         except (ValueError, TransformException) as error:
             response.accepted, response.reason = False, str(error)
             return response
-        signature = ('route', progress.points, progress.radius)
+        signature = ('route', progress.points, progress.radius, guard, heading_enabled, heading)
         previous = self._accepted_requests.get(request.request_id)
         if previous is not None:
             self._accepted_requests.move_to_end(request.request_id)
@@ -237,11 +271,13 @@ class DecisionNode(NavigationInputs):
             response.reason = ('IDEMPOTENT' if response.accepted else
                                'request_id was already accepted with different parameters')
             return response
-        if self.goal is not None:
+        if self.goal is not None or self.motion_mode == 'BRAKE':
             response.accepted, response.reason = False, 'BUSY: an active navigation goal already exists'
             return response
         self._reset_task('WAITING_REFERENCE', publish=False)
         self.route_progress = progress
+        self.guard_on_arrival, self.guard_heading_enabled = guard, heading_enabled
+        self.guard_heading = heading
         self._snapshot_route_progress()
         self.goal, self.desired_speed_mps = progress.points[0][:3], progress.points[0][3]
         self.request_id, self.accepted_task_id = request.request_id, self.task_id
@@ -253,6 +289,39 @@ class DecisionNode(NavigationInputs):
         response.accepted, response.reason, response.task_id = True, 'ACCEPTED', self.task_id
         return response
 
+    def _request_is_stopped(self, request_id):
+        return request_id in self._superseded_requests or request_id in self._stop_requests
+
+    def _stop(self, request, response):
+        """Preempt immediately; acceptance is not a measured stopped acknowledgement."""
+        response.planner_session, response.task_id = self.session, 0
+        request_id = request.request_id
+        superseded = tuple(sorted(set(request.superseded_request_ids)))
+        if (not request_id.strip() or len(request_id) > 256 or len(superseded) > 256
+                or any(not value.strip() or len(value) > 256 for value in superseded)):
+            response.accepted, response.reason = False, 'Invalid stop request identity'
+            return response
+        if request_id in self._accepted_requests:
+            response.accepted, response.reason = False, 'Stop ID already used for navigation'
+            return response
+        previous = self._stop_requests.get(request_id)
+        if previous is not None:
+            response.task_id = previous[1]
+            response.accepted = previous[0] == superseded
+            response.reason = ('IDEMPOTENT' if response.accepted else
+                               'Stop request_id was already accepted with different parameters')
+            return response
+        self._superseded_requests.update(superseded)
+        if self.request_id:
+            self._superseded_requests.add(self.request_id)
+        self._reset_task('STOPPING', publish=False)
+        self.motion_mode = 'BRAKE'
+        self.request_id, self.accepted_task_id = request_id, self.task_id
+        self._stop_requests[request_id] = (superseded, self.task_id)
+        self._publish_reference()
+        response.accepted, response.reason, response.task_id = True, 'ACCEPTED', self.task_id
+        return response
+
     def _snapshot_route_progress(self):
         progress = self.route_progress
         if progress is not None:
@@ -261,6 +330,8 @@ class DecisionNode(NavigationInputs):
                 waypoint_radius=progress.radius)
 
     def _update_route_progress(self):
+        if self.motion_mode != 'NAVIGATE':
+            return
         progress = self.route_progress
         if progress is None or self.state is None or not fresh(
                 self.state.stamp, self.now_seconds(), self.config['navigation.state_timeout']):
@@ -279,7 +350,15 @@ class DecisionNode(NavigationInputs):
 
     # 取消服务等待对应任务和参考序号的实际零输出确认，墙钟两秒超时则返回失败。
     async def _cancel(self, request, response):
-        self._reset_task('CANCELLED')
+        # A late cancellation issued before 0331 must not turn off active braking.
+        if self.motion_mode == 'BRAKE':
+            response.success = False
+            response.message = 'Active braking cannot be cancelled by navigation cancellation'
+            return response
+        if self.mode == 'STOPPED':
+            self._publish_reference()
+        else:
+            self._reset_task('CANCELLED')
         future = Future()
         self.cancel_waiters.append((self.task_id, self.sequence, time.monotonic() + 2., future))
         acknowledged = await future
@@ -299,11 +378,21 @@ class DecisionNode(NavigationInputs):
         self._publish_reference()
 
     def _on_peer_restart(self, role):
-        self._reset_task('MODULE_RESTART', role + ' restarted; submit a new goal')
+        if self.motion_mode == 'BRAKE':
+            # Preserve the stop's external accepted ID, but fence the old
+            # control instance with a new internal task ID and peer sessions.
+            self._reset_task('STOPPING', role + ' restarted; awaiting fresh braking inputs',
+                             publish=False)
+            self.motion_mode = 'BRAKE'
+            self._publish_reference()
+        else:
+            self._reset_task('MODULE_RESTART', role + ' restarted; submit a new goal')
 
     # 只在目标、状态和地图都存在且时间新鲜时投递副本，执行中的旧工作不阻塞回调。
     def _planning(self):
         now = self.now_seconds()
+        if self.motion_mode != 'NAVIGATE':
+            return
         if self.goal is None or self.state is None or self.grid is None:
             return
         if not fresh(self.state.stamp, now, self.config['navigation.state_timeout']) or not fresh(
@@ -334,7 +423,7 @@ class DecisionNode(NavigationInputs):
         if result is None:
             return
         self.timings['planning_ms'].append(result.elapsed * 1000)
-        if result.version != self.version or self.goal is None:
+        if result.version != self.version or self.goal is None or self.motion_mode != 'NAVIGATE':
             self.counters['stale_results'] += 1
             return
         self.counters['global_searches'] += int(result.searched)
@@ -363,13 +452,17 @@ class DecisionNode(NavigationInputs):
 
     # 改变内容时递增序号，定时重传时保持序号和轨迹源时间，不能靠重发延长轨迹有效期。
     def _publish_reference(self, changed=True):
-        if changed:
+        # BRAKE/HOLD have a fresh command lease, not a regenerating trajectory.
+        if changed or self.motion_mode in ('BRAKE', 'HOLD'):
             self.sequence += 1
         message = NavigationReference(
             planner_session=self.session, control_session=self.peers['control'].session,
             perception_session=self.peers['perception'].session,
             task_id=self.task_id, revision=self.version, sequence=self.sequence,
-            active=self.goal is not None, state=self.mode, reason=self.reason,
+            active=self.goal is not None or self.motion_mode == 'BRAKE',
+            motion_mode=self.motion_mode, state=self.mode, reason=self.reason,
+            guard_on_arrival=self.guard_on_arrival,
+            guard_heading_enabled=self.guard_heading_enabled, guard_heading=self.guard_heading,
             parameters_json=json.dumps(self.config, sort_keys=True))
         message.header.stamp = self.get_clock().now().to_msg()
         message.header.frame_id = self.frame
@@ -383,6 +476,7 @@ class DecisionNode(NavigationInputs):
                 and self.trajectory is not None and self.trajectory.goal is not None)
             if not message.pass_through and self._terminal_reference_sequence is None:
                 self._terminal_reference_sequence = self.sequence
+            message.guard_on_arrival = self.guard_on_arrival and not message.pass_through
         self.reference_pub.publish(message)
 
     # 先验证会话并处理取消确认，再允许当前任务报告更新决策状态。
@@ -397,6 +491,40 @@ class DecisionNode(NavigationInputs):
         if message.task_id != self.task_id:
             self.counters['stale_control_reports'] += 1
             return
+        if self.motion_mode == 'BRAKE' and message.task_finished:
+            if (message.state != 'STOPPED' or message.reference_sequence <= 0
+                    or message.reference_sequence > self.sequence
+                    or message.left != 0. or message.right != 0. or message.lateral != 0.):
+                self.counters['stale_control_reports'] += 1
+                return
+        if self.motion_mode == 'HOLD' and message.task_finished:
+            # Delayed terminal navigation reports cannot close persistent guard.
+            self.counters['stale_control_reports'] += 1
+            return
+        if message.state in ('GUARDING', 'GUARD_BRAKING', 'GUARD_BLOCKED') and self.motion_mode == 'NAVIGATE':
+            if (not self.guard_on_arrival or self.route_progress is None
+                    or not self.route_progress.terminal
+                    or self._terminal_reference_sequence is None
+                    or not self._terminal_reference_sequence <= message.reference_sequence <= self.sequence
+                    or message.task_finished or message.clock_reset):
+                self.counters['stale_control_reports'] += 1
+                return
+            self.route_progress.finish()
+            self._snapshot_route_progress()
+            self.route_progress = None
+            self.motion_mode, self.mode, self.reason = 'HOLD', 'GUARDING', ''
+            self.version += 1
+            self.worker.invalidate()
+            self.trajectory = None
+            self.route = np.empty((0, 3))
+            self._publish_global_path(self.get_clock().now().to_msg())
+            self.trajectory_pub.publish(make_path(self.route, self.frame, self.get_clock().now().to_msg()))
+            self._publish_reference()
+        if self.guard_on_arrival and message.task_finished:
+            # An older/non-guard-capable controller must not silently turn a
+            # persistent task into an ordinary completed voyage.
+            self.counters['unexpected_guard_completion'] += 1
+            return
         if message.task_finished and self.route_progress is not None:
             if (not self.route_progress.terminal or self._terminal_reference_sequence is None
                     or message.reference_sequence < self._terminal_reference_sequence
@@ -406,11 +534,14 @@ class DecisionNode(NavigationInputs):
         self.control_report, self.control_report_wall = message, time.monotonic()
         if message.clock_reset:
             self._reset_task('CLOCK_RESET', 'Simulation clock moved backwards', clear_inputs=True)
+        elif message.task_finished and self.motion_mode == 'BRAKE':
+            self._reset_task('STOPPED', 'Measured low speed and yaw rate confirmed; thrust is zero')
         elif message.task_finished and self.goal is not None:
             if self.route_progress is not None:
                 self.route_progress.finish()
             self._reset_task('GOAL_REACHED')
-        elif message.revoke_reference and message.reference_sequence == self.sequence:
+        elif (message.revoke_reference and message.reference_sequence == self.sequence
+              and self.motion_mode == 'NAVIGATE'):
             self.trajectory = None
             self.route = np.empty((0, 3))
             self.mode, self.reason = message.state, message.reason
@@ -462,15 +593,17 @@ class DecisionNode(NavigationInputs):
                 control_process = json.loads(report.process_json or '{}')
             except (ValueError, TypeError):
                 self.counters['invalid_control_statistics'] += 1
-            if self.goal is not None:
+            if self.goal is not None or self.motion_mode == 'BRAKE':
                 if report.state != 'WAITING_REFERENCE' or self.trajectory is not None or not reason:
                     mode, reason = report.state, report.reason
-        if self.goal is not None and not self.peers_ready('control', 'perception'):
+        if (self.goal is not None or self.motion_mode == 'BRAKE') and not self.peers_ready('control', 'perception'):
             mode, reason = 'WAITING_MODULE', 'Waiting for onboard modules'
         self.status_pub.publish(String(data=json.dumps(dict(
             state=mode, reason=reason, version=self.version, stamp=self.now_seconds(),
             request_id=self.request_id, task_id=self.accepted_task_id,
             current_task_id=self.task_id,
+            motion_mode=self.motion_mode, guard_on_arrival=self.guard_on_arrival,
+            guard_heading_enabled=self.guard_heading_enabled, guard_heading=self.guard_heading,
             desired_speed_mps=self.desired_speed_mps,
             **self.route_summary,
             controller=self.controller_name, goal=self.goal, metrics=metrics, counters=counters,

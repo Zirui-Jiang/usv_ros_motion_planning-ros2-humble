@@ -1,0 +1,18 @@
+# mode: standby, orbit, station_keep. Coordinates are WGS84 degrees.
+string mode
+float64 latitude
+float64 longitude
+# Heading: true north = 0 degrees, clockwise positive.
+float64 heading_deg 0.0
+float64 speed 0.5
+float64 position_tolerance 0.5
+float64 watch_radius 10.0
+float64 orbit_radius 10.0
+bool clockwise true
+# Zero laps/duration means unlimited. First nonzero limit reached ends orbit.
+uint32 laps 0
+float64 duration 0.0
+---
+bool accepted
+uint64 mission_id
+string reason

@@ -294,3 +294,59 @@ def test_route_reexecution_waits_for_cancel_and_correlates_completion(
     assert len({first.request_id, second.request_id, third.request_id}) == 3
     assert fixture.cancel_count == 1, "completed execution does not require another stop"
     assert fixture.feedback == [{"travelId": 58, "taskFinish": 1}]
+
+
+@pytest.mark.parametrize('first_hold_state', ['GUARDING', 'WAITING_MAP'])
+def test_guard_arrival_feedback_is_once_per_execution_and_guard_stays_active(
+        ros_pair, first_hold_state):
+    fixture, until = ros_pair
+    payload = json.loads(_route())
+    payload['content'].update(taskType=80, guardingHeading=None)
+    route_json = json.dumps(payload)
+    fixture.route_pub.publish(String(data=route_json))
+    until(lambda: len(fixture.requests) == 1, 'guard route was not submitted')
+    first, first_task = fixture.requests[0]
+    assert first.guard_on_arrival and not first.guard_heading_enabled
+    until(lambda: fixture.has_notice('ACTIVE', first.request_id), 'guard route not acknowledged')
+
+    fixture.set_status('NAVIGATING', first.request_id, first_task, waypoint_index=2)
+    until(lambda: fixture.has_notice('ACTIVE', first.request_id, waypoint_index=2),
+          'intermediate progress missing')
+    assert fixture.feedback == []
+
+    # HOLD remains proof of terminal arrival when the first GUARDING packet
+    # was missed and the next observed micro-control state is a safety wait.
+    with fixture.lock:
+        fixture.status = fixture.make_status(
+            first_hold_state, first.request_id, first_task,
+            waypoint_count=3, waypoint_index=3, passed_waypoints=3)
+        fixture.status['motion_mode'] = 'HOLD'
+    until(lambda: len(fixture.feedback) == 1, 'guard arrival did not publish 0052')
+    fixture.set_status('GUARDING', first.request_id, first_task, waypoint_index=3)
+    until(lambda: fixture.has_notice('GUARDING', first.request_id), 'guard did not stay active')
+    time.sleep(0.2)
+    assert fixture.feedback == [{'travelId': 58, 'taskFinish': 1}]
+    assert not fixture.has_notice('COMPLETED', first.request_id)
+
+    # Identical business content is a new execution, not a duplicate status.
+    # It must cancel the still-running guard, then earn its own arrival ACK.
+    fixture.route_pub.publish(String(data=route_json))
+    until(fixture.cancel_started.is_set, '0052 incorrectly ended the guard task')
+    time.sleep(0.15)
+    assert len(fixture.requests) == 1
+    assert len(fixture.feedback) == 1
+    fixture.cancel_release.set()
+    until(lambda: len(fixture.requests) == 2, 'new guard route not submitted after cancellation')
+    second, second_task = fixture.requests[1]
+    assert second.request_id != first.request_id
+    until(lambda: fixture.has_notice('ACTIVE', second.request_id), 'new guard route not acknowledged')
+    fixture.nav_pub.publish(String(data=json.dumps(fixture.make_status(
+        'GUARDING', first.request_id, first_task, waypoint_count=3, waypoint_index=3))))
+    time.sleep(0.15)
+    assert len(fixture.feedback) == 1
+    fixture.set_status('GUARDING', second.request_id, second_task, waypoint_index=3)
+    until(lambda: len(fixture.feedback) == 2, 'new execution did not get its own 0052')
+    time.sleep(0.2)
+    assert fixture.feedback == [{'travelId': 58, 'taskFinish': 1}] * 2
+    assert fixture.cancel_count == 1
+    assert not fixture.has_notice('COMPLETED', second.request_id)

@@ -1,0 +1,2377 @@
+{
+  "installed_commit": "3afb25f84232e560c62599a721dc0bfbe1a21657",
+  "classification": "Fixed 18-navigation plus 3-fault run. Functional results do not replace comparative, resource or exit-health acceptance.",
+  "source_run": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001",
+  "status_sampling_limit": "1 Hz observations cannot resolve sub-second transitions. Next-observation gaps are not exact state durations.",
+  "thresholds_unchanged": true,
+  "navigation_online_overrides": {},
+  "fault_fixture_exception": "Independent odom-dropout uses namespace isolation, state_timeout=.4 and map_timeout=2 at startup as defined by the unchanged harness protocol.",
+  "harness_exit_code": 0,
+  "residual_process_check": [],
+  "trials": [
+    {
+      "trial": "python_lqr_single_obstacle_01",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "single_obstacle",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 18.400000000000002,
+      "duration_wall_s": 18.494410477011115,
+      "legacy_fixed_cte": {
+        "count": 178,
+        "mean": 0.3497569227332403,
+        "rms": 0.4063731944245926,
+        "p95": 0.7366399433676734,
+        "max": 0.7798205997653536
+      },
+      "minimum_footprint_clearance_m": 0.885132594862968,
+      "global_searches": 4,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79956.4609215,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 5.800000000000001
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 79974.955295498,
+        "sim_time_s": 24.200000000000003,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 15,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_single_obstacle_01/launch.log",
+            "bytes": 13764,
+            "sha256": "2947ef87dbac1c3a6245648f9407a7479c15108338b6989451ed30359cc7b9e2"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 68,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 69,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 70,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_single_obstacle_01/events.jsonl",
+        "bytes": 732012,
+        "sha256": "5aef3279b6cd6d701c915de5eab51060fe10a9e4767a78e86ceb5ffc9bdd2360"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_lqr_single_obstacle_02",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "single_obstacle",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 18.5,
+      "duration_wall_s": 18.56696472100157,
+      "legacy_fixed_cte": {
+        "count": 179,
+        "mean": 0.3533840830565399,
+        "rms": 0.4098404495356848,
+        "p95": 0.746826591200826,
+        "max": 0.7788304797683068
+      },
+      "minimum_footprint_clearance_m": 0.8679807496382611,
+      "global_searches": 4,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79985.256661442,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 5.800000000000001
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 80003.823584638,
+        "sim_time_s": 24.3,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 15,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_single_obstacle_02/launch.log",
+            "bytes": 13763,
+            "sha256": "b0e4a709ba2e30eb2f221a864b093d91af47d2c025c44c01f48e7e612e26402d"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 68,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 69,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 70,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_single_obstacle_02/events.jsonl",
+        "bytes": 710434,
+        "sha256": "ade0ff583b31b6ab238650fd54c80ca6519a17de3391c0cb8aff72cda9115a43"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_lqr_single_obstacle_03",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "single_obstacle",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 18.400000000000002,
+      "duration_wall_s": 18.367349797001225,
+      "legacy_fixed_cte": {
+        "count": 179,
+        "mean": 0.34786390760356356,
+        "rms": 0.40625753869238457,
+        "p95": 0.7454228076338018,
+        "max": 0.7890147858408918
+      },
+      "minimum_footprint_clearance_m": 0.8878484228893592,
+      "global_searches": 4,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 80015.572083549,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 5.800000000000001
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 80033.939392751,
+        "sim_time_s": 24.200000000000003,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 15,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_single_obstacle_03/launch.log",
+            "bytes": 14802,
+            "sha256": "b8defe49169ed55cbae36583b87215fab11b1982957842638a57d4ce6557898a"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 72,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 76,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 77,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 78,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 79,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_single_obstacle_03/events.jsonl",
+        "bytes": 738917,
+        "sha256": "348519c7dd90a3c890eed305b9014be63d02e99a2806f268095ecfd5cd29564f"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_lqr_straight_01",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "straight",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 16.3,
+      "duration_wall_s": 16.64504447299987,
+      "legacy_fixed_cte": {
+        "count": 158,
+        "mean": 0.03243297364977452,
+        "rms": 0.05361846165550063,
+        "p95": 0.1232771141412563,
+        "max": 0.1749659159224674
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79787.746597259,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 3.0
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 79804.391592835,
+        "sim_time_s": 19.3,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "WAITING_REFERENCE": 1,
+        "NAVIGATING": 12,
+        "CONTROL_ERROR": 1,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "state": "WAITING_REFERENCE",
+          "reason": "",
+          "observed_monotonic_s": 79787.968256134,
+          "next_observation_monotonic_s": 79789.038975461,
+          "next_observation_gap_s": 1.0707193269918207
+        },
+        {
+          "state": "CONTROL_ERROR",
+          "reason": "LQR solve exceeded its time budget",
+          "observed_monotonic_s": 79800.931574934,
+          "next_observation_monotonic_s": 79801.932594533,
+          "next_observation_gap_s": 1.0010195990034845
+        }
+      ],
+      "failure_snapshots": [
+        {
+          "event": "navigation_failure_snapshot",
+          "wall_monotonic_s": 79787.99152224,
+          "costmap_path": "costmap_input_d6bec111.npz",
+          "state_path": "state_input_d6bec111.json",
+          "context_path": "navigation_context_d6bec111.json"
+        }
+      ],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_straight_01/launch.log",
+            "bytes": 14409,
+            "sha256": "21772470119225581002496b1d4a00f32e765ef657904ebcecbfffafc51f3a53"
+          },
+          "clean_process_count": 7,
+          "health": "abnormal",
+          "signal_lines": [
+            {
+              "line": 69,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 70,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 76,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [
+            {
+              "line": 93,
+              "text": "[ERROR] [gzserver-1]: process has died [pid 115809, exit code -6, cmd 'gzserver /home/usv/usv_migration/python/install/sim_env/share/sim_env/worlds/ocean.world -slibgazebo_ros_init.so -slibgazebo_ros_factory.so -slibgazebo_ros_force_system.so'].",
+              "after_launch_sigint": true
+            }
+          ],
+          "diagnostic_lines": [
+            {
+              "line": 84,
+              "text": "[gzserver-1] terminate called after throwing an instance of 'boost::wrapexcept<boost::thread_resource_error>'"
+            },
+            {
+              "line": 85,
+              "text": "[gzserver-1]   what():  boost thread: trying joining itself: Resource deadlock avoided"
+            }
+          ]
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_straight_01/events.jsonl",
+        "bytes": 596417,
+        "sha256": "b663ed308ea305bf7be9352625393bbf3e375f1e73ad9a99316da1d4271933de"
+      },
+      "observed_control_result_counters_max": {
+        "control_result_timeout": 1
+      }
+    },
+    {
+      "trial": "python_lqr_straight_02",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "straight",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 16.6,
+      "duration_wall_s": 20.751717336999718,
+      "legacy_fixed_cte": {
+        "count": 198,
+        "mean": 0.06108838289958899,
+        "rms": 0.09051152148119765,
+        "p95": 0.17360112738369632,
+        "max": 0.17595598490043882
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79814.293358726,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 2.9000000000000004
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 79835.045032757,
+        "sim_time_s": 19.5,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 14,
+        "SIMULATION_PAUSED": 4,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79815.777381912,
+          "next_observation_monotonic_s": 79816.839436906,
+          "next_observation_gap_s": 1.0620549939922057
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79816.839436906,
+          "next_observation_monotonic_s": 79817.902048225,
+          "next_observation_gap_s": 1.0626113190082833
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79817.902048225,
+          "next_observation_monotonic_s": 79818.963959496,
+          "next_observation_gap_s": 1.0619112709973706
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79818.963959496,
+          "next_observation_monotonic_s": 79820.034346669,
+          "next_observation_gap_s": 1.0703871729929233
+        }
+      ],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_straight_02/launch.log",
+            "bytes": 13765,
+            "sha256": "e2377fc4b3984c922b5ff6dd7c084decfb8e27385f050b47616788dee932bab5"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 68,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 69,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 70,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_straight_02/events.jsonl",
+        "bytes": 687308,
+        "sha256": "493517e76d7c2bf0f5a73756b44ff08f46620e4a66a01c7953c4ec76ec9b6c13"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_lqr_straight_03",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "straight",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 16.2,
+      "duration_wall_s": 20.224793594010407,
+      "legacy_fixed_cte": {
+        "count": 192,
+        "mean": 0.036264575513799906,
+        "rms": 0.05383078817919823,
+        "p95": 0.12247540427388515,
+        "max": 0.17711109321681817
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79842.494519576,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 2.8000000000000003
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 79862.719277801,
+        "sim_time_s": 19.0,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 13,
+        "SIMULATION_PAUSED": 4,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79847.244181036,
+          "next_observation_monotonic_s": 79848.310098241,
+          "next_observation_gap_s": 1.0659172049927292
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79848.310098241,
+          "next_observation_monotonic_s": 79849.375111028,
+          "next_observation_gap_s": 1.0650127870030701
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79849.375111028,
+          "next_observation_monotonic_s": 79850.44094766,
+          "next_observation_gap_s": 1.0658366319985362
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79850.44094766,
+          "next_observation_monotonic_s": 79851.513794909,
+          "next_observation_gap_s": 1.0728472490009153
+        }
+      ],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_straight_03/launch.log",
+            "bytes": 13763,
+            "sha256": "67651ea43a44065a13ab100bb16c3a92dd0743dccfb16591737f9746522bb310"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 68,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 69,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 70,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_straight_03/events.jsonl",
+        "bytes": 670586,
+        "sha256": "3a22f598d0f843031ef09a84233e20d9eb8b0f2c86dbc3dc2d03af794c5f3c84"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_lqr_turn_01",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "turn",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 18.0,
+      "duration_wall_s": 19.99899852598901,
+      "legacy_fixed_cte": {
+        "count": 190,
+        "mean": 0.6152965706868517,
+        "rms": 0.9419146000576117,
+        "p95": 2.1629840993692504,
+        "max": 2.2389057445559146
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79869.727556429,
+        "goal": [
+          23.125,
+          -22.125,
+          -1.5707963267948966
+        ],
+        "sim_time_s": 2.9000000000000004
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 79889.726506648,
+        "sim_time_s": 20.900000000000002,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "IDLE": 1,
+        "NAVIGATING": 15,
+        "SIMULATION_PAUSED": 1,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79880.370589128,
+          "next_observation_monotonic_s": 79881.4437746,
+          "next_observation_gap_s": 1.073185472007026
+        }
+      ],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_turn_01/launch.log",
+            "bytes": 13763,
+            "sha256": "f8caa404db284cef8126d16f40a02e045c8d1904b459c61bca6a9fe59bfeaf1a"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 68,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 69,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 70,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_turn_01/events.jsonl",
+        "bytes": 705731,
+        "sha256": "f6e9f73db31b2f95e1ae942af3bb92aa5758b4cda1c913817f4dc6698952b287"
+      },
+      "observed_control_result_counters_max": {
+        "control_result_timeout": 1
+      }
+    },
+    {
+      "trial": "python_lqr_turn_02",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "turn",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 17.8,
+      "duration_wall_s": 21.906610345002264,
+      "legacy_fixed_cte": {
+        "count": 209,
+        "mean": 0.6018975786786458,
+        "rms": 0.9163391799193648,
+        "p95": 2.154462241764822,
+        "max": 2.240413335452434
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79896.986960247,
+        "goal": [
+          23.125,
+          -22.125,
+          -1.5707963267948966
+        ],
+        "sim_time_s": 2.8000000000000003
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 79918.89352811,
+        "sim_time_s": 20.6,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 15,
+        "SIMULATION_PAUSED": 4,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79912.65248069,
+          "next_observation_monotonic_s": 79913.715321842,
+          "next_observation_gap_s": 1.0628411520010559
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79913.715321842,
+          "next_observation_monotonic_s": 79914.778174465,
+          "next_observation_gap_s": 1.062852622999344
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79914.778174465,
+          "next_observation_monotonic_s": 79915.841375657,
+          "next_observation_gap_s": 1.0632011919951765
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79915.841375657,
+          "next_observation_monotonic_s": 79916.916863598,
+          "next_observation_gap_s": 1.0754879410087597
+        }
+      ],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_turn_02/launch.log",
+            "bytes": 14004,
+            "sha256": "13cc30393b6969b81b781cb8410678836c0c456cbf7b1555104b9683cb6784a5"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 69,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 70,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 76,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_turn_02/events.jsonl",
+        "bytes": 738103,
+        "sha256": "c45b3208a0cd223128a82664243b41620b0bddb2b9719dd478ab6b860eddd2ec"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_lqr_turn_03",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "turn",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 17.6,
+      "duration_wall_s": 18.033779770004912,
+      "legacy_fixed_cte": {
+        "count": 174,
+        "mean": 0.6673024517749669,
+        "rms": 0.9767961521725865,
+        "p95": 2.139199055850817,
+        "max": 2.2062979751652882
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79926.355900411,
+        "goal": [
+          23.125,
+          -22.125,
+          -1.5707963267948966
+        ],
+        "sim_time_s": 2.7
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 79944.389683017,
+        "sim_time_s": 20.3,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 15,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_turn_03/launch.log",
+            "bytes": 14029,
+            "sha256": "c858507b0054dd283dfb260bb41e3268003af173c0d669a7d922d5ecc2159cc8"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 69,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 70,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 76,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_lqr_turn_03/events.jsonl",
+        "bytes": 679111,
+        "sha256": "e8527306b2dc80938ed3aa51693cd9c2b42760ad1d12e1fe18727b6fa0cdb0d8"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_pid_cancel_01",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "straight",
+      "fault": "cancel",
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": false,
+      "duration_sim_s": 5.6,
+      "duration_wall_s": 5.512172006012406,
+      "legacy_fixed_cte": {
+        "count": 51,
+        "mean": 0.10146933891266459,
+        "rms": 0.10390935309280892,
+        "p95": 0.14073262329984737,
+        "max": 0.17610335041923106
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": 0.0036677290045190603,
+      "nonzero_after_deadline": false,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 80077.718550932,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 2.8000000000000003
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 80083.230699296,
+        "sim_time_s": 8.4,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 4,
+        "CANCELLED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "state": "CANCELLED",
+          "reason": "",
+          "observed_monotonic_s": 80082.677464327,
+          "next_observation_monotonic_s": 80083.230699296,
+          "next_observation_gap_s": 0.5532349689892726
+        }
+      ],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_cancel_01/launch.log",
+            "bytes": 13040,
+            "sha256": "9cd4815e90ebf2ca4db4e07ca0ff92093a80c5e704162491dbbeb182f9ea415c"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 65,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 66,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 67,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 68,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 69,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 70,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_cancel_01/events.jsonl",
+        "bytes": 267912,
+        "sha256": "73c14a337fff443714bc2f34eacd2516e6fad4d696b2e5c6f112d061f3972785"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_pid_goal_change_01",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "straight",
+      "fault": "goal_change",
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 25.7,
+      "duration_wall_s": 25.851209956992534,
+      "legacy_fixed_cte": {
+        "count": 248,
+        "mean": 0.2409263587405897,
+        "rms": 0.316806070112044,
+        "p95": 0.7018962615454214,
+        "max": 0.7313489437045106
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 2,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 80044.941144255,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 2.6
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 80070.792296867,
+        "sim_time_s": 28.3,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "SIMULATION_PAUSED": 1,
+        "NAVIGATING": 21,
+        "SETTLING": 1,
+        "GOAL_REACHED": 2
+      },
+      "non_nominal_status_observations": [
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 80045.123378323,
+          "next_observation_monotonic_s": 80046.186884303,
+          "next_observation_gap_s": 1.0635059799969895
+        }
+      ],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_goal_change_01/launch.log",
+            "bytes": 14245,
+            "sha256": "e5506988b8e5bf397aa14bbdf658b3060dfcb0d599d0676e80d03f9691142148"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 70,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 76,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 77,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_goal_change_01/events.jsonl",
+        "bytes": 1024276,
+        "sha256": "90481bfebbb79eac8fcdc404727967accc8b656014efd098f34d036fbf5f8001"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_pid_odom_dropout",
+      "mode": "python",
+      "controller": null,
+      "scenario": null,
+      "fault": "odom_dropout",
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": null,
+      "duration_sim_s": null,
+      "duration_wall_s": null,
+      "legacy_fixed_cte": null,
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": 0.4248091120098252,
+      "nonzero_after_deadline": false,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 80085.346786637,
+        "goal": [
+          20.0,
+          10.0,
+          0.0
+        ],
+        "sim_time_s": 1789100614.2838898
+      },
+      "acquisition_end": null,
+      "state_counts": {
+        "WAITING_REFERENCE": 1,
+        "WAITING_STATE": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "state": "WAITING_REFERENCE",
+          "reason": "",
+          "observed_monotonic_s": 80085.519026052,
+          "next_observation_monotonic_s": 80086.598766486,
+          "next_observation_gap_s": 1.0797404339973582
+        },
+        {
+          "state": "WAITING_STATE",
+          "reason": "",
+          "observed_monotonic_s": 80086.598766486,
+          "next_observation_monotonic_s": null,
+          "next_observation_gap_s": null
+        }
+      ],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_odom_dropout/launch.log",
+            "bytes": 3532,
+            "sha256": "4848c2178f54d735f0a400478dac93c844ffde28e01f25511d1a20dc27cc74f7"
+          },
+          "clean_process_count": 0,
+          "health": "unknown_no_direct_return_code",
+          "signal_lines": [],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_odom_dropout/events.jsonl",
+        "bytes": 62127,
+        "sha256": "78f1e2ba7c838b6946267261e0d2b1b377ff6fdd32e77c723633347fe7953b52"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_pid_single_obstacle_01",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 22.4,
+      "duration_wall_s": 26.493893652994302,
+      "legacy_fixed_cte": {
+        "count": 251,
+        "mean": 0.20853448652472484,
+        "rms": 0.27416557184258766,
+        "p95": 0.528280764895548,
+        "max": 0.528280764895548
+      },
+      "minimum_footprint_clearance_m": 0.6632000591462787,
+      "global_searches": 4,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79682.145630274,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 5.9
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 79708.639478449,
+        "sim_time_s": 28.3,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 18,
+        "SIMULATION_PAUSED": 4,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79686.003157867,
+          "next_observation_monotonic_s": 79687.06482452,
+          "next_observation_gap_s": 1.0616666529967915
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79687.06482452,
+          "next_observation_monotonic_s": 79688.126501389,
+          "next_observation_gap_s": 1.0616768689942546
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79688.126501389,
+          "next_observation_monotonic_s": 79689.193573738,
+          "next_observation_gap_s": 1.0670723490038654
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79689.193573738,
+          "next_observation_monotonic_s": 79690.250185778,
+          "next_observation_gap_s": 1.0566120400035288
+        }
+      ],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_single_obstacle_01/launch.log",
+            "bytes": 14245,
+            "sha256": "4783794e711ce7216a9142ad964a727abab7732a45505f0ab967587851c08314"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 70,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 76,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 77,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_single_obstacle_01/events.jsonl",
+        "bytes": 945557,
+        "sha256": "d25711e2bb9d808b6ffda8aeeddf6a4719948800b596791489cb8c5fe972d570"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_pid_single_obstacle_02",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 22.3,
+      "duration_wall_s": 22.4420900039986,
+      "legacy_fixed_cte": {
+        "count": 216,
+        "mean": 0.1568723687858635,
+        "rms": 0.20715343911848755,
+        "p95": 0.4765451671442289,
+        "max": 0.5316142821125869
+      },
+      "minimum_footprint_clearance_m": 0.7850569737698885,
+      "global_searches": 4,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79721.787137131,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 4.300000000000001
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 79744.229191924,
+        "sim_time_s": 26.6,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 19,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_single_obstacle_02/launch.log",
+            "bytes": 14244,
+            "sha256": "cc0f549fd413b87b1d97c73dbb0d4764201422efd185678f1c3d264e930863e2"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 70,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 76,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 77,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_single_obstacle_02/events.jsonl",
+        "bytes": 878166,
+        "sha256": "bfcb66ebb4509f266590feafa04dac1ed92400a83a6456492217d25900638201"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_pid_single_obstacle_03",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 22.5,
+      "duration_wall_s": 22.599318369990215,
+      "legacy_fixed_cte": {
+        "count": 219,
+        "mean": 0.16509379555271464,
+        "rms": 0.20521744041823237,
+        "p95": 0.4506631302909945,
+        "max": 0.5138280217270825
+      },
+      "minimum_footprint_clearance_m": 0.8106155103425947,
+      "global_searches": 3,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79757.493163291,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 4.5
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 79780.092456787,
+        "sim_time_s": 27.0,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "WAITING_REFERENCE": 1,
+        "NAVIGATING": 18,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "state": "WAITING_REFERENCE",
+          "reason": "",
+          "observed_monotonic_s": 79757.664084735,
+          "next_observation_monotonic_s": 79758.734377579,
+          "next_observation_gap_s": 1.0702928440005053
+        }
+      ],
+      "failure_snapshots": [
+        {
+          "event": "navigation_failure_snapshot",
+          "wall_monotonic_s": 79757.678392381,
+          "costmap_path": "costmap_input_57b118ad.npz",
+          "state_path": "state_input_57b118ad.json",
+          "context_path": "navigation_context_57b118ad.json"
+        }
+      ],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_single_obstacle_03/launch.log",
+            "bytes": 14512,
+            "sha256": "71f0c1e2d1c963cee8b1869abd398c00b13d3c49c82be2a1804e2b8f8926375e"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 71,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 76,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 77,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 78,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_single_obstacle_03/events.jsonl",
+        "bytes": 872907,
+        "sha256": "18ec57d1d0633bd6676715d66b72ec43609dce4f1df83ad42b651aaa4f3e1933"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_pid_straight_01",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "straight",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 20.800000000000004,
+      "duration_wall_s": 20.83228678299929,
+      "legacy_fixed_cte": {
+        "count": 202,
+        "mean": 0.04211423468264759,
+        "rms": 0.0582929508219745,
+        "p95": 0.12045764050161445,
+        "max": 0.17615793154057868
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79496.181248689,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 2.9000000000000004
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 79517.013507287,
+        "sim_time_s": 23.700000000000003,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 17,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_straight_01/launch.log",
+            "bytes": 14003,
+            "sha256": "034507d1d2b3191a021dd747bdc388cdd14f44dda53deeb94768c70edf5b3f7e"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 69,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 70,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 76,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_straight_01/events.jsonl",
+        "bytes": 771689,
+        "sha256": "49011de7fd0a380ee2b89eed1d038d3945ac1cd8babdc6b5e3a7712bddc0b64c"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_pid_straight_02",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "straight",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 20.6,
+      "duration_wall_s": 22.225775315993815,
+      "legacy_fixed_cte": {
+        "count": 213,
+        "mean": 0.04845583943452025,
+        "rms": 0.06966715039901446,
+        "p95": 0.17593550882287745,
+        "max": 0.17593550882287745
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79523.902702009,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 2.6
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 79546.128422765,
+        "sim_time_s": 23.200000000000003,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "SIMULATION_PAUSED": 1,
+        "NAVIGATING": 17,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79524.550952106,
+          "next_observation_monotonic_s": 79525.614123828,
+          "next_observation_gap_s": 1.0631717219948769
+        }
+      ],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_straight_02/launch.log",
+            "bytes": 14004,
+            "sha256": "3bbe8d91158c8932cd728f314bc9e2efef80a69feb928333dd3aac3a102ecbc3"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 69,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 70,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 76,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_straight_02/events.jsonl",
+        "bytes": 743719,
+        "sha256": "5767686652af5b4b93a7553c34d19fc94b4235d7fcadaa0373c3d28831f47a61"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_pid_straight_03",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "straight",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 20.8,
+      "duration_wall_s": 24.748646936001023,
+      "legacy_fixed_cte": {
+        "count": 237,
+        "mean": 0.05083032674293111,
+        "rms": 0.06608778317215291,
+        "p95": 0.11740932699881768,
+        "max": 0.1752737240812344
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79553.171496245,
+        "goal": [
+          35.125,
+          -10.125,
+          0.0
+        ],
+        "sim_time_s": 3.0
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 79577.920102907,
+        "sim_time_s": 23.8,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 16,
+        "SIMULATION_PAUSED": 4,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79556.019693192,
+          "next_observation_monotonic_s": 79557.083850312,
+          "next_observation_gap_s": 1.064157119995798
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79557.083850312,
+          "next_observation_monotonic_s": 79558.148712201,
+          "next_observation_gap_s": 1.0648618889972568
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79558.148712201,
+          "next_observation_monotonic_s": 79559.212650409,
+          "next_observation_gap_s": 1.0639382079971256
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79559.212650409,
+          "next_observation_monotonic_s": 79560.279706854,
+          "next_observation_gap_s": 1.0670564449974336
+        }
+      ],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_straight_03/launch.log",
+            "bytes": 14003,
+            "sha256": "73d0623cb6439b50252232a96753ce9a3831eab50aa7db96edadd9010bc3ab11"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 69,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 70,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 76,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_straight_03/events.jsonl",
+        "bytes": 816948,
+        "sha256": "f65ff74555c9a4e420400459898bc39f1e9fe4095439ecafeb875409180c2fcc"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_pid_turn_01",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "turn",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 20.5,
+      "duration_wall_s": 22.498604428998078,
+      "legacy_fixed_cte": {
+        "count": 216,
+        "mean": 0.08800809081943714,
+        "rms": 0.10329494875498499,
+        "p95": 0.17494559465047413,
+        "max": 0.18305238526968992
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79584.976664309,
+        "goal": [
+          23.125,
+          -22.125,
+          -1.5707963267948966
+        ],
+        "sim_time_s": 2.8000000000000003
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 79607.475225157,
+        "sim_time_s": 23.3,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 17,
+        "SIMULATION_PAUSED": 2,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79588.875623733,
+          "next_observation_monotonic_s": 79589.93859461,
+          "next_observation_gap_s": 1.0629708769993158
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79589.93859461,
+          "next_observation_monotonic_s": 79591.005161997,
+          "next_observation_gap_s": 1.0665673870098544
+        }
+      ],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_turn_01/launch.log",
+            "bytes": 14003,
+            "sha256": "275258ecb86873b21e29363b888e323ad4a2a1fff09352133a1002943805fc6c"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 69,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 70,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 76,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_turn_01/events.jsonl",
+        "bytes": 759068,
+        "sha256": "eb2b97bfa8355c8b95e104733b413e98000e018300216bc84c8268e82fbacbde"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_pid_turn_02",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "turn",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 20.400000000000002,
+      "duration_wall_s": 22.42471888900036,
+      "legacy_fixed_cte": {
+        "count": 214,
+        "mean": 0.07222532294198883,
+        "rms": 0.0870483894830897,
+        "p95": 0.13960905137884794,
+        "max": 0.1760554480051108
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79614.695163099,
+        "goal": [
+          23.125,
+          -22.125,
+          -1.5707963267948966
+        ],
+        "sim_time_s": 3.0
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 79637.11985815,
+        "sim_time_s": 23.400000000000002,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 17,
+        "SIMULATION_PAUSED": 1,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79621.765966814,
+          "next_observation_monotonic_s": 79622.828706508,
+          "next_observation_gap_s": 1.0627396939962637
+        }
+      ],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_turn_02/launch.log",
+            "bytes": 14384,
+            "sha256": "62329a6eb49a72a8fdb0c574c7060214b34f811de3e45b48e2a220cfa2dc915c"
+          },
+          "clean_process_count": 7,
+          "health": "abnormal",
+          "signal_lines": [
+            {
+              "line": 69,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 70,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 76,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [
+            {
+              "line": 93,
+              "text": "[ERROR] [gzserver-1]: process has died [pid 114737, exit code -6, cmd 'gzserver /home/usv/usv_migration/python/install/sim_env/share/sim_env/worlds/ocean.world -slibgazebo_ros_init.so -slibgazebo_ros_factory.so -slibgazebo_ros_force_system.so'].",
+              "after_launch_sigint": true
+            }
+          ],
+          "diagnostic_lines": [
+            {
+              "line": 87,
+              "text": "[gzserver-1] terminate called after throwing an instance of 'boost::wrapexcept<boost::thread_resource_error>'"
+            },
+            {
+              "line": 88,
+              "text": "[gzserver-1]   what():  boost thread: trying joining itself: Resource deadlock avoided"
+            }
+          ]
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_turn_02/events.jsonl",
+        "bytes": 753143,
+        "sha256": "d4f888a0fbd0084d86f6101a996539773fed1fad0a009475c8f0772910b862cf"
+      },
+      "observed_control_result_counters_max": {}
+    },
+    {
+      "trial": "python_pid_turn_03",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "turn",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 20.4,
+      "duration_wall_s": 24.67360320100852,
+      "legacy_fixed_cte": {
+        "count": 234,
+        "mean": 0.07550813445108694,
+        "rms": 0.08851235101834051,
+        "p95": 0.13624999781086444,
+        "max": 0.17579704384803221
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 79647.060321137,
+        "goal": [
+          23.125,
+          -22.125,
+          -1.5707963267948966
+        ],
+        "sim_time_s": 3.1
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 79671.733850886,
+        "sim_time_s": 23.5,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 17,
+        "SIMULATION_PAUSED": 4,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79654.006557723,
+          "next_observation_monotonic_s": 79655.068741042,
+          "next_observation_gap_s": 1.0621833190089092
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79655.068741042,
+          "next_observation_monotonic_s": 79656.131850778,
+          "next_observation_gap_s": 1.063109735987382
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79656.131850778,
+          "next_observation_monotonic_s": 79657.191730616,
+          "next_observation_gap_s": 1.0598798380087828
+        },
+        {
+          "state": "SIMULATION_PAUSED",
+          "reason": "",
+          "observed_monotonic_s": 79657.191730616,
+          "next_observation_monotonic_s": 79658.254619265,
+          "next_observation_gap_s": 1.062888649001252
+        }
+      ],
+      "failure_snapshots": [],
+      "exit_health": [
+        {
+          "source": {
+            "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_turn_03/launch.log",
+            "bytes": 14271,
+            "sha256": "fd4be820a07e217349a0546b4194626a0a6233955610be98235e72a8d991e3a6"
+          },
+          "clean_process_count": 8,
+          "health": "clean",
+          "signal_lines": [
+            {
+              "line": 70,
+              "text": "[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)"
+            },
+            {
+              "line": 71,
+              "text": "[INFO] [sim_env_node-8]: sending signal 'SIGINT' to process[sim_env_node-8]"
+            },
+            {
+              "line": 72,
+              "text": "[INFO] [costmap_support_node-7]: sending signal 'SIGINT' to process[costmap_support_node-7]"
+            },
+            {
+              "line": 73,
+              "text": "[INFO] [perception_mapping_node-6]: sending signal 'SIGINT' to process[perception_mapping_node-6]"
+            },
+            {
+              "line": 74,
+              "text": "[INFO] [fake_localization_node-5]: sending signal 'SIGINT' to process[fake_localization_node-5]"
+            },
+            {
+              "line": 75,
+              "text": "[INFO] [joint_state_publisher-3]: sending signal 'SIGINT' to process[joint_state_publisher-3]"
+            },
+            {
+              "line": 76,
+              "text": "[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]"
+            },
+            {
+              "line": 77,
+              "text": "[INFO] [gzserver-1]: sending signal 'SIGINT' to process[gzserver-1]"
+            }
+          ],
+          "abnormal_exit_lines": [],
+          "diagnostic_lines": []
+        }
+      ],
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-grid-endpoint-final-matrix-001/python_pid_turn_03/events.jsonl",
+        "bytes": 808465,
+        "sha256": "bfeac8caba03a88e770b286b6c1a7e4b5daf3a10a9110b43303e59b884e62917"
+      },
+      "observed_control_result_counters_max": {}
+    }
+  ]
+}

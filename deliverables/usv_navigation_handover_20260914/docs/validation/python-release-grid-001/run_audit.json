@@ -1,0 +1,1739 @@
+{
+  "installed_commit": "e38183218fce7044e686a0f697ed13f456f49039",
+  "classification": "Completed fixed 18-navigation plus 3-fault run; functional thresholds are distinct from comparative, resource and exit-health acceptance.",
+  "source_run": "/home/usv/usv_migration/results/python-release-grid-001",
+  "status_sampling_limit": "1 Hz statuses do not resolve sub-second transitions. Interval spans are first-to-last observations; next-status gaps are observed bounds, not exact transition duration.",
+  "thresholds_unchanged": true,
+  "navigation_online_overrides": {},
+  "fault_fixture_exception": "Independent odom-dropout uses namespace isolation, state_timeout=.4 and map_timeout=2 at startup as defined by the unchanged harness protocol.",
+  "harness_exit_code": 0,
+  "residual_process_check": [],
+  "trials": [
+    {
+      "trial": "python_lqr_single_obstacle_01",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "single_obstacle",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 18.3,
+      "duration_wall_s": 20.127957794000395,
+      "fixed_cte": {
+        "count": 194,
+        "mean": 0.3806512210140155,
+        "rms": 0.45329368062410913,
+        "p95": 0.7634693365132927,
+        "max": 0.8100177398916959
+      },
+      "minimum_footprint_clearance_m": 0.8685799014630378,
+      "global_searches": 3,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75389.026963373,
+          "goal": [
+            35.125,
+            -10.125,
+            0.0
+          ],
+          "sim_time_s": 5.800000000000001
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 75409.154892443,
+        "sim_time_s": 24.1,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "NAVIGATING": 15,
+        "SIMULATION_PAUSED": 2,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [
+        {
+          "state_reason": [
+            "SIMULATION_PAUSED",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 75400.449210737,
+          "first_observed_sim_s": 17.0,
+          "observation_count": 2,
+          "last_observed_wall_monotonic_s": 75401.504198993,
+          "last_observed_sim_s": 17.0,
+          "next_status_wall_monotonic_s": 75402.568022345,
+          "next_status_sim_s": 17.5,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 1.0549882560007973,
+          "first_observation_to_next_status_wall_s": 2.118811608001124
+        }
+      ],
+      "navigation_failure_snapshots": [],
+      "exit_health": {
+        "classification": "clean_launch_markers",
+        "clean_process_count": 8,
+        "launch_sigint_line": 69,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_single_obstacle_01/events.jsonl",
+        "bytes": 746951,
+        "sha256": "ed7f40a584d5fbf756983301d04704af65b6f21b52acf011230599c671fd0d0c"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_single_obstacle_01/launch.log",
+        "bytes": 14004,
+        "sha256": "4a8fcf0eeb9a68cdcdc9bcd9c65849ec8da7503855b6acf9231b4727bfdc7c36"
+      }
+    },
+    {
+      "trial": "python_lqr_single_obstacle_02",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "single_obstacle",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 18.3,
+      "duration_wall_s": 21.67105131300923,
+      "fixed_cte": {
+        "count": 209,
+        "mean": 0.3639834999272664,
+        "rms": 0.423583982210207,
+        "p95": 0.7628487508154161,
+        "max": 0.821685087057411
+      },
+      "minimum_footprint_clearance_m": 0.8753960317090808,
+      "global_searches": 3,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75419.36166379,
+          "goal": [
+            35.125,
+            -10.125,
+            0.0
+          ],
+          "sim_time_s": 5.800000000000001
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 75441.032664015,
+        "sim_time_s": 24.1,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "NAVIGATING": 16,
+        "SIMULATION_PAUSED": 3,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [
+        {
+          "state_reason": [
+            "SIMULATION_PAUSED",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 75432.888558061,
+          "first_observed_sim_s": 19.200000000000003,
+          "observation_count": 3,
+          "last_observed_wall_monotonic_s": 75434.998410718,
+          "last_observed_sim_s": 19.200000000000003,
+          "next_status_wall_monotonic_s": 75436.064772078,
+          "next_status_sim_s": 19.400000000000002,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 2.109852657013107,
+          "first_observation_to_next_status_wall_s": 3.176214017003076
+        }
+      ],
+      "navigation_failure_snapshots": [],
+      "exit_health": {
+        "classification": "clean_launch_markers",
+        "clean_process_count": 8,
+        "launch_sigint_line": 69,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_single_obstacle_02/events.jsonl",
+        "bytes": 778368,
+        "sha256": "07cb355c29f5c560d63353fa60a1403982a1cc57e2ddf2e12352b2a56ef38eda"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_single_obstacle_02/launch.log",
+        "bytes": 14004,
+        "sha256": "da229d79e55d841d6e8fa412580d0e3210f186942a06c5505b852e74c38c643b"
+      }
+    },
+    {
+      "trial": "python_lqr_single_obstacle_03",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "single_obstacle",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 18.2,
+      "duration_wall_s": 20.0888638739998,
+      "fixed_cte": {
+        "count": 191,
+        "mean": 0.3399556040131868,
+        "rms": 0.4010048826126299,
+        "p95": 0.7459077267269365,
+        "max": 0.802666371434612
+      },
+      "minimum_footprint_clearance_m": 0.8694487503859032,
+      "global_searches": 3,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75451.157347158,
+          "goal": [
+            35.125,
+            -10.125,
+            0.0
+          ],
+          "sim_time_s": 5.6000000000000005
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 75471.246173806,
+        "sim_time_s": 23.8,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "NAVIGATING": 15,
+        "SIMULATION_PAUSED": 2,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [
+        {
+          "state_reason": [
+            "SIMULATION_PAUSED",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 75465.805190984,
+          "first_observed_sim_s": 19.6,
+          "observation_count": 2,
+          "last_observed_wall_monotonic_s": 75466.859677486,
+          "last_observed_sim_s": 19.6,
+          "next_status_wall_monotonic_s": 75467.921283564,
+          "next_status_sim_s": 20.400000000000002,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 1.0544865020056022,
+          "first_observation_to_next_status_wall_s": 2.116092580006807
+        }
+      ],
+      "navigation_failure_snapshots": [],
+      "exit_health": {
+        "classification": "clean_launch_markers",
+        "clean_process_count": 8,
+        "launch_sigint_line": 69,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_single_obstacle_03/events.jsonl",
+        "bytes": 746100,
+        "sha256": "450a5997d48efab6d049dd880b512c40f0a4537f9254f44c973a000ba9adea0f"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_single_obstacle_03/launch.log",
+        "bytes": 14004,
+        "sha256": "092c9f99720087b1b032e0569acf25d8b9f4a50fb86ef9725ba1a962c360490a"
+      }
+    },
+    {
+      "trial": "python_lqr_straight_01",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "straight",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 16.0,
+      "duration_wall_s": 19.477828738003154,
+      "fixed_cte": {
+        "count": 186,
+        "mean": 0.03214392088557608,
+        "rms": 0.05139492701749108,
+        "p95": 0.12146632076999886,
+        "max": 0.17601261799463286
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75230.147436289,
+          "goal": [
+            35.125,
+            -10.125,
+            0.0
+          ],
+          "sim_time_s": 3.0
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 75249.625205689,
+        "sim_time_s": 19.0,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "NAVIGATING": 14,
+        "SIMULATION_PAUSED": 3,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [
+        {
+          "state_reason": [
+            "SIMULATION_PAUSED",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 75239.272231779,
+          "first_observed_sim_s": 11.3,
+          "observation_count": 3,
+          "last_observed_wall_monotonic_s": 75241.380711804,
+          "last_observed_sim_s": 11.4,
+          "next_status_wall_monotonic_s": 75242.446437987,
+          "next_status_sim_s": 11.8,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 2.108480024995515,
+          "first_observation_to_next_status_wall_s": 3.1742062080011237
+        }
+      ],
+      "navigation_failure_snapshots": [],
+      "exit_health": {
+        "classification": "clean_launch_markers",
+        "clean_process_count": 8,
+        "launch_sigint_line": 68,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_straight_01/events.jsonl",
+        "bytes": 621751,
+        "sha256": "85e436e552519ed2a6e71aad9fe40863d87ac06a267c1f7ccd6f9b8b8e2d3983"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_straight_01/launch.log",
+        "bytes": 13763,
+        "sha256": "07289b007397fc3a90aacaa445c65564aced1c702093a382ff1882d728840516"
+      }
+    },
+    {
+      "trial": "python_lqr_straight_02",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "straight",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 15.8,
+      "duration_wall_s": 17.535531675006496,
+      "fixed_cte": {
+        "count": 168,
+        "mean": 0.036293900088260486,
+        "rms": 0.05333110449887301,
+        "p95": 0.12230901404278605,
+        "max": 0.175309051140262
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75256.903047001,
+          "goal": [
+            35.125,
+            -10.125,
+            0.0
+          ],
+          "sim_time_s": 3.0
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 75274.438563895,
+        "sim_time_s": 18.8,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "NAVIGATING": 13,
+        "SIMULATION_PAUSED": 2,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [
+        {
+          "state_reason": [
+            "SIMULATION_PAUSED",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 75271.294597282,
+          "first_observed_sim_s": 16.900000000000002,
+          "observation_count": 2,
+          "last_observed_wall_monotonic_s": 75272.349580322,
+          "last_observed_sim_s": 16.900000000000002,
+          "next_status_wall_monotonic_s": 75273.404898575,
+          "next_status_sim_s": 17.700000000000003,
+          "next_status": "GOAL_REACHED",
+          "observed_span_wall_s": 1.054983039997751,
+          "first_observation_to_next_status_wall_s": 2.110301292996155
+        }
+      ],
+      "navigation_failure_snapshots": [],
+      "exit_health": {
+        "classification": "clean_launch_markers",
+        "clean_process_count": 8,
+        "launch_sigint_line": 68,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_straight_02/events.jsonl",
+        "bytes": 612423,
+        "sha256": "7f892af6dd443124f13a34fd38682da9e4a11259afd22756e8ba2d2f2b8cd8f9"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_straight_02/launch.log",
+        "bytes": 13763,
+        "sha256": "c9ccf80e508f3cac4dda0e5a30a26feef444af166c39df8bf11a174e9ae39928"
+      }
+    },
+    {
+      "trial": "python_lqr_straight_03",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "straight",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 16.000000000000004,
+      "duration_wall_s": 15.986707800999284,
+      "fixed_cte": {
+        "count": 156,
+        "mean": 0.03801952709382578,
+        "rms": 0.05666181476635967,
+        "p95": 0.12312333936884912,
+        "max": 0.1765962032429027
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75281.454389458,
+          "goal": [
+            35.125,
+            -10.125,
+            0.0
+          ],
+          "sim_time_s": 2.7
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 75297.441070601,
+        "sim_time_s": 18.700000000000003,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "NAVIGATING": 13,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [],
+      "navigation_failure_snapshots": [],
+      "exit_health": {
+        "classification": "clean_launch_markers",
+        "clean_process_count": 8,
+        "launch_sigint_line": 66,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_straight_03/events.jsonl",
+        "bytes": 584368,
+        "sha256": "b6ee2c7ada47b2a4598616e99382c58d43091662eb7b4be98eff3df5a2ff7d19"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_straight_03/launch.log",
+        "bytes": 13256,
+        "sha256": "98016e4b5a31f2cb1b6832d6d9a703e2b3358f5fdbc5b92f51dbcf0a5c33c332"
+      }
+    },
+    {
+      "trial": "python_lqr_turn_01",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "turn",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 17.3,
+      "duration_wall_s": 17.30887259899464,
+      "fixed_cte": {
+        "count": 167,
+        "mean": 0.7112567210470252,
+        "rms": 1.0252062176684225,
+        "p95": 2.190431381049361,
+        "max": 2.245415669787544
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75307.72901582,
+          "goal": [
+            23.125,
+            -22.125,
+            -1.5707963267948966
+          ],
+          "sim_time_s": 2.1
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 75325.03786502,
+        "sim_time_s": 19.400000000000002,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "NAVIGATING": 15,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [],
+      "navigation_failure_snapshots": [],
+      "exit_health": {
+        "classification": "clean_launch_markers",
+        "clean_process_count": 8,
+        "launch_sigint_line": 68,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_turn_01/events.jsonl",
+        "bytes": 659481,
+        "sha256": "2bc14ed7caf06075fb82a7fa0e06a8fa846a81ede485be5178de5e0916630b45"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_turn_01/launch.log",
+        "bytes": 13763,
+        "sha256": "cfdcc455f0e214595e3c3dfbce0ae79a8477ec5e2a7d1dbced327cabdba0fc11"
+      }
+    },
+    {
+      "trial": "python_lqr_turn_02",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "turn",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 17.6,
+      "duration_wall_s": 20.836358899003244,
+      "fixed_cte": {
+        "count": 201,
+        "mean": 0.9467680912979991,
+        "rms": 1.289635814116163,
+        "p95": 2.2359247911378652,
+        "max": 2.2403185998019026
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75331.983537638,
+          "goal": [
+            23.125,
+            -22.125,
+            -1.5707963267948966
+          ],
+          "sim_time_s": 2.7
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 75352.819860113,
+        "sim_time_s": 20.3,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "NAVIGATING": 14,
+        "SIMULATION_PAUSED": 4,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [
+        {
+          "state_reason": [
+            "SIMULATION_PAUSED",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 75335.83789977,
+          "first_observed_sim_s": 6.5,
+          "observation_count": 4,
+          "last_observed_wall_monotonic_s": 75339.00204964,
+          "last_observed_sim_s": 6.7,
+          "next_status_wall_monotonic_s": 75340.063527988,
+          "next_status_sim_s": 7.500000000000001,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 3.1641498699900694,
+          "first_observation_to_next_status_wall_s": 4.225628217987833
+        }
+      ],
+      "navigation_failure_snapshots": [],
+      "exit_health": {
+        "classification": "clean_launch_markers",
+        "clean_process_count": 8,
+        "launch_sigint_line": 68,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_turn_02/events.jsonl",
+        "bytes": 711629,
+        "sha256": "712f1bd9ab04598f247e348385d8c9fbdc0e9d016b9680dcc3657ea3255ebb53"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_turn_02/launch.log",
+        "bytes": 13762,
+        "sha256": "a3d1eff67fa40e63a0550ade718e1aa31374ab1e078bacba2cd226de36808cb1"
+      }
+    },
+    {
+      "trial": "python_lqr_turn_03",
+      "mode": "python",
+      "controller": "lqr",
+      "scenario": "turn",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 17.5,
+      "duration_wall_s": 19.27251152000099,
+      "fixed_cte": {
+        "count": 186,
+        "mean": 0.6834048756656137,
+        "rms": 0.9798439130000022,
+        "p95": 2.163984101111364,
+        "max": 2.2416496503335033
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75359.785383503,
+          "goal": [
+            23.125,
+            -22.125,
+            -1.5707963267948966
+          ],
+          "sim_time_s": 2.8000000000000003
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 75379.057875596,
+        "sim_time_s": 20.3,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "NAVIGATING": 16,
+        "SIMULATION_PAUSED": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [
+        {
+          "state_reason": [
+            "SIMULATION_PAUSED",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 75368.891896647,
+          "first_observed_sim_s": 11.0,
+          "observation_count": 1,
+          "last_observed_wall_monotonic_s": 75368.891896647,
+          "last_observed_sim_s": 11.0,
+          "next_status_wall_monotonic_s": 75369.955263196,
+          "next_status_sim_s": 11.200000000000001,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 0.0,
+          "first_observation_to_next_status_wall_s": 1.0633665490022395
+        }
+      ],
+      "navigation_failure_snapshots": [],
+      "exit_health": {
+        "classification": "clean_launch_markers",
+        "clean_process_count": 8,
+        "launch_sigint_line": 68,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_turn_03/events.jsonl",
+        "bytes": 663436,
+        "sha256": "507a1e158d3e7fde186363780b7dc6d516165bc589f63fb7c854bebd66c7caf9"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_lqr_turn_03/launch.log",
+        "bytes": 13763,
+        "sha256": "e71aa93b35ce390cd3fed1d54472113f58671eb4ca1d0d46aeec2ec0a3a2ed25"
+      }
+    },
+    {
+      "trial": "python_pid_cancel_01",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "straight",
+      "fault": "cancel",
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": false,
+      "duration_sim_s": 5.5,
+      "duration_wall_s": 5.5246411380067,
+      "fixed_cte": {
+        "count": 51,
+        "mean": 0.09981526767338607,
+        "rms": 0.10273899181934555,
+        "p95": 0.15214382170258908,
+        "max": 0.17577029890914453
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": 0.0029798890027450398,
+      "nonzero_after_deadline": false,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75514.104983398,
+          "goal": [
+            35.125,
+            -10.125,
+            0.0
+          ],
+          "sim_time_s": 3.0
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 75519.62960597,
+        "sim_time_s": 8.5,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "NAVIGATING": 4,
+        "CANCELLED": 1
+      },
+      "non_nominal_observed_intervals": [],
+      "navigation_failure_snapshots": [],
+      "exit_health": {
+        "classification": "clean_launch_markers",
+        "clean_process_count": 8,
+        "launch_sigint_line": 65,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_cancel_01/events.jsonl",
+        "bytes": 235870,
+        "sha256": "5eb74b4d2658723f977ea224752a78a88c552ea3a29d68abe784c3e926c78a91"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_cancel_01/launch.log",
+        "bytes": 13040,
+        "sha256": "45c74bcfe30ff614b5631c8dc79dd942e39a4f2e006a235ea52f1057896365fa"
+      }
+    },
+    {
+      "trial": "python_pid_goal_change_01",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "straight",
+      "fault": "goal_change",
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 25.0,
+      "duration_wall_s": 28.6354135809961,
+      "fixed_cte": {
+        "count": 277,
+        "mean": 0.22027123040153296,
+        "rms": 0.29466901990209626,
+        "p95": 0.6897691091668001,
+        "max": 0.7291785204077108
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 2,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75478.390645527,
+          "goal": [
+            35.125,
+            -10.125,
+            0.0
+          ],
+          "sim_time_s": 2.6
+        },
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75482.417874038,
+          "goal": [
+            23.125,
+            -22.125,
+            -1.5707963267948966
+          ],
+          "sim_time_s": 6.7
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 75507.026006418,
+        "sim_time_s": 27.6,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "NAVIGATING": 21,
+        "SIMULATION_PAUSED": 3,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [
+        {
+          "state_reason": [
+            "SIMULATION_PAUSED",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 75498.525948247,
+          "first_observed_sim_s": 21.900000000000002,
+          "observation_count": 3,
+          "last_observed_wall_monotonic_s": 75500.631273363,
+          "last_observed_sim_s": 22.0,
+          "next_status_wall_monotonic_s": 75501.6838673,
+          "next_status_sim_s": 22.3,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 2.1053251160046784,
+          "first_observation_to_next_status_wall_s": 3.1579190530028427
+        }
+      ],
+      "navigation_failure_snapshots": [],
+      "exit_health": {
+        "classification": "clean_launch_markers",
+        "clean_process_count": 8,
+        "launch_sigint_line": 70,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_goal_change_01/events.jsonl",
+        "bytes": 1048455,
+        "sha256": "2855d0b2eee6d4762635d4fcca6a372aed685b71db6a39ec00afcbda427fff61"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_goal_change_01/launch.log",
+        "bytes": 14245,
+        "sha256": "f3766fff6cf49f7a72ecfba5bcf2c9d3196d0c3e40f7bb47957f9dc80fd29dce"
+      }
+    },
+    {
+      "trial": "python_pid_odom_dropout",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": null,
+      "fault": "odom_dropout",
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": null,
+      "duration_sim_s": null,
+      "duration_wall_s": null,
+      "fixed_cte": null,
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": 0.41820140500203706,
+      "nonzero_after_deadline": false,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75521.713292881,
+          "goal": [
+            20.0,
+            10.0,
+            0.0
+          ],
+          "sim_time_s": 1789096317.5790524
+        }
+      ],
+      "acquisition_end": null,
+      "state_counts_during_acquisition": {},
+      "non_nominal_observed_intervals": [],
+      "navigation_failure_snapshots": [],
+      "exit_health": {
+        "classification": "unknown_direct_process_exit_code_not_logged",
+        "clean_process_count": 0,
+        "launch_sigint_line": null,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_odom_dropout/events.jsonl",
+        "bytes": 62313,
+        "sha256": "43ac340d49d1cdc577207738280eaab0c9d8265998d32de6164df44689b45413"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_odom_dropout/launch.log",
+        "bytes": 3532,
+        "sha256": "3979882edfdc5c705af8e7d76db0a4129334ecfd16ad4b74832f81556b842010"
+      }
+    },
+    {
+      "trial": "python_pid_single_obstacle_01",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 22.700000000000003,
+      "duration_wall_s": 24.420105862998753,
+      "fixed_cte": {
+        "count": 233,
+        "mean": 0.1485720876080661,
+        "rms": 0.19521437046584736,
+        "p95": 0.44121470157732645,
+        "max": 0.5294226087279625
+      },
+      "minimum_footprint_clearance_m": 0.8036658113309534,
+      "global_searches": 3,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75126.271633932,
+          "goal": [
+            35.125,
+            -10.125,
+            0.0
+          ],
+          "sim_time_s": 5.7
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 75150.691707685,
+        "sim_time_s": 28.400000000000002,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "WAITING_REFERENCE": 1,
+        "NAVIGATING": 18,
+        "SIMULATION_PAUSED": 2,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [
+        {
+          "state_reason": [
+            "WAITING_REFERENCE",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 75126.293361241,
+          "first_observed_sim_s": 5.800000000000001,
+          "observation_count": 1,
+          "last_observed_wall_monotonic_s": 75126.293361241,
+          "last_observed_sim_s": 5.800000000000001,
+          "next_status_wall_monotonic_s": 75127.358248162,
+          "next_status_sim_s": 6.800000000000001,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 0.0,
+          "first_observation_to_next_status_wall_s": 1.0648869209981058
+        },
+        {
+          "state_reason": [
+            "SIMULATION_PAUSED",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 75142.16715092,
+          "first_observed_sim_s": 21.200000000000003,
+          "observation_count": 2,
+          "last_observed_wall_monotonic_s": 75143.221098443,
+          "last_observed_sim_s": 21.200000000000003,
+          "next_status_wall_monotonic_s": 75144.275797331,
+          "next_status_sim_s": 22.0,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 1.053947523003444,
+          "first_observation_to_next_status_wall_s": 2.1086464110121597
+        }
+      ],
+      "navigation_failure_snapshots": [
+        {
+          "event": "navigation_failure_snapshot",
+          "wall_monotonic_s": 75126.305481677,
+          "costmap_path": "costmap_input_8ba92555.npz",
+          "state_path": "state_input_8ba92555.json",
+          "context_path": "navigation_context_8ba92555.json"
+        }
+      ],
+      "exit_health": {
+        "classification": "not_clean",
+        "clean_process_count": 7,
+        "launch_sigint_line": 69,
+        "abnormal_exit_lines": [
+          {
+            "line": 93,
+            "text": "[ERROR] [gzserver-1]: process has died [pid 104681, exit code -6, cmd 'gzserver /home/usv/usv_migration/python/install/sim_env/share/sim_env/worlds/ocean.world -slibgazebo_ros_init.so -slibgazebo_ros_factory.so -slibgazebo_ros_force_system.so'].",
+            "after_launch_sigint_marker": true
+          }
+        ]
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_single_obstacle_01/events.jsonl",
+        "bytes": 898334,
+        "sha256": "1e6c1d2668d5e7a15d1c1204b037f78ea5c61adf1de443753340ef39a0b507e2"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_single_obstacle_01/launch.log",
+        "bytes": 14359,
+        "sha256": "3f2ccd7874c60bf317dab8eaa8cf8fd90b3d846c18049e84330bf601a901c328"
+      }
+    },
+    {
+      "trial": "python_pid_single_obstacle_02",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 22.6,
+      "duration_wall_s": 24.22480064800766,
+      "fixed_cte": {
+        "count": 233,
+        "mean": 0.146729352341501,
+        "rms": 0.19181965972577755,
+        "p95": 0.4205888824020576,
+        "max": 0.5312628613265973
+      },
+      "minimum_footprint_clearance_m": 0.7917671823608418,
+      "global_searches": 4,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75162.67502144,
+          "goal": [
+            35.125,
+            -10.125,
+            0.0
+          ],
+          "sim_time_s": 6.0
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 75186.899785895,
+        "sim_time_s": 28.6,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "NAVIGATING": 19,
+        "SIMULATION_PAUSED": 1,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [
+        {
+          "state_reason": [
+            "SIMULATION_PAUSED",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 75175.062043164,
+          "first_observed_sim_s": 17.3,
+          "observation_count": 1,
+          "last_observed_wall_monotonic_s": 75175.062043164,
+          "last_observed_sim_s": 17.3,
+          "next_status_wall_monotonic_s": 75176.11851414,
+          "next_status_sim_s": 17.8,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 0.0,
+          "first_observation_to_next_status_wall_s": 1.0564709760074038
+        }
+      ],
+      "navigation_failure_snapshots": [],
+      "exit_health": {
+        "classification": "clean_launch_markers",
+        "clean_process_count": 8,
+        "launch_sigint_line": 70,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_single_obstacle_02/events.jsonl",
+        "bytes": 912782,
+        "sha256": "85b4922e72a8861200571fea4f201a3cb76189b6df5441a96ebe7b988ac8d68e"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_single_obstacle_02/launch.log",
+        "bytes": 14245,
+        "sha256": "29b6fd87abfafafddc6a718d717bd8fe5b45f6a35e58d1bb9e9c8de3d8360ab3"
+      }
+    },
+    {
+      "trial": "python_pid_single_obstacle_03",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 22.700000000000003,
+      "duration_wall_s": 26.075742692002677,
+      "fixed_cte": {
+        "count": 251,
+        "mean": 0.19200297501979766,
+        "rms": 0.24224583481944348,
+        "p95": 0.43418482219576227,
+        "max": 0.5326425683286118
+      },
+      "minimum_footprint_clearance_m": 0.8310530084287322,
+      "global_searches": 3,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75196.889770322,
+          "goal": [
+            35.125,
+            -10.125,
+            0.0
+          ],
+          "sim_time_s": 6.0
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 75222.965468185,
+        "sim_time_s": 28.700000000000003,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "NAVIGATING": 19,
+        "SIMULATION_PAUSED": 3,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [
+        {
+          "state_reason": [
+            "SIMULATION_PAUSED",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 75207.196817035,
+          "first_observed_sim_s": 15.4,
+          "observation_count": 3,
+          "last_observed_wall_monotonic_s": 75209.30535259,
+          "last_observed_sim_s": 15.500000000000002,
+          "next_status_wall_monotonic_s": 75210.360162954,
+          "next_status_sim_s": 16.1,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 2.108535555002163,
+          "first_observation_to_next_status_wall_s": 3.1633459190052235
+        }
+      ],
+      "navigation_failure_snapshots": [],
+      "exit_health": {
+        "classification": "not_clean",
+        "clean_process_count": 7,
+        "launch_sigint_line": 70,
+        "abnormal_exit_lines": [
+          {
+            "line": 92,
+            "text": "[ERROR] [fake_localization_node-5]: process has died [pid 105109, exit code -11, cmd '/home/usv/usv_migration/python/install/sim_env/lib/sim_env/fake_localization_node --ros-args -r __node:=fake_localization -r __ns:=/otter --params-file /tmp/launch_params_5zmh75gy'].",
+            "after_launch_sigint_marker": true
+          }
+        ]
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_single_obstacle_03/events.jsonl",
+        "bytes": 932860,
+        "sha256": "d5a2d8c94dcd1d11c94dca371b9b723da323c0f5093190426c38e92c2e73d2cf"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_single_obstacle_03/launch.log",
+        "bytes": 14437,
+        "sha256": "5af28a49431a2f32782c88df6ce205404dbba68dcd2ffc03d24b84c2b00f0905"
+      }
+    },
+    {
+      "trial": "python_pid_straight_01",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "straight",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 20.7,
+      "duration_wall_s": 24.11640359199373,
+      "fixed_cte": {
+        "count": 231,
+        "mean": 0.0678018399374517,
+        "rms": 0.08645912465925228,
+        "p95": 0.17568885560154085,
+        "max": 0.17568885560154085
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 74883.55253779,
+          "goal": [
+            35.125,
+            -10.125,
+            0.0
+          ],
+          "sim_time_s": 3.1
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 74907.66888953,
+        "sim_time_s": 23.8,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "SIMULATION_PAUSED": 3,
+        "NAVIGATING": 17,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [
+        {
+          "state_reason": [
+            "SIMULATION_PAUSED",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 74883.994767432,
+          "first_observed_sim_s": 3.1,
+          "observation_count": 3,
+          "last_observed_wall_monotonic_s": 74886.105027909,
+          "last_observed_sim_s": 3.1,
+          "next_status_wall_monotonic_s": 74887.16451619,
+          "next_status_sim_s": 3.4000000000000004,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 2.110260476998519,
+          "first_observation_to_next_status_wall_s": 3.1697487579949666
+        }
+      ],
+      "navigation_failure_snapshots": [],
+      "exit_health": {
+        "classification": "clean_launch_markers",
+        "clean_process_count": 8,
+        "launch_sigint_line": 136,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_straight_01/events.jsonl",
+        "bytes": 918407,
+        "sha256": "f756d706db17ddb55ef0ea6cfd4255da08cf6dcbe3199552d5b95daa715aaa57"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_straight_01/launch.log",
+        "bytes": 31645,
+        "sha256": "b028adf5e279fbc28e68571b33e657608d3d57042923ffdb1f1bade31ec5b08f"
+      }
+    },
+    {
+      "trial": "python_pid_straight_02",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "straight",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 21.0,
+      "duration_wall_s": 22.79698592799832,
+      "fixed_cte": {
+        "count": 216,
+        "mean": 0.05500215524994038,
+        "rms": 0.06553042364790676,
+        "p95": 0.11892077638602316,
+        "max": 0.17553942750925955
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 74944.798306619,
+          "goal": [
+            35.125,
+            -10.125,
+            0.0
+          ],
+          "sim_time_s": 3.0
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 74967.595261569,
+        "sim_time_s": 24.0,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "WAITING_REFERENCE": 1,
+        "NAVIGATING": 17,
+        "SIMULATION_PAUSED": 1,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [
+        {
+          "state_reason": [
+            "WAITING_REFERENCE",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 74944.908857293,
+          "first_observed_sim_s": 3.1,
+          "observation_count": 1,
+          "last_observed_wall_monotonic_s": 74944.908857293,
+          "last_observed_sim_s": 3.1,
+          "next_status_wall_monotonic_s": 74945.967895783,
+          "next_status_sim_s": 4.2,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 0.0,
+          "first_observation_to_next_status_wall_s": 1.059038489998784
+        },
+        {
+          "state_reason": [
+            "SIMULATION_PAUSED",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 74949.125933765,
+          "first_observed_sim_s": 6.5,
+          "observation_count": 1,
+          "last_observed_wall_monotonic_s": 74949.125933765,
+          "last_observed_sim_s": 6.5,
+          "next_status_wall_monotonic_s": 74950.180290118,
+          "next_status_sim_s": 6.7,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 0.0,
+          "first_observation_to_next_status_wall_s": 1.0543563530081883
+        }
+      ],
+      "navigation_failure_snapshots": [
+        {
+          "event": "navigation_failure_snapshot",
+          "wall_monotonic_s": 74944.921817564,
+          "costmap_path": "costmap_input_9a2a4bc7.npz",
+          "state_path": "state_input_9a2a4bc7.json",
+          "context_path": "navigation_context_9a2a4bc7.json"
+        }
+      ],
+      "exit_health": {
+        "classification": "clean_launch_markers",
+        "clean_process_count": 8,
+        "launch_sigint_line": 134,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_straight_02/events.jsonl",
+        "bytes": 864093,
+        "sha256": "3c1c9f45b54cc45b4e9727b475c9b1205997b6f10d0e27876f815aa41542806f"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_straight_02/launch.log",
+        "bytes": 31139,
+        "sha256": "0e69b6ae913b2646b9341ad086344fc592a897e40db30f46dea4a75084d79679"
+      }
+    },
+    {
+      "trial": "python_pid_straight_03",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "straight",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 20.800000000000004,
+      "duration_wall_s": 24.11730877601076,
+      "fixed_cte": {
+        "count": 229,
+        "mean": 0.051468912280966575,
+        "rms": 0.0608278904751601,
+        "p95": 0.11596423190541749,
+        "max": 0.17556448583271905
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75004.686919429,
+          "goal": [
+            35.125,
+            -10.125,
+            0.0
+          ],
+          "sim_time_s": 2.9000000000000004
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 75028.804191295,
+        "sim_time_s": 23.700000000000003,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "WAITING_REFERENCE": 1,
+        "NAVIGATING": 16,
+        "SIMULATION_PAUSED": 4,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [
+        {
+          "state_reason": [
+            "WAITING_REFERENCE",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 75004.821155242,
+          "first_observed_sim_s": 3.0,
+          "observation_count": 1,
+          "last_observed_wall_monotonic_s": 75004.821155242,
+          "last_observed_sim_s": 3.0,
+          "next_status_wall_monotonic_s": 75005.874411521,
+          "next_status_sim_s": 4.1000000000000005,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 0.0,
+          "first_observation_to_next_status_wall_s": 1.053256279003108
+        },
+        {
+          "state_reason": [
+            "SIMULATION_PAUSED",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 75013.251933792,
+          "first_observed_sim_s": 10.9,
+          "observation_count": 4,
+          "last_observed_wall_monotonic_s": 75016.413603755,
+          "last_observed_sim_s": 11.3,
+          "next_status_wall_monotonic_s": 75017.469098232,
+          "next_status_sim_s": 12.4,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 3.161669963010354,
+          "first_observation_to_next_status_wall_s": 4.217164440007764
+        }
+      ],
+      "navigation_failure_snapshots": [
+        {
+          "event": "navigation_failure_snapshot",
+          "wall_monotonic_s": 75004.839021591,
+          "costmap_path": "costmap_input_c2cf1691.npz",
+          "state_path": "state_input_c2cf1691.json",
+          "context_path": "navigation_context_c2cf1691.json"
+        }
+      ],
+      "exit_health": {
+        "classification": "clean_launch_markers",
+        "clean_process_count": 8,
+        "launch_sigint_line": 135,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_straight_03/events.jsonl",
+        "bytes": 913667,
+        "sha256": "aba67b97337a20c7e6c30e4158cd5e739bd56472e9c270fbed37dbed2e04381c"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_straight_03/launch.log",
+        "bytes": 31380,
+        "sha256": "118b7e419b68326416bcfa97a97fa9a60a78c29fe8f40a6e7cd1f8f7d7fdf63a"
+      }
+    },
+    {
+      "trial": "python_pid_turn_01",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "turn",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 20.6,
+      "duration_wall_s": 22.209633460995974,
+      "fixed_cte": {
+        "count": 214,
+        "mean": 0.08092568803994067,
+        "rms": 0.09008375764800132,
+        "p95": 0.13769840180706083,
+        "max": 0.17579297065125463
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75035.939878088,
+          "goal": [
+            23.125,
+            -22.125,
+            -1.5707963267948966
+          ],
+          "sim_time_s": 2.9000000000000004
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 75058.149469842,
+        "sim_time_s": 23.5,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "NAVIGATING": 17,
+        "SIMULATION_PAUSED": 1,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [
+        {
+          "state_reason": [
+            "SIMULATION_PAUSED",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 75046.08397766,
+          "first_observed_sim_s": 12.0,
+          "observation_count": 1,
+          "last_observed_wall_monotonic_s": 75046.08397766,
+          "last_observed_sim_s": 12.0,
+          "next_status_wall_monotonic_s": 75047.139334415,
+          "next_status_sim_s": 12.5,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 0.0,
+          "first_observation_to_next_status_wall_s": 1.0553567549941363
+        }
+      ],
+      "navigation_failure_snapshots": [],
+      "exit_health": {
+        "classification": "clean_launch_markers",
+        "clean_process_count": 8,
+        "launch_sigint_line": 69,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_turn_01/events.jsonl",
+        "bytes": 755065,
+        "sha256": "2f1e8ec323643c9466791d176b813686534b7c44ed86fb987b827f3accd38974"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_turn_01/launch.log",
+        "bytes": 14004,
+        "sha256": "bfe2bcdeab39361b7e002f4f4b0e20d8cb6b7b20db8840ce3f5e4ce544e733b1"
+      }
+    },
+    {
+      "trial": "python_pid_turn_02",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "turn",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 20.5,
+      "duration_wall_s": 22.33919026599324,
+      "fixed_cte": {
+        "count": 217,
+        "mean": 0.07200234952865589,
+        "rms": 0.08495078305557742,
+        "p95": 0.14229262940314769,
+        "max": 0.17721770708272405
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75065.039178604,
+          "goal": [
+            23.125,
+            -22.125,
+            -1.5707963267948966
+          ],
+          "sim_time_s": 2.6
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 75087.378342457,
+        "sim_time_s": 23.1,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "NAVIGATING": 16,
+        "SIMULATION_PAUSED": 2,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [
+        {
+          "state_reason": [
+            "SIMULATION_PAUSED",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 75077.578759853,
+          "first_observed_sim_s": 14.700000000000001,
+          "observation_count": 2,
+          "last_observed_wall_monotonic_s": 75078.632675404,
+          "last_observed_sim_s": 14.700000000000001,
+          "next_status_wall_monotonic_s": 75079.688542687,
+          "next_status_sim_s": 15.4,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 1.0539155510050477,
+          "first_observation_to_next_status_wall_s": 2.1097828339989064
+        }
+      ],
+      "navigation_failure_snapshots": [],
+      "exit_health": {
+        "classification": "clean_launch_markers",
+        "clean_process_count": 8,
+        "launch_sigint_line": 68,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_turn_02/events.jsonl",
+        "bytes": 775724,
+        "sha256": "f30aa51dfd738e6d7e160c10a1a5e2d050373b0c7ee84bbb5fe78e26fd925c4e"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_turn_02/launch.log",
+        "bytes": 13738,
+        "sha256": "629f4e684717c25893d99edc1477b92b7be08811b60abed1b1155600a4bbd131"
+      }
+    },
+    {
+      "trial": "python_pid_turn_03",
+      "mode": "python",
+      "controller": "pid",
+      "scenario": "turn",
+      "fault": null,
+      "result": "completed",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 20.700000000000003,
+      "duration_wall_s": 22.393504635998397,
+      "fixed_cte": {
+        "count": 214,
+        "mean": 0.055020192016953726,
+        "rms": 0.06841247080281135,
+        "p95": 0.10358273572407128,
+        "max": 0.1771515375313505
+      },
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "zero_command_latency_wall_s": null,
+      "nonzero_after_deadline": null,
+      "goal_events": [
+        {
+          "event": "goal_published",
+          "wall_monotonic_s": 75094.19618312,
+          "goal": [
+            23.125,
+            -22.125,
+            -1.5707963267948966
+          ],
+          "sim_time_s": 2.5
+        }
+      ],
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 75116.589684811,
+        "sim_time_s": 23.200000000000003,
+        "cause": "loop_finished"
+      },
+      "state_counts_during_acquisition": {
+        "NAVIGATING": 16,
+        "SIMULATION_PAUSED": 2,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_observed_intervals": [
+        {
+          "state_reason": [
+            "SIMULATION_PAUSED",
+            ""
+          ],
+          "first_observed_wall_monotonic_s": 75109.921542413,
+          "first_observed_sim_s": 17.700000000000003,
+          "observation_count": 2,
+          "last_observed_wall_monotonic_s": 75110.977027181,
+          "last_observed_sim_s": 17.700000000000003,
+          "next_status_wall_monotonic_s": 75112.033061582,
+          "next_status_sim_s": 18.6,
+          "next_status": "NAVIGATING",
+          "observed_span_wall_s": 1.0554847680032253,
+          "first_observation_to_next_status_wall_s": 2.1115191690041684
+        }
+      ],
+      "navigation_failure_snapshots": [],
+      "exit_health": {
+        "classification": "clean_launch_markers",
+        "clean_process_count": 8,
+        "launch_sigint_line": 68,
+        "abnormal_exit_lines": []
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_turn_03/events.jsonl",
+        "bytes": 772000,
+        "sha256": "eded8471210b47873d901df0f933ec44f48a2975b0f894f00b423f9a2fc2655a"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-release-grid-001/python_pid_turn_03/launch.log",
+        "bytes": 13739,
+        "sha256": "8c2c8b83956d4f6ab335ed2e4ea5081b822a44a475fb8ece9f4d5ec7b8250fad"
+      }
+    }
+  ]
+}

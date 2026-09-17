@@ -10,6 +10,7 @@ from usv_ladds_bridge.config import (
     decode_utf8,
     drain_received,
     packet_info_json,
+    receive_channel,
 )
 
 
@@ -20,6 +21,16 @@ def test_library_path_falls_back_to_environment():
     )
 
     assert config.library_path == "/opt/ladds/lib/libladds.so"
+
+
+def test_optional_stop_subscription_has_explicit_topic_routing():
+    config = BridgeConfig.from_mapping({'stop_receive_topic': '0331'})
+    assert receive_channel('0331', config.receive_topic, config.stop_receive_topic) == 'stop'
+    assert receive_channel('0211', config.receive_topic, config.stop_receive_topic) == 'route'
+    assert receive_channel('0111', config.receive_topic, config.stop_receive_topic) is None
+    assert receive_channel('0331', '0211', '') == 'route'  # generic bridge compatibility
+    with pytest.raises(ValueError, match='different'):
+        BridgeConfig.from_mapping({'stop_receive_topic': '0211'})
 
 
 def test_missing_library_path_has_actionable_error():

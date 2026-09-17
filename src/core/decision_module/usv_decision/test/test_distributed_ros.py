@@ -18,8 +18,8 @@ from nav2_msgs.msg import Costmap
 from rosgraph_msgs.msg import Clock
 from std_msgs.msg import Float32, String
 from std_srvs.srv import Trigger
-from usv_navigation_interfaces.msg import ModuleHeartbeat, ControlReport
-from usv_navigation_interfaces.srv import NavigateTo
+from usv_navigation_interfaces.msg import ModuleHeartbeat, ControlReport, RouteWaypoint
+from usv_navigation_interfaces.srv import NavigateTo, NavigateRoute, StopNavigation
 from usv_navigation.configuration import C, T
 from usv_control.control import ControlNode
 from usv_decision.decision import DecisionNode
@@ -164,6 +164,57 @@ def test_atomic_navigation_service_speed_and_status_correlation():
         assert status['task_id'] == response.task_id
         assert status['current_task_id'] == response.task_id
         assert status['desired_speed_mps'] == pytest.approx(.4)
+
+
+@pytest.mark.parametrize('heading_enabled', [False, True])
+def test_real_ros_terminal_guard_then_active_stop_never_returns_to_old_point(heading_enabled):
+    """Synthetic sensors test the full mode handshake, not vessel dynamics."""
+    with distributed_harness() as h:
+        h.ready()
+        route_client = h.driver.create_client(NavigateRoute, 'navigation/navigate_route')
+        stop_client = h.driver.create_client(StopNavigation, 'navigation/stop')
+        h.until(lambda: route_client.service_is_ready() and stop_client.service_is_ready())
+        request = NavigateRoute.Request(request_id='guard-route', waypoint_radius=1.5,
+            guard_on_arrival=True, guard_heading_enabled=heading_enabled, guard_heading=.4)
+        request.header.frame_id = h.decision.frame
+        request.header.stamp = h.driver.get_clock().now().to_msg()
+        waypoint = RouteWaypoint(desired_speed_mps=.4)
+        waypoint.pose.x, waypoint.pose.y = h.x, h.y
+        request.waypoints = [waypoint]
+        future = route_client.call_async(request)
+        h.until(future.done)
+        assert future.result().accepted
+        h.until(lambda: h.decision.motion_mode == h.control.motion_mode == 'HOLD', timeout=10.)
+        assert h.decision.task_id == future.result().task_id
+        assert h.decision.goal[:2] == (waypoint.pose.x, waypoint.pose.y)
+        if heading_enabled:
+            assert h.control._hold_target[2] == pytest.approx(.4)
+        else:
+            assert h.control._hold_target[2] is None
+        assert not h.control.task_finished
+        assert h.driver.count_publishers('thrusters/left_thrust_cmd') == 1
+        # A measured displacement must provoke correction without moving the target.
+        h.x += .8
+        h.until(lambda: abs(h.control.last_published_command.left)
+                + abs(h.control.last_published_command.right) > .01)
+        assert h.control._hold_target[:2] == (waypoint.pose.x, waypoint.pose.y)
+        h.speed = .5
+        stopping = stop_client.call_async(StopNavigation.Request(request_id='brake',
+            superseded_request_ids=['guard-route']))
+        h.until(stopping.done)
+        assert stopping.result().accepted
+        h.until(lambda: h.control.motion_mode == 'BRAKE'
+                and h.control.last_published_command.left + h.control.last_published_command.right < -.01)
+        assert h.decision.mode != 'STOPPED'  # accepted while still physically moving
+        h.speed = 0.
+        h.until(lambda: h.decision.mode == h.control.mode == 'STOPPED')
+        assert h.decision.accepted_task_id == stopping.result().task_id
+        h.x += 2.
+        for _ in range(8):
+            h.step()
+            assert h.control.last_published_command.left == 0.
+            assert h.control.last_published_command.right == 0.
+        assert h.decision.goal is None and h.control.goal is None
 
 
 # 新目标可运行且推进只有一个发布者，取消必须等待控制端真实零输出确认。

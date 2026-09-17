@@ -1,7 +1,7 @@
 # Python 路径规划模块
 
 保留 ROS 包名 `path_planner`，通过 `ament_python` 安装。数值模块仅依赖
-NumPy 和 `common`；ROS 参数、消息、TF、可视化及服务由外部适配层处理。
+NumPy、`common` 和 `path_processor`；ROS 参数、消息、TF、可视化及服务由外部适配层处理。
 旧 C++ 源码和 CMakeLists.txt 暂时保留用于迁移审查，当前构建类型不会编译它们。
 
 ```python
@@ -25,9 +25,10 @@ result = planner.make_plan((0.5, 0.5, 0.0), (4.5, 4.5, 0.0), grid_snapshot)
 | unknown_is_obstacle | true | 是否将值为 255 的未知格视作障碍 |
 | allow_corner_cutting | true | 保留原对角移动规则；false 禁止从两个障碍角之间穿过 |
 | outline_map | false | 在本次搜索的掩码上封闭四周边界，不修改地图 |
-| timeout | 1.0 | 搜索时间上限，秒；含地图预处理，不含后续路径检查和重采样 |
+| timeout | 1.0 | 搜索时间上限，秒；启用 A* 剪枝后校验/剪枝/重采样也共享此预算 |
 | max_expansions | 200000 | 搜索展开节点上限 |
 | enable_resample | false | 是否重采样输出路径 |
+| enable_shortcut | false | 纯 Core 接口的剪枝开关，仅普通 A* 生效；项目普通导航默认 true |
 | resample_spacing | 0.5 | 等弧长采样间距，米；兼容旧名 resample_ratio |
 
 `SUCCESS` 表示找到路径；阻塞端点或不连通返回 `NO_PATH`；端点越界、格式
@@ -38,9 +39,10 @@ result = planner.make_plan((0.5, 0.5, 0.0), (4.5, 4.5, 0.0), grid_snapshot)
 `prune(path,state)` 保留最近航点及之后路径，等距离时选择最后一个，兼容
 原裁剪策略；可选 `prune_distance` 按路径弧长保留一段已走路径。
 `resample(path,spacing)` 保留首尾姿态，内部航向按三点圆弧切向计算。
-重采样可能跨越原折点，因此 `make_plan` 使用 `common.math_helper.path_is_clear`
-对原路径和候选路径进行分段采样碰撞检查；候选失败时返回原网格路径。
-该检查是半格采样检查，不代表船体扫掠体或连续几何碰撞证明。
+重采样可能跨越原折点，因此 `make_plan` 使用 `path_is_clear_with_inflation_escape`
+逐个遍历线段穿越的栅格，沿用软起点严格下降逃逸与切角策略。重采样失败时
+返回最近已验证路径（开启剪枝时为剪枝路径），不返回穿障连线。
+该检查只约束路径中心线，不替代后续 LOS 轨迹船体扫掠检查。
 
 迁移回归以成功状态、端点、路径可行性和代价为准；堆的平局顺序固定，但
 不保证与 C++ 选择同一条等代价路径。Dijkstra/A* 在有效端点场景保持原
@@ -51,6 +53,56 @@ result = planner.make_plan((0.5, 0.5, 0.0), (4.5, 4.5, 0.0), grid_snapshot)
 ```text
 python -m pytest src/core/decision_module/path_planner/test -q
 ```
+
+## 普通 A* 路径剪枝
+
+剪枝实现在 `path_processor.shortcut.ShortcutPathProcessor`，A* 的搜索代价、
+启发函数和展开过程不变。单目标由 `PathPlannerCore.make_plan()` 按
+“搜索 → 逐格验证 → 剪枝 → 重采样及复检”调用。多航点先暂缓 Core 后处理
+（`postprocess=False`），接入精确起终点后逐航段调用同一个处理器；不跨必经点，
+不执行两次剪枝。原有 Dijkstra/GBFS 多航点简化行为保留，Hybrid 的圆弧处理不变。
+
+纯数值接口需显式启用，以保留原始搜索输出用于对照：
+
+```python
+planner = PathPlannerCore({"planner_name": "astar", "enable_shortcut": True,
+                           "enable_resample": True, "resample_spacing": 0.5})
+result = planner.make_plan(start, goal, grid_snapshot)
+```
+
+工程公共配置 `usv_navigation/config/path_planner/common_planner_params.yaml` 中
+`path_planner.enable_shortcut: true` 已启用，但顶层 **planner_name 仍为 hybrid_astar**。
+选择普通 A* 时才应用本功能；在已构建并加载安装区的 WSL/ROS Humble 终端运行：
+
+```bash
+ros2 launch sim_env main.launch.py planner_name:=astar
+# 或只启动独立决策节点（其余模块需已启动）：
+ros2 launch usv_decision decision.launch.py planner_name:=astar
+```
+
+对照时将所用 planner YAML 的 `path_planner.enable_shortcut` 改为 `false`，
+通过既有 `planner_config:=配置文件绝对路径` 加载并重启。不是热参数；不要在
+运行中同时混用新旧安装。旧 mission 的代码默认仍为 false，但接受显式布尔键，
+不借此改动其已有算法枚举或 ADRC 兼容问题。
+
+剪枝不增加几何折线长度，可能减少冗余拐点；后续重采样仍会插点，所以最终
+发布点数不一定减少。它不减少本次 A* 的搜索展开数，不承诺闭环跟踪性能提升。
+取消重采样时仍保留原有路径复用与 LOS 行为，由连接段及船体安全门拒绝不安全
+参考；本次不重写 LOS 或缓存匹配算法。
+
+回归与独立安装核查：
+
+```bash
+python -m pytest -q src/core/decision_module/path_processor/test src/core/decision_module/path_planner/test src/core/decision_module/usv_decision/test/test_runtime_route.py src/sim_env/test/test_runtime.py src/sim_env/test/test_shortcut_configuration.py
+# WSL/Linux：在 /tmp 下创建全新 ASCII 目录、复制并独立构建8包，不操作已有仿真。
+bash scripts/validation/check_astar_shortcut_install.bash
+```
+
+安装核查会在独立目录导入已安装的处理器、规划器、配置和决策模块，并比较
+原始/剪枝路径；不创建 ROS 节点。源码回归和安装核查不等于 Gazebo 闭环或实船验收。
+临时目录保留供审计；复制源码是为了避开 ROS Humble 接口生成器对中文绝对路径的
+兼容问题，不是符号链接安装。时间预算为合作式检查：剪枝及逐格遍历可检测截止时间，
+现有重采样在返回后复核，超时结果会被拒绝；这不是整条 LOS/航控链的硬实时保证。
 
 ## 无人艇 Hybrid A*（Python）
 

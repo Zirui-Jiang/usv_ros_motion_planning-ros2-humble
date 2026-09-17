@@ -17,11 +17,12 @@ def as_path(path):
 
 
 class PathProcessor:
-    """Processors return an owned path; geometric processing is unconstrained.
+    """Processors return an owned path; constraints depend on the implementation.
 
     Stored obstacles remain available for caller diagnostics. As in the old
     implementations, RDP and SG do not consume them: callers must collision-
-    check any changed path before navigation.
+    check any changed path before navigation. Shortcut processing instead uses
+    an explicitly supplied collision callback, not this stored obstacle array.
     """
 
     def __init__(self):

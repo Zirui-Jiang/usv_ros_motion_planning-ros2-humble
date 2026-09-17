@@ -1,0 +1,122 @@
+{
+  "classification": "Fixed preview 2.5 s PID diagnostic; not production-default or full acceptance.",
+  "fixed_install": "e38183218fce7044e686a0f697ed13f456f49039",
+  "config": {
+    "absolute_path": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/scripts/validation/config/pid_preview25.yaml",
+    "bytes": 692,
+    "sha256": "b9f4e2431f367a24313a2e90eb3b1984da80cbb9edb0824a9f29b06e86445eda"
+  },
+  "status_sampling_limit": "1 Hz status observations do not prove absence of sub-second transitions.",
+  "trials": [
+    {
+      "trial": "python_pid_turn_01",
+      "passed_functional_thresholds": true,
+      "arrived": true,
+      "duration_sim_s": 19.9,
+      "fixed_cte_rms_m": 0.1004838567536164,
+      "fixed_cte_max_m": 0.19108305609720233,
+      "minimum_footprint_clearance_m": null,
+      "global_searches": 1,
+      "acquisition_begin": {
+        "event": "goal_published",
+        "wall_monotonic_s": 76452.433428963,
+        "goal": [
+          23.125,
+          -22.125,
+          -1.5707963267948966
+        ],
+        "sim_time_s": 2.9000000000000004
+      },
+      "acquisition_end": {
+        "event": "acquisition_finished",
+        "wall_monotonic_s": 76474.148584533,
+        "sim_time_s": 22.8,
+        "cause": "loop_finished"
+      },
+      "state_counts": {
+        "NAVIGATING": 17,
+        "SIMULATION_PAUSED": 1,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      },
+      "non_nominal_status_observations": [
+        {
+          "event": "navigation_status",
+          "wall_monotonic_s": 76466.852985606,
+          "payload": {
+            "state": "SIMULATION_PAUSED",
+            "reason": "",
+            "version": 1,
+            "stamp": 16.2,
+            "controller": "pid",
+            "goal": [
+              23.125,
+              -22.125,
+              -1.5707963267948963
+            ],
+            "metrics": {
+              "control_ms": {
+                "count": 181,
+                "p50": 0.2287130046170205,
+                "p95": 3.4681639954214916,
+                "p99": 7.388735195854676,
+                "max": 7.582054997328669
+              },
+              "costmap_conversion_ms": {
+                "count": 16,
+                "p50": 1.3770650039077736,
+                "p95": 2.1255422579997685,
+                "p99": 2.333990053011803,
+                "max": 2.3861020017648116
+              },
+              "planning_ms": {
+                "count": 68,
+                "p50": 6.407256005331874,
+                "p95": 8.245897393499035,
+                "p99": 8.786228927783666,
+                "max": 9.476879000430927
+              }
+            },
+            "counters": {
+              "pending_replacements": 0,
+              "global_searches": 1
+            },
+            "process": {
+              "pid": 110816,
+              "cpu_seconds": 1.072242,
+              "peak_rss_kib": 70980,
+              "monotonic": 76466.852640134
+            }
+          }
+        }
+      ],
+      "failure_snapshots": [],
+      "exit_health": {
+        "clean_process_count": 8,
+        "abnormal_exit_lines": []
+      },
+      "diagnostic_fixed_repeat_ratios": {
+        "reference": {
+          "absolute_path": "/home/usv/usv_migration/results/baseline-grid-interior-001/cpp_pid_turn_01/summary.json",
+          "bytes": 1395,
+          "sha256": "b3fce7bbb3765e88b5e453478869848d961d3a344d5c7f90fbdcf979034b6a9a"
+        },
+        "reference_functional_pass": true,
+        "rmse_ratio": 0.94349849928686,
+        "time_ratio": 0.8805309734513274,
+        "interpretation": "Candidate diagnostic only; raw fixed-repeat ratio preserved, no baseline replacement or threshold change."
+      },
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-preview25-turn-candidate-001/python_pid_turn_01/events.jsonl",
+        "bytes": 753816,
+        "sha256": "4b8fc8d1ca79ecbc1ea016929c0b6653cff1f3ec55320ebb9658c01c5181ceb8"
+      },
+      "source_launch": {
+        "absolute_path": "/home/usv/usv_migration/results/python-preview25-turn-candidate-001/python_pid_turn_01/launch.log",
+        "bytes": 14006,
+        "sha256": "c32a339b51a0c4d2909eaf02c78f59def846587595c7982c4e9a566ec4a8bfdf"
+      }
+    }
+  ],
+  "residual_process_check": []
+}

@@ -4,6 +4,7 @@
     [int]$DomainId = 1,
     [string]$Topic = '0211',
     [string]$ReceiveTopic = '',
+    [string]$StopReceiveTopic = '',
     [string]$SendTopic = '',
     [ValidateSet('best_effort', 'reliable')][string]$Qos = 'best_effort',
     [string]$BindIp = '',
@@ -44,6 +45,7 @@ try {
             '--listen', $ListenAddress, '--port', "$Port", '--domain-id', "$DomainId",
             '--send-topic', $SendTopic, '--receive-topic', $ReceiveTopic, '--qos', $Qos)
         if ($BindIp) { $laddsArgs += @('--bind-ip', $BindIp) }
+        if ($StopReceiveTopic) { $laddsArgs += @('--stop-receive-topic', $StopReceiveTopic) }
         & $PythonExe @laddsArgs
         if ($LASTEXITCODE -ne 0) { throw "LaDDS relay exited: $LASTEXITCODE" }
     } finally { Pop-Location }

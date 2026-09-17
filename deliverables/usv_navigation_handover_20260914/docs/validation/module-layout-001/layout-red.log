@@ -1,0 +1,43 @@
+FFF.                                                                     [100%]
+=================================== FAILURES ===================================
+_ test_business_can_be_built_without_simulation_or_peer_business_packages[usv_perception] _
+
+package = 'usv_perception'
+
+    @pytest.mark.parametrize('package', BUSINESS)
+    def test_business_can_be_built_without_simulation_or_peer_business_packages(package):
+        graph = package_graph()
+>       assert package in graph, f'Independent business package is missing: {package}'
+E       AssertionError: Independent business package is missing: usv_perception
+E       assert 'usv_perception' in {'common': {'ament_python', 'geometry_msgs', 'nav_msgs', 'python3-numpy', 'python3-pytest'}, 'controller': {'ament_pyt...'ament_cmake', 'rclpy', 'rviz2', 'urdf', 'xacro'}, 'dynamic_xml_config': {'ament_cmake', 'python3-yaml', 'rclpy'}, ...}
+
+scripts/validation/test_module_package_layout.py:26: AssertionError
+_ test_business_can_be_built_without_simulation_or_peer_business_packages[usv_decision] _
+
+package = 'usv_decision'
+
+    @pytest.mark.parametrize('package', BUSINESS)
+    def test_business_can_be_built_without_simulation_or_peer_business_packages(package):
+        graph = package_graph()
+>       assert package in graph, f'Independent business package is missing: {package}'
+E       AssertionError: Independent business package is missing: usv_decision
+E       assert 'usv_decision' in {'common': {'ament_python', 'geometry_msgs', 'nav_msgs', 'python3-numpy', 'python3-pytest'}, 'controller': {'ament_pyt...'ament_cmake', 'rclpy', 'rviz2', 'urdf', 'xacro'}, 'dynamic_xml_config': {'ament_cmake', 'python3-yaml', 'rclpy'}, ...}
+
+scripts/validation/test_module_package_layout.py:26: AssertionError
+_ test_business_can_be_built_without_simulation_or_peer_business_packages[usv_control] _
+
+package = 'usv_control'
+
+    @pytest.mark.parametrize('package', BUSINESS)
+    def test_business_can_be_built_without_simulation_or_peer_business_packages(package):
+        graph = package_graph()
+>       assert package in graph, f'Independent business package is missing: {package}'
+E       AssertionError: Independent business package is missing: usv_control
+E       assert 'usv_control' in {'common': {'ament_python', 'geometry_msgs', 'nav_msgs', 'python3-numpy', 'python3-pytest'}, 'controller': {'ament_pyt...'ament_cmake', 'rclpy', 'rviz2', 'urdf', 'xacro'}, 'dynamic_xml_config': {'ament_cmake', 'python3-yaml', 'rclpy'}, ...}
+
+scripts/validation/test_module_package_layout.py:26: AssertionError
+=========================== short test summary info ============================
+FAILED scripts/validation/test_module_package_layout.py::test_business_can_be_built_without_simulation_or_peer_business_packages[usv_perception]
+FAILED scripts/validation/test_module_package_layout.py::test_business_can_be_built_without_simulation_or_peer_business_packages[usv_decision]
+FAILED scripts/validation/test_module_package_layout.py::test_business_can_be_built_without_simulation_or_peer_business_packages[usv_control]
+3 failed, 1 passed in 4.94s

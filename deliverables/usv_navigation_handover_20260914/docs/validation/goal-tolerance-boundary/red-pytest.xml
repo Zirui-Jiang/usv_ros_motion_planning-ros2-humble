@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="15" skipped="0" tests="19" time="0.990" timestamp="2026-09-11T12:48:48.346440" hostname="DESKTOP-SFCU4PM"><testcase classname="src.core.controller.controller.test.test_controllers" name="test_goal_distance_tolerance_rejects_unresolvable_los_radius[0.0-PIDController]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">kind = &lt;class 'controller.pid_controller.PIDController'&gt;, tolerance = 0.0
+
+    @pytest.mark.parametrize("kind", [PIDController, LQRController])
+    @pytest.mark.parametrize("tolerance", [0., 1e-10, 1e-9])
+    def test_goal_distance_tolerance_rejects_unresolvable_los_radius(kind, tolerance):
+&gt;       with pytest.raises(ValueError, match=r"goal_distance_tolerance.*greater than.*1e-9"):
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+src/core/controller/controller/test/test_controllers.py:190: Failed</failure></testcase><testcase classname="src.core.controller.controller.test.test_controllers" name="test_goal_distance_tolerance_rejects_unresolvable_los_radius[0.0-LQRController]" time="0.001"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">kind = &lt;class 'controller.lqr_controller.LQRController'&gt;, tolerance = 0.0
+
+    @pytest.mark.parametrize("kind", [PIDController, LQRController])
+    @pytest.mark.parametrize("tolerance", [0., 1e-10, 1e-9])
+    def test_goal_distance_tolerance_rejects_unresolvable_los_radius(kind, tolerance):
+&gt;       with pytest.raises(ValueError, match=r"goal_distance_tolerance.*greater than.*1e-9"):
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+src/core/controller/controller/test/test_controllers.py:190: Failed</failure></testcase><testcase classname="src.core.controller.controller.test.test_controllers" name="test_goal_distance_tolerance_rejects_unresolvable_los_radius[1e-10-PIDController]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">kind = &lt;class 'controller.pid_controller.PIDController'&gt;, tolerance = 1e-10
+
+    @pytest.mark.parametrize("kind", [PIDController, LQRController])
+    @pytest.mark.parametrize("tolerance", [0., 1e-10, 1e-9])
+    def test_goal_distance_tolerance_rejects_unresolvable_los_radius(kind, tolerance):
+&gt;       with pytest.raises(ValueError, match=r"goal_distance_tolerance.*greater than.*1e-9"):
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+src/core/controller/controller/test/test_controllers.py:190: Failed</failure></testcase><testcase classname="src.core.controller.controller.test.test_controllers" name="test_goal_distance_tolerance_rejects_unresolvable_los_radius[1e-10-LQRController]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">kind = &lt;class 'controller.lqr_controller.LQRController'&gt;, tolerance = 1e-10
+
+    @pytest.mark.parametrize("kind", [PIDController, LQRController])
+    @pytest.mark.parametrize("tolerance", [0., 1e-10, 1e-9])
+    def test_goal_distance_tolerance_rejects_unresolvable_los_radius(kind, tolerance):
+&gt;       with pytest.raises(ValueError, match=r"goal_distance_tolerance.*greater than.*1e-9"):
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+src/core/controller/controller/test/test_controllers.py:190: Failed</failure></testcase><testcase classname="src.core.controller.controller.test.test_controllers" name="test_goal_distance_tolerance_rejects_unresolvable_los_radius[1e-09-PIDController]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">kind = &lt;class 'controller.pid_controller.PIDController'&gt;, tolerance = 1e-09
+
+    @pytest.mark.parametrize("kind", [PIDController, LQRController])
+    @pytest.mark.parametrize("tolerance", [0., 1e-10, 1e-9])
+    def test_goal_distance_tolerance_rejects_unresolvable_los_radius(kind, tolerance):
+&gt;       with pytest.raises(ValueError, match=r"goal_distance_tolerance.*greater than.*1e-9"):
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+src/core/controller/controller/test/test_controllers.py:190: Failed</failure></testcase><testcase classname="src.core.controller.controller.test.test_controllers" name="test_goal_distance_tolerance_rejects_unresolvable_los_radius[1e-09-LQRController]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">kind = &lt;class 'controller.lqr_controller.LQRController'&gt;, tolerance = 1e-09
+
+    @pytest.mark.parametrize("kind", [PIDController, LQRController])
+    @pytest.mark.parametrize("tolerance", [0., 1e-10, 1e-9])
+    def test_goal_distance_tolerance_rejects_unresolvable_los_radius(kind, tolerance):
+&gt;       with pytest.raises(ValueError, match=r"goal_distance_tolerance.*greater than.*1e-9"):
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+src/core/controller/controller/test/test_controllers.py:190: Failed</failure></testcase><testcase classname="src.core.controller.controller.test.test_controllers" name="test_rejected_goal_tolerance_update_preserves_pid_configuration_and_history" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">def test_rejected_goal_tolerance_update_preserves_pid_configuration_and_history():
+        controller = PIDController(USVModel(), {"k_i_speed": .2})
+        controller.compute(VesselState(), constant_reference(), .1)
+        previous_config = dict(controller.config)
+        previous_integral = controller.integral_speed
+&gt;       with pytest.raises(ValueError, match=r"goal_distance_tolerance.*greater than.*1e-9"):
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+src/core/controller/controller/test/test_controllers.py:199: Failed</failure></testcase><testcase classname="src.core.controller.controller.test.test_controllers" name="test_smallest_admitted_goal_radius_covers_los_duplicate_span[PIDController]" time="0.000" /><testcase classname="src.core.controller.controller.test.test_controllers" name="test_smallest_admitted_goal_radius_covers_los_duplicate_span[LQRController]" time="0.000" /><testcase classname="src.sim_env.test.test_configuration" name="test_startup_goal_distance_tolerance_rejects_unresolvable_los_radius[0.0-pid]" time="0.001"><failure message="AssertionError: Regex pattern 'usv_simulation.controller.pid_controller.goal_distance_tolerance.*greater than.*1e-9' does not match 'Gains must be nonnegative; frequencies, times and geometric limits must be positive'.">name = 'pid', tolerance = 0.0
+
+    @pytest.mark.parametrize("name", ["pid", "lqr"])
+    @pytest.mark.parametrize("tolerance", [0., 1e-10, 1e-9])
+    def test_startup_goal_distance_tolerance_rejects_unresolvable_los_radius(name, tolerance):
+        key = C + name + "_controller.goal_distance_tolerance"
+        with pytest.raises(ValueError, match=key + r".*greater than.*1e-9"):
+&gt;           resolve_parameters({key: tolerance})
+
+src/sim_env/test/test_configuration.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+values = {'usv_simulation.controller.pid_controller.goal_distance_tolerance': 0.0}
+
+    def resolve_parameters(values):
+        values = normalize_parameters(values)
+        unknown = set(values) - set(DEFAULTS)
+        if unknown:
+            raise ValueError(f"Unsupported navigation parameters: {sorted(unknown)}")
+        result = deepcopy(DEFAULTS)
+        result.update(values)
+&gt;       validate_parameters(result)
+
+src/sim_env/sim_env/configuration.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+values = {'dynamics.D': 0.395, 'dynamics.L': 1.35, 'dynamics.W': 1.0, 'dynamics.acceleration_max': 1.0, ...}
+
+    def validate_parameters(values):
+        for key, default in DEFAULTS.items():
+            value = values[key]
+            if isinstance(default, bool):
+                valid = type(value) is bool
+            elif isinstance(default, str):
+                valid = isinstance(value, str) and bool(value)
+            elif isinstance(default, int):
+                valid = type(value) is int and value &gt; 0
+            elif isinstance(default, float):
+                valid = type(value) in (int, float) and math.isfinite(value)
+            else:
+                valid = isinstance(value, list) and all(type(v) in (int, float) and math.isfinite(v) for v in value)
+            if not valid:
+                raise ValueError(f"Invalid type or nonfinite parameter: {key}={value!r}")
+        if values["planner_name"] not in ("astar", "dijkstra", "gbfs"):
+            raise ValueError("Only astar, dijkstra and gbfs are implemented")
+        if values[C + "controller_name"] not in ("pid", "lqr") or values[T + "planner_name"] != "los":
+            raise ValueError("Only PID/LQR controllers and LOS trajectory planner are implemented")
+        if not 0 &lt; values["obstacle_factor"] &lt;= 1:
+            raise ValueError("obstacle_factor must be in (0,1]")
+        nonnegative = {k for k in HOT_PARAMETERS if ".k_" in k}
+        positive = {k for k in DEFAULTS if k.startswith("navigation.") and isinstance(DEFAULTS[k], float)}
+        positive |= {k for k in DEFAULTS if k.endswith(("tolerance", "control_frequency", "resample_ratio"))}
+        nonnegative |= {k for k in DEFAULTS if k.endswith("lookahead_time")}
+        positive.discard("path_planner.default_tolerance")
+        positive |= {T + "los." + k for k in ("trajectory_time_interval", "trajectory_time", "switch_dist", "goal_tolerance", "lookahead_distance", "yaw_rate_max", "slowdown_distance")}
+        positive |= {C + "lqr_controller." + k for k in ("discrete_dt", "solve_eps", "solve_timeout")}
+        positive.add(T + "los.kp_yaw")
+        if any(values[k] &lt; 0 for k in nonnegative) or any(values[k] &lt;= 0 for k in positive):
+&gt;           raise ValueError("Gains must be nonnegative; frequencies, times and geometric limits must be positive")
+E           ValueError: Gains must be nonnegative; frequencies, times and geometric limits must be positive
+
+src/sim_env/sim_env/configuration.py:132: ValueError
+
+During handling of the above exception, another exception occurred:
+
+name = 'pid', tolerance = 0.0
+
+    @pytest.mark.parametrize("name", ["pid", "lqr"])
+    @pytest.mark.parametrize("tolerance", [0., 1e-10, 1e-9])
+    def test_startup_goal_distance_tolerance_rejects_unresolvable_los_radius(name, tolerance):
+        key = C + name + "_controller.goal_distance_tolerance"
+&gt;       with pytest.raises(ValueError, match=key + r".*greater than.*1e-9"):
+E       AssertionError: Regex pattern 'usv_simulation.controller.pid_controller.goal_distance_tolerance.*greater than.*1e-9' does not match 'Gains must be nonnegative; frequencies, times and geometric limits must be positive'.
+
+src/sim_env/test/test_configuration.py:54: AssertionError</failure></testcase><testcase classname="src.sim_env.test.test_configuration" name="test_startup_goal_distance_tolerance_rejects_unresolvable_los_radius[0.0-lqr]" time="0.001"><failure message="AssertionError: Regex pattern 'usv_simulation.controller.lqr_controller.goal_distance_tolerance.*greater than.*1e-9' does not match 'Gains must be nonnegative; frequencies, times and geometric limits must be positive'.">name = 'lqr', tolerance = 0.0
+
+    @pytest.mark.parametrize("name", ["pid", "lqr"])
+    @pytest.mark.parametrize("tolerance", [0., 1e-10, 1e-9])
+    def test_startup_goal_distance_tolerance_rejects_unresolvable_los_radius(name, tolerance):
+        key = C + name + "_controller.goal_distance_tolerance"
+        with pytest.raises(ValueError, match=key + r".*greater than.*1e-9"):
+&gt;           resolve_parameters({key: tolerance})
+
+src/sim_env/test/test_configuration.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+values = {'usv_simulation.controller.lqr_controller.goal_distance_tolerance': 0.0}
+
+    def resolve_parameters(values):
+        values = normalize_parameters(values)
+        unknown = set(values) - set(DEFAULTS)
+        if unknown:
+            raise ValueError(f"Unsupported navigation parameters: {sorted(unknown)}")
+        result = deepcopy(DEFAULTS)
+        result.update(values)
+&gt;       validate_parameters(result)
+
+src/sim_env/sim_env/configuration.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+values = {'dynamics.D': 0.395, 'dynamics.L': 1.35, 'dynamics.W': 1.0, 'dynamics.acceleration_max': 1.0, ...}
+
+    def validate_parameters(values):
+        for key, default in DEFAULTS.items():
+            value = values[key]
+            if isinstance(default, bool):
+                valid = type(value) is bool
+            elif isinstance(default, str):
+                valid = isinstance(value, str) and bool(value)
+            elif isinstance(default, int):
+                valid = type(value) is int and value &gt; 0
+            elif isinstance(default, float):
+                valid = type(value) in (int, float) and math.isfinite(value)
+            else:
+                valid = isinstance(value, list) and all(type(v) in (int, float) and math.isfinite(v) for v in value)
+            if not valid:
+                raise ValueError(f"Invalid type or nonfinite parameter: {key}={value!r}")
+        if values["planner_name"] not in ("astar", "dijkstra", "gbfs"):
+            raise ValueError("Only astar, dijkstra and gbfs are implemented")
+        if values[C + "controller_name"] not in ("pid", "lqr") or values[T + "planner_name"] != "los":
+            raise ValueError("Only PID/LQR controllers and LOS trajectory planner are implemented")
+        if not 0 &lt; values["obstacle_factor"] &lt;= 1:
+            raise ValueError("obstacle_factor must be in (0,1]")
+        nonnegative = {k for k in HOT_PARAMETERS if ".k_" in k}
+        positive = {k for k in DEFAULTS if k.startswith("navigation.") and isinstance(DEFAULTS[k], float)}
+        positive |= {k for k in DEFAULTS if k.endswith(("tolerance", "control_frequency", "resample_ratio"))}
+        nonnegative |= {k for k in DEFAULTS if k.endswith("lookahead_time")}
+        positive.discard("path_planner.default_tolerance")
+        positive |= {T + "los." + k for k in ("trajectory_time_interval", "trajectory_time", "switch_dist", "goal_tolerance", "lookahead_distance", "yaw_rate_max", "slowdown_distance")}
+        positive |= {C + "lqr_controller." + k for k in ("discrete_dt", "solve_eps", "solve_timeout")}
+        positive.add(T + "los.kp_yaw")
+        if any(values[k] &lt; 0 for k in nonnegative) or any(values[k] &lt;= 0 for k in positive):
+&gt;           raise ValueError("Gains must be nonnegative; frequencies, times and geometric limits must be positive")
+E           ValueError: Gains must be nonnegative; frequencies, times and geometric limits must be positive
+
+src/sim_env/sim_env/configuration.py:132: ValueError
+
+During handling of the above exception, another exception occurred:
+
+name = 'lqr', tolerance = 0.0
+
+    @pytest.mark.parametrize("name", ["pid", "lqr"])
+    @pytest.mark.parametrize("tolerance", [0., 1e-10, 1e-9])
+    def test_startup_goal_distance_tolerance_rejects_unresolvable_los_radius(name, tolerance):
+        key = C + name + "_controller.goal_distance_tolerance"
+&gt;       with pytest.raises(ValueError, match=key + r".*greater than.*1e-9"):
+E       AssertionError: Regex pattern 'usv_simulation.controller.lqr_controller.goal_distance_tolerance.*greater than.*1e-9' does not match 'Gains must be nonnegative; frequencies, times and geometric limits must be positive'.
+
+src/sim_env/test/test_configuration.py:54: AssertionError</failure></testcase><testcase classname="src.sim_env.test.test_configuration" name="test_startup_goal_distance_tolerance_rejects_unresolvable_los_radius[1e-10-pid]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">name = 'pid', tolerance = 1e-10
+
+    @pytest.mark.parametrize("name", ["pid", "lqr"])
+    @pytest.mark.parametrize("tolerance", [0., 1e-10, 1e-9])
+    def test_startup_goal_distance_tolerance_rejects_unresolvable_los_radius(name, tolerance):
+        key = C + name + "_controller.goal_distance_tolerance"
+&gt;       with pytest.raises(ValueError, match=key + r".*greater than.*1e-9"):
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+src/sim_env/test/test_configuration.py:54: Failed</failure></testcase><testcase classname="src.sim_env.test.test_configuration" name="test_startup_goal_distance_tolerance_rejects_unresolvable_los_radius[1e-10-lqr]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">name = 'lqr', tolerance = 1e-10
+
+    @pytest.mark.parametrize("name", ["pid", "lqr"])
+    @pytest.mark.parametrize("tolerance", [0., 1e-10, 1e-9])
+    def test_startup_goal_distance_tolerance_rejects_unresolvable_los_radius(name, tolerance):
+        key = C + name + "_controller.goal_distance_tolerance"
+&gt;       with pytest.raises(ValueError, match=key + r".*greater than.*1e-9"):
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+src/sim_env/test/test_configuration.py:54: Failed</failure></testcase><testcase classname="src.sim_env.test.test_configuration" name="test_startup_goal_distance_tolerance_rejects_unresolvable_los_radius[1e-09-pid]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">name = 'pid', tolerance = 1e-09
+
+    @pytest.mark.parametrize("name", ["pid", "lqr"])
+    @pytest.mark.parametrize("tolerance", [0., 1e-10, 1e-9])
+    def test_startup_goal_distance_tolerance_rejects_unresolvable_los_radius(name, tolerance):
+        key = C + name + "_controller.goal_distance_tolerance"
+&gt;       with pytest.raises(ValueError, match=key + r".*greater than.*1e-9"):
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+src/sim_env/test/test_configuration.py:54: Failed</failure></testcase><testcase classname="src.sim_env.test.test_configuration" name="test_startup_goal_distance_tolerance_rejects_unresolvable_los_radius[1e-09-lqr]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">name = 'lqr', tolerance = 1e-09
+
+    @pytest.mark.parametrize("name", ["pid", "lqr"])
+    @pytest.mark.parametrize("tolerance", [0., 1e-10, 1e-9])
+    def test_startup_goal_distance_tolerance_rejects_unresolvable_los_radius(name, tolerance):
+        key = C + name + "_controller.goal_distance_tolerance"
+&gt;       with pytest.raises(ValueError, match=key + r".*greater than.*1e-9"):
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+src/sim_env/test/test_configuration.py:54: Failed</failure></testcase><testcase classname="src.sim_env.test.test_configuration" name="test_startup_preserves_smallest_admitted_goal_radius[pid]" time="0.001" /><testcase classname="src.sim_env.test.test_configuration" name="test_startup_preserves_smallest_admitted_goal_radius[lqr]" time="0.000" /><testcase classname="src.sim_env.test.test_configuration" name="test_project_yaml_rejects_goal_radius_below_los_precision[pid]" time="0.040"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">tmp_path = PosixPath('/tmp/pytest-of-usv/pytest-84/test_project_yaml_rejects_goal0')
+name = 'pid'
+
+    @pytest.mark.parametrize("name", ["pid", "lqr"])
+    def test_project_yaml_rejects_goal_radius_below_los_precision(tmp_path, name):
+        controller = tmp_path / "tiny_goal_controller.yaml"
+        controller.write_text("controller:\n  " + name + "_controller:\n"
+                              "    goal_distance_tolerance: 1.0e-10\n", encoding="utf-8")
+        base = Path(__file__).resolve().parents[1] / "config"
+        key = C + name + "_controller.goal_distance_tolerance"
+&gt;       with pytest.raises(ValueError, match=key + r".*greater than.*1e-9"):
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+src/sim_env/test/test_configuration.py:72: Failed</failure></testcase><testcase classname="src.sim_env.test.test_configuration" name="test_project_yaml_rejects_goal_radius_below_los_precision[lqr]" time="0.018"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">tmp_path = PosixPath('/tmp/pytest-of-usv/pytest-84/test_project_yaml_rejects_goal1')
+name = 'lqr'
+
+    @pytest.mark.parametrize("name", ["pid", "lqr"])
+    def test_project_yaml_rejects_goal_radius_below_los_precision(tmp_path, name):
+        controller = tmp_path / "tiny_goal_controller.yaml"
+        controller.write_text("controller:\n  " + name + "_controller:\n"
+                              "    goal_distance_tolerance: 1.0e-10\n", encoding="utf-8")
+        base = Path(__file__).resolve().parents[1] / "config"
+        key = C + name + "_controller.goal_distance_tolerance"
+&gt;       with pytest.raises(ValueError, match=key + r".*greater than.*1e-9"):
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+src/sim_env/test/test_configuration.py:72: Failed</failure></testcase></testsuite></testsuites>

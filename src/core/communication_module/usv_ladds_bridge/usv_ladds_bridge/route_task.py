@@ -8,7 +8,7 @@ import json
 import math
 from typing import Optional, Tuple
 
-from common.geodesy import GeoReference
+from common.geodesy import GeoReference, heading_to_yaw
 
 from .single_leg import (
     KNOT_TO_METRES_PER_SECOND,
@@ -37,6 +37,13 @@ class RouteTask:
     points: Tuple[RouteWaypoint, ...]
     fingerprint: str
     wrapped: bool
+    task_type: int = 16
+    guard_heading: Optional[float] = None
+    warnings: Tuple[str, ...] = ()
+
+    @property
+    def guard_on_arrival(self) -> bool:
+        return self.task_type == 80
 
     @property
     def identity(self) -> Tuple[Optional[int], int]:
@@ -94,8 +101,8 @@ def parse_route(text: str, origin: GeoReference) -> RouteTask:
     _require_exact_integer("travelId", travel_id)
     task_type = _required(content, "taskType")
     _require_exact_integer("taskType", task_type)
-    if task_type != 16:
-        raise ValueError("taskType must be 16 for a route task")
+    if task_type not in (16, 80):
+        raise ValueError("taskType must be 16 (route) or 80 (route then guard)")
 
     count = _required(content, "count")
     _require_exact_integer("count", count)
@@ -107,7 +114,21 @@ def parse_route(text: str, origin: GeoReference) -> RouteTask:
     if len(point_objects) != count:
         raise ValueError("count must match the number of points")
 
-    _validate_optional_constraints(content)
+    guard_heading = None
+    warnings = []
+    if task_type == 16:
+        _validate_optional_constraints(content)
+    else:
+        heading = content.get('guardingHeading')
+        if heading is not None:
+            heading = _require_finite_number('guardingHeading', heading)
+            if not 0 <= heading <= 360:
+                raise ValueError('guardingHeading must be true-north clockwise degrees in [0, 360]')
+            guard_heading = heading_to_yaw(heading)
+        if content.get('areas') or content.get('areasCount'):
+            warnings.append('未应用区域约束：本版本仅执行航路终点定点值守，areas/areasCount 未适配')
+        if content.get('guardingRadius') is not None:
+            warnings.append('guardingRadius 未适配：不会用作允许漂移半径或定点控制精度')
 
     # Validate every protocol field before any coordinate conversion. A bad
     # later point rejects the packet without producing a partially usable task.
@@ -172,6 +193,8 @@ def parse_route(text: str, origin: GeoReference) -> RouteTask:
         "taskType": task_type,
         "travelId": travel_id,
     }
+    if task_type == 80:
+        summary['guard_heading_yaw'] = guard_heading
     canonical = json.dumps(
         summary, ensure_ascii=False, sort_keys=True, separators=(",", ":")
     )
@@ -181,6 +204,9 @@ def parse_route(text: str, origin: GeoReference) -> RouteTask:
         points=tuple(waypoints),
         fingerprint=hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
         wrapped=wrapped,
+        task_type=task_type,
+        guard_heading=guard_heading,
+        warnings=tuple(warnings),
     )
 
 

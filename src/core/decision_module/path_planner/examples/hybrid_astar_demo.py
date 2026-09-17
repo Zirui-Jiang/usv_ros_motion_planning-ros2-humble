@@ -7,6 +7,7 @@ import numpy as np
 
 package_root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(package_root))
+sys.path.insert(0, str(package_root.parent / "path_processor"))
 sys.path.insert(0, str(package_root.parent.parent / "shared" / "common"))
 
 from common.models import GridSnapshot

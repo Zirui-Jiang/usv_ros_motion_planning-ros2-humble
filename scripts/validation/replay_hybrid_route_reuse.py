@@ -9,7 +9,8 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 for package in ('shared/common','shared/usv_navigation','control_module/controller',
-                'decision_module/path_planner','decision_module/trajectory_planner','decision_module/usv_decision'):
+                'decision_module/path_planner','decision_module/path_processor',
+                'decision_module/trajectory_planner','decision_module/usv_decision'):
     sys.path.insert(0, str(ROOT/'src/core'/package))
 
 from common.models import GridSnapshot, VesselState

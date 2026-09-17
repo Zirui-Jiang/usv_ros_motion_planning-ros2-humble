@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "source_repo": "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble",
+  "source_sha256_before": {
+    "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/src/core/perception/perception/mapping_node.py": "e395697ec60a44fb7d63129f4fe95fa8bd2f830c4308f93efa517886d2fa6fbb",
+    "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/src/core/perception/perception/mapping.py": "17bd0b71d8a564b691337e514333c662839d97a574dc7057e88e75c0bccd17e0",
+    "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/src/core/perception/perception/scan_queue.py": "77cd6b567a5b4e56ac39a1a34359b00d2c1b571e75ed0d8731bbba4ade56aa3a",
+    "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/scripts/validation/compare_results.py": "07973d5ae4b08567d066b40c7df2c720e7ae4e7cc2cb558c4fe3078ba56e5c3d",
+    "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/scripts/validation/mapping_throughput.py": "02532a3de4187174ceaa135074be5e1557f26581114e5727cb856ead0bf13a7b"
+  },
+  "source_commit": "877743d25b7f88ce82b226b7f334de52778ac9d5",
+  "domain_id": 189,
+  "pid": 111356,
+  "protocol": {
+    "unique_scans": 450,
+    "duration_s": 30.0,
+    "beams": 2000,
+    "scan_hz": 15.0,
+    "width": 1024,
+    "resolution_m": 0.5,
+    "range_min_m": 0.1,
+    "range_max_m": 25.0,
+    "ranges": "All 2000 beams are deterministic 24m hits; synthetic long-ray workload, not a recorded scene.",
+    "map_publish_hz": 2.0,
+    "queue_capacity": 5,
+    "tf_wait_timeout_s": 0.2,
+    "duplicate_phase": "Three duplicates only after the 450 unique scans have integrated."
+  },
+  "scope": "Source MappingNode plus ROS driver in one process; CPU/RSS include driver, TF transport, instrumentation and subscriptions. Conditional normal-TF evidence only; no live verdict is rewritten.",
+  "namespace": "mapping_throughput_eafcd3b1c45d",
+  "backend": "python",
+  "node_module": "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/src/core/perception/perception/mapping_node.py",
+  "passed": false,
+  "error": "RuntimeError: Timeout: all 450 unique scans integrated",
+  "source_sha256_after": {
+    "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/src/core/perception/perception/mapping_node.py": "e395697ec60a44fb7d63129f4fe95fa8bd2f830c4308f93efa517886d2fa6fbb",
+    "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/src/core/perception/perception/mapping.py": "17bd0b71d8a564b691337e514333c662839d97a574dc7057e88e75c0bccd17e0",
+    "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/src/core/perception/perception/scan_queue.py": "77cd6b567a5b4e56ac39a1a34359b00d2c1b571e75ed0d8731bbba4ade56aa3a",
+    "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/scripts/validation/compare_results.py": "07973d5ae4b08567d066b40c7df2c720e7ae4e7cc2cb558c4fe3078ba56e5c3d",
+    "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/scripts/validation/mapping_throughput.py": "02532a3de4187174ceaa135074be5e1557f26581114e5727cb856ead0bf13a7b"
+  },
+  "source_unchanged": true,
+  "events_sha256": "5cdbdc8f024fd8ec0ee0889c9e6746a084204b8c3c902729004d7a7108d2f597",
+  "event_count": 3969,
+  "steady_interval_monotonic_s": [
+    77185.684986622,
+    77215.684986622
+  ]
+}

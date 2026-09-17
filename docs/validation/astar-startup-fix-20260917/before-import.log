@@ -1,0 +1,16 @@
+path_processor /home/usv/adrc-0914-20260914-mRBVAh/install/path_processor/lib/python3.10/site-packages/path_processor/__init__.py
+path_planner /tmp/usv_ladds_single_leg_20260915/build_python/path_planner/path_planner/__init__.py
+usv_decision /tmp/usv_ladds_single_leg_20260915/build_python/usv_decision/usv_decision/__init__.py
+Traceback (most recent call last):
+  File "<string>", line 4, in <module>
+  File "/tmp/usv_ladds_single_leg_20260915/build_python/usv_decision/usv_decision/decision.py", line 23, in <module>
+    from .runtime import LatestPlanWorker, PlanningRequest
+  File "/tmp/usv_ladds_single_leg_20260915/build_python/usv_decision/usv_decision/runtime.py", line 9, in <module>
+    from path_planner.path_planner_core import PathPlannerCore, path_is_clear_with_inflation_escape
+  File "/tmp/usv_ladds_single_leg_20260915/build_python/path_planner/path_planner/__init__.py", line 7, in <module>
+    from .path_planner_core import PathPlannerCore, prune, resample
+  File "/tmp/usv_ladds_single_leg_20260915/build_python/path_planner/path_planner/path_planner_core.py", line 9, in <module>
+    from path_processor import ShortcutPathProcessor
+ImportError: cannot import name 'ShortcutPathProcessor' from 'path_processor' (/home/usv/adrc-0914-20260914-mRBVAh/install/path_processor/lib/python3.10/site-packages/path_processor/__init__.py)
+
+exit_code=1

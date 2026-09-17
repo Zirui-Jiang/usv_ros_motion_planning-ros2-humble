@@ -51,7 +51,9 @@ class ControlHarness:
         self.sequence = 0
         self.simulated, self.simulated_time = simulated, 10.0
         self.x, self.y, self.speed = 0., 0., 0.
+        self.yaw_rate = 0.
         self.block = False
+        self.blocked_cells = []
         self.active_reference = None
 
     def close(self):
@@ -88,6 +90,7 @@ class ControlHarness:
             msg.pose.pose.position.x, msg.pose.pose.position.y = self.x, self.y
             msg.pose.pose.orientation.w = 1.
             msg.twist.twist.linear.x = self.speed
+            msg.twist.twist.angular.z = self.yaw_rate
             self.odom_pub.publish(msg)
         if grid:
             msg = Costmap()
@@ -100,8 +103,12 @@ class ControlHarness:
             msg.data = [0] * 6400
             if self.block:
                 msg.data[44 * 80 + 44] = 254
+            for column, row in self.blocked_cells:
+                msg.data[row * 80 + column] = 254
             self.map_pub.publish(msg)
-        if reference:
+        if isinstance(reference, str):
+            self.send_reference(motion_reference(self, reference, task=self.control.task_id or 1))
+        elif reference:
             self.send_reference()
         self.spin()
 
@@ -115,6 +122,7 @@ class ControlHarness:
         self.sequence += 1
         msg = self.Reference()
         msg.header.stamp = self.control.get_clock().now().to_msg()
+        msg.header.frame_id = self.namespace + '/map'
         msg.planner_session = self.sessions['decision']
         msg.control_session = self.control.session
         msg.perception_session = self.sessions['perception']
@@ -398,3 +406,169 @@ def test_adrc_brief_reference_interruption_resets_before_next_tick(interruption)
         assert h.control.last_published_command.left == h.control.last_published_command.right == 0.
         h.control._on_reference(h.reference())
         assert algorithm.last_sample_stamp is None
+
+
+def motion_reference(h, mode, task=1, goal=(0., 0.), heading=None):
+    message = h.reference(task=task, goal=goal, points=False)
+    message.motion_mode = mode
+    message.guard_heading_enabled = heading is not None
+    message.guard_heading = 0. if heading is None else heading
+    return message
+
+
+@pytest.mark.parametrize('speed', [.7, -.7])
+def test_active_brake_without_trajectory_opposes_motion_and_confirms_stop(speed):
+    with control_harness() as h:
+        h.speed = speed
+        h.ready()
+        h.send_reference(motion_reference(h, 'BRAKE'))
+        h.until(lambda: h.reports and h.reports[-1].state == 'BRAKING'
+                and speed * (h.reports[-1].left + h.reports[-1].right) < 0)
+        assert speed * (h.reports[-1].left + h.reports[-1].right) < 0
+        h.speed = 0.
+        h.yaw_rate = .03
+        for _ in range(24):
+            h.send_reference(motion_reference(h, 'BRAKE'))
+            h.step()
+        assert not h.reports[-1].task_finished
+        h.yaw_rate = 0.
+        for _ in range(8):
+            h.send_reference(motion_reference(h, 'BRAKE'))
+            h.step()
+        assert not h.reports[-1].task_finished
+        for _ in range(24):
+            h.send_reference(motion_reference(h, 'BRAKE'))
+            h.step()
+        assert h.reports[-1].state == 'STOPPED' and h.reports[-1].task_finished
+        assert h.reports[-1].left == h.reports[-1].right == 0.
+        h.send_reference(h.reference())
+        h.step()
+        assert h.reports[-1].state == 'STOPPED'
+
+
+def test_brake_missing_map_never_certifies_stopped_and_reference_expiry_stops_output():
+    with control_harness() as h:
+        h.until(lambda: h.control.state is not None and h.control.peers_ready('decision', 'perception'), grid=False)
+        for _ in range(25):
+            h.send_reference(motion_reference(h, 'BRAKE'))
+            h.step(grid=False)
+        assert h.reports[-1].state == 'WAITING_MAP'
+        assert not h.reports[-1].task_finished
+        h.speed = .7
+        h.send_reference(motion_reference(h, 'BRAKE'))
+        h.until(lambda: h.reports and h.reports[-1].state == 'BRAKING' and h.reports[-1].left < 0)
+        h.until(lambda: h.reports and h.reports[-1].state == 'WAITING_REFERENCE')
+        assert h.reports[-1].left == h.reports[-1].right == 0.
+
+
+def test_terminal_guard_latches_target_until_new_task_and_does_not_finish():
+    with control_harness() as h:
+        h.ready()
+        terminal = h.reference(goal=(0., 0.))
+        terminal.guard_on_arrival = True
+        terminal.guard_heading_enabled = True
+        terminal.guard_heading = .4
+        h.send_reference(terminal)
+        h.until(lambda: h.reports and h.reports[-1].state == 'GUARDING')
+        assert not h.reports[-1].task_finished
+        # A delayed navigation snapshot cannot move the locked centre or yaw.
+        h.send_reference(h.reference(goal=(8., 8.)))
+        h.step()
+        assert h.control.goal[:2] == (0., 0.)
+        assert h.control._hold_target == (0., 0., .4)
+        h.send_reference(motion_reference(h, 'HOLD', goal=(0., 0.), heading=.4))
+        h.until(lambda: h.reports and h.reports[-1].right > h.reports[-1].left)
+        cancel = h.reference(task=2, active=False, points=False)
+        h.send_reference(cancel)
+        h.until(lambda: h.reports and h.reports[-1].state == 'CANCELLED')
+        assert h.reports[-1].left == h.reports[-1].right == 0.
+        h.send_reference(h.reference(task=3))
+        h.until(lambda: h.reports and h.reports[-1].state == 'NAVIGATING')
+
+
+def test_intermediate_pass_through_does_not_trigger_guard_and_hold_checks_obstacles():
+    with control_harness() as h:
+        h.ready()
+        intermediate = h.reference(goal=(0., 0.))
+        intermediate.pass_through = True
+        intermediate.guard_on_arrival = True
+        h.send_reference(intermediate)
+        h.until(lambda: h.reports and h.reports[-1].state == 'NAVIGATING')
+        assert not h.reports[-1].task_finished
+        h.send_reference(motion_reference(h, 'HOLD', task=2))
+        h.until(lambda: h.reports and h.reports[-1].state == 'GUARDING')
+        assert h.reports[-1].left == h.reports[-1].right == 0.
+        h.y, h.block = .6, True
+        h.send_reference(motion_reference(h, 'HOLD', task=2))
+        h.until(lambda: h.reports and h.reports[-1].state == 'CURRENT_FOOTPRINT_BLOCKED')
+        assert h.reports[-1].left == h.reports[-1].right == 0.
+        assert not h.reports[-1].task_finished
+
+
+@pytest.mark.parametrize('mode', ['BRAKE', 'HOLD'])
+def test_motion_modes_keep_state_module_clock_and_frame_safety_gates(mode):
+    with control_harness() as h:
+        h.ready()
+        h.speed = .2
+        h.send_reference(motion_reference(h, mode))
+        expected = 'BRAKING' if mode == 'BRAKE' else 'GUARDING'
+        h.until(lambda: h.reports and h.reports[-1].state == expected, reference=mode)
+        h.until(lambda: h.reports and h.reports[-1].state == 'WAITING_STATE', odom=False, reference=mode)
+        assert h.reports[-1].left == h.reports[-1].right == 0.
+        assert not h.reports[-1].task_finished
+        h.until(lambda: h.reports and h.reports[-1].state == expected, reference=mode)
+        h.until(lambda: h.reports and h.reports[-1].state == 'SIMULATION_PAUSED', clock=False, reference=mode)
+        assert h.reports[-1].left == h.reports[-1].right == 0.
+        h.until(lambda: h.reports and h.reports[-1].state == expected, reference=mode)
+        invalid = motion_reference(h, mode)
+        invalid.header.frame_id = 'other/map'
+        h.send_reference(invalid)
+        h.until(lambda: h.reports and h.reports[-1].state == 'INVALID_REFERENCE')
+        assert h.reports[-1].left == h.reports[-1].right == 0.
+        h.send_reference(motion_reference(h, mode))
+        h.until(lambda: h.reports and h.reports[-1].state == expected, reference=mode)
+        h.sessions['perception'] = 'perception-restarted'
+        h.until(lambda: h.reports and h.reports[-1].state == 'MODULE_RESTART')
+        assert h.reports[-1].left == h.reports[-1].right == 0.
+        h.send_reference(motion_reference(h, mode))
+        h.step()
+        assert h.reports[-1].state == 'MODULE_RESTART'
+
+
+def test_guard_handover_is_reported_even_when_first_holding_command_is_blocked():
+    with control_harness() as h:
+        h.speed = .2
+        # x=1.25 m is outside the measured hull, but inside its stopping sweep.
+        h.blocked_cells = [(45, 40)]
+        h.ready()
+        terminal = h.reference(goal=(1.4, 0.))
+        terminal.guard_on_arrival = True
+        h.send_reference(terminal)
+        h.until(lambda: any(report.state == 'GUARD_BLOCKED' for report in h.reports))
+        assert any(report.state == 'GUARDING' and not report.task_finished for report in h.reports)
+        blocked = next(report for report in h.reports if report.state == 'GUARD_BLOCKED')
+        assert blocked.left == blocked.right == 0. and not blocked.task_finished
+
+
+@pytest.mark.parametrize('mode', ['BRAKE', 'HOLD'])
+@pytest.mark.parametrize('gate', ['WAITING_MAP', 'WAITING_REFERENCE'])
+def test_motion_lease_refresh_does_not_hide_last_control_tick_safety_gate(mode, gate):
+    with control_harness() as h:
+        h.speed = .2
+        if gate == 'WAITING_MAP':
+            h.until(lambda: h.control.state is not None and h.control.peers_ready('decision', 'perception'),
+                    grid=False)
+        else:
+            h.ready()
+        h.send_reference(motion_reference(h, mode))
+        h.until(lambda: h.reports and h.reports[-1].state == gate, grid=gate != 'WAITING_MAP')
+        previous_reason = h.reports[-1].reason
+        h.control.control_timer.cancel()
+        updated = motion_reference(h, mode)
+        h.send_reference(updated)
+        h.until(lambda: h.reports and h.reports[-1].reference_sequence == updated.sequence,
+                grid=gate != 'WAITING_MAP')
+        assert h.reports[-1].state == gate
+        assert h.reports[-1].reason == previous_reason
+        assert h.reports[-1].left == h.reports[-1].right == 0.
+        assert not h.reports[-1].task_finished

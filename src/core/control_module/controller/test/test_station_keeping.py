@@ -177,3 +177,26 @@ def test_invalid_station_configuration_is_rejected(config):
     controller_type, _ = components()
     with pytest.raises(ValueError):
         controller_type(USVModel(), config)
+
+
+def test_absent_heading_does_not_lock_current_or_zero_heading():
+    controller_type, _ = components()
+    controller = controller_type(USVModel())
+    for heading in [1.2, -2.1, .7]:
+        command = controller.compute(VesselState(psi=heading), (0., 0., None), .1)
+        assert command.status == AlgorithmStatus.SUCCESS
+        assert command.left == command.right == 0.
+        assert command.message == 'HOLD'
+
+
+@pytest.mark.parametrize('initial', [VesselState(x=2., y=2., psi=1.2),
+                                     VesselState(y=-1., psi=-2., u=-.2)])
+def test_position_only_closed_loop_recovers_without_fixed_heading(initial):
+    controller_type, step = components()
+    model = USVModel()
+    controller = controller_type(model)
+    state = initial
+    for _ in range(1800):
+        state = step(state, controller.compute(state, (0., 0., None), .1), model, .1)
+    assert math.hypot(state.x, state.y) <= .5
+    assert math.hypot(state.u, state.v) <= .04

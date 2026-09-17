@@ -1,0 +1,189 @@
+{
+  "recorded_utc": "2026-09-11T04:51:46.733300+00:00",
+  "classification": "Source-tree real ROS startup probes in separate sequential processes; no Gazebo, no ROS spin or navigation goal. Not a rebuilt install validation.",
+  "domain_id": 188,
+  "results": [
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/docs/validation/goal-tolerance-boundary/ros_startup_probe.py",
+        "--controller",
+        "pid",
+        "--tolerance",
+        "1e-10",
+        "--expected",
+        "rejected"
+      ],
+      "returncode": 0,
+      "log": "ros-pid-below.log",
+      "log_sha256": "f3bfe5bf4a13b0ccd5299ddf58bda4661f0fb4d65e06676217e5492bcf672148",
+      "report": {
+        "controller": "pid",
+        "parameter": "usv_simulation.controller.pid_controller.goal_distance_tolerance",
+        "requested_value": 1e-10,
+        "pid": 118734,
+        "domain_id": "188",
+        "simulation_module": "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/src/sim_env/sim_env/simulation.py",
+        "observed": "rejected",
+        "exception_type": "ValueError",
+        "error": "usv_simulation.controller.pid_controller.goal_distance_tolerance must be finite and greater than 1e-9 m (LOS waypoint spatial precision)",
+        "probe_passed": true
+      }
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/docs/validation/goal-tolerance-boundary/ros_startup_probe.py",
+        "--controller",
+        "pid",
+        "--tolerance",
+        "1e-09",
+        "--expected",
+        "rejected"
+      ],
+      "returncode": 0,
+      "log": "ros-pid-equal.log",
+      "log_sha256": "30abb2ecf6774195a3ff5a5d0511f49666882acc86879403a41c2a1c2898de0c",
+      "report": {
+        "controller": "pid",
+        "parameter": "usv_simulation.controller.pid_controller.goal_distance_tolerance",
+        "requested_value": 1e-09,
+        "pid": 118746,
+        "domain_id": "188",
+        "simulation_module": "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/src/sim_env/sim_env/simulation.py",
+        "observed": "rejected",
+        "exception_type": "ValueError",
+        "error": "usv_simulation.controller.pid_controller.goal_distance_tolerance must be finite and greater than 1e-9 m (LOS waypoint spatial precision)",
+        "probe_passed": true
+      }
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/docs/validation/goal-tolerance-boundary/ros_startup_probe.py",
+        "--controller",
+        "pid",
+        "--tolerance",
+        "1.0000000000000003e-09",
+        "--expected",
+        "accepted"
+      ],
+      "returncode": 0,
+      "log": "ros-pid-above.log",
+      "log_sha256": "8e4e3cf6ed46994c4ee39949e2742c9824452ae310ee5beab8cfd6eb29138b58",
+      "report": {
+        "controller": "pid",
+        "parameter": "usv_simulation.controller.pid_controller.goal_distance_tolerance",
+        "requested_value": 1.0000000000000003e-09,
+        "pid": 118758,
+        "domain_id": "188",
+        "simulation_module": "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/src/sim_env/sim_env/simulation.py",
+        "observed": "accepted",
+        "actual_value": 1.0000000000000003e-09,
+        "probe_passed": true
+      }
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/docs/validation/goal-tolerance-boundary/ros_startup_probe.py",
+        "--controller",
+        "lqr",
+        "--tolerance",
+        "1e-10",
+        "--expected",
+        "rejected"
+      ],
+      "returncode": 0,
+      "log": "ros-lqr-below.log",
+      "log_sha256": "5db9ec4403757e33c3b2a0542a6fd230a2bc4193269c47a1a8de082b745d32ba",
+      "report": {
+        "controller": "lqr",
+        "parameter": "usv_simulation.controller.lqr_controller.goal_distance_tolerance",
+        "requested_value": 1e-10,
+        "pid": 118771,
+        "domain_id": "188",
+        "simulation_module": "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/src/sim_env/sim_env/simulation.py",
+        "observed": "rejected",
+        "exception_type": "ValueError",
+        "error": "usv_simulation.controller.lqr_controller.goal_distance_tolerance must be finite and greater than 1e-9 m (LOS waypoint spatial precision)",
+        "probe_passed": true
+      }
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/docs/validation/goal-tolerance-boundary/ros_startup_probe.py",
+        "--controller",
+        "lqr",
+        "--tolerance",
+        "1e-09",
+        "--expected",
+        "rejected"
+      ],
+      "returncode": 0,
+      "log": "ros-lqr-equal.log",
+      "log_sha256": "c51818d1152e6c4151a703a335aec3087044b3ab49756ba42639b3c97ae6ed9f",
+      "report": {
+        "controller": "lqr",
+        "parameter": "usv_simulation.controller.lqr_controller.goal_distance_tolerance",
+        "requested_value": 1e-09,
+        "pid": 118783,
+        "domain_id": "188",
+        "simulation_module": "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/src/sim_env/sim_env/simulation.py",
+        "observed": "rejected",
+        "exception_type": "ValueError",
+        "error": "usv_simulation.controller.lqr_controller.goal_distance_tolerance must be finite and greater than 1e-9 m (LOS waypoint spatial precision)",
+        "probe_passed": true
+      }
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/docs/validation/goal-tolerance-boundary/ros_startup_probe.py",
+        "--controller",
+        "lqr",
+        "--tolerance",
+        "1.0000000000000003e-09",
+        "--expected",
+        "accepted"
+      ],
+      "returncode": 0,
+      "log": "ros-lqr-above.log",
+      "log_sha256": "bd7ffb7019dc3db25892756173821d8156c39fa4af60e65f1591e047942e6e3b",
+      "report": {
+        "controller": "lqr",
+        "parameter": "usv_simulation.controller.lqr_controller.goal_distance_tolerance",
+        "requested_value": 1.0000000000000003e-09,
+        "pid": 118795,
+        "domain_id": "188",
+        "simulation_module": "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/src/sim_env/sim_env/simulation.py",
+        "observed": "accepted",
+        "actual_value": 1.0000000000000003e-09,
+        "probe_passed": true
+      }
+    }
+  ],
+  "all_six_passed": true,
+  "source_after_sha256": {
+    "src/sim_env/sim_env/runtime.py": "0725b4bb4bf8f2648c3c9e27eca6d6c13c69fbe3e4ef1b6942dea9e61ebab1a8",
+    "src/core/trajectory_planner/trajectory_planner/los_trajectory_planner.py": "cc309fc7eae86d458d846974d3719ee78790ae4a5222cd96c96dfc8619db3f58",
+    "src/sim_env/sim_env/configuration.py": "f3ba4925fb0814978890a9775a509549191c5db44899f5ed178a506f984534de",
+    "src/core/controller/controller/controller/controller.py": "b25e305f9375902a7b2b822e946fe714a727d963103071817e972e572db0e865",
+    "src/core/controller/controller/controller/pid_controller.py": "d34540b42cd68ec9fc2b89e002c6ef2b6619a2014440ee84a90e8f0ae54705ba",
+    "src/core/controller/controller/controller/lqr_controller.py": "d33d877dedd63653112f42937d0566202c223b20a29f7e0e51b703067dcca40a"
+  },
+  "runtime_and_los_unchanged": {
+    "src/sim_env/sim_env/runtime.py": true,
+    "src/core/trajectory_planner/trajectory_planner/los_trajectory_planner.py": true
+  },
+  "artifact_sha256": {
+    "red-reproduction.json": "b2a69b3d27f33475b3ad3466ab93fca00f9c8a335436bf6251f46ea155257845",
+    "red-pytest.log": "3dbf98f8397a1a05d5fc5b0e6173e7f4db3c7f680ddc9f68c75f74dc95e20b22",
+    "red-pytest.xml": "7105477be30354bd163388631caddb1aef6e0eb113be8bb95ef675b224ad7100",
+    "green-pytest.log": "f242475b41950854005899929af46988e403f494ae184e1a66cdf2bc10a8b710",
+    "green-pytest.xml": "c616f672a399760d597265d54f64a54b1490900c77c8fe56fb98e45ae4f65ad0",
+    "ros_startup_probe.py": "e6ecf0c381f0c1a925daec8df42142d881c543883b82baf12ac23efcb2ef53be"
+  },
+  "signal_policy": "No signals sent by driver; each probe destroys any fully constructed own node and shuts down own rclpy context, then exits."
+}

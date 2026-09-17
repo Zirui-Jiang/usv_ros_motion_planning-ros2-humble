@@ -41,6 +41,7 @@ class LaDDSClient:
         queue_depth: int = 100,
         encryption: bool = False,
         library_loader: Optional[Callable[[str], object]] = None,
+        stop_receive_topic: str = "",
     ) -> None:
         _require_c_string("library_path", library_path, allow_empty=False)
         _require_integer("domain_id", domain_id, 0, 2**31 - 1)
@@ -50,6 +51,9 @@ class LaDDSClient:
             raise ValueError("qos must be 'reliable' or 'best_effort'")
         _require_c_string("send_topic", send_topic, allow_empty=False)
         _require_c_string("receive_topic", receive_topic, allow_empty=False)
+        _require_c_string("stop_receive_topic", stop_receive_topic, allow_empty=True)
+        if stop_receive_topic == receive_topic:
+            raise ValueError('stop_receive_topic must be different from receive_topic')
         _require_integer("src", src, 0, 2**32 - 1)
         _require_integer("dst", dst, 0, 2**32 - 1)
         _require_integer("max_payload_bytes", max_payload_bytes, 1, 2**31 - 1)
@@ -67,6 +71,9 @@ class LaDDSClient:
         self._qos = {"reliable": 1, "best_effort": 2}[qos]
         self._send_topic = send_topic.encode("utf-8")
         self._receive_topic = receive_topic.encode("utf-8")
+        self._receive_topics = [self._receive_topic]
+        if stop_receive_topic:
+            self._receive_topics.append(stop_receive_topic.encode('utf-8'))
         self._src = src
         self._dst = dst
         self._max_payload_bytes = max_payload_bytes
@@ -151,10 +158,11 @@ class LaDDSClient:
                 raise LaDDSError(
                     "LaDDS_RegPubTopic 失败；请检查发布主题、QoS 与运行授权"
                 )
-            if not library.LaDDS_RegSubTopic(handle, self._receive_topic, self._qos):
-                raise LaDDSError(
-                    "LaDDS_RegSubTopic 失败；请检查订阅主题、QoS 与运行授权"
-                )
+            for receive_topic in self._receive_topics:
+                if not library.LaDDS_RegSubTopic(handle, receive_topic, self._qos):
+                    raise LaDDSError(
+                        f"LaDDS_RegSubTopic {receive_topic!r} 失败；请检查订阅主题、QoS 与运行授权"
+                    )
         except Exception as exc:
             if handle:
                 try:

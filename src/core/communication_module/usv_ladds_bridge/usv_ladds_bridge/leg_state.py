@@ -14,6 +14,8 @@ class LegRecord:
     task_id: int = -1
     generation: int = 0
     timeout_retries: int = 0
+    # Arrival feedback is a one-shot milestone, separate from task completion.
+    arrival_confirmed: bool = False
 
 
 class LegBook:
@@ -106,7 +108,8 @@ class LegBook:
             self.active = None
             return
         record.planner_session, record.task_id = planner_session, task_id
-        record.state = 'ACTIVE'
+        if not record.arrival_confirmed:
+            record.state = 'ACTIVE'
 
     def uncertain(self, request_id, reason):
         if self.active is not None and self.active.request_id == request_id:
@@ -139,6 +142,7 @@ class LegBook:
         return 'unknown', record
 
     def observe(self, status):
+        """Return a newly confirmed arrival; guarding remains the active task."""
         record = self.active
         if record is None or not isinstance(status, dict):
             return None
@@ -174,14 +178,29 @@ class LegBook:
             return None
         state = status.get('state')
         if state == 'GOAL_REACHED':
+            if getattr(record.leg, 'guard_on_arrival', False):
+                # Require confirmed guard takeover, not an old controller's
+                # ordinary completion report that would end the hold task.
+                record.state, record.reason = 'ACTIVE', 'Waiting for terminal position guard'
+                return None
             if task != record.task_id:
                 return None
             record.state, record.reason = 'COMPLETED', 'Navigation confirmed arrival and stop'
+            record.arrival_confirmed = True
             self.active = None
             return record
-        if state in {'CANCELLED', 'MODULE_RESTART', 'CLOCK_RESET', 'SHUTDOWN', 'INVALID_GOAL'}:
+        if state in {'CANCELLED', 'MODULE_RESTART', 'CLOCK_RESET', 'SHUTDOWN', 'INVALID_GOAL', 'STOPPING', 'STOPPED'}:
             record.state, record.reason = 'ABORTED', str(state)
             self.active = None
+        elif state == 'GUARDING':
+            record.state, record.reason = 'GUARDING', str(status.get('reason', ''))
         elif record.state != 'SUBMITTING':
             record.state, record.reason = 'ACTIVE', str(status.get('reason', ''))
+        # HOLD is latched by decision only after terminal arrival. It survives
+        # brief safety waits, so a missed first GUARDING status cannot lose 0052.
+        if (self.active is record and getattr(record.leg, 'guard_on_arrival', False)
+                and not record.arrival_confirmed
+                and (state == 'GUARDING' or status.get('motion_mode') == 'HOLD')):
+            record.arrival_confirmed = True
+            return record
         return None

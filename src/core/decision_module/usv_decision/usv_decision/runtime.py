@@ -7,6 +7,7 @@ import numpy as np
 from common.models import AlgorithmStatus, GridSnapshot, USVModel, VesselState
 from common.collision import footprint_path_is_clear
 from path_planner.path_planner_core import PathPlannerCore, path_is_clear_with_inflation_escape
+from path_processor import ShortcutPathProcessor
 from trajectory_planner.trajectory import Trajectory
 from trajectory_planner.trajectory_planner_factory import create_trajectory_planner
 from trajectory_planner.route_trajectory import RouteTrajectoryPlanner
@@ -222,7 +223,9 @@ def plan_route_navigation(request):
                         cache_cursor = len(cached_route)
             if cached_leg is None:
                 searched = True
-                found = planner.make_plan(start, anchor[:3], request.grid)
+                # A* 剪枝推迟到精确端点接入之后；不要先剪格中心再重采样再剪一次。
+                found = planner.make_plan(start, anchor[:3], request.grid,
+                                          postprocess=not planner.shortcut_enabled)
                 expanded += found.expanded
                 if not found.success:
                     if legs:
@@ -237,7 +240,7 @@ def plan_route_navigation(request):
                 return path_is_clear_with_inflation_escape(
                     request.grid, candidate, 254.*cfg['obstacle_factor'],
                     planner.planner.unknown_is_obstacle, outline_map=planner.planner.outline_map,
-                    allow_corner_cutting=planner.planner.allow_corner_cutting)
+                    allow_corner_cutting=planner.planner.allow_corner_cutting, deadline=deadline)
             if not preserves_kinematics:
                 # Keep requested endpoints rather than cell centers. Simplify only
                 # inside this leg; crossing a mandatory anchor is never an option.
@@ -247,18 +250,12 @@ def plan_route_navigation(request):
                         prefix_message = 'safe prefix; next mandatory anchor connection is blocked'
                         break
                     return result(AlgorithmStatus.NO_PATH, message='exact mandatory anchor connection is blocked')
-                keep, i = [connected[0]], 0
-                while i < len(connected)-1:
-                    if time.perf_counter() >= deadline:
-                        return result(AlgorithmStatus.TIMEOUT, message='route simplification exceeded planning budget')
-                    j = len(connected)-1
-                    while j > i+1 and not valid(connected[[i, j]]):
-                        j -= 1
-                        if time.perf_counter() >= deadline:
-                            return result(AlgorithmStatus.TIMEOUT, message='route simplification exceeded planning budget')
-                    keep.append(connected[j])
-                    i = j
-                leg = np.asarray(keep)
+                # Dijkstra/GBFS 的多点链原本就做直连简化，保留其行为；
+                # 普通 A* 可显式关闭，以比较原始路径和剪枝路径。
+                if planner.shortcut_enabled or cfg['planner_name'] != 'astar':
+                    leg = ShortcutPathProcessor(valid).process(connected, deadline=deadline)
+                else:
+                    leg = connected
             legs.append(leg)
             speeds.append(float(anchor[3]))
             route = np.vstack(legs)

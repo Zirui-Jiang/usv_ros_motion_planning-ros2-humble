@@ -77,6 +77,15 @@ def _receive_until(client, timeout=0.5):
     return None
 
 
+def test_tcp_relay_keeps_stop_topic_separate_from_route(relay_pair):
+    dds, _, client = relay_pair
+    for topic in ('0211', '0331'):
+        dds.incoming.put(ReceivedPacket(1, topic, b'{}', 1000, 1001))
+        received = _receive_until(client)
+        assert received.topic == topic
+        assert received.payload == b'{}'
+
+
 def test_client_keeps_rx_coalesced_in_same_tcp_read_as_hello():
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listener.bind(("127.0.0.1", 0))

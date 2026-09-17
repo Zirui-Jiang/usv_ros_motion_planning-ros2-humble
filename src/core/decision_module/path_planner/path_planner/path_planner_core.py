@@ -6,6 +6,7 @@ import time
 import numpy as np
 
 from common.models import AlgorithmStatus, GridSnapshot, PlanResult
+from path_processor import ShortcutPathProcessor
 from .path_planner import prune, resample
 from .utils.path_planner_factory import create_planner
 
@@ -13,7 +14,7 @@ from .utils.path_planner_factory import create_planner
 # 逐个穿越单元验证线段；仅允许起点膨胀区代价严格下降，离开后不再进入高代价区。
 def path_is_clear_with_inflation_escape(grid, path, threshold=254,
                                        unknown_is_obstacle=True, *, outline_map=False,
-                                       allow_corner_cutting=True):
+                                       allow_corner_cutting=True, deadline=None):
     """Validate segments cell by cell, allowing only an initial soft descent.
 
     Repeated points/samples in the same cell do not count as a plateau step.
@@ -25,7 +26,10 @@ def path_is_clear_with_inflation_escape(grid, path, threshold=254,
     Grid-boundary traversal visits every cell interior crossed by a segment,
     including short visits that half-cell-spaced samples can miss. Exact
     corner crossings retain the planner's explicit diagonal corner policy.
+    An optional absolute perf_counter deadline bounds long cell traversals.
     """
+    if deadline is not None and time.perf_counter() >= deadline:
+        raise TimeoutError('path collision validation exceeded planning budget')
     points = np.asarray(path, dtype=float)
     if (points.ndim != 2 or len(points) == 0 or points.shape[1] < 2
             or not np.isfinite(points).all()):
@@ -56,6 +60,8 @@ def path_is_clear_with_inflation_escape(grid, path, threshold=254,
     current = cells[0]
     origin = np.array([grid.origin_x, grid.origin_y])
     for start, end, target in zip(points[:-1, :2], points[1:, :2], cells[1:]):
+        if deadline is not None and time.perf_counter() >= deadline:
+            raise TimeoutError('path collision validation exceeded planning budget')
         p, q = (start-origin)/grid.resolution, (end-origin)/grid.resolution
         dx, dy = q-p
         sx, sy = int(np.sign(dx)), int(np.sign(dy))
@@ -64,6 +70,8 @@ def path_is_clear_with_inflation_escape(grid, path, threshold=254,
         step_x, step_y = (1/abs(dx) if sx else math.inf), (1/abs(dy) if sy else math.inf)
         # 按下一个 x/y 栅格边界的穿越参数前进，捕捉固定间距采样可能漏掉的短暂单元交会。
         while current != target:
+            if deadline is not None and time.perf_counter() >= deadline:
+                raise TimeoutError('path collision validation exceeded planning budget')
             x, y = current
             # Do not step an axis beyond its endpoint because of a boundary
             # roundoff at t=1. All earlier cell intersections are retained.
@@ -92,41 +100,58 @@ class PathPlannerCore:
     def __init__(self, config: dict | None = None):
         self.config = dict(config or {})
         self.planner = create_planner(self.config)
+        enabled = self.config.get('enable_shortcut', False)
+        if type(enabled) is not bool:
+            raise ValueError('enable_shortcut must be a bool')
+        # 原始搜索接口默认不剪枝；项目导航配置显式启用。其它算法保留原有输出。
+        self.shortcut_enabled = enabled and self.planner.name == 'astar'
         self.spacing = float(self.config.get("resample_spacing", self.config.get("resample_ratio", 0.5)))
         if self.config.get("enable_resample", False):
             # Validate even if the first planning attempt fails.
             resample([], self.spacing)
 
     # 搜索成功后仍检查完整线段；重采样若穿障则保留已验证的原栅格路径。
-    def make_plan(self, start, goal, grid: GridSnapshot) -> PlanResult:
+    def make_plan(self, start, goal, grid: GridSnapshot, *, postprocess=True) -> PlanResult:
+        """Search and validate; a route caller may defer processing until anchors are connected."""
         begun = time.perf_counter()
+        deadline = begun + self.planner.timeout if self.shortcut_enabled else None
         result = self.planner.plan(start, goal, grid)
-        if result.status == AlgorithmStatus.SUCCESS:
-            threshold = 254.0 * self.planner.factor
-            unknown = self.planner.unknown_is_obstacle
-            def valid(path):
-                return path_is_clear_with_inflation_escape(
-                    grid, path, threshold, unknown, outline_map=self.planner.outline_map,
-                    allow_corner_cutting=self.planner.allow_corner_cutting)
+        try:
+            if result.status == AlgorithmStatus.SUCCESS:
+                threshold = 254.0 * self.planner.factor
+                unknown = self.planner.unknown_is_obstacle
+                def valid(path):
+                    return path_is_clear_with_inflation_escape(
+                        grid, path, threshold, unknown, outline_map=self.planner.outline_map,
+                        allow_corner_cutting=self.planner.allow_corner_cutting, deadline=deadline)
 
-            if not valid(result.path):
-                result.status = AlgorithmStatus.NO_PATH
-                result.path = np.empty((0, 3))
-                result.message = "grid path failed segment collision validation"
-            elif (self.config.get("enable_resample", False)
-                  and getattr(self.planner, "preserves_kinematics", False)):
-                # Hybrid 输出来自真实圆弧；通用直线插值会改变曲率及朝向，保留其采样。
-                result.message = "retained Hybrid A* primitive samples; generic resampling skipped"
-            elif self.config.get("enable_resample", False):
-                try:
-                    candidate = resample(result.path, self.spacing)
-                except ValueError as error:
-                    result.message = f"resampling skipped: {error}"
-                else:
-                    if valid(candidate):
-                        result.path = candidate
-                    else:
-                        result.message = "resampling crossed an obstacle; retained the grid path"
+                if not valid(result.path):
+                    result.status = AlgorithmStatus.NO_PATH
+                    result.path = np.empty((0, 3))
+                    result.message = "grid path failed segment collision validation"
+                elif postprocess:
+                    if self.shortcut_enabled:
+                        result.path = ShortcutPathProcessor(valid).process(result.path, deadline=deadline)
+                    if (self.config.get("enable_resample", False)
+                            and getattr(self.planner, "preserves_kinematics", False)):
+                        # Hybrid 的圆弧采样既不作普通直连剪枝，也不作通用直线重采样。
+                        result.message = "retained Hybrid A* primitive samples; generic resampling skipped"
+                    elif self.config.get("enable_resample", False):
+                        try:
+                            candidate = resample(result.path, self.spacing)
+                        except ValueError as error:
+                            result.message = f"resampling skipped: {error}"
+                        else:
+                            if valid(candidate):
+                                result.path = candidate
+                            else:
+                                result.message = "resampling crossed an obstacle; retained the validated path"
+            if deadline is not None and time.perf_counter() >= deadline:
+                raise TimeoutError('path postprocessing exceeded planning budget')
+        except TimeoutError as error:
+            result.status = AlgorithmStatus.TIMEOUT
+            result.path = np.empty((0, 3))
+            result.message = str(error)
         result.elapsed = time.perf_counter() - begun
         return result
 

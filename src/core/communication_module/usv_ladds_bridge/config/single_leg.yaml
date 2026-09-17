@@ -4,6 +4,7 @@ usv_ladds_bridge:
     domain_id: 1
     qos: best_effort
     receive_topic: "0211"
+    stop_receive_topic: "0331"
     send_topic: "0052"
 ladds_single_leg:
   ros__parameters:
@@ -12,6 +13,7 @@ ladds_single_leg:
     map_frame: otter/map
     navigation_namespace: /otter
     receive_topic: /ladds/rx
+    stop_receive_topic: /ladds/stop_rx
     transmit_topic: /ladds/tx
     status_topic: /ladds/task_status
     service_timeout: 5.0

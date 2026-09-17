@@ -1,0 +1,129 @@
+{
+  "config": "/home/usv/usv_migration/python/src/sim_env/rviz/sim_env.rviz",
+  "config_sha256": "4306ce872d1948c64fb87396ce6adb0c169ddde07c0574735f7999dead98c004",
+  "command": [
+    "rviz2",
+    "-d",
+    "/home/usv/usv_migration/python/src/sim_env/rviz/sim_env.rviz",
+    "--ros-args",
+    "-r",
+    "__node:=migration_gui_probe"
+  ],
+  "pid": 74978,
+  "alive_after_initialization": true,
+  "plugin_libraries": [
+    "/home/usv/usv_migration/python/install/goal_set_plugin/lib/libgoal_set_plugin.so",
+    "/opt/ros/humble/lib/librviz_default_plugins.so",
+    "/opt/ros/humble/opt/rviz_ogre_vendor/lib/libOgreMain.so.1.12.1",
+    "/usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0",
+    "/usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0"
+  ],
+  "subscriptions": [
+    [
+      "/otter/costmap",
+      [
+        "nav_msgs/msg/OccupancyGrid"
+      ]
+    ],
+    [
+      "/otter/costmap_updates",
+      [
+        "map_msgs/msg/OccupancyGridUpdate"
+      ]
+    ],
+    [
+      "/otter/debug",
+      [
+        "visualization_msgs/msg/Marker"
+      ]
+    ],
+    [
+      "/otter/debug_array",
+      [
+        "visualization_msgs/msg/MarkerArray"
+      ]
+    ],
+    [
+      "/otter/global_path",
+      [
+        "nav_msgs/msg/Path"
+      ]
+    ],
+    [
+      "/otter/goal",
+      [
+        "geometry_msgs/msg/PoseStamped"
+      ]
+    ],
+    [
+      "/otter/local_trajectory",
+      [
+        "nav_msgs/msg/Path"
+      ]
+    ],
+    [
+      "/otter/sensors/lidars/lidar/scan",
+      [
+        "sensor_msgs/msg/LaserScan"
+      ]
+    ],
+    [
+      "/parameter_events",
+      [
+        "rcl_interfaces/msg/ParameterEvent"
+      ]
+    ],
+    [
+      "/robot_description",
+      [
+        "std_msgs/msg/String"
+      ]
+    ]
+  ],
+  "publishers": [
+    [
+      "/clicked_point",
+      [
+        "geometry_msgs/msg/PointStamped"
+      ]
+    ],
+    [
+      "/otter/goal",
+      [
+        "geometry_msgs/msg/PoseStamped"
+      ]
+    ],
+    [
+      "/parameter_events",
+      [
+        "rcl_interfaces/msg/ParameterEvent"
+      ]
+    ],
+    [
+      "/rosout",
+      [
+        "rcl_interfaces/msg/Log"
+      ]
+    ]
+  ],
+  "windows": [
+    {
+      "line": "0xa00014 \"/home/usv/usv_migration/python/src/sim_env/rviz/sim_env.rviz - RViz\": (\"rviz2\" \"rviz2\")  1850x1016+38+59  +76+54",
+      "pid": "_NET_WM_PID(CARDINAL) = 74978",
+      "id": "0xa00014"
+    }
+  ],
+  "screenshot_saved": true,
+  "screenshot_dimensions": [
+    1850,
+    1016
+  ],
+  "exit_code": 0,
+  "opengl_initialized": true,
+  "goal_plugin_loaded": true,
+  "plugin_error": false,
+  "passed": true,
+  "screenshot_usable": false,
+  "screenshot_limitation": "Inspected Qt/X11 window grab is all black under WSLg; it is not evidence of visible rendered content.",
+  "validation_scope": "Actual OpenGL context, GPU renderer, WSLg sockets, X11 window/PID, loaded goal/display plugin libraries, ROS endpoint registration and graceful exit. No Gazebo or visual scene correctness assertion."
+}

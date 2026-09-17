@@ -1,0 +1,207 @@
+Panels:
+- Class: rviz/Displays
+  Name: Displays
+Visualization Manager:
+  Displays:
+  - Class: rviz/TF
+    Enabled: false
+    Name: TF
+  - Alpha: 1.0
+    Class: rviz/Axes
+    Enabled: true
+    Length: 5.0
+    Name: Axes
+    Radius: 0.5
+    Reference Frame: world
+  - Class: rviz/Group
+    Displays:
+    - Class: rviz/RobotModel
+      Enabled: true
+      Name: RobotModel
+      Robot Description: wamv1/robot_description
+      TF Prefix: wamv1
+    - Class: rviz/Group
+      Displays:
+      - Alpha: 1
+        Class: rviz/LaserScan
+        Color: 46; 255; 0
+        Color Transformer: AxisColor
+        Enabled: true
+        Name: LaserScan
+        Size (m): 1
+        Style: Flat Squares
+        Topic: wamv1/sensors/lidars/lidar/scan
+      - Alpha: 1
+        Class: rviz/PointCloud2
+        Color: 25; 255; 0
+        Color Transformer: FlatColor
+        Enabled: true
+        Name: PointCloud2
+        Size (m): 0.3
+        Style: Flat Squares
+        Topic: wamv1/sensors/lidars/lidar/points
+      Enabled: true
+      Name: LiDAR
+    - Class: rviz/Group
+      Displays:
+      - Alpha: 0.7
+        Class: rviz/Map
+        Color Scheme: costmap
+        Enabled: true
+        Name: global_map
+        Topic: wamv1/map
+      - Alpha: 0.3
+        Class: rviz/Map
+        Color Scheme: costmap
+        Enabled: true
+        Name: global_costmap
+        Topic: wamv1/usv_simulation/costmap/costmap
+      Enabled: true
+      Name: Map
+    - Class: rviz/Group
+      Displays:
+      - Class: rviz/Path
+        Color: 25; 255; 0
+        Enabled: true
+        Line Style: Billboards
+        Line Width: 0.5
+        Name: local_trajectory
+        Topic: wamv1/local_trajectory
+      - Class: rviz/Path
+        Color: 239; 41; 41
+        Enabled: true
+        Line Style: Billboards
+        Line Width: 0.3
+        Name: global_path
+        Topic: wamv1/global_path
+      Enabled: true
+      Name: Plan
+    - Class: rviz/Group
+      Displays:
+      - Class: rviz/Marker
+        Enabled: true
+        Marker Topic: wamv1/lookahead_point
+        Name: lookahead_point
+      Enabled: true
+      Name: Marker
+    - Class: rviz/Group
+      Displays:
+      - Alpha: 1.0
+        Class: rviz/Pose
+        Color: 255; 25; 0
+        Enabled: true
+        Head Length: 3.0
+        Head Radius: 1.0
+        Name: goal
+        Shaft Length: 3.0
+        Shaft Radius: 0.5
+        Shape: Arrow
+        Topic: wamv1/goal
+      Enabled: true
+      Name: Pose
+    Enabled: true
+    Name: wamv1
+  - Class: rviz/Group
+    Displays:
+    - Class: rviz/RobotModel
+      Enabled: true
+      Name: RobotModel
+      Robot Description: otter2/robot_description
+      TF Prefix: otter2
+    - Class: rviz/Group
+      Displays:
+      - Alpha: 1
+        Class: rviz/LaserScan
+        Color: 46; 255; 0
+        Color Transformer: AxisColor
+        Enabled: true
+        Name: LaserScan
+        Size (m): 1
+        Style: Flat Squares
+        Topic: otter2/sensors/lidars/lidar/scan
+      - Alpha: 1
+        Class: rviz/PointCloud2
+        Color: 25; 255; 0
+        Color Transformer: FlatColor
+        Enabled: true
+        Name: PointCloud2
+        Size (m): 0.3
+        Style: Flat Squares
+        Topic: otter2/sensors/lidars/lidar/points
+      Enabled: true
+      Name: LiDAR
+    - Class: rviz/Group
+      Displays:
+      - Alpha: 0.7
+        Class: rviz/Map
+        Color Scheme: costmap
+        Enabled: true
+        Name: global_map
+        Topic: otter2/map
+      - Alpha: 0.3
+        Class: rviz/Map
+        Color Scheme: costmap
+        Enabled: true
+        Name: global_costmap
+        Topic: otter2/usv_simulation/costmap/costmap
+      Enabled: true
+      Name: Map
+    - Class: rviz/Group
+      Displays:
+      - Class: rviz/Path
+        Color: 25; 255; 0
+        Enabled: true
+        Line Style: Billboards
+        Line Width: 0.5
+        Name: local_trajectory
+        Topic: otter2/local_trajectory
+      - Class: rviz/Path
+        Color: 239; 41; 41
+        Enabled: true
+        Line Style: Billboards
+        Line Width: 0.3
+        Name: global_path
+        Topic: otter2/global_path
+      Enabled: true
+      Name: Plan
+    - Class: rviz/Group
+      Displays:
+      - Class: rviz/Marker
+        Enabled: true
+        Marker Topic: otter2/lookahead_point
+        Name: lookahead_point
+      Enabled: true
+      Name: Marker
+    - Class: rviz/Group
+      Displays:
+      - Alpha: 1.0
+        Class: rviz/Pose
+        Color: 255; 25; 0
+        Enabled: true
+        Head Length: 3.0
+        Head Radius: 1.0
+        Name: goal
+        Shaft Length: 3.0
+        Shaft Radius: 0.5
+        Shape: Arrow
+        Topic: otter2/goal
+      Enabled: true
+      Name: Pose
+    Enabled: true
+    Name: otter2
+  Global Options:
+    Background Color: 114; 159; 207
+    Fixed Frame: world
+  Tools:
+  - Class: rviz/Interact
+  - Class: rviz/MoveCamera
+  - Class: rviz/Select
+  - Class: rviz/FocusCamera
+  - Class: rviz/Measure
+  - Class: rviz/PublishPoint
+  - Class: goal_set_plugin/GoalSetPlugin
+    Name: wamv1 goal
+    Topic: wamv1/goal
+  - Class: goal_set_plugin/GoalSetPlugin
+    Name: otter2 goal
+    Topic: otter2/goal

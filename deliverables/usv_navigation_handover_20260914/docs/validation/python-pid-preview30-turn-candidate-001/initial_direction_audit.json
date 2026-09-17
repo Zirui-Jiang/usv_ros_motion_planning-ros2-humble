@@ -1,0 +1,1356 @@
+{
+  "classification": "Observable initial-direction audit, not replay of internal atomic controller inputs.",
+  "limits": [
+    "Latest callback command values may be asynchronous; raw per-axis receipts retained.",
+    "Command/sample intervals do not measure controller internal dt.",
+    "Zero sample count includes normal terminal settling and is not an error count."
+  ],
+  "trials": [
+    {
+      "trial": "python_pid_turn_01",
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-pid-preview30-turn-candidate-001/python_pid_turn_01/events.jsonl",
+        "sha256": "6ed0f93bb8b4e2edaeddd7a423bca2bdffa0886b98c102420ba0a010e8f154a4"
+      },
+      "goal_line": 289,
+      "goal": {
+        "event": "goal_published",
+        "wall_monotonic_s": 82823.377866515,
+        "goal": [
+          23.125,
+          -22.125,
+          -1.5707963267948966
+        ],
+        "sim_time_s": 2.9000000000000004
+      },
+      "first_nonzero_sample_monotonic_s": 82823.807265517,
+      "initial_one_second_samples": [
+        {
+          "line": 319,
+          "wall_monotonic_s": 82823.807265517,
+          "sim_time_s": 3.3000000000000003,
+          "yaw": -2.0774191702289166e-05,
+          "body_yaw_rate": 0.00023630543065399792,
+          "command": {
+            "left": 1.0,
+            "right": -1.0,
+            "lateral": 0.0
+          },
+          "right_minus_left": -2.0
+        },
+        {
+          "line": 325,
+          "wall_monotonic_s": 82823.908039616,
+          "sim_time_s": 3.5,
+          "yaw": -0.015853653115504594,
+          "body_yaw_rate": -0.305076758343319,
+          "command": {
+            "left": 1.0,
+            "right": -1.0,
+            "lateral": 0.0
+          },
+          "right_minus_left": -2.0
+        },
+        {
+          "line": 332,
+          "wall_monotonic_s": 82824.008384187,
+          "sim_time_s": 3.6,
+          "yaw": -0.059741490068013145,
+          "body_yaw_rate": -0.5624728043855637,
+          "command": {
+            "left": 1.0,
+            "right": -1.0,
+            "lateral": 0.0
+          },
+          "right_minus_left": -2.0
+        },
+        {
+          "line": 337,
+          "wall_monotonic_s": 82824.108711191,
+          "sim_time_s": 3.7,
+          "yaw": -0.1273414065355291,
+          "body_yaw_rate": -0.7802045423725936,
+          "command": {
+            "left": 1.0,
+            "right": -1.0,
+            "lateral": 0.0
+          },
+          "right_minus_left": -2.0
+        },
+        {
+          "line": 345,
+          "wall_monotonic_s": 82824.208773966,
+          "sim_time_s": 3.8000000000000003,
+          "yaw": -0.21500078974381875,
+          "body_yaw_rate": -0.9645071779500185,
+          "command": {
+            "left": 1.0,
+            "right": -0.9552580118179321,
+            "lateral": 0.0
+          },
+          "right_minus_left": -1.9552580118179321
+        },
+        {
+          "line": 352,
+          "wall_monotonic_s": 82824.309171436,
+          "sim_time_s": 3.9000000000000004,
+          "yaw": -0.31942404476240543,
+          "body_yaw_rate": -1.1155117102121892,
+          "command": {
+            "left": 1.0,
+            "right": -1.0,
+            "lateral": 0.0
+          },
+          "right_minus_left": -2.0
+        },
+        {
+          "line": 357,
+          "wall_monotonic_s": 82824.40945504,
+          "sim_time_s": 4.0,
+          "yaw": -0.43775977085804396,
+          "body_yaw_rate": -1.247040787628609,
+          "command": {
+            "left": 1.0,
+            "right": -0.7831884622573853,
+            "lateral": 0.0
+          },
+          "right_minus_left": -1.7831884622573853
+        },
+        {
+          "line": 364,
+          "wall_monotonic_s": 82824.509677196,
+          "sim_time_s": 4.1000000000000005,
+          "yaw": -0.5674741399077513,
+          "body_yaw_rate": -1.3364149800779657,
+          "command": {
+            "left": 1.0,
+            "right": -0.9785755276679993,
+            "lateral": 0.0
+          },
+          "right_minus_left": -1.9785755276679993
+        },
+        {
+          "line": 369,
+          "wall_monotonic_s": 82824.609706211,
+          "sim_time_s": 4.2,
+          "yaw": -0.7050776747609548,
+          "body_yaw_rate": -1.4198836522875868,
+          "command": {
+            "left": 1.0,
+            "right": -0.6971009373664856,
+            "lateral": 0.0
+          },
+          "right_minus_left": -1.6971009373664856
+        },
+        {
+          "line": 376,
+          "wall_monotonic_s": 82824.709879444,
+          "sim_time_s": 4.300000000000001,
+          "yaw": -0.8506588386787942,
+          "body_yaw_rate": -1.477587408327738,
+          "command": {
+            "left": 1.0,
+            "right": -0.972416877746582,
+            "lateral": 0.0
+          },
+          "right_minus_left": -1.972416877746582
+        }
+      ],
+      "initial_command_receipts": [
+        {
+          "line": 292,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.378531124,
+          "axis": "left",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 293,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.378625714,
+          "axis": "right",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 294,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.378692937,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 297,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.381228934,
+          "axis": "left",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 298,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.381470374,
+          "axis": "right",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 299,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.381526005,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 302,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.486116822,
+          "axis": "left",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 303,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.486290568,
+          "axis": "right",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 304,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.486400187,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 307,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.592781248,
+          "axis": "left",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 308,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.592869157,
+          "axis": "right",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 309,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.592966597,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 315,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.708998065,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 316,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.709058467,
+          "axis": "right",
+          "normalized_command": -1.0
+        },
+        {
+          "line": 317,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.709095537,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 322,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.811055584,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 323,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.811102879,
+          "axis": "right",
+          "normalized_command": -1.0
+        },
+        {
+          "line": 324,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.811135797,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 329,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.917298864,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 330,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.917344889,
+          "axis": "right",
+          "normalized_command": -1.0
+        },
+        {
+          "line": 331,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82823.917442981,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 334,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.019532635,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 335,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.019818103,
+          "axis": "right",
+          "normalized_command": -1.0
+        },
+        {
+          "line": 336,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.019877374,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 342,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.131639568,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 343,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.131673222,
+          "axis": "right",
+          "normalized_command": -0.9552580118179321
+        },
+        {
+          "line": 344,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.131702479,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 349,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.237059526,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 350,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.237105466,
+          "axis": "right",
+          "normalized_command": -1.0
+        },
+        {
+          "line": 351,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.237136836,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 354,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.339851454,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 355,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.33994455,
+          "axis": "right",
+          "normalized_command": -0.7831884622573853
+        },
+        {
+          "line": 356,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.34029105,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 361,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.45210362,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 362,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.452157629,
+          "axis": "right",
+          "normalized_command": -0.9785755276679993
+        },
+        {
+          "line": 363,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.452261058,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 366,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.553226793,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 367,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.553311756,
+          "axis": "right",
+          "normalized_command": -0.6971009373664856
+        },
+        {
+          "line": 368,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.553477198,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 373,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.664299923,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 374,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.6643482,
+          "axis": "right",
+          "normalized_command": -0.972416877746582
+        },
+        {
+          "line": 375,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.664388782,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 378,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.766820009,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 379,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.766902538,
+          "axis": "right",
+          "normalized_command": -0.6688206195831299
+        },
+        {
+          "line": 380,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82824.766940814,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        }
+      ],
+      "initial_one_second_positive_right_minus_left_count": 0,
+      "observed_control_result_counters_max": {},
+      "zero_command_sample_count_after_first_nonzero": 26,
+      "state_counts": {
+        "NAVIGATING": 17,
+        "SETTLING": 1,
+        "GOAL_REACHED": 1
+      }
+    },
+    {
+      "trial": "python_pid_turn_02",
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-pid-preview30-turn-candidate-001/python_pid_turn_02/events.jsonl",
+        "sha256": "2962ec2bdf1ad6b3522b6d9a9973805ab8c9d45fedec24a98ce981c3f25212ef"
+      },
+      "goal_line": 261,
+      "goal": {
+        "event": "goal_published",
+        "wall_monotonic_s": 82851.077341187,
+        "goal": [
+          23.125,
+          -22.125,
+          -1.5707963267948966
+        ],
+        "sim_time_s": 3.0
+      },
+      "first_nonzero_sample_monotonic_s": 82851.390520413,
+      "initial_one_second_samples": [
+        {
+          "line": 285,
+          "wall_monotonic_s": 82851.390520413,
+          "sim_time_s": 3.3000000000000003,
+          "yaw": -3.001816401867044e-05,
+          "body_yaw_rate": 0.0002481699123909146,
+          "command": {
+            "left": 1.0,
+            "right": -1.0,
+            "lateral": 0.0
+          },
+          "right_minus_left": -2.0
+        },
+        {
+          "line": 292,
+          "wall_monotonic_s": 82851.509480904,
+          "sim_time_s": 3.4000000000000004,
+          "yaw": -0.014071503962736886,
+          "body_yaw_rate": -0.2881344790653849,
+          "command": {
+            "left": 1.0,
+            "right": -1.0,
+            "lateral": 0.0
+          },
+          "right_minus_left": -2.0
+        },
+        {
+          "line": 300,
+          "wall_monotonic_s": 82851.61299532,
+          "sim_time_s": 3.5,
+          "yaw": -0.056407732736774914,
+          "body_yaw_rate": -0.5482168402250835,
+          "command": {
+            "left": 1.0,
+            "right": -1.0,
+            "lateral": 0.0
+          },
+          "right_minus_left": -2.0
+        },
+        {
+          "line": 307,
+          "wall_monotonic_s": 82851.732491335,
+          "sim_time_s": 3.6,
+          "yaw": -0.12269666251818434,
+          "body_yaw_rate": -0.7682171648661545,
+          "command": {
+            "left": 1.0,
+            "right": -1.0,
+            "lateral": 0.0
+          },
+          "right_minus_left": -2.0
+        },
+        {
+          "line": 313,
+          "wall_monotonic_s": 82851.845007414,
+          "sim_time_s": 3.7,
+          "yaw": -0.2092453045148773,
+          "body_yaw_rate": -0.9542678560527084,
+          "command": {
+            "left": 1.0,
+            "right": -0.9605861902236938,
+            "lateral": 0.0
+          },
+          "right_minus_left": -1.9605861902236938
+        },
+        {
+          "line": 320,
+          "wall_monotonic_s": 82851.95785516,
+          "sim_time_s": 3.8000000000000003,
+          "yaw": -0.31275704992214165,
+          "body_yaw_rate": -1.1073437886755093,
+          "command": {
+            "left": 1.0,
+            "right": -1.0,
+            "lateral": 0.0
+          },
+          "right_minus_left": -2.0
+        },
+        {
+          "line": 325,
+          "wall_monotonic_s": 82852.063400789,
+          "sim_time_s": 4.0,
+          "yaw": -0.4303544227523717,
+          "body_yaw_rate": -1.2399719252205796,
+          "command": {
+            "left": 1.0,
+            "right": -0.7858991622924805,
+            "lateral": 0.0
+          },
+          "right_minus_left": -1.7858991622924805
+        },
+        {
+          "line": 332,
+          "wall_monotonic_s": 82852.176374401,
+          "sim_time_s": 4.0,
+          "yaw": -0.5595811279909074,
+          "body_yaw_rate": -1.3328831680526414,
+          "command": {
+            "left": 1.0,
+            "right": -0.9759804010391235,
+            "lateral": 0.0
+          },
+          "right_minus_left": -1.9759804010391235
+        },
+        {
+          "line": 336,
+          "wall_monotonic_s": 82852.278177196,
+          "sim_time_s": 4.0,
+          "yaw": -0.5595811279909074,
+          "body_yaw_rate": -1.3328831680526414,
+          "command": {
+            "left": 0.0,
+            "right": 0.0,
+            "lateral": 0.0
+          },
+          "right_minus_left": 0.0
+        },
+        {
+          "line": 340,
+          "wall_monotonic_s": 82852.38520707,
+          "sim_time_s": 4.0,
+          "yaw": -0.5595811279909074,
+          "body_yaw_rate": -1.3328831680526414,
+          "command": {
+            "left": 0.0,
+            "right": 0.0,
+            "lateral": 0.0
+          },
+          "right_minus_left": 0.0
+        }
+      ],
+      "initial_command_receipts": [
+        {
+          "line": 264,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.078202267,
+          "axis": "left",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 267,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.078679065,
+          "axis": "right",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 268,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.078708392,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 269,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.14705112,
+          "axis": "left",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 270,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.147161049,
+          "axis": "right",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 271,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.147198578,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 274,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.253405641,
+          "axis": "left",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 275,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.253508468,
+          "axis": "right",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 276,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.253547755,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 282,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.368857519,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 283,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.368904453,
+          "axis": "right",
+          "normalized_command": -1.0
+        },
+        {
+          "line": 284,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.368936778,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 289,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.475038125,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 290,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.475154037,
+          "axis": "right",
+          "normalized_command": -1.0
+        },
+        {
+          "line": 291,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.475243256,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 296,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.577759831,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 297,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.577805561,
+          "axis": "right",
+          "normalized_command": -1.0
+        },
+        {
+          "line": 298,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.577835827,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 304,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.684062441,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 305,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.68411987,
+          "axis": "right",
+          "normalized_command": -1.0
+        },
+        {
+          "line": 306,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.684165311,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 309,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.786922794,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 310,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.787011799,
+          "axis": "right",
+          "normalized_command": -0.9605861902236938
+        },
+        {
+          "line": 311,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.787049936,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 317,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.897423867,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 318,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.897468242,
+          "axis": "right",
+          "normalized_command": -1.0
+        },
+        {
+          "line": 319,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82851.897500512,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 322,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82852.00015817,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 323,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82852.000475651,
+          "axis": "right",
+          "normalized_command": -0.7858991622924805
+        },
+        {
+          "line": 324,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82852.000540438,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 329,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82852.111635985,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 330,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82852.111681426,
+          "axis": "right",
+          "normalized_command": -0.9759804010391235
+        },
+        {
+          "line": 331,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82852.111713388,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 333,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82852.213196174,
+          "axis": "left",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 334,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82852.213432883,
+          "axis": "right",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 335,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82852.213477791,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 337,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82852.319931018,
+          "axis": "left",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 338,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82852.320188512,
+          "axis": "right",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 339,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82852.320534275,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        }
+      ],
+      "initial_one_second_positive_right_minus_left_count": 0,
+      "observed_control_result_counters_max": {},
+      "zero_command_sample_count_after_first_nonzero": 64,
+      "state_counts": {
+        "NAVIGATING": 16,
+        "SIMULATION_PAUSED": 4,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      }
+    },
+    {
+      "trial": "python_pid_turn_03",
+      "source_events": {
+        "absolute_path": "/home/usv/usv_migration/results/python-pid-preview30-turn-candidate-001/python_pid_turn_03/events.jsonl",
+        "sha256": "22b1ff0ff29abf8a374da5e1c42782aefb7def8e7149c87f45f30be388aa3cfd"
+      },
+      "goal_line": 261,
+      "goal": {
+        "event": "goal_published",
+        "wall_monotonic_s": 82882.857765888,
+        "goal": [
+          23.125,
+          -22.125,
+          -1.5707963267948966
+        ],
+        "sim_time_s": 3.0
+      },
+      "first_nonzero_sample_monotonic_s": 82883.174724723,
+      "initial_one_second_samples": [
+        {
+          "line": 285,
+          "wall_monotonic_s": 82883.174724723,
+          "sim_time_s": 3.3000000000000003,
+          "yaw": -3.1233852156641614e-05,
+          "body_yaw_rate": 0.0002483005148666871,
+          "command": {
+            "left": 1.0,
+            "right": -1.0,
+            "lateral": 0.0
+          },
+          "right_minus_left": -2.0
+        },
+        {
+          "line": 292,
+          "wall_monotonic_s": 82883.291886631,
+          "sim_time_s": 3.4000000000000004,
+          "yaw": -0.012935914489297292,
+          "body_yaw_rate": -0.2767559830292466,
+          "command": {
+            "left": 1.0,
+            "right": -1.0,
+            "lateral": 0.0
+          },
+          "right_minus_left": -2.0
+        },
+        {
+          "line": 300,
+          "wall_monotonic_s": 82883.40566203,
+          "sim_time_s": 3.5,
+          "yaw": -0.054228902025659775,
+          "body_yaw_rate": -0.5386418771307019,
+          "command": {
+            "left": 1.0,
+            "right": -1.0,
+            "lateral": 0.0
+          },
+          "right_minus_left": -2.0
+        },
+        {
+          "line": 307,
+          "wall_monotonic_s": 82883.514731503,
+          "sim_time_s": 3.6,
+          "yaw": -0.11963571551833509,
+          "body_yaw_rate": -0.7601752007478472,
+          "command": {
+            "left": 1.0,
+            "right": -1.0,
+            "lateral": 0.0
+          },
+          "right_minus_left": -2.0
+        },
+        {
+          "line": 313,
+          "wall_monotonic_s": 82883.621986924,
+          "sim_time_s": 3.8000000000000003,
+          "yaw": -0.20543833846376156,
+          "body_yaw_rate": -0.9474354793815362,
+          "command": {
+            "left": 1.0,
+            "right": -0.9642412662506104,
+            "lateral": 0.0
+          },
+          "right_minus_left": -1.9642412662506104
+        },
+        {
+          "line": 320,
+          "wall_monotonic_s": 82883.721995866,
+          "sim_time_s": 3.9000000000000004,
+          "yaw": -0.3083592955319745,
+          "body_yaw_rate": -1.1021763613631859,
+          "command": {
+            "left": 1.0,
+            "right": -1.0,
+            "lateral": 0.0
+          },
+          "right_minus_left": -2.0
+        },
+        {
+          "line": 325,
+          "wall_monotonic_s": 82883.822192834,
+          "sim_time_s": 4.0,
+          "yaw": -0.42548353855335863,
+          "body_yaw_rate": -1.2353799210054452,
+          "command": {
+            "left": 1.0,
+            "right": -0.7877488732337952,
+            "lateral": 0.0
+          },
+          "right_minus_left": -1.7877488732337952
+        },
+        {
+          "line": 332,
+          "wall_monotonic_s": 82883.922246795,
+          "sim_time_s": 4.1000000000000005,
+          "yaw": -0.5544282168858689,
+          "body_yaw_rate": -1.3311985745489687,
+          "command": {
+            "left": 1.0,
+            "right": -0.9741016626358032,
+            "lateral": 0.0
+          },
+          "right_minus_left": -1.9741016626358032
+        },
+        {
+          "line": 337,
+          "wall_monotonic_s": 82884.022541513,
+          "sim_time_s": 4.2,
+          "yaw": -0.6913819725166992,
+          "body_yaw_rate": -1.4125667605387782,
+          "command": {
+            "left": 1.0,
+            "right": -0.6978570818901062,
+            "lateral": 0.0
+          },
+          "right_minus_left": -1.6978570818901062
+        },
+        {
+          "line": 344,
+          "wall_monotonic_s": 82884.122661031,
+          "sim_time_s": 4.300000000000001,
+          "yaw": -0.8364989200210227,
+          "body_yaw_rate": -1.4759687155975263,
+          "command": {
+            "left": 1.0,
+            "right": -0.9668455123901367,
+            "lateral": 0.0
+          },
+          "right_minus_left": -1.9668455123901367
+        }
+      ],
+      "initial_command_receipts": [
+        {
+          "line": 264,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82882.858414109,
+          "axis": "left",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 265,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82882.858469688,
+          "axis": "right",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 266,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82882.858503744,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 269,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82882.910629667,
+          "axis": "left",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 270,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82882.910803428,
+          "axis": "right",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 271,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82882.910879985,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 274,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.017375329,
+          "axis": "left",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 275,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.017550008,
+          "axis": "right",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 276,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.017602075,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 282,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.131455638,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 283,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.131499527,
+          "axis": "right",
+          "normalized_command": -1.0
+        },
+        {
+          "line": 284,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.131531255,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 289,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.238535414,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 290,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.238592562,
+          "axis": "right",
+          "normalized_command": -1.0
+        },
+        {
+          "line": 291,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.238627856,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 296,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.341681406,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 297,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.34172538,
+          "axis": "right",
+          "normalized_command": -1.0
+        },
+        {
+          "line": 298,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.341756447,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 304,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.447982355,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 305,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.448026148,
+          "axis": "right",
+          "normalized_command": -1.0
+        },
+        {
+          "line": 306,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.448062008,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 309,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.550998201,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 310,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.551322472,
+          "axis": "right",
+          "normalized_command": -0.9642412662506104
+        },
+        {
+          "line": 311,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.551442768,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 317,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.662353711,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 318,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.662398667,
+          "axis": "right",
+          "normalized_command": -1.0
+        },
+        {
+          "line": 319,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.662429243,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 322,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.764683331,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 323,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.764780983,
+          "axis": "right",
+          "normalized_command": -0.7877488732337952
+        },
+        {
+          "line": 324,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.764817794,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 329,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.87534736,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 330,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.875390416,
+          "axis": "right",
+          "normalized_command": -0.9741016626358032
+        },
+        {
+          "line": 331,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.875421109,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 334,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.978144639,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 335,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.978258722,
+          "axis": "right",
+          "normalized_command": -0.6978570818901062
+        },
+        {
+          "line": 336,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82883.978317088,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        },
+        {
+          "line": 341,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82884.088807426,
+          "axis": "left",
+          "normalized_command": 1.0
+        },
+        {
+          "line": 342,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82884.088853076,
+          "axis": "right",
+          "normalized_command": -0.9668455123901367
+        },
+        {
+          "line": 343,
+          "event": "thruster_command",
+          "wall_monotonic_s": 82884.088885104,
+          "axis": "lateral",
+          "normalized_command": 0.0
+        }
+      ],
+      "initial_one_second_positive_right_minus_left_count": 0,
+      "observed_control_result_counters_max": {},
+      "zero_command_sample_count_after_first_nonzero": 45,
+      "state_counts": {
+        "NAVIGATING": 16,
+        "SIMULATION_PAUSED": 2,
+        "SETTLING": 2,
+        "GOAL_REACHED": 1
+      }
+    }
+  ]
+}

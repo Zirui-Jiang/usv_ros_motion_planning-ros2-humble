@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:macro name="otter_usv_thrust_gazebo" params="name">
+    <gazebo>
+      <plugin name="otter_gazebo_thrust" filename="libotter_usv_gazebo_thrust_plugin.so">
+        <!-- ROS 2 namespace so subscriptions resolve inside the robot namespace -->
+        <robotNamespace>${namespace}</robotNamespace>
+        <cmdTimeout>1.0</cmdTimeout>
+        <xacro:include filename="$(find sim_env)/urdf/otter/thrusters/otter_gazebo_thruster_config.xacro" />
+        <xacro:otter_gazebo_thruster_config name="left" />
+        <xacro:otter_gazebo_thruster_config name="right" />
+      </plugin>
+    </gazebo>
+  </xacro:macro>
+</robot>

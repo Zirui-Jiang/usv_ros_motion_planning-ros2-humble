@@ -28,6 +28,36 @@ SG 默认七点二阶核为 `[-2,3,6,7,6,3,-2]/21`，内部点位置与原核一
 默认导航链路不会自动启用 RDP 或 SG。兼容 `set_obstacles()` 仅保存障碍副本，
 与旧算法一样不参与处理，不应据此推断具备避障能力。
 
+## 带碰撞检查的直连剪枝
+
+`ShortcutPathProcessor` 与上面的无约束 RDP/SG 不同：每次删除中间节点前，
+必须调用调用方传入的碰撞判定。实现只依赖 NumPy，不反向导入规划器或 ROS。
+
+```python
+from path_processor import ShortcutPathProcessor
+
+# is_path_clear(path) 由规划层提供，检查同一地图快照上的整条路径。
+# deadline 是调用方已有的 time.perf_counter() 绝对截止时间，不是新增时长。
+processor = ShortcutPathProcessor(is_path_clear)
+shortened = processor.process(path, deadline=deadline)
+```
+
+也可直接调用 `shortcut_path(path, is_path_clear, deadline=deadline)`。
+处理器从当前保留点向后寻找最远可直连点；先验证原路径，再尝试捷径，最后
+复检完整结果。没有合法捷径时保留原相邻边；这对仍在软膨胀区中的逃逸前缀
+尤其重要。最终复检失败回退到已验证原路径；超时抛出 `TimeoutError`，非法
+输入或原路径不可通行抛出 `ValueError`，不返回未经验证的部分捷径。
+
+调用方的校验函数应当无副作用，覆盖未知格、膨胀阈值、切角及地图边界规则，
+并在较长的内部遍历中检查同一截止时间。独立调用时可省略 deadline；导航中
+始终传入共享预算。贪心候选数最坏为 O(N²)，不保证最少拐点或全局最短路径。
+
+输出保留首尾完整位姿，不修改输入；本功能只删冗余节点，不平滑转弯、不约束
+最小转弯半径。应逐个必经航段调用，不能对多个必经点拼成的整条路线直接剪枝。
+Hybrid A* 圆弧不要使用这个处理器，船体/轨迹安全检查仍由外层保留。
+
+普通 A* 的工程接入与开关见 [路径规划说明](../path_planner/README.python.md#普通-a-路径剪枝)。
+
 在仓库根目录执行：
 
 ```text

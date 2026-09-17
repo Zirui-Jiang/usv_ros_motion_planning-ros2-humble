@@ -1,0 +1,244 @@
+{
+  "branch": "codex/distributed-navigation",
+  "head": "81ab8ed1a228a23f8c1f0a1c071ef4acdfbe34dd",
+  "source_state": "Uncommitted worktree; HEAD alone does not identify these tested sources.",
+  "workspace": "/home/usv/module-layout-20260914",
+  "source_before": "/home/usv/module-layout-20260914/source-before",
+  "source_after_file_count": 679,
+  "packages": {
+    "controller": "src/core/control_module/controller",
+    "usv_control": "src/core/control_module/usv_control",
+    "path_planner": "src/core/decision_module/path_planner",
+    "path_processor": "src/core/decision_module/path_processor",
+    "trajectory_planner": "src/core/decision_module/trajectory_planner",
+    "usv_decision": "src/core/decision_module/usv_decision",
+    "usv_mission": "src/core/mission_module/usv_mission",
+    "usv_mission_interfaces": "src/core/mission_module/usv_mission_interfaces",
+    "perception": "src/core/perception_module/perception",
+    "usv_perception": "src/core/perception_module/usv_perception",
+    "common": "src/core/shared/common",
+    "usv_navigation": "src/core/shared/usv_navigation",
+    "usv_navigation_interfaces": "src/core/shared/usv_navigation_interfaces",
+    "dynamic_rviz_config": "src/plugins/dynamic_rviz_config",
+    "dynamic_xml_config": "src/plugins/dynamic_xml_config",
+    "usv_gazebo_plugins": "src/plugins/gazebo_plugins/usv_gazebo_plugins",
+    "wave_gazebo": "src/plugins/gazebo_plugins/wave_gazebo",
+    "wave_gazebo_plugins": "src/plugins/gazebo_plugins/wave_gazebo_plugins",
+    "goal_set_plugin": "src/plugins/rviz_plugins/goal_set_plugin",
+    "sim_env": "src/sim_env"
+  },
+  "package_count": 20,
+  "source_tests": {
+    "tests": 926,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "source_tests_report": "source-tests-final/tests.xml",
+  "initial_source_tests_report": "source-tests/tests.xml",
+  "initial_source_tests_result": "925 passed, 1 legacy process-worker timeout; isolated rerun passed. The exact transient cause was not established; no assertion or algorithm was changed.",
+  "install_audit": {
+    "passed": true,
+    "checks": 76
+  },
+  "preservation": {
+    "passed": true,
+    "checks": 98
+  },
+  "process_smoke": {
+    "passed": true,
+    "result": "completed",
+    "checks": [
+      {
+        "name": "three_processes_and_unique_output",
+        "passed": true,
+        "pids": {
+          "perception": 224426,
+          "control": 224429,
+          "decision": 224433
+        },
+        "publishers": {
+          "left": 1,
+          "right": 1,
+          "lateral": 1
+        }
+      },
+      {
+        "name": "installed_end_to_end_reference",
+        "passed": true,
+        "points": 41,
+        "trajectory_stamp": 1789320058.3270483,
+        "task_id": 1
+      },
+      {
+        "name": "cancel_ack_and_late_reference_do_not_revive",
+        "passed": true,
+        "observed_zero_samples": {
+          "left": 4,
+          "right": 4,
+          "lateral": 4
+        },
+        "cancelled_task_id": 2,
+        "reference_sequence": 5,
+        "stale_reference_counter_before": 4,
+        "stale_reference_counter_after": 5,
+        "paused_decision_s": 0.669600493973121
+      },
+      {
+        "name": "odom_dropout_stops_control",
+        "passed": true,
+        "zero_latency_s": 0.43354459200054407,
+        "deadline_s": 0.7
+      },
+      {
+        "name": "map_dropout_stops_control",
+        "passed": true,
+        "zero_latency_s": 1.5174093959503807,
+        "deadline_s": 1.9
+      },
+      {
+        "name": "decision_restart_requires_new_goal",
+        "passed": true,
+        "old_session": "5c7b818e99e24e5bb1d9c15ff1bac0da",
+        "new_session": "dea63000ae1b48b9b6df85b903d29636",
+        "observed_zero_samples": {
+          "left": 6,
+          "right": 6,
+          "lateral": 6
+        }
+      },
+      {
+        "name": "decision_restart_recovers_on_new_goal",
+        "passed": true
+      },
+      {
+        "name": "control_restart_requires_new_goal",
+        "passed": true,
+        "old_session": "8cc113e2c7194bd38bd2b843bbe3a95d",
+        "new_session": "9619aa53ada943b7aa022bd570362786",
+        "observed_zero_samples": {
+          "left": 7,
+          "right": 7,
+          "lateral": 7
+        }
+      },
+      {
+        "name": "control_restart_recovers_on_new_goal",
+        "passed": true
+      },
+      {
+        "name": "perception_restart_requires_new_goal",
+        "passed": true,
+        "old_session": "3769e71ee1834e4dbfa4aaceb56dda6d",
+        "new_session": "27a660e85c0548098b6ecb63224a2505",
+        "observed_zero_samples": {
+          "left": 7,
+          "right": 7,
+          "lateral": 7
+        }
+      },
+      {
+        "name": "perception_restart_recovers_on_new_goal",
+        "passed": true
+      },
+      {
+        "name": "perception_output_publisher_restart_invalidates_task",
+        "passed": true
+      }
+    ],
+    "scope": "independent local ROS processes with synthetic sensors; no Gazebo/multi-host claim"
+  },
+  "yaml_probe": {
+    "passed": true,
+    "domain_id": 218,
+    "installed_share": "/home/usv/module-layout-20260914/install/usv_navigation/share/usv_navigation",
+    "config_paths": {
+      "dynamics_config": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/docs/validation/module-layout-001/yaml/dynamics_config.yaml",
+      "controller_config": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/docs/validation/module-layout-001/yaml/controller_config.yaml",
+      "trajectory_config": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/docs/validation/module-layout-001/yaml/trajectory_config.yaml",
+      "planner_config": "/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/docs/validation/module-layout-001/yaml/planner_config.yaml"
+    },
+    "expected": {
+      "dynamics.mass": 31.25,
+      "dynamics.ns": "yaml_probe",
+      "planner_name": "dijkstra",
+      "obstacle_factor": 0.35,
+      "usv_simulation.controller.controller_name": "lqr",
+      "usv_simulation.controller.control_frequency": 8.0,
+      "usv_simulation.controller.pid_controller.k_p_speed": 3.25,
+      "usv_simulation.trajectory_planner.los.yaw_rate_max": 0.23
+    },
+    "commands": [
+      {
+        "argv": [
+          "ros2",
+          "launch",
+          "usv_decision",
+          "decision.launch.py",
+          "robot_namespace:=yaml_probe",
+          "use_sim_time:=false",
+          "dynamics_config:=/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/docs/validation/module-layout-001/yaml/dynamics_config.yaml",
+          "controller_config:=/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/docs/validation/module-layout-001/yaml/controller_config.yaml",
+          "trajectory_config:=/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/docs/validation/module-layout-001/yaml/trajectory_config.yaml",
+          "planner_config:=/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/docs/validation/module-layout-001/yaml/planner_config.yaml"
+        ],
+        "launcher_pid": 224340
+      },
+      {
+        "argv": [
+          "ros2",
+          "launch",
+          "usv_control",
+          "control.launch.py",
+          "robot_namespace:=yaml_probe",
+          "use_sim_time:=false",
+          "dynamics_config:=/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/docs/validation/module-layout-001/yaml/dynamics_config.yaml",
+          "controller_config:=/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/docs/validation/module-layout-001/yaml/controller_config.yaml",
+          "trajectory_config:=/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/docs/validation/module-layout-001/yaml/trajectory_config.yaml",
+          "planner_config:=/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/docs/validation/module-layout-001/yaml/planner_config.yaml"
+        ],
+        "launcher_pid": 224341
+      }
+    ],
+    "checks": {
+      "usv_simulation_startup_yaml": {
+        "passed": true,
+        "actual": {
+          "dynamics.mass": 31.25,
+          "dynamics.ns": "yaml_probe",
+          "planner_name": "dijkstra",
+          "obstacle_factor": 0.35,
+          "usv_simulation.controller.controller_name": "lqr",
+          "usv_simulation.controller.control_frequency": 8.0,
+          "usv_simulation.controller.pid_controller.k_p_speed": 3.25,
+          "usv_simulation.trajectory_planner.los.yaw_rate_max": 0.23
+        }
+      },
+      "usv_control_startup_yaml": {
+        "passed": true,
+        "actual": {
+          "dynamics.mass": 31.25,
+          "dynamics.ns": "yaml_probe",
+          "planner_name": "dijkstra",
+          "obstacle_factor": 0.35,
+          "usv_simulation.controller.controller_name": "lqr",
+          "usv_simulation.controller.control_frequency": 8.0,
+          "usv_simulation.controller.pid_controller.k_p_speed": 3.25,
+          "usv_simulation.trajectory_planner.los.yaw_rate_max": 0.23
+        }
+      },
+      "hot_update_actual_control": {
+        "passed": true,
+        "actual": 4.75
+      },
+      "export_compatibility": {
+        "passed": true
+      }
+    }
+  },
+  "navigation": {
+    "passed": true,
+    "checks": 9,
+    "run_finished": true
+  }
+}

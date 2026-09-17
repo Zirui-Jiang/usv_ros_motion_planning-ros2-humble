@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+
+<!-- Defines the Otter USV with gazebo plugins for dynamics and thrust -->
+<robot name="otter" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Arguments -->
+  <xacro:arg name="gps_enabled"           default="true" />
+  <xacro:arg name="imu_enabled"           default="true" />
+  <xacro:arg name="lidar_enabled"         default="true" />
+  <xacro:arg name="thruster_namespace"    default="thrusters/"/>
+  <xacro:arg name="sensor_namespace"      default="sensors/"/>
+
+  <!-- Define macros -->
+  <xacro:arg name="namespace" default=""/>
+  <xacro:property name="thruster_namespace" value="$(arg thruster_namespace)" scope="global" />
+  <xacro:property name="sensor_namespace" value="$(arg sensor_namespace)" scope="global" />
+  <xacro:property name="namespace" value="$(arg namespace)" scope="global" />
+
+  <!-- Defines the "otter_base" macro -->
+  <xacro:include filename="$(find sim_env)/urdf/otter/otter_base.urdf.xacro" />
+
+  <!-- Defines the "usv_dynamics_gazebo" macro -->
+  <xacro:include filename="$(find sim_env)/urdf/otter/dynamics/otter_gazebo_dynamics_plugin.xacro" />
+
+  <!-- Defines the "usv_wind_gazebo" macro -->
+  <xacro:include filename="$(find sim_env)/urdf/otter/dynamics/otter_gazebo_wind_plugin.xacro" />
+
+  <!-- Defines the "usv_thrust_gazebo" macro -->
+  <xacro:include filename="$(find sim_env)/urdf/otter/thrusters/otter_gazebo_thruster_plugin.xacro" />
+
+  <!-- Define macros for sensors -->
+  <xacro:include filename="$(find sim_env)/urdf/otter/sensors/otter_gps.xacro" />
+  <xacro:include filename="$(find sim_env)/urdf/otter/sensors/otter_imu.xacro" />
+  <xacro:include filename="$(find sim_env)/urdf/otter/sensors/otter_lidar.xacro" />
+
+  <!-- Call the macros defined above -->
+
+  <!-- Includes basic description of the Otter without plugins -->
+  <xacro:otter_base />
+
+  <!-- USV dynamics plugin -->
+  <xacro:usv_dynamics_gazebo name="otter"/>
+
+  <!-- Attach wind plugin -->
+  <xacro:usv_wind_gazebo name="otter"/>
+
+  <!-- USV thrust plugin -->
+  <xacro:otter_usv_thrust_gazebo name="otter"/>
+
+  <!-- Add simulated GPS -->
+  <xacro:if value="$(arg gps_enabled)">
+    <xacro:otter_gps name="gps" x="0.08" y="0.1" z="0.395" />
+  </xacro:if>
+
+  <!-- Add Simulated IMU -->
+  <xacro:if value="$(arg imu_enabled)">
+    <xacro:otter_imu name="imu" x="0.08" y="-0.1" z="0.385" />
+  </xacro:if>
+
+  <!-- Add planar LIDAR -->
+  <xacro:if value="$(arg lidar_enabled)">
+    <xacro:otter_lidar name="lidar" x="0" y="0.0" z="0.40" min_range="1.2" max_range="25" visualize="false" />
+  </xacro:if>
+
+</robot>

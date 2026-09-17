@@ -12,6 +12,7 @@ pytest.importorskip("rclpy")
 from builtin_interfaces.msg import Time
 
 from usv_ladds_bridge.leg_state import LegBook
+from usv_ladds_bridge.stop_task import StopExecution
 from usv_ladds_bridge.single_leg_node import SingleLegNode
 from common.geodesy import GeoReference
 
@@ -97,6 +98,11 @@ class _Harness:
         self.book = LegBook(max_timeout_retries=3)
         self.client = _Client()
         self.cancel_client = _Client()
+        self.stop_client = _Client()
+        self.stop_record = None
+        self.stop_futures = set()
+        self.stop_submitted_at = 0.0
+        self.stop_retry_at = 0.0
         self.origin = GeoReference(30.5453, 114.392931)
         self.frame = "otter/map"
         self.waypoint_radius = 1.5
@@ -121,6 +127,7 @@ class _Harness:
         self.service_timeout = 0.01
         self.notices = []
         self.completions = []
+        self.tx = _Publisher()
 
     def __getattr__(self, name):
         method = getattr(SingleLegNode, name, None)
@@ -135,8 +142,9 @@ class _Harness:
     def _notice(self, state, reason="", record=None):
         self.notices.append((state, reason, record))
 
-    def _complete(self, record):
+    def _report_arrival(self, record):
         self.completions.append(record)
+        SingleLegNode._report_arrival(self, record)
 
     def _warning(self, text):
         pass
@@ -535,3 +543,121 @@ def test_response_from_retired_session_does_not_rebind_current_request():
                              state='GOAL_REACHED', task_id=9))
     assert node.completions == []
     assert node.navigation_session == 'planner-b'
+
+
+def test_guard_arrival_sends_0052_once_without_ending_micro_control():
+    node = _Harness()
+    content = json.loads(_message(points=_multi_points()).data)
+    content.update(taskType=80, guardingHeading=0)
+    node._receive(SimpleNamespace(data=json.dumps(content)))
+    request = node.client.requests[-1]
+    assert request.guard_on_arrival is True
+    assert request.guard_heading_enabled is True
+    assert request.guard_heading == pytest.approx(1.5707963267948966)
+    record = node.book.active
+    _accept(node)
+    node._navigation(_status(request_id=record.request_id, state='GUARDING', task_id=7))
+    assert record.state == 'GUARDING'
+    assert node.book.active is record
+    assert node.completions == [record]
+    assert node.tx.messages == [{'travelId': record.leg.travel_id, 'taskFinish': 1}]
+    assert node.notices[-1][0] == 'GUARDING'
+    for state in ('GUARDING', 'GUARD_BLOCKED', 'GUARDING'):
+        node._navigation(_status(request_id=record.request_id, state=state, task_id=7))
+    assert node.completions == [record]
+    assert len(node.tx.messages) == 1
+    assert node.book.active is record
+    # A new route must still cancel the ongoing guard, despite the arrival ACK.
+    node._receive(_message(travel_id=59))
+    assert len(node.cancel_client.requests) == 1
+    assert len(node.client.requests) == 1
+
+
+def test_guard_arrival_during_replacement_is_not_reported_as_new_route_arrival():
+    node = _Harness()
+    content = json.loads(_message().data)
+    content.update(taskType=80, guardingHeading=None)
+    node._receive(SimpleNamespace(data=json.dumps(content)))
+    record = node.book.active
+    _accept(node)
+    node._receive(_message(travel_id=59))
+    node._navigation(_status(request_id=record.request_id, state='GUARDING', task_id=7))
+    assert node.tx.messages == []
+    assert record.state == 'ABORTED'
+    assert len(node.client.requests) == 1
+    node.cancel_client.futures[0].resolve(success=True, message='CANCELLED')
+    assert len(node.client.requests) == 2
+
+
+def test_stop_does_not_wait_for_pending_route_acceptance_or_fresh_status():
+    node = _Harness()
+    node._receive(_message())
+    record = node.book.active
+    old_future = node.client.futures[0]
+    node._receive(_message(speed=2))
+    waiting = node.waiting_record
+    node.navigation_status_at = float('-inf')
+    node._receive_stop(SimpleNamespace(data='{}'))
+    assert len(node.stop_client.requests) == 1
+    assert record.request_id in node.stop_client.requests[0].superseded_request_ids
+    assert record.state == waiting.state == 'ABORTED'
+    assert node.waiting_record is None
+    assert node.book.active is None
+    old_future.resolve(accepted=True, planner_session='planner-a', task_id=7, reason='ACCEPTED')
+    assert node.book.active is None
+    assert node.completions == []
+
+
+def test_stop_accepted_does_not_mean_stopped_and_new_route_waits_for_matching_status():
+    node = _Harness()
+    node._receive_stop(SimpleNamespace(data='{}'))
+    stop = node.stop_record
+    node._receive(_message())
+    node.stop_client.futures[0].resolve(accepted=True, planner_session='planner-a', task_id=8, reason='STOPPING')
+    assert node.client.requests == []
+    node._navigation(_status(request_id='old-stop', state='STOPPED', task_id=7))
+    assert node.client.requests == []
+    node._navigation(_status(request_id=stop.request_id, state='STOPPED', task_id=8))
+    assert len(node.client.requests) == 1
+    assert node.completions == []
+
+
+def test_stop_timeout_retries_same_id_but_old_unresolved_stop_still_blocks_new_route():
+    node = _Harness()
+    node._receive_stop(SimpleNamespace(data='{}'))
+    stop = node.stop_record
+    node.stop_submitted_at = time.monotonic() - 1
+    node._tick()
+    assert len(node.stop_client.requests) == 2
+    assert {r.request_id for r in node.stop_client.requests} == {stop.request_id}
+    node.stop_client.futures[-1].resolve(accepted=True, planner_session='planner-a', task_id=8, reason='STOPPING')
+    node._navigation(_status(request_id=stop.request_id, state='STOPPED', task_id=8))
+    node._receive(_message())
+    assert node.client.requests == []
+    node.stop_client.futures[0].resolve(accepted=True, planner_session='planner-a', task_id=8, reason='STOPPING')
+    assert len(node.client.requests) == 1
+
+
+def test_stop_during_cancel_waits_for_old_cancel_result_before_new_route():
+    node = _Harness()
+    node._receive(_message())
+    _accept(node)
+    node._receive(_message(speed=2))
+    cancel_future = node.cancel_client.futures[0]
+    node._receive_stop(SimpleNamespace(data='{}'))
+    stop = node.stop_record
+    node.stop_client.futures[0].resolve(accepted=True, planner_session='planner-a', task_id=8, reason='STOPPING')
+    node._navigation(_status(request_id=stop.request_id, state='STOPPED', task_id=8))
+    node._receive(_message(speed=3))
+    assert len(node.client.requests) == 1
+    cancel_future.resolve(success=False, message='Active braking cannot be cancelled')
+    assert len(node.client.requests) == 2
+
+
+def test_malformed_stop_does_not_abort_current_task():
+    node = _Harness()
+    node._receive(_message())
+    record = node.book.active
+    node._receive_stop(SimpleNamespace(data='[]'))
+    assert node.book.active is record
+    assert node.stop_client.requests == []

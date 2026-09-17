@@ -47,6 +47,64 @@ def test_only_matching_actual_completion_generates_feedback():
     assert repeated.state == 'PENDING'
 
 
+def test_guard_arrival_returns_feedback_once_without_completing_the_task():
+    book = LegBook()
+    guarded = leg()
+    guarded.guard_on_arrival = True
+    _, record = book.receive(guarded)
+    book.acknowledge(record.request_id, True, 'planner-a', 7, '')
+    assert book.observe(status(record, state='GOAL_REACHED')) is None
+    assert book.active is record
+    assert book.observe(status(record, state='GUARDING')) is record
+    assert record.state == 'GUARDING'
+    assert book.active is record
+    assert book.observe(status(record, state='GUARDING')) is None
+    book.acknowledge(record.request_id, True, 'planner-a', 7, 'late acceptance')
+    assert record.state == 'GUARDING'
+    assert book.observe(status(record, state='GUARDING')) is None
+    assert book.observe(status(record, state='STOPPING')) is None
+    assert record.state == 'ABORTED'
+    assert book.observe(status(record, state='GUARDING')) is None
+
+
+@pytest.mark.parametrize('control_state', ['GUARD_BRAKING', 'GUARD_BLOCKED', 'WAITING_MAP'])
+def test_hold_mode_remembers_arrival_even_if_first_guarding_status_was_missed(control_state):
+    book = LegBook()
+    guarded = leg()
+    guarded.guard_on_arrival = True
+    _, record = book.receive(guarded)
+    book.acknowledge(record.request_id, True, 'planner-a', 7, '')
+    report = status(record, state=control_state)
+    report['motion_mode'] = 'HOLD'
+    assert book.observe(report) is record
+    assert book.active is record
+    assert book.observe(report) is None
+    assert book.observe(status(record, state='GUARDING')) is None
+    assert book.active is record
+
+
+def test_ordinary_route_cannot_report_arrival_from_a_guarding_status():
+    book = LegBook()
+    _, record = book.receive(leg())
+    book.acknowledge(record.request_id, True, 'planner-a', 7, '')
+    assert book.observe(status(record, state='GUARDING')) is None
+    assert book.active is record
+
+
+@pytest.mark.parametrize('changed', [dict(task=6), dict(task=8),
+                                    dict(request='another-request'),
+                                    dict(session='another-session'), dict(state='CANCELLED')])
+def test_guard_arrival_requires_matching_live_execution(changed):
+    book = LegBook()
+    guarded = leg()
+    guarded.guard_on_arrival = True
+    _, record = book.receive(guarded)
+    book.acknowledge(record.request_id, True, 'planner-a', 7, '')
+    report = status(record, **{'state': 'GUARDING', **changed})
+    report['motion_mode'] = 'HOLD'
+    assert book.observe(report) is None
+
+
 def test_cancel_replacement_and_restart_cannot_finish_original_task():
     for changed in [dict(state='CANCELLED'), dict(session='planner-b'),
                     dict(request='manual-goal', task=8), dict(state='CLOCK_RESET')]:

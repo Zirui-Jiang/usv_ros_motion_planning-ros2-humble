@@ -107,6 +107,49 @@ def test_expired_total_budget_returns_timeout():
     assert result.status == AlgorithmStatus.TIMEOUT
 
 
+def test_shortcut_can_be_disabled_for_an_astar_route_comparison():
+    points = ((15.17, 10.31, 0., 1.),)
+    enabled, disabled = request(points), request(points)
+    enabled.parameters['path_planner.enable_shortcut'] = True
+    disabled.parameters['path_planner.enable_shortcut'] = False
+    shortened, original = plan_navigation(enabled), plan_navigation(disabled)
+    assert shortened.status == original.status == AlgorithmStatus.SUCCESS
+    assert len(shortened.route) == 2
+    assert len(original.route) > len(shortened.route)
+    np.testing.assert_array_equal(shortened.route[[0, -1]], original.route[[0, -1]])
+
+
+def test_route_shortcuts_run_once_per_leg_after_exact_anchors_are_connected(monkeypatch):
+    from path_processor import ShortcutPathProcessor
+    process = ShortcutPathProcessor.process
+    seen = []
+    def recording(self, path, **options):
+        seen.append(np.asarray(path)[[0, -1]].copy())
+        return process(self, path, **options)
+    monkeypatch.setattr(ShortcutPathProcessor, 'process', recording)
+    points = ((12.17, 10.31, 0., 1.), (20.72, 15.69, 0., 1.))
+    req = request(points)
+    req.parameters['path_planner.enable_shortcut'] = True
+    result = plan_navigation(req)
+    assert result.status == AlgorithmStatus.SUCCESS
+    assert len(seen) == 2
+    np.testing.assert_array_equal(seen[0], [req.state.pose, points[0][:3]])
+    np.testing.assert_array_equal(seen[1], [points[0][:3], points[1][:3]])
+
+
+@pytest.mark.parametrize('name', ['dijkstra', 'gbfs'])
+def test_astar_shortcut_switch_does_not_change_other_route_algorithms(name):
+    points = ((12.17, 10.31, 0., 1.), (20.72, 15.69, 0., 1.))
+    enabled, disabled = request(points), request(points)
+    for req, flag in ((enabled, True), (disabled, False)):
+        req.parameters.update(planner_name=name)
+        req.parameters['path_planner.enable_shortcut'] = flag
+    first, second = plan_navigation(enabled), plan_navigation(disabled)
+    assert first.status == second.status == AlgorithmStatus.SUCCESS
+    np.testing.assert_array_equal(first.route, second.route)
+    np.testing.assert_array_equal(first.trajectory.points, second.trajectory.points)
+
+
 @pytest.mark.parametrize('next_point', [(150., 10., 0., 1.), (30., 10., 0., 1.)])
 def test_unavailable_preview_anchor_keeps_safe_current_prefix(next_point):
     grid = np.zeros((80, 100), np.uint8)

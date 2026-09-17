@@ -1,8 +1,9 @@
-# 普通导航控制 ROS 节点：接收决策参考和感知快照，执行选定控制器，通过唯一输出适配器发布桨命令。
-"""Ordinary navigation control process and the sole propulsion output adapter.
+# 导航/主动制动/终点微控共用 ROS 节点和唯一推进输出，任务切换不启动第二个桨命令发布源。
+"""Navigation, active braking and holding through the sole propulsion adapter.
 
 Planning and reference collision checks belong to the decision process. This
-node retains the original per-tick measured-hull check and PID/LQR lifecycle.
+node retains the original per-tick measured-hull check and controller lifecycle.
+Braking/holding additionally screen every output and its predicted stopping tail.
 """
 import json
 import math
@@ -14,11 +15,14 @@ from std_msgs.msg import Float32
 from usv_navigation_interfaces.msg import NavigationReference, ControlReport
 
 from common.models import AlgorithmStatus, ControlCommand
+from common.dynamics import braking_candidates, clear_control
+from controller.active_braking_controller import ActiveBrakingController
 from controller.controller_factory import create_controller
+from controller.station_keeping_controller import StationKeepingController
 from usv_navigation.configuration import C, DEFAULTS, HOT_PARAMETERS, resolve_parameters, section, validate_update
 from usv_navigation.protocol import trajectory_from_message
-from usv_navigation.state_rules import readiness
-from usv_navigation.ros_support import NavigationInputs
+from usv_navigation.state_rules import fresh, readiness
+from usv_navigation.ros_support import NavigationInputs, seconds
 from usv_navigation.node_runner import run_node
 
 
@@ -34,6 +38,13 @@ class ControlNode(NavigationInputs):
         self.controller_name = self.config[C + 'controller_name']
         self.controller = create_controller(self.controller_name, self.model,
                             section(self.config, C + self.controller_name + '_controller.'))
+        self.brake_controller = ActiveBrakingController(self.model)
+        self.station_controller = StationKeepingController(self.model)
+        self.motion_mode = 'NAVIGATE'
+        self.guard_on_arrival = False
+        self.guard_heading = None
+        self._hold_target = None
+        self._motion_stamp = float('-inf')
         self.task_id = 0
         self.planner_session = ''
         self.reference_sequence = 0
@@ -65,6 +76,10 @@ class ControlNode(NavigationInputs):
                 self.task_id, self._closed_tasks.get(self.planner_session, -1))
         self.goal = self.trajectory = None
         self.controller.reset()
+        self.brake_controller.reset()
+        self.station_controller.reset()
+        self.motion_mode, self._hold_target = 'NAVIGATE', None
+        self.guard_on_arrival, self.guard_heading = False, None
         self.mode, self.reason = mode, reason
         self.reference_state, self.reference_reason = mode, reason
         self._reference_error = ''
@@ -112,6 +127,10 @@ class ControlNode(NavigationInputs):
         new_task = not same_planner or message.task_id != self.task_id
         if new_task:
             self.controller.reset()
+            self.brake_controller.reset()
+            self.station_controller.reset()
+            self.motion_mode, self._hold_target = 'NAVIGATE', None
+            self.guard_on_arrival, self.guard_heading = False, None
             self.goal = self.trajectory = None
             self.task_finished = self.clock_reset = False
             self._publish_command(ControlCommand())
@@ -129,6 +148,8 @@ class ControlNode(NavigationInputs):
             self.mode, self.reason = self._reference_error, str(error)
             self.counters['invalid_reference_config'] += 1
             self.controller.on_control_hold()
+            self.brake_controller.reset()
+            self.station_controller.reset()
             self._publish_command(ControlCommand())
             self._publish_report()
             return
@@ -141,13 +162,54 @@ class ControlNode(NavigationInputs):
             self._publish_report()
             return
         try:
+            motion_mode = getattr(message, 'motion_mode', '') or 'NAVIGATE'
+            if motion_mode not in ('NAVIGATE', 'BRAKE', 'HOLD'):
+                raise ValueError('Unknown motion mode')
+            heading_enabled = getattr(message, 'guard_heading_enabled', False)
+            guard_heading = float(message.guard_heading) if heading_enabled else None
+            if guard_heading is not None and not math.isfinite(guard_heading):
+                raise ValueError('Guard heading is nonfinite')
+            stamp = seconds(message.header.stamp)
+            if (motion_mode != 'NAVIGATE' or self._hold_target is not None
+                    or getattr(message, 'guard_on_arrival', False)):
+                if message.header.frame_id != self.frame:
+                    raise ValueError('Motion reference must use the control map frame')
+                if not math.isfinite(stamp):
+                    raise ValueError('Motion reference timestamp is nonfinite')
+            if motion_mode == 'BRAKE':
+                # There is deliberately no target-position dependency in 0331.
+                entering_brake = self.motion_mode != 'BRAKE'
+                self.goal = self.trajectory = None
+                self.motion_mode, self._motion_stamp = 'BRAKE', stamp
+                self._hold_target = None
+                # A lease refresh does not imply that the input/safety gates
+                # passed. Preserve the last control tick's actual result.
+                if entering_brake:
+                    self.mode, self.reason = 'STOPPING', 'Awaiting a valid braking control tick'
+                self._publish_report()
+                return
+            if self.motion_mode == 'BRAKE':
+                raise ValueError('A braking task cannot resume navigation without a new task')
             goal = (float(message.goal.x), float(message.goal.y), float(message.goal.theta))
             if not all(math.isfinite(value) for value in goal):
                 raise ValueError('Navigation goal is nonfinite')
             trajectory = trajectory_from_message(message)
             if trajectory is not None and trajectory.frame_id != self.frame:
                 raise ValueError('Navigation reference frame differs from control map frame')
+            # Once terminal holding is acquired, late same-task navigation
+            # snapshots may renew the lease but must not move its centre/yaw.
+            if self._hold_target is not None:
+                self.goal, self.trajectory = self._hold_target, None
+                self.motion_mode, self._motion_stamp = 'HOLD', stamp
+                self._publish_report()
+                return
             self.goal, self.trajectory = goal, trajectory
+            self.motion_mode, self._motion_stamp = motion_mode, stamp
+            self.guard_on_arrival = bool(getattr(message, 'guard_on_arrival', False))
+            self.guard_heading = guard_heading
+            if motion_mode == 'HOLD':
+                self._start_guarding()
+                return
             self.mode, self.reason = message.state or 'WAITING_REFERENCE', message.reason
             if trajectory is None:
                 self.controller.on_control_hold()
@@ -158,8 +220,63 @@ class ControlNode(NavigationInputs):
             self.mode, self.reason = self._reference_error, str(error)
             self.counters['invalid_references'] += 1
             self.controller.on_control_hold()
+            self.brake_controller.reset()
+            self.station_controller.reset()
             self._publish_command(ControlCommand())
         self._publish_report()
+
+    def _start_guarding(self):
+        self._hold_target = (self.goal[0], self.goal[1], self.guard_heading)
+        self.goal, self.trajectory = self._hold_target, None
+        self.motion_mode = 'HOLD'
+        self.controller.reset()
+        self.station_controller.reset()
+        self.station_controller.observe_command(self.last_published_command)
+        self.mode, self.reason = 'GUARDING', ''
+        # Acknowledge the persistent mode latch before the following command
+        # safety gate. GUARDING is mode ownership, not a claim of zero error.
+        self._publish_report()
+
+    def _motion_ready(self, now):
+        ready = readiness(now, self.state, self.grid, None, self.config)
+        if ready != 'WAITING_REFERENCE':
+            return ready
+        if not fresh(self._motion_stamp, now, self.config['navigation.trajectory_timeout']):
+            return 'WAITING_REFERENCE'
+        return 'NAVIGATING'
+
+    def _clear_motion(self, command, dt):
+        return clear_control(self.state, command, self.grid, self.model, dt,
+                             length=self.config['navigation.footprint_length'],
+                             width=self.config['navigation.footprint_width'])
+
+    def _screen_motion(self, command, dt):
+        # Check the actual output and its full braking tail, including slew
+        # inherited from navigation. An unsafe hold tries bounded braking first.
+        probe = ControlCommand() if command.status == AlgorithmStatus.GOAL_REACHED else command
+        if self._clear_motion(probe, dt):
+            return command, True
+        for alternative in reversed(braking_candidates(self.state, self.model)):
+            if self._clear_motion(alternative, dt):
+                self.mode = 'GUARD_BRAKING' if self.motion_mode == 'HOLD' else 'BRAKING'
+                self.reason = 'Requested motion unsafe; screened braking replacement'
+                return alternative, True
+        self.mode = 'GUARD_BLOCKED' if self.motion_mode == 'HOLD' else 'BRAKE_BLOCKED'
+        self.reason = 'No command passes full-hull execution and stopping-tail check'
+        self.counters['motion_safety_blocks'] += 1
+        return ControlCommand(), False
+
+    def _compute_motion(self, dt):
+        if self.motion_mode == 'BRAKE':
+            self.mode, self.reason = 'BRAKING', ''
+            command = self.brake_controller.compute(self.state, dt)
+        else:
+            self.mode, self.reason = 'GUARDING', ''
+            command = self.station_controller.compute(self.state, self._hold_target, dt)
+        if not command.is_valid() or command.status not in (AlgorithmStatus.SUCCESS, AlgorithmStatus.GOAL_REACHED):
+            self.mode, self.reason = 'CONTROL_ERROR', command.message
+            return ControlCommand(), False
+        return self._screen_motion(command, dt)
 
     # 在控制拍边界原子应用待处理参数，PID 在线增益更新保留积分状态。
     def _apply_parameters(self):
@@ -211,8 +328,10 @@ class ControlNode(NavigationInputs):
                 self.mode = self._reference_error
             elif not self.peers_ready('decision', 'perception'):
                 self.mode, self.reason = 'WAITING_MODULES', 'Waiting for fresh decision and perception heartbeats'
-            elif self.goal is not None:
-                ready = readiness(now, self.state, self.grid, self.trajectory, self.config)
+            elif self.goal is not None or self.motion_mode == 'BRAKE':
+                special = self.motion_mode in ('BRAKE', 'HOLD')
+                ready = self._motion_ready(now) if special else readiness(
+                    now, self.state, self.grid, self.trajectory, self.config)
                 # 即使参考尚未到来，也检查最新实测船体；碰撞撤销参考但不将任务标为完成。
                 if ready in ('NAVIGATING', 'WAITING_REFERENCE') and not self._current_footprint_clear():
                     self.trajectory = None
@@ -222,10 +341,17 @@ class ControlNode(NavigationInputs):
                     self.counters['current_footprint_blocks'] += 1
                 if ready == 'NAVIGATING' and dt > 0:
                     self.mode, self.reason = ready, ''
-                    command = self.controller.compute(self.state, self.trajectory, dt)
+                    if special:
+                        command, tracking = self._compute_motion(dt)
+                    else:
+                        command = self.controller.compute(self.state, self.trajectory, dt)
+                    if (command.status == AlgorithmStatus.GOAL_REACHED and self.guard_on_arrival
+                            and self.motion_mode == 'NAVIGATE' and self.trajectory.goal is not None):
+                        self._start_guarding()
+                        command, tracking = self._compute_motion(dt)
                     if command.status == AlgorithmStatus.GOAL_REACHED:
                         self.task_finished = True
-                        self._close_task('GOAL_REACHED')
+                        self._close_task('STOPPED' if self.motion_mode == 'BRAKE' else 'GOAL_REACHED')
                         command = ControlCommand()
                     elif command.status == AlgorithmStatus.SETTLING:
                         self.mode, self.reason = 'SETTLING', command.message
@@ -233,19 +359,24 @@ class ControlNode(NavigationInputs):
                         self.mode, self.reason = 'CONTROL_ERROR', command.message
                         self.counters['control_result_' + command.status.value] += 1
                         command = ControlCommand()
-                    else:
+                    elif not special and self.motion_mode == 'NAVIGATE':
                         tracking = True
                 elif ready == 'NAVIGATING' and dt == 0:
                     if wall_now - self.last_clock_progress_wall < CLOCK_STALL_TIMEOUT:
                         # 等待下一条 /clock：保留已发布命令，不重复计算/积分。
                         # 就绪、碰撞和对端检查仍在前面执行，取消/无效参考也会立即归零。
-                        self.mode, self.reason = 'NAVIGATING', ''
+                        self.mode, self.reason = ('BRAKING' if self.motion_mode == 'BRAKE' else
+                                                 'GUARDING' if self.motion_mode == 'HOLD' else 'NAVIGATING'), ''
                         command = self.last_published_command
                         tracking = True
+                        if special:
+                            command, tracking = self._screen_motion(
+                                command, 1. / self.config[C + 'control_frequency'])
                     else:
                         self.mode, self.reason = 'SIMULATION_PAUSED', 'Simulation clock stalled for at least 0.5 wall seconds'
                 else:
-                    if ready == 'WAITING_REFERENCE' and self.reference_state not in ('NAVIGATING', 'SETTLING'):
+                    if (not special and ready == 'WAITING_REFERENCE'
+                            and self.reference_state not in ('NAVIGATING', 'SETTLING')):
                         self.mode, self.reason = self.reference_state or ready, self.reference_reason
                     else:
                         self.mode = ready
@@ -255,10 +386,15 @@ class ControlNode(NavigationInputs):
             self.mode, self.reason = 'CONTROL_ERROR', str(error)
             self.counters['control_errors'] += 1
             command = ControlCommand()
+            tracking = False
         if not tracking:
             # 等待/暂停/失败期间不携带 ADRC 的旧积分和滤波历史。
             # 基类为空操作，原 PID/LQR 的暂停行为保持。
             self.controller.on_control_hold()
+            self.brake_controller.reset()
+            self.station_controller.reset()
+        if self.motion_mode == 'HOLD':
+            self.station_controller.observe_command(command)
         elapsed = (time.perf_counter() - begun) * 1000
         if elapsed >= 1000. / self.config[C + 'control_frequency']:
             self.counters['control_overruns'] += 1

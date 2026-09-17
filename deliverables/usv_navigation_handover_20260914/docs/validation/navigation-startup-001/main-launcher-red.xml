@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="7" time="0.339" timestamp="2026-09-14T01:47:56.345661" hostname="DESKTOP-SFCU4PM"><testcase classname="scripts.validation.test_main_launcher" name="test_explicit_install_selection_overrides_existing_project_install" time="0.115"><failure message="AssertionError: assert '/tmp/pytest-...space/install' == '/tmp/pytest-...arate-install'&#10;  Skipping 52 identical leading characters in diff, use -v to show&#10;  - selectio0/separate-install&#10;  + selectio0/project workspace/install">launcher = (PosixPath('/tmp/pytest-of-usv/pytest-151/test_explicit_install_selectio0/project workspace'), &lt;function launcher.&lt;locals&gt;.install at 0x78a38cb79750&gt;, &lt;function launcher.&lt;locals&gt;.run at 0x78a38cb797e0&gt;)
+tmp_path = PosixPath('/tmp/pytest-of-usv/pytest-151/test_explicit_install_selectio0')
+
+    def test_explicit_install_selection_overrides_existing_project_install(launcher, tmp_path):
+        project, install, run = launcher
+        install(project / 'install')
+        selected = install(tmp_path / 'separate-install')
+        result, observed = run(selected)
+        assert result.returncode == 0, result.stderr
+&gt;       assert observed['install'] == str(selected)
+E       AssertionError: assert '/tmp/pytest-...space/install' == '/tmp/pytest-...arate-install'
+E         Skipping 52 identical leading characters in diff, use -v to show
+E         - selectio0/separate-install
+E         + selectio0/project workspace/install
+
+scripts/validation/test_main_launcher.py:82: AssertionError</failure></testcase><testcase classname="scripts.validation.test_main_launcher" name="test_unset_install_selection_defaults_to_project_install" time="0.026" /><testcase classname="scripts.validation.test_main_launcher" name="test_missing_selected_setup_fails_with_path_and_override_instructions[False]" time="0.009"><failure message="AssertionError: assert '/tmp/pytest-of-usv/pytest-151/test_missing_selected_setup_fa0/project workspace/install/setup.bash' in '[main] Workspace not built, please run scripts/build.sh first.\n'&#10; +  where '/tmp/pytest-of-usv/pytest-151/test_missing_selected_setup_fa0/project workspace/install/setup.bash' = str((PosixPath('/tmp/pytest-of-usv/pytest-151/test_missing_selected_setup_fa0/project workspace/install') / 'setup.bash'))&#10; +  and   '[main] Workspace not built, please run scripts/build.sh first.\n' = CompletedProcess(args=['bash', '/tmp/pytest-of-usv/pytest-151/test_missing_selected_setup_fa0/project workspace/scripts/main.sh'], returncode=1, stdout='', stderr='[main] Workspace not built, please run scripts/build.sh first.\n').stderr">launcher = (PosixPath('/tmp/pytest-of-usv/pytest-151/test_missing_selected_setup_fa0/project workspace'), &lt;function launcher.&lt;locals&gt;.install at 0x78a38ca38550&gt;, &lt;function launcher.&lt;locals&gt;.run at 0x78a38ca38280&gt;)
+tmp_path = PosixPath('/tmp/pytest-of-usv/pytest-151/test_missing_selected_setup_fa0')
+explicit = False
+
+    @pytest.mark.parametrize('explicit', [False, True])
+    def test_missing_selected_setup_fails_with_path_and_override_instructions(launcher, tmp_path, explicit):
+        project, install, run = launcher
+        missing = tmp_path / 'missing external install' if explicit else project / 'install'
+        if explicit:
+            # An explicit invalid path must not silently fall back to an old build.
+            install(project / 'install')
+        result, observed = run(missing if explicit else None)
+        assert result.returncode != 0
+        assert observed is None
+&gt;       assert str(missing / 'setup.bash') in result.stderr
+E       AssertionError: assert '/tmp/pytest-of-usv/pytest-151/test_missing_selected_setup_fa0/project workspace/install/setup.bash' in '[main] Workspace not built, please run scripts/build.sh first.\n'
+E        +  where '/tmp/pytest-of-usv/pytest-151/test_missing_selected_setup_fa0/project workspace/install/setup.bash' = str((PosixPath('/tmp/pytest-of-usv/pytest-151/test_missing_selected_setup_fa0/project workspace/install') / 'setup.bash'))
+E        +  and   '[main] Workspace not built, please run scripts/build.sh first.\n' = CompletedProcess(args=['bash', '/tmp/pytest-of-usv/pytest-151/test_missing_selected_setup_fa0/project workspace/scripts/main.sh'], returncode=1, stdout='', stderr='[main] Workspace not built, please run scripts/build.sh first.\n').stderr
+
+scripts/validation/test_main_launcher.py:104: AssertionError</failure></testcase><testcase classname="scripts.validation.test_main_launcher" name="test_missing_selected_setup_fails_with_path_and_override_instructions[True]" time="0.026"><failure message="AssertionError: assert 0 != 0&#10; +  where 0 = CompletedProcess(args=['bash', '/tmp/pytest-of-usv/pytest-151/test_missing_selected_setup_fa1/project workspace/scripts/main.sh'], returncode=0, stdout='', stderr='').returncode">launcher = (PosixPath('/tmp/pytest-of-usv/pytest-151/test_missing_selected_setup_fa1/project workspace'), &lt;function launcher.&lt;locals&gt;.install at 0x78a38ca38940&gt;, &lt;function launcher.&lt;locals&gt;.run at 0x78a38ca38a60&gt;)
+tmp_path = PosixPath('/tmp/pytest-of-usv/pytest-151/test_missing_selected_setup_fa1')
+explicit = True
+
+    @pytest.mark.parametrize('explicit', [False, True])
+    def test_missing_selected_setup_fails_with_path_and_override_instructions(launcher, tmp_path, explicit):
+        project, install, run = launcher
+        missing = tmp_path / 'missing external install' if explicit else project / 'install'
+        if explicit:
+            # An explicit invalid path must not silently fall back to an old build.
+            install(project / 'install')
+        result, observed = run(missing if explicit else None)
+&gt;       assert result.returncode != 0
+E       AssertionError: assert 0 != 0
+E        +  where 0 = CompletedProcess(args=['bash', '/tmp/pytest-of-usv/pytest-151/test_missing_selected_setup_fa1/project workspace/scripts/main.sh'], returncode=0, stdout='', stderr='').returncode
+
+scripts/validation/test_main_launcher.py:102: AssertionError</failure></testcase><testcase classname="scripts.validation.test_main_launcher" name="test_explicit_install_path_with_spaces_is_sourced_intact" time="0.009"><failure message="AssertionError: [main] Workspace not built, please run scripts/build.sh first.&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['bash', '/tmp/pytest-of-usv/pytest-151/test_explicit_install_path_wit0/project workspace/scripts/main.sh'], returncode=1, stdout='', stderr='[main] Workspace not built, please run scripts/build.sh first.\n').returncode">launcher = (PosixPath('/tmp/pytest-of-usv/pytest-151/test_explicit_install_path_wit0/project workspace'), &lt;function launcher.&lt;locals&gt;.install at 0x78a38ca39120&gt;, &lt;function launcher.&lt;locals&gt;.run at 0x78a38ca392d0&gt;)
+tmp_path = PosixPath('/tmp/pytest-of-usv/pytest-151/test_explicit_install_path_wit0')
+
+    def test_explicit_install_path_with_spaces_is_sourced_intact(launcher, tmp_path):
+        _, install, run = launcher
+        selected = install(tmp_path / 'installation with spaces')
+        result, observed = run(selected)
+&gt;       assert result.returncode == 0, result.stderr
+E       AssertionError: [main] Workspace not built, please run scripts/build.sh first.
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['bash', '/tmp/pytest-of-usv/pytest-151/test_explicit_install_path_wit0/project workspace/scripts/main.sh'], returncode=1, stdout='', stderr='[main] Workspace not built, please run scripts/build.sh first.\n').returncode
+
+scripts/validation/test_main_launcher.py:112: AssertionError</failure></testcase><testcase classname="scripts.validation.test_main_launcher" name="test_launch_arguments_are_forwarded_without_splitting_or_evaluation" time="0.022" /><testcase classname="scripts.validation.test_main_launcher" name="test_setup_failure_stops_before_ros2_launch" time="0.008" /></testsuite></testsuites>

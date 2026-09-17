@@ -1,0 +1,1772 @@
+{
+  "generated_utc": "2026-09-11T01:21:05.359502+00:00",
+  "scope": "PID pairwise extraction from unchanged comparator; original full report retains missing LQR pairs and interrupted baseline source",
+  "report_source": "/home/usv/usv_migration/results/python-pid-final-001-vs-baseline-matrix-002-compare-001/report.json",
+  "report_sha256": "cdc1ca99ffc0113d985b6708ef6ea34c729fe7745ccc77d7ae40ba47a9449f6e",
+  "comparator_sha256": "c37ec8bfea1f54c72c25b6eec67d47285b0af096bd78b80ae8acbaeff2c53bdf",
+  "summary": {
+    "pairs": 18,
+    "comparable_pairs": 9,
+    "passed_pairs": 4,
+    "failed_pairs": 5,
+    "not_comparable_pairs": 9,
+    "fault_trials": 3,
+    "fault_passed": 3,
+    "performance_trials": 9,
+    "performance_passed": 7,
+    "performance_failed": 0,
+    "performance_unknown": 2,
+    "all_performance_passed": false,
+    "all_sources_finished": false,
+    "all_passed": false
+  },
+  "sources": [
+    {
+      "directory": "/home/usv/usv_migration/results/python-pid-final-001",
+      "role": "python",
+      "source_order": 0,
+      "created_unix_s": 1789088768.2065203,
+      "latest_basis": "manifest.created_unix_s",
+      "manifest_mode": "live",
+      "run_finished": true,
+      "interrupted": false,
+      "summary_present": true,
+      "selected_trials": 12,
+      "ignored_trials": [],
+      "planned_navigation_trials": 9,
+      "missing_planned_trials": []
+    },
+    {
+      "directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+      "role": "cpp",
+      "source_order": 1,
+      "created_unix_s": 1789060806.022348,
+      "latest_basis": "manifest.created_unix_s",
+      "manifest_mode": "live",
+      "run_finished": false,
+      "interrupted": true,
+      "summary_present": true,
+      "selected_trials": 10,
+      "ignored_trials": [],
+      "planned_navigation_trials": 18,
+      "missing_planned_trials": [
+        {
+          "mode": "cpp",
+          "controller": "lqr",
+          "scenario": "straight",
+          "repeat": 2
+        },
+        {
+          "mode": "cpp",
+          "controller": "lqr",
+          "scenario": "straight",
+          "repeat": 3
+        },
+        {
+          "mode": "cpp",
+          "controller": "lqr",
+          "scenario": "turn",
+          "repeat": 1
+        },
+        {
+          "mode": "cpp",
+          "controller": "lqr",
+          "scenario": "turn",
+          "repeat": 2
+        },
+        {
+          "mode": "cpp",
+          "controller": "lqr",
+          "scenario": "turn",
+          "repeat": 3
+        },
+        {
+          "mode": "cpp",
+          "controller": "lqr",
+          "scenario": "single_obstacle",
+          "repeat": 1
+        },
+        {
+          "mode": "cpp",
+          "controller": "lqr",
+          "scenario": "single_obstacle",
+          "repeat": 2
+        },
+        {
+          "mode": "cpp",
+          "controller": "lqr",
+          "scenario": "single_obstacle",
+          "repeat": 3
+        }
+      ]
+    }
+  ],
+  "pid_pairs": [
+    {
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "repeat": 1,
+      "comparable": true,
+      "passed": false,
+      "reasons": [],
+      "python_source": {
+        "run_directory": "/home/usv/usv_migration/results/python-pid-final-001",
+        "summary_path": "/home/usv/usv_migration/results/python-pid-final-001/python_pid_single_obstacle_01/summary.json",
+        "source_order": 0,
+        "created_unix_s": 1789088768.2065203,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "b8c30cfb912b9a6b4d0be5778c01cb379bcce2a1efdc1af91c806c7f13afc08c",
+        "manifest_mode": "live",
+        "git_commit": "1a82de47a21238b7c5b8e1c3794db5eb5ae7235a"
+      },
+      "cpp_source": {
+        "run_directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+        "summary_path": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_pid_single_obstacle_01/summary.json",
+        "source_order": 1,
+        "created_unix_s": 1789060806.022348,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "312556fb748166e2238b4ae9d6a4b4eafbd1c6ed42d705b69866d5a2a106d513",
+        "manifest_mode": "live",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+      },
+      "metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.32861984176902753,
+          "cpp": 0.2859645226434731,
+          "ratio": 1.1491629756420345,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": false,
+          "reason": "",
+          "method": "python_divided_by_cpp",
+          "change_percent": 14.91629756420345
+        },
+        "duration_sim_s": {
+          "python": 22.5,
+          "cpp": 26.1,
+          "ratio": 0.8620689655172413,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp",
+          "change_percent": -13.793103448275868
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "repeat": 2,
+      "comparable": true,
+      "passed": false,
+      "reasons": [],
+      "python_source": {
+        "run_directory": "/home/usv/usv_migration/results/python-pid-final-001",
+        "summary_path": "/home/usv/usv_migration/results/python-pid-final-001/python_pid_single_obstacle_02/summary.json",
+        "source_order": 0,
+        "created_unix_s": 1789088768.2065203,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "6b2add294a74a124c5dd72842e0ba778a3d110fc9d64ee1faad559521adc9aea",
+        "manifest_mode": "live",
+        "git_commit": "1a82de47a21238b7c5b8e1c3794db5eb5ae7235a"
+      },
+      "cpp_source": {
+        "run_directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+        "summary_path": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_pid_single_obstacle_02/summary.json",
+        "source_order": 1,
+        "created_unix_s": 1789060806.022348,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "95bd1a1a3f99d81e8e45c38d7393dce5ff387b013aba6fd8ce1c4aba9da6600f",
+        "manifest_mode": "live",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+      },
+      "metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.32919986606907836,
+          "cpp": 0.26857298516653555,
+          "ratio": 1.2257370780048842,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": false,
+          "reason": "",
+          "method": "python_divided_by_cpp",
+          "change_percent": 22.573707800488418
+        },
+        "duration_sim_s": {
+          "python": 22.5,
+          "cpp": 27.800000000000004,
+          "ratio": 0.8093525179856114,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp",
+          "change_percent": -19.064748201438864
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "single_obstacle",
+      "repeat": 3,
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "python_source": {
+        "run_directory": "/home/usv/usv_migration/results/python-pid-final-001",
+        "summary_path": "/home/usv/usv_migration/results/python-pid-final-001/python_pid_single_obstacle_03/summary.json",
+        "source_order": 0,
+        "created_unix_s": 1789088768.2065203,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "f5bff8c11d1e2e10633bfdf4ff1eb583963d9adec971f09431f8446993a4db42",
+        "manifest_mode": "live",
+        "git_commit": "1a82de47a21238b7c5b8e1c3794db5eb5ae7235a"
+      },
+      "cpp_source": {
+        "run_directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+        "summary_path": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_pid_single_obstacle_03/summary.json",
+        "source_order": 1,
+        "created_unix_s": 1789060806.022348,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "601b41d6b8411489960402fe9a51b0c27aa9b3760e39774ba127e47783bd9a3f",
+        "manifest_mode": "live",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+      },
+      "metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.29540873293335146,
+          "cpp": 0.3079671946989555,
+          "ratio": 0.9592214301335562,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp",
+          "change_percent": -4.077856986644379
+        },
+        "duration_sim_s": {
+          "python": 22.900000000000002,
+          "cpp": 27.799999999999997,
+          "ratio": 0.8237410071942448,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp",
+          "change_percent": -17.625899280575517
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 1,
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "python_source": {
+        "run_directory": "/home/usv/usv_migration/results/python-pid-final-001",
+        "summary_path": "/home/usv/usv_migration/results/python-pid-final-001/python_pid_straight_01/summary.json",
+        "source_order": 0,
+        "created_unix_s": 1789088768.2065203,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "3a53a493cfced53833e6cf58a73e6798476fd5ca686ea958612fac8821a0335a",
+        "manifest_mode": "live",
+        "git_commit": "1a82de47a21238b7c5b8e1c3794db5eb5ae7235a"
+      },
+      "cpp_source": {
+        "run_directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+        "summary_path": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_pid_straight_01/summary.json",
+        "source_order": 1,
+        "created_unix_s": 1789060806.022348,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "f9a3b4b1577ebad2825b36ba94699f13983ace23a22d39f0a62c7f92166b1a3e",
+        "manifest_mode": "live",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+      },
+      "metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.13435568022534522,
+          "cpp": 0.1824650957436304,
+          "ratio": 0.7363363369732887,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp",
+          "change_percent": -26.36636630267113
+        },
+        "duration_sim_s": {
+          "python": 21.4,
+          "cpp": 26.900000000000002,
+          "ratio": 0.795539033457249,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp",
+          "change_percent": -20.446096654275102
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 2,
+      "comparable": true,
+      "passed": false,
+      "reasons": [],
+      "python_source": {
+        "run_directory": "/home/usv/usv_migration/results/python-pid-final-001",
+        "summary_path": "/home/usv/usv_migration/results/python-pid-final-001/python_pid_straight_02/summary.json",
+        "source_order": 0,
+        "created_unix_s": 1789088768.2065203,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "32b378e399edb893a135170f8a286b3a35f69537c1f27d51c80860c0c1946154",
+        "manifest_mode": "live",
+        "git_commit": "1a82de47a21238b7c5b8e1c3794db5eb5ae7235a"
+      },
+      "cpp_source": {
+        "run_directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+        "summary_path": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_pid_straight_02/summary.json",
+        "source_order": 1,
+        "created_unix_s": 1789060806.022348,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "eeb68ffefb1fb99d1a3448a132b38e36922f58c291668e6b6afa1096a6d788f9",
+        "manifest_mode": "live",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+      },
+      "metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.12821263065984995,
+          "cpp": 0.11352257254374161,
+          "ratio": 1.1294020897072965,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": false,
+          "reason": "",
+          "method": "python_divided_by_cpp",
+          "change_percent": 12.94020897072965
+        },
+        "duration_sim_s": {
+          "python": 21.300000000000004,
+          "cpp": 23.6,
+          "ratio": 0.9025423728813561,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp",
+          "change_percent": -9.745762711864392
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "straight",
+      "repeat": 3,
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "python_source": {
+        "run_directory": "/home/usv/usv_migration/results/python-pid-final-001",
+        "summary_path": "/home/usv/usv_migration/results/python-pid-final-001/python_pid_straight_03/summary.json",
+        "source_order": 0,
+        "created_unix_s": 1789088768.2065203,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "eaa4c5a4474faab0b381fb3a6381c2304d2a68d05a8e3bc9599d326dd7587e5f",
+        "manifest_mode": "live",
+        "git_commit": "1a82de47a21238b7c5b8e1c3794db5eb5ae7235a"
+      },
+      "cpp_source": {
+        "run_directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+        "summary_path": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_pid_straight_03/summary.json",
+        "source_order": 1,
+        "created_unix_s": 1789060806.022348,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "db50eccdae964ad7dfa2f621f2b9d369e601145be28c823438f1faab4c86ac1e",
+        "manifest_mode": "live",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+      },
+      "metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.13327790746639212,
+          "cpp": 0.18128446010683616,
+          "ratio": 0.7351866088678953,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp",
+          "change_percent": -26.481339113210467
+        },
+        "duration_sim_s": {
+          "python": 21.3,
+          "cpp": 26.900000000000002,
+          "ratio": 0.79182156133829,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp",
+          "change_percent": -20.817843866171003
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "turn",
+      "repeat": 1,
+      "comparable": true,
+      "passed": false,
+      "reasons": [],
+      "python_source": {
+        "run_directory": "/home/usv/usv_migration/results/python-pid-final-001",
+        "summary_path": "/home/usv/usv_migration/results/python-pid-final-001/python_pid_turn_01/summary.json",
+        "source_order": 0,
+        "created_unix_s": 1789088768.2065203,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "60cbbb178fd1d40c7bec52a2396944f17a0d9df0e1c6dae157283395eac4d3e1",
+        "manifest_mode": "live",
+        "git_commit": "1a82de47a21238b7c5b8e1c3794db5eb5ae7235a"
+      },
+      "cpp_source": {
+        "run_directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+        "summary_path": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_pid_turn_01/summary.json",
+        "source_order": 1,
+        "created_unix_s": 1789060806.022348,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "1dd3dc2b58610c008fa73f09c565b91f0d46f071fba608d9a129b292d4bdee2b",
+        "manifest_mode": "live",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+      },
+      "metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.4492211470587756,
+          "cpp": 0.1515135557525505,
+          "ratio": 2.964890796916128,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": false,
+          "reason": "",
+          "method": "python_divided_by_cpp",
+          "change_percent": 196.48907969161277
+        },
+        "duration_sim_s": {
+          "python": 20.4,
+          "cpp": 22.6,
+          "ratio": 0.902654867256637,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp",
+          "change_percent": -9.734513274336297
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "turn",
+      "repeat": 2,
+      "comparable": true,
+      "passed": false,
+      "reasons": [],
+      "python_source": {
+        "run_directory": "/home/usv/usv_migration/results/python-pid-final-001",
+        "summary_path": "/home/usv/usv_migration/results/python-pid-final-001/python_pid_turn_02/summary.json",
+        "source_order": 0,
+        "created_unix_s": 1789088768.2065203,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "5d64a8700c6bf7dbb4b8bcf3faebb4a49aa0f2634f2f56950ed511489b9c9861",
+        "manifest_mode": "live",
+        "git_commit": "1a82de47a21238b7c5b8e1c3794db5eb5ae7235a"
+      },
+      "cpp_source": {
+        "run_directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+        "summary_path": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_pid_turn_02/summary.json",
+        "source_order": 1,
+        "created_unix_s": 1789060806.022348,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "15b15bafa958a1e15a8ad6659bf4ed95c076a77019e7ade40f9e50a3fe96dc2c",
+        "manifest_mode": "live",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+      },
+      "metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.1563818724802338,
+          "cpp": 0.14156070460479053,
+          "ratio": 1.1046983194723496,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": false,
+          "reason": "",
+          "method": "python_divided_by_cpp",
+          "change_percent": 10.469831947234965
+        },
+        "duration_sim_s": {
+          "python": 20.6,
+          "cpp": 22.4,
+          "ratio": 0.9196428571428573,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp",
+          "change_percent": -8.035714285714269
+        }
+      }
+    },
+    {
+      "controller": "pid",
+      "scenario": "turn",
+      "repeat": 3,
+      "comparable": true,
+      "passed": true,
+      "reasons": [],
+      "python_source": {
+        "run_directory": "/home/usv/usv_migration/results/python-pid-final-001",
+        "summary_path": "/home/usv/usv_migration/results/python-pid-final-001/python_pid_turn_03/summary.json",
+        "source_order": 0,
+        "created_unix_s": 1789088768.2065203,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "adae8cf9506726f9f1227c132f51dec611a02e2fc9e4a62fa49c0408ce81f5b8",
+        "manifest_mode": "live",
+        "git_commit": "1a82de47a21238b7c5b8e1c3794db5eb5ae7235a"
+      },
+      "cpp_source": {
+        "run_directory": "/home/usv/usv_migration/results/baseline-matrix-002",
+        "summary_path": "/home/usv/usv_migration/results/baseline-matrix-002/cpp_pid_turn_03/summary.json",
+        "source_order": 1,
+        "created_unix_s": 1789060806.022348,
+        "latest_basis": "manifest.created_unix_s",
+        "summary_sha256": "866d9972e0503c6d754046b500cb164dfb1cf17cdade046c4c57dd6c645fb88b",
+        "manifest_mode": "live",
+        "git_commit": "632734ba31478bdb833e15949287b53ae9334cf3"
+      },
+      "metrics": {
+        "cross_track_rmse_m": {
+          "python": 0.15180860256832612,
+          "cpp": 0.14472410296442342,
+          "ratio": 1.0489517603411522,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp",
+          "change_percent": 4.895176034115223
+        },
+        "duration_sim_s": {
+          "python": 20.500000000000004,
+          "cpp": 22.7,
+          "ratio": 0.9030837004405288,
+          "limit": 1.1,
+          "zero_baseline_atol": 1e-06,
+          "comparable": true,
+          "passed": true,
+          "reason": "",
+          "method": "python_divided_by_cpp",
+          "change_percent": -9.691629955947123
+        }
+      }
+    }
+  ],
+  "python_performance": [
+    {
+      "trial": "python_pid_straight_01",
+      "status": "pass",
+      "window": {
+        "start": 67646.580822706,
+        "end": 67670.80030555,
+        "complete": true,
+        "end_source": "acquisition_finished",
+        "legacy_fallback": false,
+        "fallback_reason": null,
+        "definition": "first goal_published through acquisition_finished; legacy records fall back explicitly to trial_finished; reported rolling timing windows can include earlier samples"
+      },
+      "control_timing": {
+        "status": "pass",
+        "reason": "all_observed_computation_windows_meet_limit",
+        "reported_windows": 23,
+        "malformed_windows": 0,
+        "tail_covered": true,
+        "last_observed": 67670.389114956,
+        "comparison": "P99 < 100ms",
+        "maximum_observed_ms": 4.728028195677322,
+        "budget_ms_values": [
+          100.0
+        ]
+      },
+      "mapping_timing": {
+        "status": "pass",
+        "reason": "all_observed_computation_windows_meet_limit",
+        "reported_windows": 5,
+        "malformed_windows": 0,
+        "tail_covered": true,
+        "last_observed": 67669.199967239,
+        "comparison": "processing P95 <= same snapshot observed scan-period P50; only integrated scans",
+        "maximum_observed_ms": 28.33876801087171,
+        "budget_ms_values": [
+          67.0
+        ]
+      },
+      "backlog": {
+        "status": "pass",
+        "passed": true,
+        "reason": "observed_progress_balanced_counters_no_overflow_and_recovery_or_no_net_growth",
+        "status_samples": 5,
+        "missing_samples": 0,
+        "full_intervals": 4,
+        "observation_start": 67648.336375472,
+        "observation_end": 67669.199967239,
+        "observation_span_s": 20.863591766988975,
+        "expected_metrics_period_s": 5.0,
+        "boundary_covered": true,
+        "intervals": [
+          {
+            "start": 67648.336375472,
+            "end": 67653.529978288,
+            "duration_s": 5.19360281599802,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 77,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 77,
+            "queue_delta": 1
+          },
+          {
+            "start": 67653.529978288,
+            "end": 67658.753516205,
+            "duration_s": 5.223537917001522,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 55,
+              "processed": 56,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 56,
+            "queue_delta": -1
+          },
+          {
+            "start": 67658.753516205,
+            "end": 67663.985634667,
+            "duration_s": 5.232118461994105,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 58,
+              "processed": 56,
+              "overflow": 0,
+              "expired": 2,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 56,
+            "queue_delta": 0
+          },
+          {
+            "start": 67663.985634667,
+            "end": 67669.199967239,
+            "duration_s": 5.214332571995328,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 77,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 77,
+            "queue_delta": 1
+          }
+        ],
+        "expired_delta_observed": 2,
+        "net_queue_growth": 1,
+        "observed_queue_recovery": true,
+        "transient_net_growth_limit_scans": 2,
+        "conclusion_scope": "observed acquisition window only; not an indefinite stability guarantee"
+      },
+      "observed_queue_sizes": [
+        0,
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "trial": "python_pid_straight_02",
+      "status": "pass",
+      "window": {
+        "start": 67707.807790809,
+        "end": 67732.077287285,
+        "complete": true,
+        "end_source": "acquisition_finished",
+        "legacy_fallback": false,
+        "fallback_reason": null,
+        "definition": "first goal_published through acquisition_finished; legacy records fall back explicitly to trial_finished; reported rolling timing windows can include earlier samples"
+      },
+      "control_timing": {
+        "status": "pass",
+        "reason": "all_observed_computation_windows_meet_limit",
+        "reported_windows": 23,
+        "malformed_windows": 0,
+        "tail_covered": true,
+        "last_observed": 67731.66014372,
+        "comparison": "P99 < 100ms",
+        "maximum_observed_ms": 3.930517104163299,
+        "budget_ms_values": [
+          100.0
+        ]
+      },
+      "mapping_timing": {
+        "status": "pass",
+        "reason": "all_observed_computation_windows_meet_limit",
+        "reported_windows": 5,
+        "malformed_windows": 0,
+        "tail_covered": true,
+        "last_observed": 67730.467535722,
+        "comparison": "processing P95 <= same snapshot observed scan-period P50; only integrated scans",
+        "maximum_observed_ms": 29.300972251803614,
+        "budget_ms_values": [
+          67.0
+        ]
+      },
+      "backlog": {
+        "status": "pass",
+        "passed": true,
+        "reason": "observed_progress_balanced_counters_no_overflow_and_recovery_or_no_net_growth",
+        "status_samples": 5,
+        "missing_samples": 0,
+        "full_intervals": 4,
+        "observation_start": 67709.574810785,
+        "observation_end": 67730.467535722,
+        "observation_span_s": 20.89272493700264,
+        "expected_metrics_period_s": 5.0,
+        "boundary_covered": true,
+        "intervals": [
+          {
+            "start": 67709.574810785,
+            "end": 67714.796759598,
+            "duration_s": 5.2219488130067475,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 77,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 77,
+            "queue_delta": 1
+          },
+          {
+            "start": 67714.796759598,
+            "end": 67720.030200765,
+            "duration_s": 5.233441167001729,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 77,
+              "processed": 78,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 78,
+            "queue_delta": -1
+          },
+          {
+            "start": 67720.030200765,
+            "end": 67725.286133439,
+            "duration_s": 5.255932674001087,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 36,
+              "processed": 34,
+              "overflow": 0,
+              "expired": 2,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 34,
+            "queue_delta": 0
+          },
+          {
+            "start": 67725.286133439,
+            "end": 67730.467535722,
+            "duration_s": 5.181402282993076,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 77,
+              "processed": 76,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 76,
+            "queue_delta": 1
+          }
+        ],
+        "expired_delta_observed": 2,
+        "net_queue_growth": 1,
+        "observed_queue_recovery": true,
+        "transient_net_growth_limit_scans": 2,
+        "conclusion_scope": "observed acquisition window only; not an indefinite stability guarantee"
+      },
+      "observed_queue_sizes": [
+        0,
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "trial": "python_pid_straight_03",
+      "status": "pass",
+      "window": {
+        "start": 67769.557421675,
+        "end": 67793.674593086,
+        "complete": true,
+        "end_source": "acquisition_finished",
+        "legacy_fallback": false,
+        "fallback_reason": null,
+        "definition": "first goal_published through acquisition_finished; legacy records fall back explicitly to trial_finished; reported rolling timing windows can include earlier samples"
+      },
+      "control_timing": {
+        "status": "pass",
+        "reason": "all_observed_computation_windows_meet_limit",
+        "reported_windows": 23,
+        "malformed_windows": 0,
+        "tail_covered": true,
+        "last_observed": 67793.153681699,
+        "comparison": "P99 < 100ms",
+        "maximum_observed_ms": 4.063287403550932,
+        "budget_ms_values": [
+          100.0
+        ]
+      },
+      "mapping_timing": {
+        "status": "pass",
+        "reason": "all_observed_computation_windows_meet_limit",
+        "reported_windows": 5,
+        "malformed_windows": 0,
+        "tail_covered": true,
+        "last_observed": 67791.973872275,
+        "comparison": "processing P95 <= same snapshot observed scan-period P50; only integrated scans",
+        "maximum_observed_ms": 26.156768051441755,
+        "budget_ms_values": [
+          67.0
+        ]
+      },
+      "backlog": {
+        "status": "pass",
+        "passed": true,
+        "reason": "observed_progress_balanced_counters_no_overflow_and_recovery_or_no_net_growth",
+        "status_samples": 5,
+        "missing_samples": 0,
+        "full_intervals": 4,
+        "observation_start": 67771.066184188,
+        "observation_end": 67791.973872275,
+        "observation_span_s": 20.90768808699795,
+        "expected_metrics_period_s": 5.0,
+        "boundary_covered": true,
+        "intervals": [
+          {
+            "start": 67771.066184188,
+            "end": 67776.295637256,
+            "duration_s": 5.229453067993745,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 78,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 78,
+            "queue_delta": 0
+          },
+          {
+            "start": 67776.295637256,
+            "end": 67781.54599577,
+            "duration_s": 5.250358513992978,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 79,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 79,
+            "queue_delta": -1
+          },
+          {
+            "start": 67781.54599577,
+            "end": 67786.771282577,
+            "duration_s": 5.225286807006341,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 78,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 78,
+            "queue_delta": 0
+          },
+          {
+            "start": 67786.771282577,
+            "end": 67791.973872275,
+            "duration_s": 5.202589698004886,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 36,
+              "processed": 33,
+              "overflow": 0,
+              "expired": 2,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 33,
+            "queue_delta": 1
+          }
+        ],
+        "expired_delta_observed": 2,
+        "net_queue_growth": 0,
+        "observed_queue_recovery": true,
+        "transient_net_growth_limit_scans": 2,
+        "conclusion_scope": "observed acquisition window only; not an indefinite stability guarantee"
+      },
+      "observed_queue_sizes": [
+        1,
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "trial": "python_pid_turn_01",
+      "status": "pass",
+      "window": {
+        "start": 67830.815949777,
+        "end": 67851.518150903,
+        "complete": true,
+        "end_source": "acquisition_finished",
+        "legacy_fallback": false,
+        "fallback_reason": null,
+        "definition": "first goal_published through acquisition_finished; legacy records fall back explicitly to trial_finished; reported rolling timing windows can include earlier samples"
+      },
+      "control_timing": {
+        "status": "pass",
+        "reason": "all_observed_computation_windows_meet_limit",
+        "reported_windows": 19,
+        "malformed_windows": 0,
+        "tail_covered": true,
+        "last_observed": 67850.579018649,
+        "comparison": "P99 < 100ms",
+        "maximum_observed_ms": 3.8145194994285703,
+        "budget_ms_values": [
+          100.0
+        ]
+      },
+      "mapping_timing": {
+        "status": "pass",
+        "reason": "all_observed_computation_windows_meet_limit",
+        "reported_windows": 4,
+        "malformed_windows": 0,
+        "tail_covered": true,
+        "last_observed": 67848.351664312,
+        "comparison": "processing P95 <= same snapshot observed scan-period P50; only integrated scans",
+        "maximum_observed_ms": 27.363501241779886,
+        "budget_ms_values": [
+          67.0
+        ]
+      },
+      "backlog": {
+        "status": "pass",
+        "passed": true,
+        "reason": "observed_progress_balanced_counters_no_overflow_and_recovery_or_no_net_growth",
+        "status_samples": 4,
+        "missing_samples": 0,
+        "full_intervals": 3,
+        "observation_start": 67832.672268257,
+        "observation_end": 67848.351664312,
+        "observation_span_s": 15.679396054998506,
+        "expected_metrics_period_s": 5.0,
+        "boundary_covered": true,
+        "intervals": [
+          {
+            "start": 67832.672268257,
+            "end": 67837.949207653,
+            "duration_s": 5.276939396004309,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 79,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 79,
+            "queue_delta": -1
+          },
+          {
+            "start": 67837.949207653,
+            "end": 67843.163055706,
+            "duration_s": 5.213848052997491,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 78,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 78,
+            "queue_delta": 0
+          },
+          {
+            "start": 67843.163055706,
+            "end": 67848.351664312,
+            "duration_s": 5.188608605996706,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 77,
+              "processed": 77,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 77,
+            "queue_delta": 0
+          }
+        ],
+        "expired_delta_observed": 0,
+        "net_queue_growth": -1,
+        "observed_queue_recovery": true,
+        "transient_net_growth_limit_scans": 2,
+        "conclusion_scope": "observed acquisition window only; not an indefinite stability guarantee"
+      },
+      "observed_queue_sizes": [
+        1,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "trial": "python_pid_turn_02",
+      "status": "pass",
+      "window": {
+        "start": 67891.78518551,
+        "end": 67912.404506077,
+        "complete": true,
+        "end_source": "acquisition_finished",
+        "legacy_fallback": false,
+        "fallback_reason": null,
+        "definition": "first goal_published through acquisition_finished; legacy records fall back explicitly to trial_finished; reported rolling timing windows can include earlier samples"
+      },
+      "control_timing": {
+        "status": "pass",
+        "reason": "all_observed_computation_windows_meet_limit",
+        "reported_windows": 19,
+        "malformed_windows": 0,
+        "tail_covered": true,
+        "last_observed": 67911.634261558,
+        "comparison": "P99 < 100ms",
+        "maximum_observed_ms": 4.777408993686546,
+        "budget_ms_values": [
+          100.0
+        ]
+      },
+      "mapping_timing": {
+        "status": "pass",
+        "reason": "all_observed_computation_windows_meet_limit",
+        "reported_windows": 4,
+        "malformed_windows": 0,
+        "tail_covered": true,
+        "last_observed": 67909.382825928,
+        "comparison": "processing P95 <= same snapshot observed scan-period P50; only integrated scans",
+        "maximum_observed_ms": 25.65933375444729,
+        "budget_ms_values": [
+          67.0
+        ]
+      },
+      "backlog": {
+        "status": "pass",
+        "passed": true,
+        "reason": "observed_progress_balanced_counters_no_overflow_and_recovery_or_no_net_growth",
+        "status_samples": 4,
+        "missing_samples": 0,
+        "full_intervals": 3,
+        "observation_start": 67893.558701563,
+        "observation_end": 67909.382825928,
+        "observation_span_s": 15.82412436499726,
+        "expected_metrics_period_s": 5.0,
+        "boundary_covered": true,
+        "intervals": [
+          {
+            "start": 67893.558701563,
+            "end": 67898.904767252,
+            "duration_s": 5.346065688994713,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 79,
+              "processed": 80,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 80,
+            "queue_delta": -1
+          },
+          {
+            "start": 67898.904767252,
+            "end": 67904.155623357,
+            "duration_s": 5.250856105005369,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 79,
+              "processed": 78,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 78,
+            "queue_delta": 1
+          },
+          {
+            "start": 67904.155623357,
+            "end": 67909.382825928,
+            "duration_s": 5.2272025709971786,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 77,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 77,
+            "queue_delta": 1
+          }
+        ],
+        "expired_delta_observed": 0,
+        "net_queue_growth": 1,
+        "observed_queue_recovery": true,
+        "transient_net_growth_limit_scans": 2,
+        "conclusion_scope": "observed acquisition window only; not an indefinite stability guarantee"
+      },
+      "observed_queue_sizes": [
+        1,
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "trial": "python_pid_turn_03",
+      "status": "pass",
+      "window": {
+        "start": 67922.024579187,
+        "end": 67942.539756753,
+        "complete": true,
+        "end_source": "acquisition_finished",
+        "legacy_fallback": false,
+        "fallback_reason": null,
+        "definition": "first goal_published through acquisition_finished; legacy records fall back explicitly to trial_finished; reported rolling timing windows can include earlier samples"
+      },
+      "control_timing": {
+        "status": "pass",
+        "reason": "all_observed_computation_windows_meet_limit",
+        "reported_windows": 20,
+        "malformed_windows": 0,
+        "tail_covered": true,
+        "last_observed": 67942.032862728,
+        "comparison": "P99 < 100ms",
+        "maximum_observed_ms": 8.231256995350122,
+        "budget_ms_values": [
+          100.0
+        ]
+      },
+      "mapping_timing": {
+        "status": "pass",
+        "reason": "all_observed_computation_windows_meet_limit",
+        "reported_windows": 4,
+        "malformed_windows": 0,
+        "tail_covered": true,
+        "last_observed": 67940.836575492,
+        "comparison": "processing P95 <= same snapshot observed scan-period P50; only integrated scans",
+        "maximum_observed_ms": 26.43728659604675,
+        "budget_ms_values": [
+          67.0
+        ]
+      },
+      "backlog": {
+        "status": "pass",
+        "passed": true,
+        "reason": "observed_progress_balanced_counters_no_overflow_and_recovery_or_no_net_growth",
+        "status_samples": 4,
+        "missing_samples": 0,
+        "full_intervals": 3,
+        "observation_start": 67925.161214115,
+        "observation_end": 67940.836575492,
+        "observation_span_s": 15.675361376997898,
+        "expected_metrics_period_s": 5.0,
+        "boundary_covered": true,
+        "intervals": [
+          {
+            "start": 67925.161214115,
+            "end": 67930.385476609,
+            "duration_s": 5.22426249399723,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 77,
+              "processed": 77,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 77,
+            "queue_delta": 0
+          },
+          {
+            "start": 67930.385476609,
+            "end": 67935.610464839,
+            "duration_s": 5.22498823000933,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 78,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 78,
+            "queue_delta": 0
+          },
+          {
+            "start": 67935.610464839,
+            "end": 67940.836575492,
+            "duration_s": 5.226110652991338,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 78,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 78,
+            "queue_delta": 0
+          }
+        ],
+        "expired_delta_observed": 0,
+        "net_queue_growth": 0,
+        "observed_queue_recovery": false,
+        "transient_net_growth_limit_scans": 2,
+        "conclusion_scope": "observed acquisition window only; not an indefinite stability guarantee"
+      },
+      "observed_queue_sizes": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "trial": "python_pid_single_obstacle_01",
+      "status": "unknown",
+      "window": {
+        "start": 67955.2528457,
+        "end": 67977.841682172,
+        "complete": true,
+        "end_source": "acquisition_finished",
+        "legacy_fallback": false,
+        "fallback_reason": null,
+        "definition": "first goal_published through acquisition_finished; legacy records fall back explicitly to trial_finished; reported rolling timing windows can include earlier samples"
+      },
+      "control_timing": {
+        "status": "pass",
+        "reason": "all_observed_computation_windows_meet_limit",
+        "reported_windows": 22,
+        "malformed_windows": 0,
+        "tail_covered": true,
+        "last_observed": 67977.52850466,
+        "comparison": "P99 < 100ms",
+        "maximum_observed_ms": 7.276105502387522,
+        "budget_ms_values": [
+          100.0
+        ]
+      },
+      "mapping_timing": {
+        "status": "pass",
+        "reason": "all_observed_computation_windows_meet_limit",
+        "reported_windows": 5,
+        "malformed_windows": 0,
+        "tail_covered": true,
+        "last_observed": 67976.315628319,
+        "comparison": "processing P95 <= same snapshot observed scan-period P50; only integrated scans",
+        "maximum_observed_ms": 24.61924950039247,
+        "budget_ms_values": [
+          67.0
+        ]
+      },
+      "backlog": {
+        "status": "unknown",
+        "passed": null,
+        "reason": "observed_window_does_not_establish_stable_throughput",
+        "status_samples": 5,
+        "missing_samples": 0,
+        "full_intervals": 4,
+        "observation_start": 67955.450090116,
+        "observation_end": 67976.315628319,
+        "observation_span_s": 20.865538202997413,
+        "expected_metrics_period_s": 5.0,
+        "boundary_covered": true,
+        "intervals": [
+          {
+            "start": 67955.450090116,
+            "end": 67960.666047389,
+            "duration_s": 5.215957272986998,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 78,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 78,
+            "queue_delta": 0
+          },
+          {
+            "start": 67960.666047389,
+            "end": 67965.861952241,
+            "duration_s": 5.195904852007516,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 77,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 77,
+            "queue_delta": 1
+          },
+          {
+            "start": 67965.861952241,
+            "end": 67971.088775046,
+            "duration_s": 5.226822804994299,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 78,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 78,
+            "queue_delta": 0
+          },
+          {
+            "start": 67971.088775046,
+            "end": 67976.315628319,
+            "duration_s": 5.226853273008601,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 77,
+              "processed": 77,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 77,
+            "queue_delta": 0
+          }
+        ],
+        "expired_delta_observed": 0,
+        "net_queue_growth": 1,
+        "observed_queue_recovery": false,
+        "transient_net_growth_limit_scans": 2,
+        "conclusion_scope": "observed acquisition window only; not an indefinite stability guarantee"
+      },
+      "observed_queue_sizes": [
+        0,
+        0,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "trial": "python_pid_single_obstacle_02",
+      "status": "unknown",
+      "window": {
+        "start": 67987.965302215,
+        "end": 68010.525788729,
+        "complete": true,
+        "end_source": "acquisition_finished",
+        "legacy_fallback": false,
+        "fallback_reason": null,
+        "definition": "first goal_published through acquisition_finished; legacy records fall back explicitly to trial_finished; reported rolling timing windows can include earlier samples"
+      },
+      "control_timing": {
+        "status": "pass",
+        "reason": "all_observed_computation_windows_meet_limit",
+        "reported_windows": 21,
+        "malformed_windows": 0,
+        "tail_covered": true,
+        "last_observed": 68009.58558766,
+        "comparison": "P99 < 100ms",
+        "maximum_observed_ms": 7.041999005014078,
+        "budget_ms_values": [
+          100.0
+        ]
+      },
+      "mapping_timing": {
+        "status": "pass",
+        "reason": "all_observed_computation_windows_meet_limit",
+        "reported_windows": 4,
+        "malformed_windows": 0,
+        "tail_covered": true,
+        "last_observed": 68006.286652995,
+        "comparison": "processing P95 <= same snapshot observed scan-period P50; only integrated scans",
+        "maximum_observed_ms": 23.321188757108757,
+        "budget_ms_values": [
+          67.0
+        ]
+      },
+      "backlog": {
+        "status": "unknown",
+        "passed": null,
+        "reason": "observed_window_does_not_establish_stable_throughput",
+        "status_samples": 4,
+        "missing_samples": 0,
+        "full_intervals": 3,
+        "observation_start": 67990.626299511,
+        "observation_end": 68006.286652995,
+        "observation_span_s": 15.660353483996005,
+        "expected_metrics_period_s": 5.0,
+        "boundary_covered": true,
+        "intervals": [
+          {
+            "start": 67990.626299511,
+            "end": 67995.851737783,
+            "duration_s": 5.225438271998428,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 78,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 78,
+            "queue_delta": 0
+          },
+          {
+            "start": 67995.851737783,
+            "end": 68001.060928687,
+            "duration_s": 5.209190904002753,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 77,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 77,
+            "queue_delta": 1
+          },
+          {
+            "start": 68001.060928687,
+            "end": 68006.286652995,
+            "duration_s": 5.225724307994824,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 78,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 78,
+            "queue_delta": 0
+          }
+        ],
+        "expired_delta_observed": 0,
+        "net_queue_growth": 1,
+        "observed_queue_recovery": false,
+        "transient_net_growth_limit_scans": 2,
+        "conclusion_scope": "observed acquisition window only; not an indefinite stability guarantee"
+      },
+      "observed_queue_sizes": [
+        0,
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "trial": "python_pid_single_obstacle_03",
+      "status": "pass",
+      "window": {
+        "start": 68020.668527469,
+        "end": 68043.587407625,
+        "complete": true,
+        "end_source": "acquisition_finished",
+        "legacy_fallback": false,
+        "fallback_reason": null,
+        "definition": "first goal_published through acquisition_finished; legacy records fall back explicitly to trial_finished; reported rolling timing windows can include earlier samples"
+      },
+      "control_timing": {
+        "status": "pass",
+        "reason": "all_observed_computation_windows_meet_limit",
+        "reported_windows": 22,
+        "malformed_windows": 0,
+        "tail_covered": true,
+        "last_observed": 68043.315459182,
+        "comparison": "P99 < 100ms",
+        "maximum_observed_ms": 7.660585606936366,
+        "budget_ms_values": [
+          100.0
+        ]
+      },
+      "mapping_timing": {
+        "status": "pass",
+        "reason": "all_observed_computation_windows_meet_limit",
+        "reported_windows": 4,
+        "malformed_windows": 0,
+        "tail_covered": true,
+        "last_observed": 68039.021378104,
+        "comparison": "processing P95 <= same snapshot observed scan-period P50; only integrated scans",
+        "maximum_observed_ms": 25.805677996686427,
+        "budget_ms_values": [
+          67.0
+        ]
+      },
+      "backlog": {
+        "status": "pass",
+        "passed": true,
+        "reason": "observed_progress_balanced_counters_no_overflow_and_recovery_or_no_net_growth",
+        "status_samples": 4,
+        "missing_samples": 0,
+        "full_intervals": 3,
+        "observation_start": 68023.304835018,
+        "observation_end": 68039.021378104,
+        "observation_span_s": 15.716543085989542,
+        "expected_metrics_period_s": 5.0,
+        "boundary_covered": true,
+        "intervals": [
+          {
+            "start": 68023.304835018,
+            "end": 68028.536217728,
+            "duration_s": 5.2313827100006165,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 78,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 78,
+            "queue_delta": 0
+          },
+          {
+            "start": 68028.536217728,
+            "end": 68033.779934126,
+            "duration_s": 5.243716397992102,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 79,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 79,
+            "queue_delta": -1
+          },
+          {
+            "start": 68033.779934126,
+            "end": 68039.021378104,
+            "duration_s": 5.241443977996823,
+            "full_metrics_interval": true,
+            "same_epoch": true,
+            "valid": true,
+            "accounting_balanced": true,
+            "counter_deltas": {
+              "accepted": 78,
+              "processed": 78,
+              "overflow": 0,
+              "expired": 0,
+              "invalid": 0,
+              "resets": 0
+            },
+            "integrated_delta": 78,
+            "queue_delta": 0
+          }
+        ],
+        "expired_delta_observed": 0,
+        "net_queue_growth": -1,
+        "observed_queue_recovery": true,
+        "transient_net_growth_limit_scans": 2,
+        "conclusion_scope": "observed acquisition window only; not an indefinite stability guarantee"
+      },
+      "observed_queue_sizes": [
+        1,
+        1,
+        0,
+        0
+      ]
+    }
+  ]
+}

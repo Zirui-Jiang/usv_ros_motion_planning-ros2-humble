@@ -1,0 +1,23 @@
+{
+  "input_source": "live Gazebo diagnostic, probe snapshot immediately before goal publication",
+  "workspace_commit": "e2f8674",
+  "ros_domain_id": 182,
+  "original_trial_directory": "/home/usv/usv_migration/results/python-obstacle-diagnostic-001/python_pid_single_obstacle_01",
+  "costmap_topic": "/otter/costmap",
+  "costmap_message_type": "nav_msgs/msg/OccupancyGrid",
+  "limitation": "This live diagnostic selected the OccupancyGrid display topic before the raw topic was discovered. The NPZ is a true observed occupancy grid but is NOT lossless Nav2 raw uint8 cost data. Exact threshold-level raw costmap replay requires a later raw capture. First global path stores xy only; LOS recomputes segment heading and does not consume waypoint theta.",
+  "online_parameter_change": {
+    "parameter": "usv_simulation.trajectory_planner.los.lookahead_distance",
+    "from": 5.0,
+    "to": 1.0,
+    "simulation_time_s": 31.9
+  },
+  "observed_outcome": {
+    "arrived": true,
+    "final_pose_xy": [34.944982350992696, -9.958276668318847],
+    "goal_distance_m": 0.06904909926180372,
+    "minimum_full_footprint_clearance_m": 0.6467385122497835,
+    "final_simulation_time_s": 54.5
+  },
+  "classification": "diagnostic with mid-run parameter change; exclude from fixed-configuration acceptance statistics"
+}

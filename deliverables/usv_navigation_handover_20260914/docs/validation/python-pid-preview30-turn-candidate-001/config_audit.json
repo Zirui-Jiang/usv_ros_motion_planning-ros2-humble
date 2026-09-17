@@ -1,0 +1,17 @@
+{
+  "source": "/home/usv/usv_migration/python/install/sim_env/share/sim_env/config/robots/otter/controller_params_otter.yaml",
+  "source_sha256": "3e11175489dd7d32d06bd56c62e917a1285c47190f5d60276cebefa9deeb0e72",
+  "candidate": "/mnt/d/ROS2\u8f7b\u91cf\u4eff\u771f\u7cfb\u7edf/usv_ros_motion_planning-ros2-humble/scripts/validation/config/pid_preview30.yaml",
+  "candidate_sha256": "98f941e18bd683fcf2d1cb58f19d1ec8dd1c1523507dd876494915ed7a4f3b13",
+  "resolved_parameter_diff": {
+    "usv_simulation.controller.pid_controller.lookahead_time": {
+      "before": 2.6,
+      "after": 3.0
+    }
+  },
+  "resolved_parameter_count": 84,
+  "full_parameter_validation_passed": true,
+  "pid_k_d_course": 0.0,
+  "fixed_install": "3afb25f84232e560c62599a721dc0bfbe1a21657",
+  "text_diff": "--- installed_controller\n+++ pid_preview30\n@@ -7,7 +7,7 @@\n     goal_speed_tolerance: 0.25\n     # The old LOS point labelled 3.0 s represented 2.6 s of rollout.\n     # Calibrated with the corrected time axis; trajectory age is still applied.\n-    lookahead_time: 2.6\n+    lookahead_time: 3.0\n     k_p_speed: 2.0\n     k_i_speed: 0.5\n     k_d_speed: 0.0\n"
+}

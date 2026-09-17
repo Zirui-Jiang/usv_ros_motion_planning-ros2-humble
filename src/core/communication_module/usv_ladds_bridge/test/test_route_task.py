@@ -1,6 +1,7 @@
 import json
 from copy import deepcopy
 from dataclasses import FrozenInstanceError
+import math
 
 import pytest
 
@@ -125,3 +126,48 @@ def test_single_point_route_matches_public_single_leg_contract():
 def test_existing_single_leg_parser_still_rejects_multi_point_route():
     with pytest.raises(ValueError, match="count must be exactly 1"):
         parse_single_leg(json.dumps(_content()), ORIGIN)
+
+
+@pytest.mark.parametrize('heading,yaw', [(None, None), (0, math.pi / 2), (90, 0), (360, math.pi / 2)])
+def test_guard_route_preserves_optional_true_heading(heading, yaw):
+    content = dict(_content(), taskType=80, guardingHeading=heading)
+    route = parse_route(json.dumps(content), ORIGIN)
+    assert route.guard_on_arrival is True
+    assert route.task_type == 80
+    if yaw is None:
+        assert route.guard_heading is None
+    else:
+        assert route.guard_heading == pytest.approx(yaw)
+    assert len(route.points) == 3
+
+
+def test_guard_fingerprint_distinguishes_null_zero_and_route_task_type():
+    variants = [_content(), dict(_content(), taskType=80),
+                dict(_content(), taskType=80, guardingHeading=0)]
+    assert len({parse_route(json.dumps(v), ORIGIN).fingerprint for v in variants}) == 3
+
+
+@pytest.mark.parametrize('heading', [True, '90', -1, 361, float('nan'), float('inf')])
+def test_guard_route_rejects_invalid_heading(heading):
+    with pytest.raises(ValueError, match='guardingHeading'):
+        parse_route(json.dumps(dict(_content(), taskType=80, guardingHeading=heading)), ORIGIN)
+
+
+def test_guard_regions_and_radius_are_explicitly_unapplied():
+    route = parse_route(json.dumps(dict(_content(), taskType=80,
+        areas=[{'funcId': 5, 'polygon': []}], areasCount=None, guardingRadius=10)), ORIGIN)
+    assert any('未应用区域约束' in warning for warning in route.warnings)
+    assert any('guardingRadius' in warning for warning in route.warnings)
+    assert route.guard_heading is None
+
+
+def test_normal_route_still_rejects_unsupported_constraints():
+    with pytest.raises(ValueError):
+        parse_route(json.dumps(dict(_content(), areas=[{'funcId': 5}])), ORIGIN)
+
+
+@pytest.mark.parametrize('count', [1, 255])
+def test_guard_route_accepts_single_and_maximum_waypoint_count(count):
+    route = parse_route(json.dumps(dict(_content(points=[POINTS[0]] * count), taskType=80)), ORIGIN)
+    assert len(route.points) == count
+    assert route.guard_on_arrival

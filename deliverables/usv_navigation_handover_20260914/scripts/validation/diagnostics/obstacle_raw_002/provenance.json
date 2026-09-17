@@ -1,0 +1,13 @@
+{
+  "classification": "actual raw captured-input replay and separate observed closed-loop result",
+  "workspace_commit": "8ebb23e",
+  "original_trial_directory": "/home/usv/usv_migration/results/python-matrix-002/python_pid_single_obstacle_01",
+  "costmap_topic": "/otter/costmap_raw",
+  "costmap_message_type": "nav2_msgs/msg/Costmap",
+  "events_selection": "events.jsonl contains only the original controller_verified, goal_input_snapshot and first nonempty reference_path events; complete live logs remain in original_trial_directory",
+  "fixed_los_lookahead_distance_m": 1.0,
+  "online_parameter_changes": false,
+  "time_alignment_limitation": "The map and state snapshot were captured before goal publication; first global route arrives later. This is captured-input replay, not an assertion of the exact private worker snapshot. Map/state/route stamps are retained in los_replay.json.",
+  "geometry": "2.2 x 1.2 m oriented vessel rectangle, spawned circle centre (29,-10) radius 1 m; swept conservative gap, no contact sensor",
+  "result_semantics": "summary.json contains actual closed-loop observations; los_replay.json contains predicted trajectory metrics for lookahead 5 and 1 m, never substitute predicted clearance for actual clearance"
+}
