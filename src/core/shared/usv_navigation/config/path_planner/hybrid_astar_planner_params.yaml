@@ -3,6 +3,8 @@ planner_name: hybrid_astar
 path_planner:
   # 4 米是待验证的仿真起点，不是实艇测得的最小回转半径。
   minimum_turning_radius: 4.0
+  # 1.0 为最小回转半径；追加 2.0、3.0 只增加更缓的圆弧基元，默认仍是直行加左右最小半径。
+  turning_radius_multipliers: [1.0]
   angle_bins: 72
   # f=g+w*h；1.2 减少长航段展开，可能略增路径长度；1.0 恢复原排序。
   heuristic_weight: 1.2

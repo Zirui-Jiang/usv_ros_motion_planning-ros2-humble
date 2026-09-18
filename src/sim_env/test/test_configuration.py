@@ -2,7 +2,7 @@
 from pathlib import Path
 import math
 import pytest
-from sim_env.configuration import C, T, DEFAULTS, load_project_parameters, normalize_parameters, resolve_parameters, validate_update
+from sim_env.configuration import C, T, DEFAULTS, HOT_PARAMETERS, load_project_parameters, normalize_parameters, resolve_parameters, validate_update
 
 CONFIG = Path(__file__).resolve().parents[2] / "core/shared/usv_navigation/config"
 
@@ -13,8 +13,29 @@ def test_original_configuration_loads_and_aliases_work():
     p = load_project_parameters(base/"robots/otter/dynamics_otter.yaml", base/"robots/otter/controller_params_otter.yaml", base/"trajectory_planner/trajectory_planner_params.yaml", base/"path_planner/common_planner_params.yaml")
     assert p[C+"control_frequency"] == 10.0
     assert p[C+"pid_controller.k_p_speed"] == 2.0
-    assert p["obstacle_factor"] == .25
+    assert p["obstacle_factor"] == .05
     assert all(type(v) is float for v in p[C+"lqr_controller.Q_matrix_diag"])
+
+
+def test_station_adrc_defaults_are_resolved_and_sample_time_tracks_control_frequency():
+    p = resolve_parameters({})
+    prefix = C + "station_adrc_controller."
+    assert p[prefix + "position_tolerance"] == .5
+    assert p[prefix + "command_limit"] == .4
+    assert p[prefix + "sample_time"] == .1
+    assert prefix + "k_p_speed" not in HOT_PARAMETERS
+    with pytest.raises(ValueError, match="station ADRC sample_time"):
+        resolve_parameters({C + "control_frequency": 20., prefix + "sample_time": .1})
+
+
+@pytest.mark.parametrize("key", ["position_tolerance", "force_min", "moment_max", "filter_window_length"])
+def test_station_adrc_invalid_ranges_are_rejected(key):
+    prefix = C + "station_adrc_controller."
+    invalid = {
+        "position_tolerance": 0., "force_min": 1., "moment_max": -1., "filter_window_length": 1,
+    }
+    with pytest.raises(ValueError):
+        resolve_parameters({prefix + key: invalid[key]})
 
 
 # 已移除的传感器参数必须明确拒绝，不能表面接受但实际不生效。

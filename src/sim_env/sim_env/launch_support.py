@@ -9,6 +9,7 @@ from usv_navigation.launch_support import (
     ALGORITHM_CONFIGS, NAVIGATION_ARGUMENT_NAMES,
     navigation_arguments, navigation_settings,
 )
+from sim_env.wind_profiles import xacro_wind_arguments
 
 
 PERCEPTION_CONFIGS = (
@@ -107,9 +108,12 @@ def _simulation_nodes(context, settings):
     gui = _boolean(context, "gui") and not headless
     rviz = _boolean(context, "rviz") and not headless
     # 通过 xacro 展开当前船模；此入口明确关闭 IMU/GPS 并启用 LiDAR。
+    wind_args = [" " + argument for argument in
+                 xacro_wind_arguments(_value(context, "world"), namespace)]
     description = Command([
         "xacro ", os.path.join(settings.share, "urdf", "otter", "otter.urdf.xacro"),
         " namespace:=", namespace, " imu_enabled:=false gps_enabled:=false lidar_enabled:=true",
+        *wind_args,
     ])
     nodes = [
         IncludeLaunchDescription(

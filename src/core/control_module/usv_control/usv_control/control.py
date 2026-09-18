@@ -39,7 +39,8 @@ class ControlNode(NavigationInputs):
         self.controller = create_controller(self.controller_name, self.model,
                             section(self.config, C + self.controller_name + '_controller.'))
         self.brake_controller = ActiveBrakingController(self.model)
-        self.station_controller = StationKeepingController(self.model)
+        self.station_controller = StationKeepingController(
+            self.model, section(self.config, C + 'station_adrc_controller.'))
         self.motion_mode = 'NAVIGATE'
         self.guard_on_arrival = False
         self.guard_heading = None

@@ -11,8 +11,20 @@ def test_original_configuration_loads_and_aliases_work():
     p = load_project_parameters(base/"robots/otter/dynamics_otter.yaml", base/"robots/otter/controller_params_otter.yaml", base/"trajectory_planner/trajectory_planner_params.yaml", base/"path_planner/common_planner_params.yaml")
     assert p[C+"control_frequency"] == 10.0
     assert p[C+"pid_controller.k_p_speed"] == 2.0
-    assert p["obstacle_factor"] == .25
+    # The shared planner YAML is the source of truth; its current safety
+    # envelope uses the explicit 0.05 override rather than the module default.
+    assert p["obstacle_factor"] == .05
     assert all(type(v) is float for v in p[C+"lqr_controller.Q_matrix_diag"])
+    assert p[C+"station_adrc_controller.command_limit"] == .4
+    assert p[C+"adrc_controller.command_limit"] == 1.0
+
+
+def test_station_adrc_sample_time_is_tied_to_control_frequency():
+    with pytest.raises(ValueError, match="station ADRC sample_time"):
+        resolve_parameters({C + "control_frequency": 20.,
+                            C + "station_adrc_controller.sample_time": .1})
+    values = resolve_parameters({C + "station_adrc_controller.sample_time": .1})
+    assert values[C + "station_adrc_controller.sample_time"] == .1
 
 
 # 验证：规范参数名与别名给出冲突值时明确拒绝。

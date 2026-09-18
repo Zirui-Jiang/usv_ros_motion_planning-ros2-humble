@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Hybrid A* · 看一条航线怎样被找到</title>
+<style>
+:root{--ink:#163b50;--muted:#617c8a;--sea:#eaf2f6;--paper:#fff;--line:#d5e2e9;--blue:#327bc0;--teal:#087d70;--amber:#be741b;--red:#c34d4e;--night:#153548;--mono:Consolas,"SFMono-Regular",monospace;--body:"Microsoft YaHei UI","Microsoft YaHei","PingFang SC",sans-serif;--display:Georgia,"Noto Serif SC","SimSun",serif}
+*{box-sizing:border-box}body{margin:0;background:var(--sea);color:var(--ink);font:14px/1.7 var(--body)}button,select,input{font:inherit}button,select{cursor:pointer}button{padding:8px 14px;border:1px solid var(--line);border-radius:6px;background:white;color:var(--ink)}button:hover{background:#eaf2f6}button:disabled{opacity:.4;cursor:default}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--amber);outline-offset:3px}button.primary{background:var(--ink);color:white;border-color:var(--ink)}button.primary:hover{background:#235771}a{color:var(--blue);text-underline-offset:4px}input[type=range]{accent-color:var(--teal);width:100%;cursor:pointer}input[type=checkbox]{accent-color:var(--teal)}select{border:1px solid var(--line);border-radius:5px;padding:5px 8px;color:var(--ink);background:#fff}.shell{max-width:1450px;margin:auto;padding:0 36px}.top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #c9dae4;padding:18px 0;gap:16px}.brand{font-weight:700;letter-spacing:.06em}.brand b{background:var(--ink);color:white;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;margin-right:10px;font:17px var(--mono)}.top a,.top span{font-size:12px;color:var(--muted)}.hero{display:flex;justify-content:space-between;align-items:end;gap:28px;padding:28px 0 24px}.eyebrow{font:11px var(--mono);letter-spacing:.12em;color:var(--muted)}h1{font:500 clamp(29px,3.2vw,46px)/1.25 var(--display);margin:9px 0 12px}h1 em{font-style:normal;color:var(--teal)}.hero p{margin:0;color:var(--muted);max-width:790px}.stamp{flex:none;border-left:2px solid var(--teal);padding-left:15px;font-size:12px;color:var(--muted)}.stamp strong{display:block;color:var(--ink)}
+.lab{border:1px solid #cbdae3;background:white;border-radius:12px;overflow:hidden;box-shadow:0 12px 40px #163b5008}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:13px 19px;border-bottom:1px solid var(--line);flex-wrap:wrap}.scenes{display:flex;flex-wrap:wrap;gap:4px}.scenes button{border:0;font-size:12px;padding:6px 11px}.scenes button[aria-pressed=true]{background:#dfeef4;color:#175873;font-weight:700}.toolbar-note{font:11px var(--mono);color:var(--muted)}.workbench{display:grid;grid-template-columns:minmax(0,1fr) 326px}.map-side{min-width:0}.map-wrap{position:relative;background:#f4f8fb;padding:8px 10px 0}.map-wrap canvas{display:block;width:100%;aspect-ratio:900/555}.map-note{position:absolute;left:24px;top:17px;font-size:11px;color:var(--muted)}.map-note strong{color:var(--teal)}.legend{display:flex;gap:18px;flex-wrap:wrap;padding:10px 22px;color:var(--muted);font-size:11px;border-top:1px solid #e3edf2}.legend span{display:flex;align-items:center;gap:6px}.legend i{display:inline-block;width:18px;height:3px;background:var(--blue)}.legend .visited{background:#a4c2d4}.legend .candidate{background:var(--amber)}.legend .reject{background:var(--red)}.legend .route{background:var(--teal)}.metrics{display:grid;grid-template-columns:repeat(4,1fr);border-block:1px solid var(--line);padding:12px 8px}.metric{padding:0 15px;border-right:1px solid var(--line)}.metric:last-child{border:0}.metric span{display:block;font-size:11px;color:var(--muted)}.metric strong{font:23px var(--mono)}.metric small{margin-left:5px;color:var(--muted);font-size:10px}.playbar{padding:15px 20px 13px}.playrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.playrow button{font-size:12px}.playrow .speed{margin-left:auto;font-size:11px;color:var(--muted)}.speed select{font-size:12px}.timeline{display:flex;align-items:center;gap:12px;margin-top:10px}.timeline label{white-space:nowrap;font-size:11px;color:var(--muted)}.timeline output{font:11px var(--mono);min-width:76px;text-align:right}.caption{margin:6px 0 0;font-size:11px;color:var(--muted)}.inspector{background:var(--night);color:#ecf4f8;padding:21px 21px 16px;display:flex;flex-direction:column}.inspector .eyebrow{color:#9dc0d2}.phase-title{font-size:21px;line-height:1.5;margin:8px 0}.phase-copy{font-size:12px;color:#bcd0dd;min-height:62px;margin:0 0 14px}.equation{padding:11px 12px;background:#20495e;border-left:2px solid #63cfbd;font:14px/1.8 var(--mono);margin-bottom:14px}.pose-row{font:11px var(--mono);color:#b8d1df;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:10px}.panel-label{font-size:11px;color:#9dc0d2;display:flex;justify-content:space-between;margin:2px 0 7px}.candidate-list{min-height:114px}.candidate-item{display:grid;grid-template-columns:52px 1fr 63px;align-items:center;gap:5px;border-top:1px solid #305163;padding:7px 0;font-size:11px}.candidate-item .values{color:#b7cfdd;font:11px var(--mono)}.candidate-item .badge{text-align:right;color:#72d8c5}.candidate-item.blocked .badge{color:#ffa5a0}.candidate-item.dominated .badge{color:#c9b2e9}.candidate-item.waiting .badge{color:#edd090}.queue{margin-top:10px}.queue table{width:100%;border-collapse:collapse;font:11px var(--mono);text-align:right}.queue th{font-weight:400;color:#9dc0d2;padding:4px}.queue td{padding:4px;border-top:1px solid #305163}.queue th:first-child,.queue td:first-child{text-align:left}.queue tbody tr:first-child{color:#80decc}.queue-empty{font-size:11px;color:#9dc0d2;padding:6px 0;min-height:65px}.hint{margin-top:auto;padding-top:15px;font-size:11px;color:#a9c7d8;border-top:1px solid #305163}.hint strong{color:#f0ce83;font-weight:500}
+.steps{display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--line);background:#f8fbfc}.step{padding:12px 14px;border-right:1px solid var(--line);color:var(--muted);font-size:11px;position:relative}.step:last-child{border:0}.step b{display:block;font-size:12px;font-weight:500;color:var(--ink);margin-top:3px}.step .num{font:10px var(--mono)}.step.active{background:#ddf0ec;box-shadow:inset 0 -3px var(--teal)}.step.active b,.step.active .num{color:var(--teal)}.settings{padding:18px 20px;display:grid;grid-template-columns:1fr 1fr 1.1fr;gap:24px;border-top:1px solid var(--line)}.setting label{display:flex;justify-content:space-between;gap:10px;font-size:12px}.setting output{font-family:var(--mono);color:var(--teal)}.setting small{display:block;font-size:11px;color:var(--muted)}.toggles{display:flex;gap:5px 13px;flex-wrap:wrap;align-content:center;font-size:11px}.toggles label{display:flex;align-items:center;gap:3px}.concepts{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;padding:29px 0 23px}.concept{border-top:2px solid #b7ceda;padding-top:15px}.concept h2{font-size:16px;font-weight:600;margin:0 0 8px}.concept p{font-size:12px;color:var(--muted);margin:8px 0}.concept code{font-family:var(--mono);color:var(--ink)}.mini{height:105px;display:flex;align-items:center;gap:18px}.mini svg{width:155px;height:100px;flex:none}.mini div{font-size:12px;color:var(--muted)}.mini strong{color:var(--ink);font-weight:500}.formula-card{height:105px;background:#f5f9fb;display:flex;flex-direction:column;justify-content:center;padding:12px 16px;border-radius:7px;font:13px/2 var(--mono)}.formula-card span{font:11px/1.8 var(--body);color:var(--muted)}.source{background:#f7fafc;border:1px solid var(--line);border-radius:8px;padding:15px 20px;margin-bottom:22px}.source summary{cursor:pointer;font-size:12px;font-weight:600}.source p,.source li{font-size:12px;color:var(--muted)}.source code{font-family:var(--mono);font-size:11px;overflow-wrap:anywhere}.source ul{padding-left:20px}.footer{display:flex;justify-content:space-between;gap:15px;padding:0 0 28px;color:var(--muted);font-size:11px}.sr-only{position:absolute;clip:rect(0,0,0,0);width:1px;height:1px;overflow:hidden}
+@media(min-width:1250px){.inspector{padding:24px}.phase-copy{min-height:65px}.candidate-item{padding:9px 0}.queue td{padding:5px}}
+@media(max-width:1050px){.shell{padding:0 20px}.workbench{grid-template-columns:minmax(0,1fr) 288px}.inspector{padding:16px}.hero h1{font-size:34px}.stamp{display:none}.playrow .speed{margin-left:0}.mini svg{width:120px}.mini{gap:8px}.step{padding:10px}.map-note{font-size:10px;top:10px}}
+@media(max-width:760px){.shell{padding:0 12px}.top{padding:12px 0}.top span{display:none}.hero{padding:22px 0}.hero h1{font-size:30px}.hero p{font-size:12px}.workbench{grid-template-columns:1fr}.inspector{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}.inspector .state-panel{grid-row:span 2}.phase-copy{min-height:0}.queue{margin-top:0}.hint{grid-column:1/-1;margin-top:13px}.steps{grid-template-columns:repeat(3,1fr)}.steps .step:nth-child(3){border-right:0}.settings{grid-template-columns:1fr 1fr;gap:16px;padding:16px}.toggles{grid-column:1/-1}.concepts{grid-template-columns:1fr;gap:20px}.mini{height:90px}.mini svg{width:160px}.formula-card{height:90px}.metric{padding:0 10px}.metric strong{font-size:20px}.playbar{padding:12px}.legend{gap:10px;padding:8px 12px}.toolbar-note{display:none}.map-note{left:17px;font-size:9px}.footer{flex-direction:column;gap:3px}}
+@media(max-width:420px){.inspector{grid-template-columns:1fr}.inspector .state-panel{grid-row:auto}.queue{margin-top:10px}.hero h1{font-size:26px}.playrow{gap:5px}.playrow button{padding:7px 10px}.brand{font-size:12px}.top a{font-size:11px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<main class="shell">
+<header class="top"><div class="brand"><b>↗</b>无人艇 · 算法观察室</div><span>PATH PLANNING / 02</span><a href="los-trajectory-explained.html">继续理解 LOS →</a></header>
+<section class="hero"><div><div class="eyebrow">CONTINUOUS MOTION · DISCRETE SEARCH</div><h1>Hybrid A*<em>，一条航线的诞生。</em></h1><p>把“往哪里走”和“船头朝哪里”一起搜索。按下播放，看看一棵搜索树怎样长成一条能转得过去的航线。</p></div><div class="stamp"><strong>对应项目的前进限定版本</strong>三种运动原语 · Dubins 终点连接<br>离线运行 / 中文逐步讲解</div></section>
+<section class="lab" aria-label="Hybrid A 星交互动画">
+<div class="toolbar"><div class="scenes" aria-label="选择场景"><button data-scene="island" aria-pressed="true">绕过岛屿</button><button data-scene="channel" aria-pressed="false">穿过弯道</button><button data-scene="heading" aria-pressed="false">带朝向到点</button></div><span class="toolbar-note">64 × 40 m / x → / y ↑ / θ 逆时针为正</span></div>
+<div class="workbench"><div class="map-side"><div class="map-wrap"><div class="map-note" id="map-note">观察 <strong>橙色候选弧线</strong>，它们从同一位姿出发。</div><canvas id="map" width="900" height="555" role="img" aria-label="Hybrid A 星搜索过程：障碍物、候选运动、搜索树、起点和目标朝向">请使用支持 Canvas 的浏览器；下方文字面板也会说明每一步。</canvas></div>
+<div class="legend"><span><i class="visited"></i>已探索分支</span><span><i class="candidate"></i>本轮候选</span><span><i class="reject"></i>碰撞淘汰</span><span><i class="route"></i>回溯航线</span><span>◇ 待选节点</span></div>
+<div class="metrics"><div class="metric"><span>已取出节点</span><strong id="m-expanded">0</strong><small>个</small></div><div class="metric"><span>Open 待选</span><strong id="m-open">1</strong><small>个</small></div><div class="metric"><span>碰撞淘汰</span><strong id="m-rejected">0</strong><small>段</small></div><div class="metric"><span>最终航线长度</span><strong id="m-length">—</strong><small>m</small></div></div>
+<div class="playbar"><div class="playrow"><button id="play" class="primary" aria-pressed="false">▶ 播放过程</button><button id="step">单步 →</button><button id="result">看完整航线</button><button id="reset" title="回到第一个节点，保留参数">↺ 重置</button><label class="speed" for="speed">速度 <select id="speed"><option value="1">讲解 ×1</option><option value="5" selected>浏览 ×5</option><option value="20">快速 ×20</option></select></label></div><div class="timeline"><label for="timeline">过程回放</label><input id="timeline" type="range" min="0" max="1" value="0" step="1"><output id="frame-counter">1 / 1</output></div><p class="caption" id="play-caption">先用“单步”观察一轮，再播放搜索全程。空格：播放 / 暂停；→：下一步。</p></div>
+</div>
+<aside class="inspector" aria-label="当前步骤解释"><div class="state-panel"><div class="eyebrow" id="phase-counter">STEP 01 / 06</div><h2 class="phase-title" id="phase-title">取出最有希望的节点</h2><p class="phase-copy" id="phase-copy"></p><div class="equation" id="equation">f = g + w · h</div><div class="pose-row" id="pose"></div></div><div><div class="panel-label"><span>本轮运动原语</span><span id="primitive-length">每段 3.0 m</span></div><div class="candidate-list" id="candidates"></div></div><div class="queue"><div class="panel-label"><span>Open 队列 · 最优前 3 项</span><span>按 f 升序</span></div><div id="queue"></div></div><div class="hint" id="hint"></div></aside></div>
+<div class="steps" aria-label="算法循环"><div class="step" data-stage="0"><span class="num">01 / SELECT</span><b>取出最小 f</b></div><div class="step" data-stage="1"><span class="num">02 / CONNECT</span><b>尝试直达终点</b></div><div class="step" data-stage="2"><span class="num">03 / EXPAND</span><b>生成三种动作</b></div><div class="step" data-stage="3"><span class="num">04 / CHECK</span><b>沿途检查碰撞</b></div><div class="step" data-stage="4"><span class="num">05 / UPDATE</span><b>判重并更新队列</b></div><div class="step" data-stage="5"><span class="num">06 / TRACE</span><b>成功后回溯路径</b></div></div>
+<div class="settings"><div class="setting"><label for="radius">最小转弯半径 R<output id="radius-out">4.0 m</output></label><input id="radius" type="range" min="2" max="6" step="1" value="4"><small>调大后弧线更平缓，需要更宽的转弯空间。</small></div><div class="setting"><label for="weight">启发式权重 w<output id="weight-out">1.2</output></label><input id="weight" type="range" min="1" max="2" step="0.2" value="1.2"><small>w 越大，越偏向靠近目标；路径不一定更短。</small></div><div class="toggles"><label><input id="show-tree" type="checkbox" checked>搜索树</label><label><input id="show-grid" type="checkbox" checked>位置栅格</label><label><input id="show-hull" type="checkbox" checked>碰撞包络</label><label><input id="show-heuristic" type="checkbox">启发式距离</label><small class="caption">参数变化会重新计算；播放速度只影响回放。</small></div></div>
+</section>
+<section class="concepts" aria-label="三个关键原理"><article class="concept"><h2>“Hybrid” 混合了什么？</h2><div class="mini"><svg viewBox="0 0 160 100" aria-hidden="true"><g stroke="#bfd2df" stroke-width="1"><path d="M15 10V90M45 10V90M75 10V90M105 10V90M135 10V90M15 20H145M15 50H145M15 80H145"/></g><path d="M25 75Q62 76 72 51T123 27" fill="none" stroke="#087d70" stroke-width="3"/><circle cx="72" cy="51" r="4" fill="#be741b"/><path d="M72 51l7-20m-7 20l22-3" stroke="#be741b" stroke-width="2"/><path d="M77 33l2-2 1 4m11 9 3 4-4 3" fill="none" stroke="#be741b"/></svg><div><strong>运动保留连续位姿</strong><br>判重使用离散分箱</div></div><p>节点保存实际的 <code>(x, y, θ)</code>，不会吸附到格子中心。同一位置、不同船头朝向，接下来能走的路不同。项目还把上一次转向加入判重键。</p></article>
+<article class="concept"><h2>为什么每次是三条线？</h2><div class="mini"><svg viewBox="0 0 160 100" aria-hidden="true"><path d="M20 50H136M20 50Q79 50 116 13M20 50Q79 50 116 87" stroke="#be741b" stroke-width="2.4" fill="none"/><path d="M15 44L29 44L37 50L29 56L15 56Z" fill="#163b50"/><text x="125" y="20" fill="#617c8a" font-size="10">左</text><text x="141" y="54" fill="#617c8a" font-size="10">直</text><text x="125" y="92" fill="#617c8a" font-size="10">右</text></svg><div><strong>κ ∈ {0, +1/R, −1/R}</strong><br>曲率决定转弯幅度</div></div><p>这是本项目选用的三种<strong>运动原语</strong>，每段以固定曲率前进。沿弧线检查整个船体；只检查终点，会漏掉中途穿过障碍物的轨迹。</p></article>
+<article class="concept"><h2>算法为什么选这个节点？</h2><div class="formula-card">f = g + w · h<span>g：已走代价　h：剩余代价估计　w：权重</span>h = max(d, R · |Δθ|)</div><p><code>g</code> 累计距离、转弯及切换转向的惩罚。<code>h</code> 同时考虑直线距离和朝向差；它是估计，不会提前知道怎样绕岛。每轮从整个 Open 队列选最小 <code>f</code>，不一定选当前节点的孩子。</p></article></section>
+<details class="source"><summary>与项目源码的对应，以及这个动画做了哪些简化</summary><p>本页在浏览器中实际执行搜索，再按事件回放；弧线、代价、碰撞结果与父节点均来自本次计算。固定场景可复现，拖动时间轴只改变观看位置。搜索中的船形表示“正在考察的假设位姿”；找到航线后才播放沿线前进。</p><ul><li><a href="../../src/core/decision_module/path_planner/path_planner/graph_planner/hybrid_astar_planner.py">hybrid_astar_planner.py</a>：<code>_key → _heuristic → _try_connection → plan → _reconstruct</code>；保持项目的转弯代价 1.05、转向切换惩罚 0.2、72 个朝向分箱及前进限定。</li><li><a href="../../src/core/decision_module/path_planner/path_planner/graph_planner/dubins.py">dubins.py</a>：移植六类 Dubins 曲线与常曲率积分。只有连接全段无碰撞才结束搜索，精确满足终点位置和朝向，不强行直线补齐。</li><li>为便于看清，本页使用 1 m 位置分箱、3 m 运动段、16 m 解析连接上限、0.2 m 碰撞采样；船体为 2.2 × 1.2 m 矩形，采样间加入保守裕量。地图为自定义矩形障碍；没有项目 costmap 的软代价、未知格策略、超时机制和路径复用，最多取出 8000 个节点。</li><li>普通栅格 A* 常用位置节点和格点邻居；Hybrid A* 使用连续位姿及可行运动段。“Hybrid”并不是简单地把 A* 和 Dijkstra 拼起来。</li><li>这是几何全局规划：没有倒车、水动力、流扰动、动态目标或 COLREGs。曲率受限不代表舵角 / 曲率变化率连续，也不证明实船能精确跟踪。加权启发式、状态分箱和首次可行解析连接都使这里不承诺连续空间全局最优。</li></ul><p>建议实验：先看默认场景的一轮，再把 R 从 4 m 调到 6 m；最后切换“带朝向到点”，观察终点附近为何仍要转弯。</p></details>
+<footer class="footer"><span>SEARCH → CONNECT → TRACE · 把一次搜索拆开看。</span><span>单文件 HTML · 无需 ROS、联网或安装依赖</span></footer>
+<div class="sr-only" id="announcement" aria-live="polite"></div>
+</main>
+<script>
+'use strict';
+// 几何与搜索独立于绘图；动画回放真实计算事件，不用预画的固定路线。
+const TAU = Math.PI * 2;
+const CFG = {width:64,height:40,resolution:1,bins:72,step:3,spacing:.2,length:2.2,widthHull:1.2,connectionLimit:16,maxExpansions:8000};
+const SCENES = {
+  island:{start:[7,13,0],goal:[56,27,0],obstacles:[[26,8,10,21]],name:'绕过岛屿'},
+  channel:{start:[7,11,0],goal:[56,28,0],obstacles:[[22,0,5,23],[39,19,5,21]],name:'穿过弯道'},
+  heading:{start:[8,13,0],goal:[54,27,Math.PI/2],obstacles:[[25,8,10,19],[47,32,13,3]],name:'带朝向到点'}
+};
+const mod = a => {const v = ((a % TAU) + TAU) % TAU; return TAU-v < 1e-14 ? 0 : v;};
+const wrap = a => mod(a + Math.PI) - Math.PI;
+const $ = id => document.getElementById(id);
+const fmt = (x,n=1) => Number.isFinite(x) ? x.toFixed(n) : '—';
+const turnName = t => t===0?'直行':t>0?'左转':'右转';
+
+// 精确常曲率积分：用弦长与中点朝向计算，避免极小曲率时相减失精度。
+function advance(p,k,s){const a=k*s/2,chord=a===0?s:s*Math.sin(a)/a;return [p[0]+chord*Math.cos(p[2]+a),p[1]+chord*Math.sin(p[2]+a),wrap(p[2]+2*a)];}
+function sample(p,k,d){const n=Math.max(1,Math.ceil(d/CFG.spacing)),out=[p];for(let i=1;i<=n;i++)out.push(advance(p,k,d*i/n));return out;}
+function heuristic(p,g,r){return Math.max(Math.hypot(g[0]-p[0],g[1]-p[1]),r*Math.abs(wrap(g[2]-p[2])));}
+function stateKey(p,turn){return `${Math.floor(p[0]/CFG.resolution)},${Math.floor(p[1]/CFG.resolution)},${Math.floor(mod(p[2])*CFG.bins/TAU+.5)%CFG.bins},${turn}`;}
+function edgeCost(d,turn,previous){return d*(turn===0?1:1.05)+(turn!==previous?.2:0);}
+
+// 矩形船体对轴对齐矩形障碍做分离轴检测；边界也不可穿越。
+function poseClear(p,obstacles,pad=0){
+  const [x,y,t]=p,c=Math.cos(t),s=Math.sin(t),ac=Math.abs(c),as=Math.abs(s);
+  const l=CFG.length/2+pad,w=CFG.widthHull/2+pad,ex=l*ac+w*as,ey=l*as+w*ac;
+  if(x-ex<=0||x+ex>=CFG.width||y-ey<=0||y+ey>=CFG.height)return false;
+  for(const [ox,oy,ow,oh] of obstacles){const dx=ox+ow/2-x,dy=oy+oh/2-y;
+    if(Math.abs(dx)<=ex+ow/2&&Math.abs(dy)<=ey+oh/2&&Math.abs(c*dx+s*dy)<=l+ow/2*ac+oh/2*as&&Math.abs(-s*dx+c*dy)<=w+ow/2*as+oh/2*ac)return false;
+  }return true;
+}
+function checkMotion(points,k,obstacles){
+  const rho=Math.hypot(CFG.length/2,CFG.widthHull/2),pad=CFG.spacing/2*(1+rho*Math.abs(k));
+  const hit=points.findIndex(p=>!poseClear(p,obstacles,pad));return {clear:hit<0,hit,pad};
+}
+
+// 六类 Dubins 连接，逐式对应项目 dubins.py；长度均为实际米数。
+function dubinsPaths(start,goal,r){
+  const dx=goal[0]-start[0],dy=goal[1]-start[1],d=Math.hypot(dx,dy)/r,dir=Math.atan2(dy,dx),a=mod(start[2]-dir),b=mod(goal[2]-dir);
+  const sa=Math.sin(a),ca=Math.cos(a),sb=Math.sin(b),cb=Math.cos(b),paths=[];
+  const add=(word,t,p,q)=>paths.push({word,lengths:[mod(t)*r,p*r,mod(q)*r]});
+  const lx=d+sa-sb,ly=cb-ca,ld=Math.hypot(lx,ly),lt=Math.atan2(ly,lx);
+  if(ld<1e-12)add('LSL',b-a,0,0);else add('LSL',lt-a,ld,b-lt);
+  const rx=d-sa+sb,ry=ca-cb,rd=Math.hypot(rx,ry),rt=Math.atan2(ry,rx);
+  if(rd<1e-12)add('RSR',a-b,0,0);else add('RSR',a-rt,rd,rt-b);
+  let ix=d+sa+sb,iy=-ca-cb,id=Math.hypot(ix,iy);
+  if(id>=2-1e-12){const p=Math.sqrt(Math.max(0,id-2))*Math.sqrt(id+2),t=Math.atan2(iy,ix)-Math.atan2(-2,p);add('LSR',t-a,p,t-b);}
+  ix=d-sa-sb;iy=ca+cb;id=Math.hypot(ix,iy);
+  if(id>=2-1e-12){const p=Math.sqrt(Math.max(0,id-2))*Math.sqrt(id+2),t=Math.atan2(iy,ix)-Math.atan2(2,p);add('RSL',a-t,p,b-t);}
+  if(rd<=4+1e-12){const m=TAU-2*Math.asin(Math.min(1,rd/4)),t=mod(a-rt+m/2);add('RLR',t,mod(m),a-b-t+m);}
+  if(ld<=4+1e-12){const m=TAU-2*Math.asin(Math.min(1,ld/4)),t=mod(-a+lt+m/2);add('LRL',t,mod(m),b-a-t+m);}
+  return paths.map(p=>({...p,length:p.lengths.reduce((a,b)=>a+b,0)}));
+}
+function connectionAttempt(node,scene,r){
+  const distance=Math.hypot(scene.goal[0]-node.p[0],scene.goal[1]-node.p[1]);
+  if(distance>CFG.connectionLimit)return {reason:'far',distance,paths:[],chosen:null};
+  const paths=dubinsPaths(node.p,scene.goal,r).filter(p=>p.length<=CFG.connectionLimit+1e-9);
+  for(const path of paths){let previous=node.turn,cost=0;path.word.split('').forEach((mode,i)=>{const t=mode==='S'?0:mode==='L'?1:-1;if(path.lengths[i]>1e-10){cost+=edgeCost(path.lengths[i],t,previous);previous=t;}});path.cost=cost;}
+  paths.sort((a,b)=>a.cost-b.cost);
+  const tried=[];let chosen=null;
+  for(const path of paths){let pose=node.p,points=[pose],clear=true,hit=-1;
+    for(let i=0;i<3;i++){const t=path.word[i]==='S'?0:path.word[i]==='L'?1:-1,part=sample(pose,t/r,path.lengths[i]),check=checkMotion(part,t/r,scene.obstacles);if(!check.clear&&hit<0)hit=points.length-1+check.hit;clear=clear&&check.clear;points.push(...part.slice(1));pose=part[part.length-1];}
+    const endpointError=Math.hypot(pose[0]-scene.goal[0],pose[1]-scene.goal[1]);
+    clear=clear&&endpointError<1e-7&&Math.abs(wrap(pose[2]-scene.goal[2]))<1e-7;
+    const result={...path,points,clear,hit};tried.push(result);if(clear){chosen=result;break;}
+  }return {reason:chosen?'success':paths.length?'collision':'length',distance,paths:tried,chosen};
+}
+
+// 最小堆按 f 排序，序号保证同分时回放可复现。
+class MinHeap{
+  constructor(){this.data=[];}
+  less(a,b){return a.f<b.f||(a.f===b.f&&a.id<b.id);}
+  push(n){const a=this.data;a.push(n);let i=a.length-1;while(i>0){const p=(i-1)>>1;if(!this.less(a[i],a[p]))break;[a[i],a[p]]=[a[p],a[i]];i=p;}}
+  pop(){const a=this.data,top=a[0],last=a.pop();if(a.length){a[0]=last;let i=0;for(;;){let j=i,l=2*i+1,r=l+1;if(l<a.length&&this.less(a[l],a[j]))j=l;if(r<a.length&&this.less(a[r],a[j]))j=r;if(j===i)break;[a[i],a[j]]=[a[j],a[i]];i=j;}}return top;}
+}
+
+// 记录一轮五个阶段的快照；best 包含同分箱的历史最优，frontier 仅含待选项。
+function solve(scene,r,w){
+  let sequence=0,rejected=0;const heap=new MinHeap(),best=new Map(),frontier=new Map(),rounds=[],tree=[],frames=[];
+  const make=(p,g,turn,parent,points)=>{const h=heuristic(p,scene.goal,r);return {id:sequence++,p,g,h,f:g+w*h,turn,parent,points,key:stateKey(p,turn)};};
+  const first=make(scene.start,0,0,null,[]);best.set(first.key,first);frontier.set(first.key,first);heap.push(first);
+  const queueSnapshot=()=>{const top=[];for(const n of frontier.values()){top.push(n);top.sort((a,b)=>a.f-b.f||a.id-b.id);if(top.length>3)top.pop();}return {count:frontier.size,top};};
+  let finalNode=null,tail=null;
+  while(heap.data.length&&rounds.length<CFG.maxExpansions){
+    const current=heap.pop();if(best.get(current.key)!==current)continue;
+    const before=queueSnapshot();frontier.delete(current.key);const afterPop=queueSnapshot(),connection=connectionAttempt(current,scene,r);
+    const round={current,before,afterPop,connection,candidates:[],rejectedBefore:rejected,treeBefore:tree.length,index:rounds.length};
+    if(connection.chosen){round.after=afterPop;round.rejectedAfter=rejected;round.treeAfter=tree.length;rounds.push(round);frames.push({round,stage:0},{round,stage:1});finalNode=current;tail=connection.chosen;break;}
+    for(const turn of [0,1,-1]){
+      const points=sample(current.p,turn/r,CFG.step),p=points[points.length-1],check=checkMotion(points,turn/r,scene.obstacles);
+      const g=current.g+edgeCost(CFG.step,turn,current.turn),child=make(p,g,turn,current,points),old=best.get(child.key);
+      let status='accepted';if(!check.clear){status='blocked';rejected++;}else if(old&&g>=old.g-1e-10)status='dominated';
+      const candidate={...child,status,hit:check.hit,pad:check.pad};round.candidates.push(candidate);
+      if(status==='accepted'){best.set(child.key,child);frontier.set(child.key,child);heap.push(child);tree.push(child);}
+    }
+    round.after=queueSnapshot();round.rejectedAfter=rejected;round.treeAfter=tree.length;rounds.push(round);
+    for(let stage=0;stage<5;stage++)frames.push({round,stage});
+  }
+  let chain=[],route=[],length=0;
+  if(finalNode){for(let n=finalNode;n.parent;n=n.parent)chain.push(n);chain.reverse();route=[scene.start];for(const n of chain)route.push(...n.points.slice(1));route.push(...tail.points.slice(1));length=chain.length*CFG.step+tail.length;
+    const round=rounds[rounds.length-1];for(let traced=0;traced<=chain.length;traced++)frames.push({round,stage:5,traced});frames.push({round,stage:6,traced:chain.length});
+  }else frames.push({round:rounds[rounds.length-1],stage:7,reason:rounds.length>=CFG.maxExpansions?'limit':'empty'});
+  return {rounds,tree,frames,chain,route,length,tail,success:!!finalNode,rejected,r,w,scene};
+}
+
+let sceneName='island',run=null,index=0,playing=false,lastTick=0,flight=0,lastFrameTime=0;
+const canvas=$('map'),ctx=canvas.getContext('2d');
+const COLORS={ink:'#163b50',muted:'#617c8a',teal:'#087d70',amber:'#be741b',red:'#c34d4e',blue:'#327bc0',tree:'#adc9d9'};
+const PLOT={x:50,y:38,w:812,h:475};
+// 等比例投影，保证画出来的圆弧仍是圆弧；坐标 y 向上。
+const SCALE=Math.min(PLOT.w/CFG.width,PLOT.h/CFG.height);
+PLOT.w=CFG.width*SCALE;PLOT.x=(900-PLOT.w)/2;PLOT.h=CFG.height*SCALE;
+const project=p=>[PLOT.x+p[0]*SCALE,PLOT.y+(CFG.height-p[1])*SCALE];
+function line(points,color,width=2,dash=[],limit=1){if(!points.length)return;ctx.beginPath();const count=Math.max(1,Math.ceil(points.length*limit));points.slice(0,count).forEach((p,i)=>{const [x,y]=project(p);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.strokeStyle=color;ctx.lineWidth=width;ctx.setLineDash(dash);ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke();ctx.setLineDash([]);}
+function dot(p,color,r=3){const [x,y]=project(p);ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fillStyle=color;ctx.fill();}
+function vessel(p,color,alpha=1,envelope=false){const [x,y]=project(p),l=CFG.length*SCALE,w=CFG.widthHull*SCALE;ctx.save();ctx.translate(x,y);ctx.rotate(-p[2]);ctx.globalAlpha=alpha;if(envelope){ctx.strokeStyle=color;ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.strokeRect(-l/2-2,-w/2-2,l+4,w+4);ctx.setLineDash([]);}ctx.beginPath();ctx.moveTo(l/2,0);ctx.lineTo(l*.19,-w/2);ctx.lineTo(-l/2,-w/2);ctx.lineTo(-l/2,w/2);ctx.lineTo(l*.19,w/2);ctx.closePath();ctx.fillStyle=color;ctx.fill();ctx.strokeStyle='#ffffff';ctx.lineWidth=1.6;ctx.stroke();ctx.beginPath();ctx.moveTo(-l*.2,0);ctx.lineTo(l*.13,0);ctx.stroke();ctx.restore();}
+function textAt(p,text,color,dx=0,dy=0){const [x,y]=project(p);ctx.font='11px "Microsoft YaHei",sans-serif';ctx.fillStyle=color;ctx.fillText(text,x+dx,y+dy);}
+function drawBackground(){
+  ctx.clearRect(0,0,900,555);ctx.fillStyle='#f4f8fb';ctx.fillRect(0,0,900,555);
+  ctx.fillStyle='#edf5f9';ctx.fillRect(PLOT.x,PLOT.y,PLOT.w,PLOT.h);
+  if($('show-grid').checked){ctx.strokeStyle='#dbe7ee';ctx.lineWidth=.6;ctx.beginPath();for(let x=0;x<=64;x++){const p=project([x,0]);ctx.moveTo(p[0],PLOT.y);ctx.lineTo(p[0],PLOT.y+PLOT.h);}for(let y=0;y<=40;y++){const p=project([0,y]);ctx.moveTo(PLOT.x,p[1]);ctx.lineTo(PLOT.x+PLOT.w,p[1]);}ctx.stroke();}
+  ctx.strokeStyle='#b9cedb';ctx.lineWidth=1;ctx.strokeRect(PLOT.x,PLOT.y,PLOT.w,PLOT.h);ctx.font='10px Consolas,monospace';ctx.fillStyle='#7892a3';ctx.textAlign='center';for(let x=0;x<=64;x+=8){const p=project([x,0]);ctx.fillText(x,p[0],p[1]+19);}ctx.textAlign='right';for(let y=0;y<=40;y+=8){const p=project([0,y]);ctx.fillText(y,p[0]-10,p[1]+4);}ctx.textAlign='left';ctx.fillText('x / m',PLOT.x+PLOT.w-30,544);ctx.fillText('y / m',PLOT.x-27,26);
+  for(const [x,y,w,h] of run.scene.obstacles){const p=project([x,y+h]);ctx.fillStyle='#c0cdd3';ctx.fillRect(p[0],p[1],w*SCALE,h*SCALE);ctx.strokeStyle='#94a9b5';ctx.strokeRect(p[0],p[1],w*SCALE,h*SCALE);ctx.save();ctx.beginPath();ctx.rect(p[0],p[1],w*SCALE,h*SCALE);ctx.clip();ctx.strokeStyle='#a9bdc8';ctx.lineWidth=.7;for(let t=-h*SCALE;t<w*SCALE;t+=9){ctx.beginPath();ctx.moveTo(p[0]+t,p[1]);ctx.lineTo(p[0]+t+h*SCALE,p[1]+h*SCALE);ctx.stroke();}ctx.restore();if(w>7&&h>7){ctx.fillStyle='#5e7885';ctx.textAlign='center';ctx.font='12px "Microsoft YaHei"';ctx.fillText('不可通行',p[0]+w*SCALE/2,p[1]+h*SCALE/2);ctx.textAlign='left';}}
+}
+function draw(){
+  if(!run)return;drawBackground();const frame=run.frames[index],round=frame.round,stage=frame.stage;
+  const treeEnd=stage>=4?round.treeAfter:round.treeBefore;
+  ctx.save();ctx.beginPath();ctx.rect(PLOT.x,PLOT.y,PLOT.w,PLOT.h);ctx.clip();
+  if($('show-tree').checked){ctx.globalAlpha=.53;for(let i=0;i<treeEnd;i++)line(run.tree[i].points,COLORS.tree,1.1);ctx.globalAlpha=1;}
+  if($('show-heuristic').checked&&stage<5){line([round.current.p,run.scene.goal],'#819da8',1.4,[5,6]);const mid=[(round.current.p[0]+run.scene.goal[0])/2,(round.current.p[1]+run.scene.goal[1])/2];textAt(mid,'d：直线距离','#617c8a',5,-8);}
+  const queue=stage===0?round.before:stage>=4?round.after:round.afterPop;
+  if(stage<5)for(const n of queue.top){const [x,y]=project(n.p);ctx.save();ctx.translate(x,y);ctx.rotate(Math.PI/4);ctx.strokeStyle='#327bc0';ctx.lineWidth=1.5;ctx.strokeRect(-4,-4,8,8);ctx.restore();}
+  if(stage>=2&&stage<=4){for(const c of round.candidates){const color=stage>=3&&c.status==='blocked'?COLORS.red:stage===4&&c.status==='dominated'?'#9c86b8':COLORS.amber;line(c.points,color,3,c.status==='blocked'&&stage>=3?[4,4]:[]);vessel(c.p,color,.6,false);if(stage>=3&&c.hit>=0){const p=c.points[c.hit];dot(p,COLORS.red,4);if($('show-hull').checked)vessel(p,COLORS.red,.7,true);textAt(p,'×',COLORS.red,9,-8);}}}
+  if(stage===1&&round.connection.paths.length){for(const p of round.connection.paths)line(p.points,p.clear?COLORS.teal:COLORS.red,2.5,p.clear?[]:[5,5]);}
+  if(stage===5){line(run.tail.points,COLORS.teal,4);for(const n of run.chain.slice(run.chain.length-frame.traced))line(n.points,COLORS.teal,4);const current=frame.traced===0?run.tail.points[0]:run.chain[run.chain.length-frame.traced].parent.p;dot(current,COLORS.teal,6);}
+  if(stage===6){line(run.route,'#ffffff',7);line(run.route,COLORS.teal,3.5);for(let i=25;i<run.route.length;i+=60)vessel(run.route[i],COLORS.teal,.35,false);const n=Math.min(run.route.length-1,Math.floor(flight*(run.route.length-1)));vessel(run.route[n],COLORS.ink,1,$('show-hull').checked);}
+  ctx.restore();
+  vessel(run.scene.start,COLORS.blue,.9);textAt(run.scene.start,'起点 S',COLORS.blue,-20,27);vessel(run.scene.goal,COLORS.teal,.8);textAt(run.scene.goal,'目标 G',COLORS.teal,-20,-21);
+  // 箭头表现期望的终点朝向，而不只是一个目标位置。
+  const g=run.scene.goal,end=advance(g,0,3.3);line([g,end],COLORS.teal,1.5,[3,3]);
+  if(stage<5){vessel(round.current.p,COLORS.ink,1,$('show-hull').checked);textAt(round.current.p,`当前 #${round.current.id}`,COLORS.ink,-18,-24);}
+  if(stage===6){ctx.fillStyle='#ffffffee';ctx.fillRect(PLOT.x+14,PLOT.y+14,235,52);ctx.fillStyle=COLORS.teal;ctx.font='bold 14px "Microsoft YaHei"';ctx.fillText('已找到可行航线',PLOT.x+27,PLOT.y+35);ctx.font='11px "Microsoft YaHei"';ctx.fillStyle=COLORS.muted;ctx.fillText(`${fmt(run.length)} m · 满足终点位置与朝向`,PLOT.x+27,PLOT.y+54);}
+}
+
+function render(){
+  const frame=run.frames[index],r=frame.round,n=r.current,s=frame.stage,q=s===0?r.before:s>=4?r.after:r.afterPop;
+  const titles=['取出最有希望的节点','能直接接到终点吗？','沿船头方向试走三步','检查整段，而非只看终点','留下更好的状态','沿父节点找回航线','航线已找到，沿线看一遍','本次搜索未找到航线'];
+  let copy='',formula='',hint='';
+  if(s===0){copy=`从整个 Open 队列取出 f 最小的 #${n.id}。它是本轮要扩展的假设位姿，不表示船已经走到这里。`;formula=`f = ${fmt(n.g)} + ${fmt(run.w)} × ${fmt(n.h)}<br>= ${fmt(n.f)}`;hint='注意：下一轮可能跳到<strong>另一条分支</strong>，不是沿一条路线一直走。';}
+  if(s===1){const c=r.connection;copy=c.reason==='far'?`距目标 ${fmt(c.distance)} m，超过 16 m 连接上限，先继续局部扩展。`:c.reason==='length'?'已接近目标，但满足朝向约束的 Dubins 曲线都超过 16 m，继续搜索。':c.reason==='collision'?`本轮检查了 ${c.paths.length} 条长度合格的连接，都与障碍或边界相交。红色虚线不能采用。`:`找到 ${c.chosen.word} 连接！整段无碰撞，且精确满足目标位置和朝向。接下来回溯父节点。`;formula=c.chosen?`${c.chosen.word} · ${fmt(c.chosen.length)} m<br>位置 ✓　朝向 ✓　碰撞 ✓`:'Dubins = 圆弧 + 直线 / 圆弧<br>末端必须匹配 (x, y, θ)';hint='L / S / R 分别是左转、直行、右转。<strong>解析连接也必须检查碰撞。</strong>';}
+  if(s===2){copy='从当前连续位姿分别直行、左转、右转 3 m，生成三个孩子。这里还没有用碰撞结果淘汰它们。';formula=`κ ∈ {0, +1/${run.r}, −1/${run.r}}<br>θ′ = θ + κ · 3`;hint='曲率 κ = 1/R。R 越大，每走一米<strong>改变的朝向越少</strong>。';}
+  if(s===3){const blocked=r.candidates.filter(c=>c.status==='blocked').length;copy=`沿每条轨迹以不大于 0.2 m 的间隔检查船体，并加采样间裕量。本轮 ${blocked} 段碰撞淘汰，${3-blocked} 段通过。`;formula='check(每个采样位姿的船体)<br>任一位置相交 → 丢弃';hint='船中心没撞，不等于船体没撞。虚线矩形是<strong>船体检查包络示意</strong>。';}
+  if(s===4){const accepted=r.candidates.filter(c=>c.status==='accepted').length,dom=r.candidates.filter(c=>c.status==='dominated').length;copy=`把连续位姿映射到位置 / 朝向 / 上次转向分箱。本轮 ${accepted} 个更优状态入队，${dom} 个状态因同分箱已有更低或相等 g 而丢弃。`;formula='g′ = g + 段长 × 转弯系数<br>　　 + 切换转向惩罚';hint='入队后仍保留<strong>连续的 x、y、θ</strong>。分箱只用于判重，不把位置挪到格子中心。';}
+  if(s===5){copy=`从成功连接的节点沿 parent 指针向起点倒着找。已回溯 ${frame.traced} / ${run.chain.length} 段，绿色部分逐渐连成完整航线。`;formula='goal ← connection ← node<br>← parent ← … ← start';hint='这里只收集最终分支，其他探索过的分支<strong>不会进入输出路径</strong>。';}
+  if(s===6){copy=`共取出 ${run.rounds.length} 个节点，得到 ${fmt(run.length)} m 的可行航线。船形沿规划结果移动；这是几何回放，没有运行跟踪控制器。`;formula=`航线 = ${run.chain.length} 段运动原语<br>　　 + ${run.tail.word} 终点连接`;hint='可行路线不等于全局最短。试着改变<strong>转弯半径</strong>，观察航线与搜索量。';}
+  if(s===7){copy=frame.reason==='limit'?'已达到本页 8000 个节点的演示预算。此结果不证明地图无解，可尝试改变半径或场景。':'Open 队列耗尽；当前运动原语与状态分辨率下未找到可行连接。';formula='停止搜索 / 没有可回放航线';hint='“本次没找到”不等于<strong>连续空间中一定无解</strong>。';}
+  $('phase-title').textContent=titles[s];$('phase-copy').textContent=copy;$('equation').innerHTML=formula;$('hint').innerHTML=hint;
+  $('phase-counter').textContent=s<5?`STEP 0${s+1} / 06 · 第 ${r.index+1} 轮`:s===5?'STEP 06 / 06 · 回溯':s===6?'RESULT / 航线回放':'SEARCH / 未完成';
+  $('pose').innerHTML=`<span>x ${fmt(n.p[0])} m</span><span>y ${fmt(n.p[1])} m</span><span>θ ${fmt(n.p[2]*180/Math.PI)}°</span>`;
+  $('candidates').innerHTML=[0,1,-1].map(t=>{const c=r.candidates.find(v=>v.turn===t),visible=c&&s>=2&&s<=4;let badge='未生成',status='waiting',values=`κ = ${t===0?'0':(t/run.r).toFixed(2)}`;if(visible){values=`g ${fmt(c.g)} · f ${fmt(c.f)}`;badge='待检查';if(s>=3){badge=c.status==='blocked'?'× 碰撞':'✓ 可通行';status=c.status==='blocked'?'blocked':'accepted';}if(s===4&&c.status!=='blocked'){badge=c.status==='dominated'?'同箱更差':'✓ 入队';status=c.status;}}if(s>=5||r.connection.chosen)badge='本轮不扩展';return `<div class="candidate-item ${status}"><span>${turnName(t)}</span><span class="values">${values}</span><span class="badge">${badge}</span></div>`;}).join('');
+  $('queue').innerHTML=q.top.length?`<table><thead><tr><th>节点</th><th>g</th><th>h</th><th>f</th></tr></thead><tbody>${q.top.map(v=>`<tr><td>#${v.id}</td><td>${fmt(v.g)}</td><td>${fmt(v.h)}</td><td>${fmt(v.f)}</td></tr>`).join('')}</tbody></table>`:'<div class="queue-empty">队列为空</div>';
+  $('m-expanded').textContent=r.index+1;$('m-open').textContent=q.count;$('m-rejected').textContent=s>=3?r.rejectedAfter:r.rejectedBefore;$('m-length').textContent=s>=5&&run.success?fmt(run.length):'—';
+  $('frame-counter').textContent=`${index+1} / ${run.frames.length}`;$('timeline').value=index;$('timeline').max=run.frames.length-1;
+  $('play').textContent=playing?'Ⅱ 暂停':s===6?'▶ 回放航行':index===0?'▶ 播放过程':'▶ 继续播放';$('play').setAttribute('aria-pressed',String(playing));$('step').disabled=index>=run.frames.length-1;$('result').textContent=run.success?'看完整航线':'看搜索结果';
+  document.querySelectorAll('.step').forEach(el=>{const active=+el.dataset.stage===Math.min(s,5);el.classList.toggle('active',active);if(active)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
+  $('map-note').innerHTML=s===6?'绿色航线：<strong>运动原语 + Dubins 连接</strong>':s===5?'沿 <strong>父节点指针</strong> 倒着找回起点。':s===1?'先判断：<strong>能否用一条可行曲线接到目标？</strong>':'搜索中的船形 = <strong>假设位姿</strong>，不是实际航行。';draw();
+}
+
+function rebuild(){playing=false;flight=0;index=0;const radius=+$('radius').value,weight=+$('weight').value;$('radius-out').textContent=`${radius.toFixed(1)} m`;$('weight-out').textContent=weight.toFixed(1);run=solve(SCENES[sceneName],radius,weight);render();$('announcement').textContent=`${SCENES[sceneName].name}已重新计算，可以播放。`;}
+function togglePlay(){playing=!playing;lastTick=performance.now();lastFrameTime=lastTick;if(playing&&index===run.frames.length-1&&run.success)flight=0;if(playing&&index===run.frames.length-1&&!run.success)index=0;render();}
+function step(){playing=false;if(index<run.frames.length-1)index++;flight=0;render();$('announcement').textContent=$('phase-title').textContent+'。'+$('phase-copy').textContent;}
+function animate(now){
+  if(playing&&run){const frame=run.frames[index];if(frame.stage===6){flight=Math.min(1,flight+(now-lastFrameTime)/9000);draw();if(flight>=1){playing=false;render();}}
+    else {const duration=1000/+$('speed').value;if(now-lastTick>=duration){const jump=Math.min(40,Math.floor((now-lastTick)/duration));index=Math.min(run.frames.length-1,index+jump);lastTick=now;render();if(run.frames[index].stage===7){playing=false;render();}}}}
+  lastFrameTime=now;requestAnimationFrame(animate);
+}
+$('play').addEventListener('click',togglePlay);$('step').addEventListener('click',step);
+$('reset').addEventListener('click',()=>{playing=false;index=0;flight=0;render();});
+$('result').addEventListener('click',()=>{index=run.frames.length-1;flight=0;playing=run.success&&!matchMedia('(prefers-reduced-motion: reduce)').matches;lastFrameTime=performance.now();render();});
+$('timeline').addEventListener('input',()=>{playing=false;index=+$('timeline').value;flight=0;render();});
+for(const id of ['radius','weight']){$(id).addEventListener('input',()=>{$(id+'-out').textContent=(+$(id).value).toFixed(1)+(id==='radius'?' m':'');});$(id).addEventListener('change',rebuild);}
+for(const id of ['show-tree','show-grid','show-hull','show-heuristic'])$(id).addEventListener('change',draw);
+document.querySelectorAll('[data-scene]').forEach(button=>button.addEventListener('click',()=>{sceneName=button.dataset.scene;document.querySelectorAll('[data-scene]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));rebuild();}));
+document.addEventListener('keydown',e=>{if(/INPUT|SELECT|BUTTON|TEXTAREA|A|SUMMARY/.test(e.target.tagName))return;if(e.code==='Space'){e.preventDefault();togglePlay();}if(e.code==='ArrowRight'){e.preventDefault();step();}});
+// Canvas 逻辑坐标固定，像素缓冲跟随显示尺寸，保证高清屏和手机文字清晰。
+function resize(){const ratio=window.devicePixelRatio||1,w=canvas.clientWidth,h=w*555/900;canvas.width=Math.round(w*ratio);canvas.height=Math.round(h*ratio);ctx.setTransform(canvas.width/900,0,0,canvas.height/555,0,0);draw();}
+window.addEventListener('resize',resize);rebuild();resize();requestAnimationFrame(animate);
+</script>
+</body>
+</html>

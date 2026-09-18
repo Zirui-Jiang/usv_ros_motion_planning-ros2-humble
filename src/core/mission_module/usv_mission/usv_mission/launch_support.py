@@ -21,6 +21,21 @@ ALGORITHM_CONFIGS = (
 )
 
 
+# mission.launch.py must remain usable without importing sim_env's Python
+# runtime.  Only the dedicated simulation world owns a wind plugin; regular
+# worlds keep the historical Otter-embedded zero-wind plugin.
+def _stationkeeping_wind_arguments(world_name, robot_namespace="otter"):
+    stem = os.path.basename(str(world_name)).removesuffix(".world")
+    if stem != "stationkeeping_vrx":
+        return ()
+    if str(robot_namespace).strip("/") != "otter":
+        raise ValueError(
+            "stationkeeping_vrx requires robot_namespace=otter because its "
+            "Classic wind plugin targets the static model name 'otter'"
+        )
+    return ("wind_enabled:=false",)
+
+
 # 显式地理参考 YAML 与 world 文件二选一；缺省时禁用地理任务，显式零原点仍合法。
 def geographic_parameters(geo_reference="", world_path=""):
     """Require an explicitly supplied WGS84/ENU reference before enabling tasks.
@@ -140,9 +155,12 @@ def simulation_setup(context):
     costmap_params = load_yaml(os.path.join(
         perception_share, "config", "robots", "otter", "global_costmap_params_otter.yaml"))["costmap"]
 
+    wind_args = [" " + argument for argument in
+                 _stationkeeping_wind_arguments(_value(context, "world"), namespace)]
     robot_description = Command([
         "xacro ", os.path.join(share, "urdf", "otter", "otter.urdf.xacro"),
         " namespace:=", namespace, " imu_enabled:=false gps_enabled:=false lidar_enabled:=true",
+        *wind_args,
     ])
     robot_state_publisher = Node(
         package="robot_state_publisher", executable="robot_state_publisher",
@@ -211,7 +229,7 @@ def common_arguments(simulation=False):
         DeclareLaunchArgument("use_sim_time", default_value="true" if simulation else "false",
                               choices=["true", "false"]),
         DeclareLaunchArgument("planner_name", default_value="", choices=["", "astar", "dijkstra", "gbfs"]),
-        DeclareLaunchArgument("controller_name", default_value="", choices=["", "pid", "lqr"]),
+        DeclareLaunchArgument("controller_name", default_value="", choices=["", "pid", "lqr", "adrc"]),
         DeclareLaunchArgument("trajectory_name", default_value="", choices=["", "los"]),
     ]
     for name, relative in ALGORITHM_CONFIGS:

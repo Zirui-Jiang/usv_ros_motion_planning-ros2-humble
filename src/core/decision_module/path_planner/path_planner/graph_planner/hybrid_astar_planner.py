@@ -56,6 +56,12 @@ class HybridAStarPathPlanner:
         if self.heuristic_weight < 1.:
             raise ValueError("heuristic_weight must be at least one")
         self.minimum_turning_radius = self._number("minimum_turning_radius", 4., positive=True)
+        self.turning_radius_multipliers = self._multipliers("turning_radius_multipliers", (1.,))
+        # 默认只有最小半径左右转加直行，与原先三种运动基元一致；乘数>1 增加更缓的圆弧。
+        self.curvatures = (0.,) + tuple(
+            sign / (self.minimum_turning_radius * multiplier)
+            for multiplier in self.turning_radius_multipliers
+            for sign in (1., -1.))
         self.motion_step = self._number("motion_step", 1., positive=True)
         self.collision_step = self._number("collision_step", .2, positive=True)
         self.analytic_expansion_max_length = self._number("analytic_expansion_max_length", 20., positive=True)
@@ -91,6 +97,29 @@ class HybridAStarPathPlanner:
         if isinstance(value, bool) or not isinstance(value, (int, np.integer)) or value < minimum:
             raise ValueError(f"{key} must be an integer >= {minimum}")
         return int(value)
+
+    # 半径乘数必须 >=1；重复项合并后按从小到大生成更缓的左右转基元。
+    def _multipliers(self, key, default):
+        value = self.config.get(key, default)
+        if isinstance(value, np.ndarray):
+            value = value.tolist()
+        if isinstance(value, (int, float, np.integer, np.floating)) and not isinstance(value, bool):
+            value = (float(value),)
+        if not isinstance(value, (list, tuple)) or not value:
+            raise ValueError(f"{key} must be a nonempty list of finite numbers >= 1")
+        unique = []
+        seen = set()
+        for item in value:
+            if isinstance(item, (bool, np.bool_)) or not isinstance(item, (int, float, np.integer, np.floating)):
+                raise ValueError(f"{key} must be a nonempty list of finite numbers >= 1")
+            number = float(item)
+            if not math.isfinite(number) or number < 1.:
+                raise ValueError(f"{key} must be a nonempty list of finite numbers >= 1")
+            marker = round(number, 9)
+            if marker not in seen:
+                seen.add(marker)
+                unique.append(number)
+        return tuple(sorted(unique))
 
     def _key(self, pose, curvature, grid):
         cell = grid.world_to_map(float(pose[0]), float(pose[1]))
@@ -222,7 +251,7 @@ class HybridAStarPathPlanner:
             distance = max(self.motion_step, math.sqrt(2)*grid.resolution)
             spacing = min(self.collision_step, grid.resolution/4,
                           self.minimum_turning_radius*math.pi/8)
-            curvatures = (0., 1./self.minimum_turning_radius, -1./self.minimum_turning_radius)
+            curvatures = self.curvatures
             initial = _SearchNode(first, 0.)
             counter = itertools.count()
             # 适度加权优先向目标推进，避免长航段对大量近似等代价分支做昂贵的船体检查。

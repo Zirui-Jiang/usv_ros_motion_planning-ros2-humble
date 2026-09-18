@@ -8,6 +8,7 @@ from sim_env.configuration import C, HOT_PARAMETERS, load_project_parameters, re
 
 CONFIG = Path(__file__).resolve().parents[2] / "core/shared/usv_navigation/config"
 ADRC = C + "adrc_controller."
+STATION_ADRC = C + "station_adrc_controller."
 
 
 def test_adrc_defaults_resolve_and_remain_startup_only():
@@ -19,8 +20,8 @@ def test_adrc_defaults_resolve_and_remain_startup_only():
     assert values[ADRC + "heading_integral_max"] == 0.25
     assert values[ADRC + "force_min"] == -8.0
     assert values[ADRC + "force_max"] == 8.0
-    assert values[ADRC + "moment_min"] == -2.0
-    assert values[ADRC + "moment_max"] == 2.0
+    assert values[ADRC + "moment_min"] == -10.0
+    assert values[ADRC + "moment_max"] == 10.0
     assert not any(key.startswith(ADRC) for key in HOT_PARAMETERS)
     with pytest.raises(ValueError, match="Restart"):
         validate_update(values, {ADRC + "k_p_speed": 9.0})
@@ -90,3 +91,33 @@ def test_selected_adrc_sample_time_matches_control_frequency():
 def test_unselected_adrc_sample_time_does_not_constrain_existing_controllers():
     values = resolve_parameters({C + "controller_name": "pid", ADRC + "sample_time": 0.2})
     assert values[ADRC + "sample_time"] == 0.2
+
+
+def test_station_adrc_defaults_are_independent_and_startup_only():
+    values = resolve_parameters({})
+    assert values[STATION_ADRC + "position_speed_gain"] == 0.5
+    assert values[STATION_ADRC + "k_p_speed"] == 30.0
+    assert values[STATION_ADRC + "moment_min"] == -8.0
+    assert values[STATION_ADRC + "command_limit"] == 0.4
+    assert not any(key.startswith(STATION_ADRC) for key in HOT_PARAMETERS)
+    with pytest.raises(ValueError, match="Restart"):
+        validate_update(values, {STATION_ADRC + "k_p_speed": 31.0})
+
+
+def test_station_adrc_sample_time_always_matches_control_frequency():
+    resolve_parameters({STATION_ADRC + "sample_time": 0.1 + 1e-14})
+    with pytest.raises(ValueError, match="station ADRC sample_time"):
+        resolve_parameters({C + "controller_name": "pid", STATION_ADRC + "sample_time": 0.2})
+
+
+@pytest.mark.parametrize("suffix,value", [
+    ("command_limit", 0.0),
+    ("command_slew_rate", 0.0),
+    ("position_speed_gain", -0.1),
+    ("free_heading_yaw_damping", -0.1),
+    ("filter_window_length", 1),
+    ("heading_tolerance_deg", 181.0),
+])
+def test_invalid_station_adrc_scalars_are_rejected(suffix, value):
+    with pytest.raises(ValueError):
+        resolve_parameters({STATION_ADRC + suffix: value})

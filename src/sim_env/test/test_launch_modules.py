@@ -103,7 +103,7 @@ def test_standalone_navigation_starts_only_its_business_module(monkeypatch, entr
     assert parameters["use_sim_time"] is True
     assert parameters["usv_simulation.controller.control_frequency"] == 10.0
     assert parameters["navigation.planning_frequency"] == 5.0
-    assert parameters["usv_simulation.controller.controller_name"] == "pid"
+    assert parameters["usv_simulation.controller.controller_name"] == "adrc"
     assert parameters["usv_simulation.trajectory_planner.los.lookahead_distance"] == 1.0
 
 
@@ -203,6 +203,9 @@ def test_custom_project_yaml_and_launch_precedence_match_across_business_entries
             values["controller"]["controller_name"] = "lqr"
             values["controller"]["control_frequncy"] = 12.0
             values["controller"]["pid_controller"]["k_p_speed"] = 3.25
+            # Station ADRC is active for every navigation algorithm, so its
+            # fixed startup sample period must follow the shared control rate.
+            values["controller"]["station_adrc_controller"]["sample_time"] = 1.0 / 12.0
             if expected_controller == "adrc":
                 values["controller"].setdefault("adrc_controller", {})["sample_time"] = 1.0 / 12.0
         elif argument == "trajectory_config":

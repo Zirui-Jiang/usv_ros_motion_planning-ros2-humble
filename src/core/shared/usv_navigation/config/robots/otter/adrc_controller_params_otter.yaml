@@ -50,3 +50,35 @@ controller:
     acceleration_gain: 0.0
     filter_window_length: 10
     filter_history_length: 50
+
+  # 终点/独立定点值守：与普通航行 ADRC 分离保存积分、滤波和输出限幅。
+  station_adrc_controller:
+    position_tolerance: 0.5
+    heading_tolerance_deg: 5.0
+    position_speed_gain: 0.5
+    recover_speed: 0.3
+    recover_speed_tolerance: 0.04
+    alignment_time: 1.0
+    alignment_yaw_rate: 0.02
+    free_heading_yaw_damping: 10.0
+    k_p_speed: 30.0
+    k_i_speed: 0.8
+    force_min: -20.0
+    force_max: 20.0
+    speed_integral_min: -8.0
+    speed_integral_max: 8.0
+    k_p_heading: 12.0
+    k_d_heading: 10.0
+    k_i_heading: 0.03
+    moment_min: -8.0
+    moment_max: 8.0
+    heading_integral_min: -0.25
+    heading_integral_max: 0.25
+    sample_time: 0.1
+    max_sample_gap: 0.5
+    error_reset_deg: 20.0
+    acceleration_gain: 0.0
+    filter_window_length: 10
+    filter_history_length: 50
+    command_limit: 0.4
+    command_slew_rate: 0.6

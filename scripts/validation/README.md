@@ -67,6 +67,40 @@ python3 "$PY_WS/scripts/validation/ros_acceptance.py" \
 
 输出目录必须不存在，防止覆盖已有实验结果。退出码为 `0` 仅表示所请求且实际运行的用例全部通过；`blocked`、`unsupported` 或失败都会使 live run 返回非零。`--dry-run` 成功只表示计划生成成功。
 
+## VRX Station Keeping 风浪场景
+
+`stationkeeping_vrx.world` 是当前 Gazebo Classic 环境中的 VRX practice 风浪映射：风向
+`120°`、平均风速 `5 m/s`、随机增益 `2`、时间常数 `2 s`、随机种子 `15`；PMS 波浪周期
+`6 s`、增益 `0.6`、方向 `45°`。场景只调整 world/xacro 的扰动配置，不替换现有定点控制器、
+任务状态机或目标接口。该 world 固定使用 `robot_namespace:=otter`，因为 world-level 风插件按
+Gazebo Classic 模型名查找 `otter`。
+
+先启动仿真（可将 `gui` 和 `rviz` 关闭）：
+
+```bash
+ros2 launch usv_mission mission_sim.launch.py \
+  world:=stationkeeping_vrx robot_namespace:=otter \
+  gui:=false rviz:=false headless:=true
+```
+
+另开终端启动原有定点任务，再用只读记录器采集评分与风/推力统计。记录器不发布目标或控制命令，
+目标坐标必须与任务配置一致；下面的 `(23, -10, 0)` 只是当前默认出生位姿示例：
+
+```bash
+ros2 run usv_mission mission_cli start \
+  "$(ros2 pkg prefix --share usv_mission)/config/mission/examples/station_keep.yaml"
+
+python3 scripts/validation/record_station_keeping.py \
+  --output results/station_keep_vrx_01 \
+  --x 23 --y -10 --yaw 0 \
+  --start-delay 20 --duration 300 --world stationkeeping_vrx
+```
+
+记录器会生成 `events.jsonl`、`metadata.json`、`metrics.json` 和 `summary.json`。评分窗口为
+`[20, 320)` 仿真秒，采用官方 `distance + 0.75**distance * heading_error` 公式；风速、风向和三路
+推力仅做旁路观测。若 Gazebo 未提供可用 `/clock`，可显式使用 `--wall-time` 让窗口按记录器启动后的
+墙钟秒数计时。正式实验请为每次试验使用新的输出目录，保留运行日志和 world 版本信息。
+
 每次导航试验运行 `ros2 launch sim_env main.launch.py world:=ocean gui:=false rviz:=false controller_name:=...`，并指定起点与 namespace。只终止本脚本 `start_new_session=True` 建立的子进程组，不使用 `killall`、`pkill` 或现有终端。默认使用隔离的 `ROS_DOMAIN_ID=182`、本机通信，以及每次独立的 Gazebo master 端口；`--domain-id` 可调整。若发现该域已有 `/otter/odom` 发布者，该例中止，不复位其他仿真。
 
 ## 基线注意事项

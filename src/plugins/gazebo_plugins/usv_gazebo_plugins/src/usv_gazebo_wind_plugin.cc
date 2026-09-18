@@ -16,6 +16,7 @@
  */
 
 // 世界级风载插件：对配置的多个模型施加水平风力和艏摇力矩，并可发布风速/风向调试值。
+#include <cmath>
 #include <std_msgs/msg/float64.hpp>
 #include <functional>
 #include <gazebo/common/Console.hh>
@@ -156,9 +157,9 @@ void UsvWindPlugin::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
 
   // Initialize previous time and previous velocity
 #if GAZEBO_MAJOR_VERSION >= 8
-  this->previousTime = this->world->SimTime().Double();
+  this->previousTime = this->world->SimTime().Double() - 0.001;
 #else
-  this->previousTime = this->world->GetSimTime().Double();
+  this->previousTime = this->world->GetSimTime().Double() - 0.001;
 #endif
   this->varVel = 0;
 
@@ -216,8 +217,14 @@ void UsvWindPlugin::Update()
   double randomDist = dist(*this->randGenerator);
 
   // Current variable wind velocity
-  // 一阶随机滤波叠加到平均风速；dT 为仿真秒数，平方根及除法要求 dT、timeConstant 为正。
-  this->varVel += 1.0 / this->timeConstant * (-1.0 * this->varVel + this->filterGain / sqrt(dT) * randomDist) * dT;
+  // 一阶随机滤波叠加到平均风速；首帧/暂停/回拨时 dT 可能为零或负数，
+  // 此时跳过随机更新，避免 sqrt(dT) 与 0 相乘产生持久 NaN。
+  if (dT > 0.0 && std::isfinite(dT) && this->timeConstant > 0.0 &&
+      std::isfinite(this->timeConstant))
+  {
+    this->varVel += 1.0 / this->timeConstant *
+                    (-1.0 * this->varVel + this->filterGain / sqrt(dT) * randomDist) * dT;
+  }
   // Current wind velocity
   double velocity = this->varVel + this->windMeanVelocity;
 

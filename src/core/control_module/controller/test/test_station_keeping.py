@@ -59,8 +59,8 @@ def test_limits_slew_and_bad_inputs_stop_immediately():
 def test_hold_remains_active_and_hysteresis_scales_with_requested_accuracy():
     controller_type, _ = components()
     controller = controller_type(USVModel(), {"position_tolerance": .2})
-    for _ in range(20):
-        cmd = controller.compute(VesselState(), (0, 0, 0), .1)
+    for tick in range(20):
+        cmd = controller.compute(VesselState(stamp=tick * .1), (0, 0, 0), .1)
     assert controller.phase == "HOLD"
     assert cmd.status == AlgorithmStatus.SUCCESS
     controller.compute(VesselState(y=.11), (0, 0, 0), .1)
@@ -187,6 +187,130 @@ def test_absent_heading_does_not_lock_current_or_zero_heading():
         assert command.status == AlgorithmStatus.SUCCESS
         assert command.left == command.right == 0.
         assert command.message == 'HOLD'
+
+
+def test_station_controller_owns_independent_adrc_speed_and_heading_loops():
+    controller_type, _ = components()
+    controller = controller_type(USVModel())
+    from controller.adrc_core import PIController, ADRCController
+    assert isinstance(controller.speed_loop, PIController)
+    assert isinstance(controller.heading_loop, ADRCController)
+    assert controller.speed_loop is not controller.heading_loop
+    assert controller.config['command_limit'] == pytest.approx(.4)
+
+
+def test_station_controller_timestamp_repeat_freezes_inner_state_and_backwards_stops():
+    controller_type, _ = components()
+    controller = controller_type(USVModel())
+    first = controller.compute(VesselState(x=2., stamp=1.), (0., 0., 0.), .1)
+    integral = controller.speed_loop.integral_speed
+    repeated = controller.compute(VesselState(x=2., stamp=1.), (0., 0., 0.), .1)
+    assert controller.speed_loop.integral_speed == pytest.approx(integral)
+    assert repeated.status == AlgorithmStatus.SUCCESS
+    invalid = controller.compute(VesselState(x=2., stamp=.9), (0., 0., 0.), .1)
+    assert invalid.status == AlgorithmStatus.INVALID_INPUT
+    assert invalid.left == invalid.right == invalid.lateral == 0.
+
+
+def test_repeated_measurement_stamp_does_not_advance_alignment_timer():
+    controller_type, _ = components()
+    controller = controller_type(USVModel(), {"alignment_time": .2})
+    target = (0., 0., 0.)
+    controller.compute(VesselState(stamp=1.), target, .1)
+    assert controller.phase == "ALIGN"
+    controller.compute(VesselState(stamp=1.), target, .1)
+    controller.compute(VesselState(stamp=1.), target, .1)
+    assert controller.phase == "ALIGN"
+    controller.compute(VesselState(stamp=1.1), target, .1)
+    assert controller.phase == "HOLD"
+
+
+def test_station_controller_long_timestamp_gap_restarts_adrc_history():
+    controller_type, _ = components()
+    controller = controller_type(USVModel())
+    controller.compute(VesselState(x=2., stamp=1.), (0., 0., 0.), .1)
+    controller.speed_loop.integral_speed = 3.
+    command = controller.compute(VesselState(x=2., stamp=2.), (0., 0., 0.), .1)
+    assert command.status == AlgorithmStatus.SUCCESS
+    assert controller.last_sample_stamp == pytest.approx(2.)
+    assert abs(controller.speed_loop.integral_speed) < 3.
+
+
+def test_zero_fixed_heading_is_forwarded_as_zero_not_replaced_by_measured_heading():
+    controller_type, _ = components()
+    controller = controller_type(USVModel())
+    captured = []
+    original = controller.heading_loop.compute
+
+    def capture(desire_psi, *args, **kwargs):
+        captured.append(desire_psi)
+        return original(desire_psi, *args, **kwargs)
+
+    controller.heading_loop.compute = capture
+    controller.compute(VesselState(psi=.7, stamp=1.), (0., 0., 0.), .1)
+    assert captured and captured[-1] == pytest.approx(0.)
+
+
+@pytest.mark.parametrize("config", [{"position_speed_gain": -1.}, {"free_heading_yaw_damping": -1.},
+                                    {"alignment_time": 0.}, {"alignment_yaw_rate": -1.}])
+def test_station_nonnegative_outer_gains_are_validated(config):
+    controller_type, _ = components()
+    with pytest.raises(ValueError):
+        controller_type(USVModel(), config)
+
+
+def test_safety_override_rolls_back_unrealised_speed_integral_but_normal_observe_does_not():
+    from common.models import ControlCommand
+    controller_type, _ = components()
+    controller = controller_type(USVModel(), {"command_slew_rate": 10.})
+    command = controller.compute(VesselState(stamp=1.), (2., 0., 0.), .1)
+    integrated = controller.speed_loop.integral_speed
+    assert integrated > 0.
+    controller.observe_command(command)
+    assert controller.speed_loop.integral_speed == pytest.approx(integrated)
+
+    controller.reset()
+    command = controller.compute(VesselState(stamp=2.), (2., 0., 0.), .1)
+    assert controller.speed_loop.integral_speed > 0.
+    controller.observe_command(ControlCommand())
+    assert controller.speed_loop.integral_speed == pytest.approx(0.)
+
+
+def test_safety_override_rolls_back_unrealised_heading_integral():
+    from common.models import ControlCommand
+    controller_type, _ = components()
+    controller = controller_type(USVModel(), {"command_slew_rate": 10.})
+    command = controller.compute(VesselState(psi=.1, stamp=1.), (0., 0., 0.), .1)
+    assert command.left != pytest.approx(command.right)
+    assert controller.heading_loop.integral_heading > 0.
+    controller.observe_command(ControlCommand())
+    assert controller.heading_loop.integral_heading == pytest.approx(0.)
+
+
+def test_large_heading_error_reset_is_not_undone_by_tracking_anti_windup():
+    controller_type, _ = components()
+    controller = controller_type(USVModel())
+    controller.heading_loop.integral_heading = .2
+    controller.compute(VesselState(psi=1., stamp=1.), (0., 0., 0.), .1)
+    assert controller.heading_loop.integral_reset
+    assert controller.heading_loop.integral_heading == pytest.approx(0.)
+
+
+def test_internal_station_core_failure_is_atomic_and_returns_zero(monkeypatch):
+    controller_type, _ = components()
+    controller = controller_type(USVModel())
+
+    def fail(*args, **kwargs):
+        raise RuntimeError("simulated station core failure")
+
+    monkeypatch.setattr(controller.heading_loop, "compute", fail)
+    command = controller.compute(VesselState(stamp=1.), (0., 0., 0.), .1)
+
+    assert command.status == AlgorithmStatus.INVALID_INPUT
+    assert command.left == command.right == command.lateral == 0.
+    assert controller.speed_loop.integral_speed == pytest.approx(0.)
+    assert controller.heading_loop.integral_heading == pytest.approx(0.)
+    assert controller.last_sample_stamp is None
 
 
 @pytest.mark.parametrize('initial', [VesselState(x=2., y=2., psi=1.2),

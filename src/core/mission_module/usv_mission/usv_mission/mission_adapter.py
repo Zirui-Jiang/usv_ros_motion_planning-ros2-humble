@@ -71,15 +71,17 @@ class MissionAdapter:
             candidate = MissionManager(spec, target, n.now_seconds(), self.sequence + 1, dict(n.config))
             parameters = dict(n.config)
             parameters['dynamics.cruising_speed'] = spec.speed
-            for kind in ('pid', 'lqr'):
+            for kind in ('pid', 'lqr', 'adrc'):
                 parameters[C + kind + '_controller.goal_distance_tolerance'] = spec.position_tolerance
                 parameters[C + kind + '_controller.goal_speed_tolerance'] = .1
             parameters[T + 'los.goal_tolerance'] = min(spec.position_tolerance, parameters[T + 'los.goal_tolerance'])
             nav = create_controller(n.controller_name, replace(n.model, cruising_speed=spec.speed),
                                     section(parameters, C + n.controller_name + '_controller.'))
-            holding = StationKeepingController(n.model, {
+            holding_config = section(n.config, C + 'station_adrc_controller.')
+            holding_config.update({
                 'position_tolerance': spec.position_tolerance,
                 'heading_tolerance_deg': n.config.get('mission.heading_tolerance_deg', 5.0)})
+            holding = StationKeepingController(n.model, holding_config)
         except (ValueError, TypeError, ArithmeticError) as error:
             response.accepted, response.mission_id, response.reason = False, self.sequence, str(error)
             return response

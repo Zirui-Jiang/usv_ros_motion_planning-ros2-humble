@@ -182,7 +182,27 @@ def test_wall_cannot_be_jumped_by_long_motion_primitives():
     {"max_expansions": 1.2}, {"max_expansions": False}, {"obstacle_factor": 0.},
     {"heuristic_weight": .99}, {"heuristic_weight": math.nan},
     {"heuristic_weight": math.inf}, {"heuristic_weight": True},
+    {"turning_radius_multipliers": []}, {"turning_radius_multipliers": [0.5]},
+    {"turning_radius_multipliers": [1., True]}, {"turning_radius_multipliers": "1"},
 ])
 def test_bad_configuration_is_rejected_at_construction(change):
     with pytest.raises(ValueError):
         PathPlannerCore(options(**change))
+
+
+def test_default_curvatures_are_straight_and_minimum_radius():
+    planner = create_planner(options())
+    radius = planner.minimum_turning_radius
+    assert planner.turning_radius_multipliers == (1.,)
+    assert planner.curvatures == (0., 1. / radius, -1. / radius)
+
+
+def test_turning_radius_multipliers_add_shallower_arcs_and_still_plan():
+    planner = create_planner(options(turning_radius_multipliers=[2., 1., 1.]))
+    radius = planner.minimum_turning_radius
+    assert planner.turning_radius_multipliers == (1., 2.)
+    assert planner.curvatures == (0., 1. / radius, -1. / radius, .5 / radius, -.5 / radius)
+    result = PathPlannerCore(options(turning_radius_multipliers=[1., 2.])).make_plan(
+        (0., 0., 0.), (6., 0., 0.), scene())
+    assert result.success, result.message
+    assert_forward_curvature(result.path, 2.)

@@ -18,6 +18,7 @@ def test_hybrid_parameters_are_accepted_and_forwarded_as_flat_planner_keys():
         'path_planner.change_penalty': .3,
         'path_planner.cost_penalty': .2,
         'path_planner.footprint_padding': .25,
+        'path_planner.turning_radius_multipliers': [1, 2],
     })
     planner = section(values, 'path_planner.')
     assert values['planner_name'] == 'hybrid_astar'
@@ -26,6 +27,7 @@ def test_hybrid_parameters_are_accepted_and_forwarded_as_flat_planner_keys():
     assert planner['angle_bins'] == 96
     assert planner['heuristic_weight'] == 1.4
     assert planner['footprint_padding'] == .25
+    assert planner['turning_radius_multipliers'] == [1., 2.]
     with pytest.raises(ValueError, match='Restart'):
         validate_update(values, {'path_planner.minimum_turning_radius': 5.})
 
@@ -38,13 +40,14 @@ def test_hybrid_parameters_are_accepted_and_forwarded_as_flat_planner_keys():
     ('non_straight_penalty', .99), ('change_penalty', -.1),
     ('cost_penalty', -.1), ('footprint_padding', -.1),
     ('heuristic_weight', .99), ('heuristic_weight', float('inf')),
+    ('turning_radius_multipliers', []), ('turning_radius_multipliers', [0.5]),
 ])
 def test_hybrid_invalid_values_are_rejected(name, value):
     with pytest.raises(ValueError):
         resolve_parameters({'planner_name': 'hybrid_astar', 'path_planner.'+name: value})
 
 
-@pytest.mark.parametrize('name', ['minimum_turning_radius', 'angle_bins', 'motion_step',
+@pytest.mark.parametrize('name', ['minimum_turning_radius', 'turning_radius_multipliers', 'angle_bins', 'motion_step',
     'collision_step', 'analytic_expansion_max_length', 'non_straight_penalty',
     'change_penalty', 'cost_penalty', 'footprint_padding'])
 def test_hybrid_defaults_can_construct_a_valid_startup_configuration(name):

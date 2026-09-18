@@ -185,6 +185,16 @@ def test_control_tracks_then_cancels_and_rejects_old_identity_or_sequence(algori
         assert h.reports[-1].task_id == 2
 
 
+# Station keeping must consume its own read-only ADRC parameter section,
+# independent of the ordinary navigation controller selection.
+def test_station_adrc_parameters_are_injected_into_holding_controller():
+    with control_harness(extra_args=(
+            '-p', 'usv_simulation.controller.station_adrc_controller.k_p_speed:=17.0',
+            '-p', 'usv_simulation.controller.station_adrc_controller.command_limit:=0.25')) as h:
+        assert h.control.station_controller.config['k_p_speed'] == pytest.approx(17.0)
+        assert h.control.station_controller.config['command_limit'] == pytest.approx(.25)
+
+
 # 热参数在控制拍应用，PID 积分历史保持不变。
 def test_control_applies_hot_parameters_on_tick_without_resetting_pid():
     with control_harness() as h:

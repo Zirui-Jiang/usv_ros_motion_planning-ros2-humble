@@ -1,0 +1,184 @@
+digraph runtime_topic_graph {
+    graph [
+        rankdir=LR,
+        bgcolor="white",
+        pad=0.25,
+        nodesep=0.35,
+        ranksep=1.05,
+        splines=spline,
+        compound=true,
+        fontname="Arial",
+        fontsize=16,
+        label="ROS 2 runtime topic graph | domain 42 | 2026-09-18 04:03 MDT",
+        labelloc=t
+    ]
+
+    node [
+        fontname="Arial",
+        fontsize=10,
+        color="#2563eb",
+        fontcolor="#0f172a",
+        style="rounded,filled",
+        fillcolor="#e8f1ff",
+        shape=ellipse,
+        margin="0.12,0.08"
+    ]
+    edge [
+        fontname="Arial",
+        fontsize=8,
+        color="#64748b",
+        fontcolor="#334155",
+        arrowsize=0.7
+    ]
+
+    subgraph cluster_simulation {
+        label="Simulation and visualization"
+        color="#93c5fd"
+        style="rounded,dashed"
+        gazebo [label="Gazebo"]
+        gazebo_state [label="gazebo_ros_state"]
+        fake_localization [label="fake_localization"]
+        lidar [label="lidar"]
+        thrust_plugin [label="otter_usv_gazebo_thrust_plugin"]
+        robot_state_publisher [label="robot_state_publisher"]
+        joint_state_publisher [label="joint_state_publisher"]
+        rviz2 [label="RViz2"]
+    }
+
+    subgraph cluster_navigation {
+        label="Navigation modules"
+        color="#86efac"
+        style="rounded,dashed"
+        mapping [label="mapping"]
+        costmap [label="costmap"]
+        perception [label="usv_perception"]
+        decision [label="usv_simulation\n(decision)"]
+        control [label="usv_control"]
+    }
+
+    subgraph cluster_ladds {
+        label="LaDDS integration"
+        color="#fbbf24"
+        style="rounded,dashed"
+        ladds_bridge [label="usv_ladds_bridge"]
+        ladds_single_leg [label="ladds_single_leg"]
+    }
+
+    // Topic nodes: green = operational data, gray = shared runtime support.
+    node [shape=box, style="rounded,filled", color="#16a34a", fillcolor="#ecfdf5", fontsize=9]
+    scan_topic [label="/otter/sensors/lidars/\nlidar/scan"]
+    map_topic [label="/otter/map"]
+    mapping_status_topic [label="/otter/mapping_status"]
+    costmap_raw_topic [label="/otter/costmap_raw"]
+    costmap_topic [label="/otter/costmap"]
+    costmap_updates_topic [label="/otter/costmap_updates"]
+    odom_topic [label="/otter/odom"]
+    goal_topic [label="/otter/goal"]
+    global_path_topic [label="/otter/global_path"]
+    local_trajectory_topic [label="/otter/local_trajectory"]
+    reference_topic [label="/otter/navigation/\nreference"]
+    control_report_topic [label="/otter/navigation/\ncontrol_report"]
+    heartbeat_topic [label="/otter/navigation/\nheartbeat"]
+    navigation_status_topic [label="/otter/navigation_status"]
+    left_cmd_topic [label="/otter/thrusters/\nleft_thrust_cmd"]
+    right_cmd_topic [label="/otter/thrusters/\nright_thrust_cmd"]
+    lateral_cmd_topic [label="/otter/thrusters/\nlateral_thrust_cmd"]
+    model_states_topic [label="/gazebo/model_states"]
+    ladds_rx_topic [label="/ladds/rx"]
+    ladds_stop_rx_topic [label="/ladds/stop_rx"]
+    ladds_tx_topic [label="/ladds/tx"]
+    ladds_status_topic [label="/ladds/task_status"]
+    joint_states_topic [label="/joint_states"]
+    otter_joint_states_topic [label="/otter/joint_states"]
+    robot_description_topic [label="/robot_description"]
+
+    node [shape=box, style="rounded,filled", color="#94a3b8", fillcolor="#f8fafc", fontcolor="#334155", fontsize=9]
+    clock_topic [label="/clock\n14 sim-time subscribers"]
+    tf_topic [label="/tf\n5 navigation consumers"]
+    tf_static_topic [label="/tf_static\n5 navigation consumers"]
+    sim_time_clients [label="sim-time clients\n(aggregated)", shape=ellipse, fillcolor="#f1f5f9"]
+    tf_clients [label="TF consumers\n(aggregated)", shape=ellipse, fillcolor="#f1f5f9"]
+    tf_static_clients [label="static TF consumers\n(aggregated)", shape=ellipse, fillcolor="#f1f5f9"]
+
+    node [shape=box, style="rounded,dashed,filled", color="#dc2626", fillcolor="#fef2f2", fontcolor="#991b1b", fontsize=9]
+    lateral_sink [label="no subscriber\ndiscovered", shape=note]
+    map_sink [label="no subscriber\ndiscovered", shape=note]
+    mapping_status_sink [label="no subscriber\ndiscovered", shape=note]
+    otter_joint_states_sink [label="no subscriber\ndiscovered", shape=note]
+
+    // LiDAR and mapping/costmap chain.
+    lidar -> scan_topic
+    scan_topic -> mapping
+    scan_topic -> costmap
+    scan_topic -> rviz2 [style=dashed, color="#94a3b8", label="display"]
+    mapping -> map_topic
+    mapping -> mapping_status_topic
+    map_topic -> map_sink [style=dashed, color="#dc2626"]
+    mapping_status_topic -> mapping_status_sink [style=dashed, color="#dc2626"]
+    costmap -> costmap_raw_topic
+    costmap_raw_topic -> decision
+    costmap_raw_topic -> control
+    costmap -> costmap_topic
+    costmap_topic -> rviz2 [style=dashed, color="#94a3b8", label="display"]
+    costmap -> costmap_updates_topic
+    costmap_updates_topic -> rviz2 [style=dashed, color="#94a3b8", label="display"]
+
+    // Localization, planning, and control loop.
+    gazebo_state -> model_states_topic
+    model_states_topic -> fake_localization
+    fake_localization -> odom_topic
+    odom_topic -> decision
+    odom_topic -> control
+    rviz2 -> goal_topic
+    goal_topic -> decision
+    decision -> global_path_topic
+    global_path_topic -> rviz2 [style=dashed, color="#94a3b8", label="display"]
+    decision -> local_trajectory_topic
+    local_trajectory_topic -> rviz2 [style=dashed, color="#94a3b8", label="display"]
+    decision -> reference_topic
+    reference_topic -> control
+    control -> control_report_topic
+    control_report_topic -> decision
+    perception -> heartbeat_topic
+    decision -> heartbeat_topic
+    control -> heartbeat_topic
+    heartbeat_topic -> decision
+    heartbeat_topic -> control
+    decision -> navigation_status_topic
+    navigation_status_topic -> ladds_single_leg
+
+    // Thruster command outputs.
+    control -> left_cmd_topic
+    left_cmd_topic -> thrust_plugin
+    control -> right_cmd_topic
+    right_cmd_topic -> thrust_plugin
+    control -> lateral_cmd_topic
+    lateral_cmd_topic -> lateral_sink [style=dashed, color="#dc2626"]
+    thrust_plugin -> otter_joint_states_topic
+    otter_joint_states_topic -> otter_joint_states_sink [style=dashed, color="#dc2626"]
+
+    // LaDDS bridge loop.
+    ladds_bridge -> ladds_rx_topic
+    ladds_rx_topic -> ladds_single_leg
+    ladds_bridge -> ladds_stop_rx_topic
+    ladds_stop_rx_topic -> ladds_single_leg
+    ladds_single_leg -> ladds_tx_topic
+    ladds_tx_topic -> ladds_bridge
+    ladds_single_leg -> ladds_status_topic
+
+    // Shared simulation-time and frame transforms. Self-edges and ubiquitous
+    // /rosout and /parameter_events traffic are intentionally omitted.
+    gazebo -> clock_topic
+    clock_topic -> sim_time_clients [style=dashed, color="#94a3b8"]
+    fake_localization -> tf_topic
+    robot_state_publisher -> tf_topic
+    tf_topic -> tf_clients [style=dashed, color="#94a3b8"]
+    robot_state_publisher -> tf_static_topic
+    tf_static_topic -> tf_static_clients [style=dashed, color="#94a3b8"]
+    robot_state_publisher -> robot_description_topic
+    robot_description_topic -> joint_state_publisher
+    robot_description_topic -> rviz2 [style=dashed, color="#94a3b8", label="display"]
+    joint_state_publisher -> joint_states_topic
+    joint_states_topic -> robot_state_publisher
+
+}

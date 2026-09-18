@@ -43,6 +43,59 @@ DEFAULTS = {
     C + "lqr_controller.solve_timeout": 0.08,
     C + "lqr_controller.Q_matrix_diag": [1., 1., 100., 10., 10., 10.],
     C + "lqr_controller.R_matrix_diag": [20., 20.],
+    # 保留普通 ADRC 参数以便与控制节点共享完整参数快照；任务导航也可按共享配置选择 ADRC。
+    C + "adrc_controller.goal_distance_tolerance": 1.5,
+    C + "adrc_controller.goal_speed_tolerance": 0.25,
+    C + "adrc_controller.lookahead_time": 2.6,
+    C + "adrc_controller.command_limit": 1.0,
+    C + "adrc_controller.sample_time": 0.1,
+    C + "adrc_controller.max_sample_gap": 0.5,
+    C + "adrc_controller.k_p_speed": 8.0,
+    C + "adrc_controller.k_i_speed": 0.8,
+    C + "adrc_controller.force_min": -8.0,
+    C + "adrc_controller.force_max": 8.0,
+    C + "adrc_controller.speed_integral_min": -8.0,
+    C + "adrc_controller.speed_integral_max": 8.0,
+    C + "adrc_controller.k_p_heading": 1.5,
+    C + "adrc_controller.k_d_heading": 0.5,
+    C + "adrc_controller.k_i_heading": 0.03,
+    C + "adrc_controller.moment_min": -10.0,
+    C + "adrc_controller.moment_max": 10.0,
+    C + "adrc_controller.heading_integral_min": -0.25,
+    C + "adrc_controller.heading_integral_max": 0.25,
+    C + "adrc_controller.error_reset_deg": 20.0,
+    C + "adrc_controller.acceleration_gain": 0.0,
+    C + "adrc_controller.filter_window_length": 10,
+    C + "adrc_controller.filter_history_length": 50,
+    C + "station_adrc_controller.position_tolerance": .5,
+    C + "station_adrc_controller.heading_tolerance_deg": 5.,
+    C + "station_adrc_controller.position_speed_gain": .5,
+    C + "station_adrc_controller.recover_speed": .3,
+    C + "station_adrc_controller.recover_speed_tolerance": .04,
+    C + "station_adrc_controller.alignment_time": 1.,
+    C + "station_adrc_controller.alignment_yaw_rate": .02,
+    C + "station_adrc_controller.free_heading_yaw_damping": 10.,
+    C + "station_adrc_controller.k_p_speed": 30.,
+    C + "station_adrc_controller.k_i_speed": .8,
+    C + "station_adrc_controller.force_min": -20.,
+    C + "station_adrc_controller.force_max": 20.,
+    C + "station_adrc_controller.speed_integral_min": -8.,
+    C + "station_adrc_controller.speed_integral_max": 8.,
+    C + "station_adrc_controller.k_p_heading": 12.,
+    C + "station_adrc_controller.k_d_heading": 10.,
+    C + "station_adrc_controller.k_i_heading": .03,
+    C + "station_adrc_controller.moment_min": -8.,
+    C + "station_adrc_controller.moment_max": 8.,
+    C + "station_adrc_controller.heading_integral_min": -.25,
+    C + "station_adrc_controller.heading_integral_max": .25,
+    C + "station_adrc_controller.sample_time": .1,
+    C + "station_adrc_controller.max_sample_gap": .5,
+    C + "station_adrc_controller.error_reset_deg": 20.,
+    C + "station_adrc_controller.acceleration_gain": 0.,
+    C + "station_adrc_controller.filter_window_length": 10,
+    C + "station_adrc_controller.filter_history_length": 50,
+    C + "station_adrc_controller.command_limit": .4,
+    C + "station_adrc_controller.command_slew_rate": .6,
     T + "planner_name": "los",
     T + "los.trajectory_time_interval": 0.5, T + "los.trajectory_time": 20.0,
     T + "los.switch_dist": 5.0, T + "los.goal_tolerance": 1.0,
@@ -126,13 +179,13 @@ def validate_parameters(values):
             valid = isinstance(value, list) and all(type(v) in (int, float) and math.isfinite(v) for v in value)
         if not valid:
             raise ValueError(f"Invalid type or nonfinite parameter: {key}={value!r}")
-    for name in ("pid", "lqr"):
+    for name in ("pid", "lqr", "adrc"):
         key = C + name + "_controller.goal_distance_tolerance"
         validate_goal_distance_tolerance(values[key], key)
     if values["planner_name"] not in ("astar", "dijkstra", "gbfs"):
         raise ValueError("Only astar, dijkstra and gbfs are implemented")
-    if values[C + "controller_name"] not in ("pid", "lqr") or values[T + "planner_name"] != "los":
-        raise ValueError("Only PID/LQR controllers and LOS trajectory planner are implemented")
+    if values[C + "controller_name"] not in ("pid", "lqr", "adrc") or values[T + "planner_name"] != "los":
+        raise ValueError("Only PID/LQR/ADRC controllers and LOS trajectory planner are implemented")
     if not 0 < values["obstacle_factor"] <= 1:
         raise ValueError("obstacle_factor must be in (0,1]")
     if not -90 <= values["mission.geo.latitude"] <= 90 or not -180 <= values["mission.geo.longitude"] <= 180:
@@ -155,6 +208,58 @@ def validate_parameters(values):
         matrix = values[C + "lqr_controller." + suffix]
         if len(matrix) != length or any(v < 0 or (strictly_positive and v == 0) for v in matrix):
             raise ValueError(f"Invalid {suffix}")
+    adrc = C + "adrc_controller."
+    if values[adrc + "sample_time"] <= 0 or values[adrc + "max_sample_gap"] <= 0:
+        raise ValueError("ADRC sample_time and max_sample_gap must be positive")
+    if values[C + "controller_name"] == "adrc" and not math.isclose(
+            values[adrc + "sample_time"], 1.0 / values[C + "control_frequency"],
+            rel_tol=1e-9, abs_tol=1e-12):
+        raise ValueError("ADRC sample_time must equal the reciprocal of control_frequency")
+    if not 0 < values[adrc + "command_limit"] <= 1:
+        raise ValueError("ADRC command_limit must be in (0,1]")
+    for suffix in ("k_p_speed", "k_i_speed", "k_p_heading", "k_d_heading",
+                   "k_i_heading", "acceleration_gain"):
+        if values[adrc + suffix] < 0:
+            raise ValueError(f"ADRC {suffix} must be nonnegative")
+    if not 0 < values[adrc + "error_reset_deg"] <= 180:
+        raise ValueError("ADRC error_reset_deg must be in (0,180]")
+    for prefix in ("force", "speed_integral", "moment", "heading_integral"):
+        lower, upper = values[adrc + prefix + "_min"], values[adrc + prefix + "_max"]
+        if lower > 0 or upper < 0 or lower >= upper:
+            raise ValueError(f"ADRC {prefix} range must be ordered and contain zero")
+    window = values[adrc + "filter_window_length"]
+    history = values[adrc + "filter_history_length"]
+    if window < 2 or history < window or int(window) != window or int(history) != history:
+        raise ValueError("ADRC filter history must be at least the window length, and window must be >= 2")
+    station = C + "station_adrc_controller."
+    if not math.isclose(values[station + "sample_time"], 1.0 / values[C + "control_frequency"],
+                        rel_tol=1e-9, abs_tol=1e-12):
+        raise ValueError("station ADRC sample_time must equal the reciprocal of control_frequency")
+    if not 0 < values[station + "command_limit"] <= 1 or values[station + "command_slew_rate"] <= 0:
+        raise ValueError("Invalid station ADRC command envelope")
+    for key in ("position_tolerance", "heading_tolerance_deg", "recover_speed",
+                "recover_speed_tolerance", "alignment_time", "max_sample_gap"):
+        if values[station + key] <= 0:
+            raise ValueError(f"station ADRC {key} must be positive")
+    if values[station + "heading_tolerance_deg"] > 180:
+        raise ValueError("station ADRC heading_tolerance_deg must be in (0,180]")
+    if values[station + "position_speed_gain"] < 0 or values[station + "alignment_yaw_rate"] < 0 \
+            or values[station + "free_heading_yaw_damping"] < 0:
+        raise ValueError("station ADRC outer-loop gains must be nonnegative")
+    for suffix in ("k_p_speed", "k_i_speed", "k_p_heading", "k_d_heading",
+                   "k_i_heading", "acceleration_gain"):
+        if values[station + suffix] < 0:
+            raise ValueError(f"station ADRC {suffix} must be nonnegative")
+    for prefix in ("force", "speed_integral", "moment", "heading_integral"):
+        lower, upper = values[station + prefix + "_min"], values[station + prefix + "_max"]
+        if lower > 0 or upper < 0 or lower >= upper:
+            raise ValueError(f"station ADRC {prefix} range must be ordered and contain zero")
+    if not 0 < values[station + "error_reset_deg"] <= 180:
+        raise ValueError("station ADRC error_reset_deg must be in (0,180]")
+    window = values[station + "filter_window_length"]
+    history = values[station + "filter_history_length"]
+    if window < 2 or history < window or int(window) != window or int(history) != history:
+        raise ValueError("station ADRC filter history must be at least the window length, and window must be >= 2")
     USVModel.from_mapping(section(values, "dynamics."))
     return values
 
