@@ -122,13 +122,18 @@ def plan_navigation(request):
             # positive LOS stop radius. Keep it and validate a new connection.
             # 栅格中心在真实目标盘之外时追加真实目标，并先检查新增连接线段。
             connection = np.vstack((route[-1], request.goal))
-            if not path_is_clear_with_inflation_escape(
+            if path_is_clear_with_inflation_escape(
                     request.grid, connection, threshold, planner.planner.unknown_is_obstacle,
                     outline_map=planner.planner.outline_map,
                     allow_corner_cutting=planner.planner.allow_corner_cutting):
+                route = np.vstack((route, request.goal))
+                los_config['goal_tolerance'] = min(los_config['goal_tolerance'], controller_tolerance)
+            elif endpoint_offset <= float(cfg.get('path_planner.default_tolerance', 0.0)):
+                # Search already stopped on a free cell inside the configured
+                # goal relaxation. Do not force a blocked exact-goal segment.
+                pass
+            else:
                 return result(AlgorithmStatus.NO_PATH, message='goal connection failed grid collision validation')
-            route = np.vstack((route, request.goal))
-            los_config['goal_tolerance'] = min(los_config['goal_tolerance'], controller_tolerance)
         guidance = create_trajectory_planner(cfg[T + 'planner_name'], model, los_config)
         generated = guidance.plan(route, request.state)
         if generated.status not in (AlgorithmStatus.SUCCESS, AlgorithmStatus.GOAL_REACHED):

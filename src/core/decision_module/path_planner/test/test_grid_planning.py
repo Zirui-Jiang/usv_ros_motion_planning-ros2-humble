@@ -134,7 +134,8 @@ def test_clock_budget_is_enforced_deterministically(monkeypatch):
 # 配置错误在构造时立即抛出。
 @pytest.mark.parametrize("config", [{"planner_name": "rrt"}, {"timeout": 0}, {"obstacle_factor": 0},
                                      {"obstacle_factor": float("nan")}, {"max_expansions": 1.5},
-                                     {"max_expansions": 0}, {"enable_resample": True, "resample_ratio": 0}])
+                                     {"max_expansions": 0}, {"enable_resample": True, "resample_ratio": 0},
+                                     {"cost_penalty": -1}, {"default_tolerance": -0.1}])
 def test_configuration_errors_do_not_create_half_initialized_planners(config):
     with pytest.raises(ValueError):
         PathPlannerCore(config)
@@ -247,7 +248,7 @@ def test_escape_never_admits_hard_or_default_unknown_cells(costs):
     assert not path_is_clear_with_inflation_escape(scene, path, 63.5)
 
 
-# 即使起点可逃逸，高代价终点仍拒绝。
+# 即使起点可逃逸，高代价终点在零容差下仍拒绝。
 @pytest.mark.parametrize("costs", [[120], [120, 100, 75], [0, 75]])
 def test_soft_goal_is_still_blocked_even_when_start_can_escape(costs):
     scene = grid([costs])
@@ -255,6 +256,40 @@ def test_soft_goal_is_still_blocked_even_when_start_can_escape(costs):
     result = PathPlannerCore({"obstacle_factor": .25}).make_plan(path[0], path[-1], scene)
     assert result.status == AlgorithmStatus.NO_PATH and "blocked" in result.message
     assert not path_is_clear_with_inflation_escape(scene, path, 63.5)
+
+
+# 软膨胀终点可在容差内松弛到最近自由格，致命终点不能松弛。
+def test_soft_goal_snaps_to_nearest_free_cell_within_tolerance():
+    data = np.zeros((7, 7), dtype=np.uint8)
+    data[3, 5] = 80
+    result = PathPlannerCore({"obstacle_factor": .25, "default_tolerance": 1.5}).make_plan(
+        (1.5, 3.5, 0), (5.5, 3.5, 0.4), grid(data))
+    assert result.success
+    assert not np.allclose(result.path[-1, :2], [5.5, 3.5])
+    assert np.linalg.norm(result.path[-1, :2] - [5.5, 3.5]) <= 1.5 + 1e-9
+    assert result.path[-1, 2] == pytest.approx(0.4)
+
+
+def test_lethal_goal_cannot_be_relaxed_by_tolerance():
+    data = np.zeros((7, 7), dtype=np.uint8)
+    data[3, 5] = 254
+    result = PathPlannerCore({"default_tolerance": 5.0}).make_plan(
+        (1.5, 3.5, 0), (5.5, 3.5, 0), grid(data))
+    assert result.status == AlgorithmStatus.NO_PATH and "blocked" in result.message
+
+
+# 边权计入膨胀代价后，宁可走更长的自由绕行也不穿过低膨胀捷径。
+def test_cost_penalty_prefers_free_detour_over_inflated_shortcut():
+    data = np.zeros((5, 5), dtype=np.uint8)
+    data[1:4, 1:4] = 40
+    start, goal = (0.5, 2.5, 0), (4.5, 2.5, 0)
+    straight = PathPlannerCore({"obstacle_factor": .25}).make_plan(start, goal, grid(data))
+    detour = PathPlannerCore({"obstacle_factor": .25, "cost_penalty": 30.0}).make_plan(
+        start, goal, grid(data))
+    assert straight.success and detour.success
+    assert np.allclose(straight.path[:, 1], 2.5)
+    assert (np.min(np.abs(detour.path[:, 1] - 0.5)) < 1e-9
+            or np.min(np.abs(detour.path[:, 1] - 4.5)) < 1e-9)
 
 
 # 显式可通行未知格不成为重新进入膨胀区的入口。

@@ -39,6 +39,7 @@ def test_hybrid_parameters_are_accepted_and_forwarded_as_flat_planner_keys():
     ('angle_bins', 7), ('angle_bins', 72.), ('angle_bins', True),
     ('non_straight_penalty', .99), ('change_penalty', -.1),
     ('cost_penalty', -.1), ('footprint_padding', -.1),
+    ('default_tolerance', -.1),
     ('heuristic_weight', .99), ('heuristic_weight', float('inf')),
     ('turning_radius_multipliers', []), ('turning_radius_multipliers', [0.5]),
 ])

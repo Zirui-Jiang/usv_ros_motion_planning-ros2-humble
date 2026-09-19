@@ -14,6 +14,8 @@ def test_original_configuration_loads_and_aliases_work():
     assert p[C+"control_frequency"] == 10.0
     assert p[C+"pid_controller.k_p_speed"] == 2.0
     assert p["obstacle_factor"] == .05
+    assert p["path_planner.default_tolerance"] == 1.5
+    assert p["path_planner.cost_penalty"] == 20.0
     assert all(type(v) is float for v in p[C+"lqr_controller.Q_matrix_diag"])
 
 

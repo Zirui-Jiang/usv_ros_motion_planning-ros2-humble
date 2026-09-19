@@ -19,7 +19,11 @@ class AStarPathPlanner:
     ``obstacle_factor`` preserves the old threshold ``254 * factor``.
     A soft inflated start may escape through strictly descending costs, as
     in C++; after reaching free space no above-threshold cell is reachable.
-    Lethal cells, blocked goals and outlined boundaries cannot be escaped.
+    Lethal cells and outlined boundaries cannot be escaped. A soft-blocked
+    goal may be replaced by the nearest free cell within
+    ``default_tolerance`` metres; lethal or unknown goals cannot. Search
+    g-cost is geometric length plus ``cost_penalty * length * (raw/254)``
+    so residual inflation is detoured when a cheaper free route exists.
     Unknown cells are blocked unless explicitly allowed. Diagonal corner
     cutting defaults to the original behaviour and can be disabled.
     """
@@ -42,9 +46,40 @@ class AStarPathPlanner:
             raise ValueError("timeout must be positive and finite")
         if isinstance(self.max_expansions, bool) or not isinstance(self.max_expansions, (int, np.integer)) or self.max_expansions < 1:
             raise ValueError("max_expansions must be a positive integer")
+        self.cost_penalty = float(self.config.get("cost_penalty", 0.0))
+        self.default_tolerance = float(self.config.get("default_tolerance", 0.0))
+        if not np.isfinite(self.cost_penalty) or self.cost_penalty < 0:
+            raise ValueError("cost_penalty must be nonnegative and finite")
+        if not np.isfinite(self.default_tolerance) or self.default_tolerance < 0:
+            raise ValueError("default_tolerance must be nonnegative and finite")
         self.unknown_is_obstacle = bool(self.config.get("unknown_is_obstacle", True))
         self.allow_corner_cutting = bool(self.config.get("allow_corner_cutting", True))
         self.outline_map = bool(self.config.get("outline_map", False))
+
+    # 软膨胀终点就近松弛到容差内最近自由格；致命/未知格与零容差保持拒绝。
+    def _relax_soft_goal(self, target, goal_xy, grid, blocked, hard_blocked, costs):
+        """Return the nearest free cell within default_tolerance, or None."""
+        if not blocked[target[1], target[0]]:
+            return target
+        if hard_blocked[target[1], target[0]] or self.default_tolerance <= 0:
+            return None
+        radius = int(math.ceil(self.default_tolerance / grid.resolution))
+        best = None
+        for dy in range(-radius, radius + 1):
+            for dx in range(-radius, radius + 1):
+                nx, ny = target[0] + dx, target[1] + dy
+                if not (0 <= nx < grid.width and 0 <= ny < grid.height):
+                    continue
+                if blocked[ny, nx] or hard_blocked[ny, nx]:
+                    continue
+                world = grid.map_to_world(nx, ny)
+                distance = math.hypot(world[0] - goal_xy[0], world[1] - goal_xy[1])
+                if distance > self.default_tolerance + 1e-9:
+                    continue
+                key = (distance, int(costs[ny, nx]), ny, nx)
+                if best is None or key < best:
+                    best = key
+        return None if best is None else (best[3], best[2])
 
     # 输入起终点均为 (x米, y米, yaw弧度)，搜索过程中同时限制耗时和扩展次数。
     def plan(self, start, goal, grid: GridSnapshot) -> PlanResult:
@@ -83,8 +118,12 @@ class AStarPathPlanner:
                 hard_blocked[:, [0, -1]] = True
         except (ValueError, TypeError, AttributeError, OverflowError) as error:
             return result(AlgorithmStatus.INVALID_INPUT, str(error))
-        if hard_blocked[source[1], source[0]] or blocked[target[1], target[0]]:
+        if hard_blocked[source[1], source[0]]:
             return result(AlgorithmStatus.NO_PATH, "start or goal is blocked")
+        relaxed = self._relax_soft_goal(target, last[:2], grid, blocked, hard_blocked, costs)
+        if relaxed is None:
+            return result(AlgorithmStatus.NO_PATH, "start or goal is blocked")
+        target = relaxed
         if source == target:
             x, y = grid.map_to_world(*source)
             return result(AlgorithmStatus.SUCCESS, path=np.array([[x, y, last[2]]]))
@@ -132,7 +171,11 @@ class AStarPathPlanner:
                 neighbour = (nx, ny)
                 if neighbour in closed:
                     continue
-                cost = current_g + distance
+                step = distance
+                raw = int(costs[ny, nx])
+                if self.cost_penalty and raw != 255:
+                    step += self.cost_penalty * distance * (raw / 254.0)
+                cost = current_g + step
                 if cost >= best.get(neighbour, math.inf):
                     continue
                 best[neighbour], parents[neighbour] = cost, current

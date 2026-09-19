@@ -210,7 +210,7 @@ def validate_parameters(values):
         raise ValueError("path_planner.reuse_max_heading_error must be in (0, pi]")
     nonnegative = {k for k in HOT_PARAMETERS if ".k_" in k}
     nonnegative |= {"path_planner." + k for k in
-                    ("change_penalty", "cost_penalty", "footprint_padding")}
+                    ("change_penalty", "cost_penalty", "footprint_padding", "default_tolerance")}
     positive = {k for k in DEFAULTS if k.startswith("navigation.") and isinstance(DEFAULTS[k], float)}
     positive |= {"path_planner." + k for k in
                  ("minimum_turning_radius", "motion_step", "collision_step", "analytic_expansion_max_length",
