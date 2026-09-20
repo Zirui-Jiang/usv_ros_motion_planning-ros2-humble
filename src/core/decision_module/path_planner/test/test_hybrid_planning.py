@@ -206,3 +206,20 @@ def test_turning_radius_multipliers_add_shallower_arcs_and_still_plan():
         (0., 0., 0.), (6., 0., 0.), scene())
     assert result.success, result.message
     assert_forward_curvature(result.path, 2.)
+
+
+def test_reconstruct_preserves_the_radius_of_a_shallower_search_arc():
+    from path_planner.graph_planner.dubins import DubinsPath, advance_pose
+    from path_planner.graph_planner.hybrid_astar_planner import HybridAStarPathPlanner, _SearchNode
+
+    planner = HybridAStarPathPlanner(options(turning_radius_multipliers=[1., 2.]))
+    first = np.array([0., 0., 0.])
+    curvature = .5 / planner.minimum_turning_radius
+    endpoint = advance_pose(first, curvature, 2.)
+    node = _SearchNode(endpoint, 1., _SearchNode(first, 0.), curvature, 2.)
+
+    path = planner._reconstruct(
+        node, DubinsPath((), (), planner.minimum_turning_radius), first, endpoint, .2, 1e300)
+
+    np.testing.assert_allclose(np.linalg.norm(path[:, :2] - [0., 4.], axis=1), 4., atol=1e-7)
+    assert_forward_curvature(path, 4.)

@@ -198,7 +198,9 @@ class HybridAStarPathPlanner:
             if time.perf_counter() >= deadline:
                 raise TimeoutError("path reconstruction exceeded planning time budget")
             mode = "S" if edge.curvature == 0 else ("L" if edge.curvature > 0 else "R")
-            primitive = DubinsPath((mode,), (edge.distance,), self.minimum_turning_radius)
+            # 回放半径必须对应搜索边的实际曲率；缓弧不能按最小半径重新采样。
+            radius = self.minimum_turning_radius if edge.curvature == 0 else 1. / abs(edge.curvature)
+            primitive = DubinsPath((mode,), (edge.distance,), radius)
             samples = sample_dubins(edge.parent.pose, primitive, spacing)[1:]
             count += len(samples)
             if count > 2_000_000:
