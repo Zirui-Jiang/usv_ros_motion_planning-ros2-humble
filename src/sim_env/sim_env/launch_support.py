@@ -53,6 +53,11 @@ def common_arguments():
                               description="Start RViz"),
         DeclareLaunchArgument("headless", default_value="false", choices=["true", "false"],
                               description="Disable both Gazebo GUI and RViz"),
+        DeclareLaunchArgument(
+            "localization_odom_topic",
+            default_value="odom",
+            description="Relative topic name used by fake_localization for ground-truth odometry.",
+        ),
         *navigation_arguments(),
     ]
     for name, relative in PERCEPTION_CONFIGS:
@@ -132,7 +137,8 @@ def _simulation_nodes(context, settings):
                         "-z", str(pose["z"]), "-Y", str(pose["yaw"])], output="screen"),
         Node(package="sim_env", executable="fake_localization_node", name="fake_localization",
              namespace=namespace, output="screen",
-             parameters=[{"model_name": namespace, "use_sim_time": settings.use_sim_time}]),
+             parameters=[{"model_name": namespace, "use_sim_time": settings.use_sim_time}],
+             remappings=_localization_remappings(context)),
     ]
     if rviz:
         nodes.append(Node(
@@ -142,12 +148,22 @@ def _simulation_nodes(context, settings):
     return nodes
 
 
+# 仅在真值话题不是默认 odom 时改名，避免与接收节点解出的 /otter/odom 双发布。
+def _localization_remappings(context):
+    topic = _value(context, "localization_odom_topic").strip() or "odom"
+    if topic == "odom":
+        return []
+    return [("odom", topic)]
+
+
 # 按模块所属包加载 launch，并转发同一组启动参数。
 def _include_module(context, name):
     from ament_index_python.packages import get_package_share_directory
     from launch.actions import IncludeLaunchDescription
     from launch.launch_description_sources import PythonLaunchDescriptionSource
     arguments = {argument: _value(context, argument) for argument in COMMON_ARGUMENT_NAMES}
+    if name == "simulation_support":
+        arguments["localization_odom_topic"] = _value(context, "localization_odom_topic")
     return IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(
             get_package_share_directory(MODULE_ENTRIES[name]), "launch", name + ".launch.py")),

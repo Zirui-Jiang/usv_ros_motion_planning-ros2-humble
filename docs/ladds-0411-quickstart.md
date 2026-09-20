@@ -1,28 +1,30 @@
-# LaDDS 0411 本船导航上行
+# LaDDS 0411 本船导航
 
-本阶段不改变感知、决策和航控三个业务模块之间已有的 ROS 2 通讯。`0411` 由现有
-`usv_ladds_bridge` 直接订阅 `/otter/odom`，转换成 JSON 后通过同一个 LaDDS 连接发到
-外部主题 `0411`。
-
-外部链路如下：
+感知 → 决策的本船导航走协议 `0411`。仿真真值不再直接给决策/航控当 `odom`；
+发布节点把它编成 0411 发到 LaDDS，**接收节点订阅 0411 后再解成** `nav_msgs/Odometry`。
 
 ```text
-/otter/odom
-    ↓
-usv_ladds_bridge（WGS84 / 节 / 真北艏向转换）
-    ↓
-LaDDS 0411
+fake_localization  /otter/odom_gt
+        ↓
+usv_ladds_outbound   编码 0411 JSON
+        ├──────────► LaDDS 主题 0411（岸基/工具）
+        └──────────► /ladds/ownship_0411
+                         ↓
+              usv_ladds_inbound 订阅 0411
+                         ↓
+                   /otter/odom
+              决策 / 航控订阅这份 odom
 ```
 
-原有任务链保持不变：外部 `0211` 进入 `/ladds/rx`，外部 `0331` 进入
-`/ladds/stop_rx`，实际完成反馈 `0052` 由 `/ladds/tx` 发出。`0052` 和 `0411` 共用一个
-LaDDS 句柄，只按不同主题注册发布端，不需要再启动第二个 Windows 中继。ROS 侧桥和
-Windows 中继必须使用本分支对应版本；旧中继只认识无主题字段的发送帧，会把 0411 请求
-误发到默认发送主题。
+接收节点也会对 LaDDS 主题 `0411` 做 DDS 订阅。同一句柄通常收不到自己刚发的包，
+因此仿真回灌走 ROS 话题 `/ladds/ownship_0411`；外部发来的 0411 仍可从 DDS 解进 `/otter/odom`。
+
+0211 / 0331 / 0052 任务链不变。`0052` 与 `0411` 仍共用一个 LaDDS 句柄。ROS 侧桥和
+Windows 中继必须使用本分支对应版本。
 
 ## 启动参数
 
-Windows 中继使用同一个进程注册两个发布主题：
+Windows 中继注册 0411 发布端和 0411 订阅端：
 
 ```powershell
 .\scripts\start_ladds_relay.ps1 `
@@ -30,10 +32,21 @@ Windows 中继使用同一个进程注册两个发布主题：
   -ReceiveTopic '0211' `
   -StopReceiveTopic '0331' `
   -SendTopic '0052' `
-  -OwnshipSendTopic '0411'
+  -OwnshipSendTopic '0411' `
+  -OwnshipReceiveTopic '0411'
 ```
 
-ROS 2 侧仍使用原来的单腿联调入口：
+仿真真值改到 `odom_gt`，避免和接收节点解出的 `/otter/odom` 抢发布者：
+
+```bash
+source /opt/ros/humble/setup.bash
+export ROS_DOMAIN_ID=196
+export ROS_LOCALHOST_ONLY=1
+ros2 launch sim_env main.launch.py world:=ocean headless:=true \
+  localization_odom_topic:=odom_gt
+```
+
+ROS 2 侧单腿联调入口：
 
 ```bash
 source /opt/ros/humble/setup.bash
@@ -46,14 +59,17 @@ ros2 launch usv_ladds_bridge single_leg.launch.py use_sim_time:=true
 
 ```yaml
 ownship_send_topic: "0411"
-ownship_input_topic: "/otter/odom"
+ownship_receive_topic: "0411"
+ownship_input_topic: "/otter/odom_gt"
+ownship_json_topic: "/ladds/ownship_0411"
+ownship_output_topic: "/otter/odom"
 origin_latitude: 30.5453
 origin_longitude: 114.392931
 origin_altitude: 0.0
 ```
 
-实际船舶或其他仿真场景需要把 `ownship_input_topic` 改成定位模块实际发布的
-`nav_msgs/msg/Odometry` 话题，并把原点改成对应的 WGS84 基准点。
+实际船舶需要把 `ownship_input_topic` 改成定位模块的 `nav_msgs/msg/Odometry`，
+并把原点改成对应 WGS84 基准点。决策和航控仍订相对名 `odom`，由接收节点发布。
 
 ## 0411 JSON
 
@@ -74,17 +90,20 @@ origin_altitude: 0.0
 - `heading`：真北为 0°，顺时针增加；
 - `angularZ`：度每秒。
 
-附件中的二进制定点精度暂不在 ROS JSON 层量化；将来如果外部工具要求定点二进制，
-应在 LaDDS 编解码层单独增加量化规则。
+0411 没有时间戳和横漂速度。接收节点订内部 `/ladds/ownship_0411` 时，用发布节点缓存的源
+odom 头（stamp / frame_id / child_frame_id）回填，以便和 `fake_localization` 的 TF
+对齐。从 DDS 收到的外部 0411 使用接收节点时钟和配置的 `ownship_frame_id`。
+解回的 `twist.linear.y` 固定为 0。
+
+附件中的二进制定点精度暂不在 ROS JSON 层量化。
 
 ## 验证重点
 
-先确认 `/otter/odom` 持续有数据，再让外部 DDS 订阅主题 `0411`。当前代码已经用替身
-LaDDS、TCP 中继和纯转换测试验证了：
+先确认 `/otter/odom_gt` 持续有数据，再看 `/ladds/ownship_0411` 和 `/otter/odom`。
+决策/航控应订 `/otter/odom` 且该话题的发布者是 `usv_ladds_inbound`。
+外部工具仍订阅域 1、主题 `0411`。当前代码用替身 LaDDS、TCP 中继和纯转换测试验证了：
 
-- `0052` 与 `0411` 可以在同一个客户端上注册为两个发布主题；
+- 同一客户端可注册 0411 发布与 0411 订阅；
 - 普通 `/ladds/tx` 仍发送到 `0052`；
 - 0411 发送请求携带主题 `0411`；
-- 本地 ENU、ROS yaw、米每秒和弧度每秒能够转换成 0411 的字段单位。
-
-真实 Windows SDK 对“同一句柄注册两个发布主题”的现场互通仍需要用外部工具确认。
+- 本地 ENU、ROS yaw、米每秒和弧度每秒能编成 0411 再解回。

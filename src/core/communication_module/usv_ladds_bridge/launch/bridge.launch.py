@@ -23,10 +23,13 @@ def generate_launch_description() -> LaunchDescription:
     relay_host = LaunchConfiguration("relay_host")
     relay_port = LaunchConfiguration("relay_port")
     relay_timeout = LaunchConfiguration("relay_timeout")
+    obstacle_input_topic = LaunchConfiguration("obstacle_input_topic")
+    obstacle_send_topic = LaunchConfiguration("obstacle_send_topic")
+    use_sim_time = LaunchConfiguration("use_sim_time")
     bridge = Node(
         package="usv_ladds_bridge",
         executable="usv_ladds_bridge_node",
-        name="usv_ladds_bridge",
+        name="usv_ladds_inbound",
         output="screen",
         parameters=[
             parameters_file,
@@ -35,6 +38,14 @@ def generate_launch_description() -> LaunchDescription:
                 "relay_host": relay_host,
                 "relay_port": ParameterValue(relay_port, value_type=int),
                 "relay_timeout": ParameterValue(relay_timeout, value_type=float),
+                "obstacle_input_topic": ParameterValue(
+                    obstacle_input_topic, value_type=str
+                ),
+                # 0141 前导零会被 YAML 1.1 当成八进制整数 97，必须强制为字符串。
+                "obstacle_send_topic": ParameterValue(
+                    obstacle_send_topic, value_type=str
+                ),
+                "use_sim_time": ParameterValue(use_sim_time, value_type=bool),
             },
         ],
     )
@@ -65,6 +76,21 @@ def generate_launch_description() -> LaunchDescription:
                 "relay_timeout",
                 default_value="5.0",
                 description="TCP relay connection timeout in seconds.",
+            ),
+            DeclareLaunchArgument(
+                "obstacle_input_topic",
+                default_value="/ladds/obstacle_tx",
+                description="ROS String topic carrying the 0141 obstacle JSON.",
+            ),
+            DeclareLaunchArgument(
+                "obstacle_send_topic",
+                default_value="0141",
+                description="LaDDS publication topic for obstacle JSON.",
+            ),
+            DeclareLaunchArgument(
+                "use_sim_time",
+                default_value="false",
+                description="Use the /clock topic for 0411→odom stamps without a source header.",
             ),
             RegisterEventHandler(
                 OnProcessExit(

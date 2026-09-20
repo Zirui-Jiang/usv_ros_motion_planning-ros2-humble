@@ -1,4 +1,4 @@
-usv_ladds_bridge:
+usv_ladds_inbound:
   ros__parameters:
     # Windows 原生 LaDDS 由 TCP relay 转发给 WSL 中的 ROS 2 节点。
     backend: "tcp"
@@ -14,10 +14,20 @@ usv_ladds_bridge:
     # 字符串引号不可去掉，否则 YAML 会丢失前导零。
     send_topic: "0211"
     ownship_send_topic: "0411"
+    obstacle_send_topic: "0141"
     receive_topic: "0211"
     # 通用透传默认不启用；航路/停船联调使用 single_leg.yaml 中的 "0331"。
     stop_receive_topic: ""
+    ownship_receive_topic: "0411"
+    obstacle_receive_topic: "0141"
     ownship_input_topic: ""
+    obstacle_input_topic: "/ladds/obstacle_tx"
+    ownship_output_topic: ""
+    obstacle_output_topic: ""
+    ownship_json_topic: "/ladds/ownship_0411"
+    obstacle_json_topic: "/ladds/obstacle_0141"
+    ownship_frame_id: "otter/odom"
+    ownship_child_frame_id: "otter/base_link"
     origin_latitude: 30.5453
     origin_longitude: 114.392931
     origin_altitude: 0.0

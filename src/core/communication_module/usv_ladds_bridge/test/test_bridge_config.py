@@ -1,9 +1,11 @@
 """ROS-independent tests for bridge parameter validation and payload decoding."""
 
-import pytest
-
 from dataclasses import dataclass
+from pathlib import Path
 import json
+
+import pytest
+import yaml
 
 from usv_ladds_bridge.config import (
     BridgeConfig,
@@ -11,6 +13,7 @@ from usv_ladds_bridge.config import (
     drain_received,
     packet_info_json,
     receive_channel,
+    validate_obstacle_payload,
 )
 
 
@@ -28,6 +31,20 @@ def test_optional_stop_subscription_has_explicit_topic_routing():
     assert receive_channel('0331', config.receive_topic, config.stop_receive_topic) == 'stop'
     assert receive_channel('0211', config.receive_topic, config.stop_receive_topic) == 'route'
     assert receive_channel('0111', config.receive_topic, config.stop_receive_topic) is None
+    assert receive_channel(
+        '0411',
+        config.receive_topic,
+        config.stop_receive_topic,
+        config.ownship_receive_topic,
+        config.obstacle_receive_topic,
+    ) == 'ownship'
+    assert receive_channel(
+        '0141',
+        config.receive_topic,
+        config.stop_receive_topic,
+        config.ownship_receive_topic,
+        config.obstacle_receive_topic,
+    ) == 'obstacle'
     assert receive_channel('0331', '0211', '') == 'route'  # generic bridge compatibility
     with pytest.raises(ValueError, match='different'):
         BridgeConfig.from_mapping({'stop_receive_topic': '0211'})
@@ -59,10 +76,12 @@ def test_tcp_backend_does_not_require_native_library():
         ({"send_topic": ""}, "send_topic"),
         ({"ownship_send_topic": ""}, "ownship_send_topic"),
         ({"receive_topic": ""}, "receive_topic"),
+        ({"ownship_receive_topic": "0211"}, "ownship_receive_topic"),
         ({"backend": "udp"}, "backend"),
         ({"relay_port": 0}, "relay_port"),
         ({"relay_port": 65536}, "relay_port"),
         ({"relay_timeout": 0.0}, "relay_timeout"),
+        ({"ownship_json_topic": "/ladds/0411"}, "must not start with a number"),
     ],
 )
 def test_invalid_transport_limits_are_rejected(override, message):
@@ -89,8 +108,18 @@ def test_default_transport_parameters_match_bridge_contract():
     assert config.qos == "best_effort"
     assert config.send_topic == "0211"
     assert config.ownship_send_topic == "0411"
+    assert config.obstacle_send_topic == "0141"
     assert config.ownship_input_topic == ""
+    assert config.obstacle_input_topic == "/ladds/obstacle_tx"
     assert config.receive_topic == "0211"
+    assert config.ownship_receive_topic == "0411"
+    assert config.obstacle_receive_topic == "0141"
+    assert config.ownship_output_topic == "/otter/odom"
+    assert config.obstacle_output_topic == "/otter/ladds_targets"
+    assert config.ownship_json_topic == "/ladds/ownship_0411"
+    assert config.obstacle_json_topic == "/ladds/obstacle_0141"
+    assert config.ownship_frame_id == "otter/odom"
+    assert config.ownship_child_frame_id == "otter/base_link"
     assert config.src == 0
     assert config.dst == 0
     assert config.encryption is False
@@ -108,6 +137,87 @@ def test_ownship_transport_topic_and_ros_input_are_configurable():
     assert config.send_topic == "0052"
     assert config.ownship_send_topic == "0411"
     assert config.ownship_input_topic == "/otter/odom"
+
+
+def test_ownship_output_and_json_topics_are_configurable():
+    config = BridgeConfig.from_mapping({
+        "ownship_receive_topic": "0411",
+        "ownship_output_topic": "/boat/odom",
+        "ownship_json_topic": "/ladds/ownship",
+        "ownship_frame_id": "boat/odom",
+        "ownship_child_frame_id": "boat/base_link",
+    })
+    assert config.ownship_receive_topic == "0411"
+    assert config.ownship_output_topic == "/boat/odom"
+    assert config.ownship_json_topic == "/ladds/ownship"
+    assert config.ownship_frame_id == "boat/odom"
+    assert config.ownship_child_frame_id == "boat/base_link"
+
+
+def test_obstacle_transport_topic_and_ros_input_are_configurable():
+    config = BridgeConfig.from_mapping({
+        "obstacle_send_topic": "0141",
+        "obstacle_input_topic": "/navigation/obstacles",
+    })
+    assert config.obstacle_send_topic == "0141"
+    assert config.obstacle_input_topic == "/navigation/obstacles"
+
+
+# YAML 1.1 会把未加引号的 0141 读成八进制整数 97，桥参数必须保持字符串。
+def test_bridge_yaml_keeps_ladds_topic_ids_as_strings():
+    config_dir = Path(__file__).resolve().parents[1] / "config"
+    topic_keys = (
+        "send_topic",
+        "ownship_send_topic",
+        "obstacle_send_topic",
+        "receive_topic",
+        "stop_receive_topic",
+        "ownship_receive_topic",
+        "obstacle_receive_topic",
+    )
+    for filename in ("bridge.yaml", "single_leg.yaml"):
+        loaded = yaml.safe_load((config_dir / filename).read_text(encoding="utf-8"))
+        params = next(iter(loaded.values()))["ros__parameters"]
+        for key in topic_keys:
+            if key not in params or params[key] in ("", None):
+                continue
+            assert isinstance(params[key], str), f"{filename} {key}={params[key]!r}"
+        assert params["obstacle_send_topic"] == "0141"
+        assert params["ownship_send_topic"] == "0411"
+        if "ownship_json_topic" in params and params["ownship_json_topic"]:
+            assert params["ownship_json_topic"] == "/ladds/ownship_0411"
+        if "obstacle_json_topic" in params and params["obstacle_json_topic"]:
+            assert params["obstacle_json_topic"] == "/ladds/obstacle_0141"
+
+
+@pytest.mark.parametrize(
+    ("text", "message"),
+    [
+        ('{"count": 1, "targets": []}', "count must match"),
+        ('{"count": 1, "targets": [{} ,  {}]}', "count must match"),
+        ('{"count": 1, "targets": [1]}', r"targets\[0\] must be an object"),
+        ('{"count": true, "targets": []}', "count must be an integer"),
+        ('{"count": 256, "targets": []}', "count must be in"),
+        ('{"count": 0, "targets": {}}', "targets must be a list"),
+        ('{"count": 0}', "missing required field: targets"),
+        ('[]', "root must be an object"),
+        ('not-json', "invalid obstacle JSON"),
+    ],
+)
+def test_obstacle_payload_validation_rejects_invalid_count_or_targets(text, message):
+    with pytest.raises(ValueError, match=message):
+        validate_obstacle_payload(text)
+
+
+def test_obstacle_payload_validation_keeps_target_attributes_opaque():
+    text = (
+        '{"count":1,"targets":[{"batch":7,"longitude":114.3,'
+        '"vendorField":"原样保留"}]}'
+    )
+    payload = validate_obstacle_payload(text)
+    assert payload["count"] == 1
+    assert payload["targets"][0]["batch"] == 7
+    assert payload["targets"][0]["vendorField"] == "原样保留"
 
 
 def test_decode_utf8_returns_text_only_for_valid_utf8():

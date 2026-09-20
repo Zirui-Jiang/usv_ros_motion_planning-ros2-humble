@@ -94,6 +94,14 @@ def test_tcp_relay_forwards_selected_publish_topic(relay_pair):
     assert dds.sent == [('0411', b'0411-json')]
 
 
+def test_tcp_relay_forwards_obstacle_publish_topic(relay_pair):
+    dds, _, client = relay_pair
+
+    client.send(b'0141-json', topic='0141')
+
+    assert dds.sent == [('0141', b'0141-json')]
+
+
 def test_client_keeps_rx_coalesced_in_same_tcp_read_as_hello():
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listener.bind(("127.0.0.1", 0))

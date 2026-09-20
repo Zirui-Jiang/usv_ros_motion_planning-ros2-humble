@@ -7,6 +7,9 @@
     [string]$StopReceiveTopic = '',
     [string]$SendTopic = '',
     [string]$OwnshipSendTopic = '0411',
+    [string]$ObstacleSendTopic = '0141',
+    [string]$OwnshipReceiveTopic = '0411',
+    [string]$ObstacleReceiveTopic = '0141',
     [ValidateSet('best_effort', 'reliable')][string]$Qos = 'best_effort',
     [string]$BindIp = '',
     [string]$LibraryPath = 'D:\自主航行设计文档\0. LaDDS说明\dds联调工具\LaDDS.dll',
@@ -41,11 +44,15 @@ try {
     # SDK 在运行目录查找原有授权；不复制或更改授权文件。
     Push-Location -LiteralPath (Split-Path -Parent $laddsLibrary)
     try {
-        Write-Host "LaDDS: domain=$DomainId receive=$ReceiveTopic stop=$StopReceiveTopic send=$SendTopic ownship=$OwnshipSendTopic qos=$Qos; TCP=$ListenAddress`:$Port"
+        Write-Host "LaDDS: domain=$DomainId receive=$ReceiveTopic stop=$StopReceiveTopic ownship-rx=$OwnshipReceiveTopic obstacle-rx=$ObstacleReceiveTopic send=$SendTopic ownship=$OwnshipSendTopic obstacle=$ObstacleSendTopic qos=$Qos; TCP=$ListenAddress`:$Port"
         $laddsArgs = @('-u', '-m', 'usv_ladds_bridge.relay', '--library', $laddsLibrary,
             '--listen', $ListenAddress, '--port', "$Port", '--domain-id', "$DomainId",
             '--send-topic', $SendTopic, '--ownship-send-topic', $OwnshipSendTopic,
-            '--receive-topic', $ReceiveTopic, '--qos', $Qos)
+            '--obstacle-send-topic', $ObstacleSendTopic,
+            '--receive-topic', $ReceiveTopic,
+            '--ownship-receive-topic', $OwnshipReceiveTopic,
+            '--obstacle-receive-topic', $ObstacleReceiveTopic,
+            '--qos', $Qos)
         if ($BindIp) { $laddsArgs += @('--bind-ip', $BindIp) }
         if ($StopReceiveTopic) { $laddsArgs += @('--stop-receive-topic', $StopReceiveTopic) }
         & $PythonExe @laddsArgs

@@ -3,7 +3,8 @@
 from dataclasses import dataclass
 import json
 import os
-from typing import Any, List, Mapping, Optional
+import threading
+from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 
 @dataclass(frozen=True)
@@ -21,9 +22,19 @@ class BridgeConfig:
     qos: str = "best_effort"
     send_topic: str = "0211"
     ownship_send_topic: str = "0411"
+    obstacle_send_topic: str = "0141"
     receive_topic: str = "0211"
     stop_receive_topic: str = ""
+    ownship_receive_topic: str = "0411"
+    obstacle_receive_topic: str = "0141"
     ownship_input_topic: str = ""
+    obstacle_input_topic: str = "/ladds/obstacle_tx"
+    ownship_output_topic: str = "/otter/odom"
+    obstacle_output_topic: str = "/otter/ladds_targets"
+    ownship_json_topic: str = "/ladds/ownship_0411"
+    obstacle_json_topic: str = "/ladds/obstacle_0141"
+    ownship_frame_id: str = "otter/odom"
+    ownship_child_frame_id: str = "otter/base_link"
     origin_latitude: float = 30.5453
     origin_longitude: float = 114.392931
     origin_altitude: float = 0.0
@@ -65,9 +76,25 @@ class BridgeConfig:
             qos=str(values.get("qos", "best_effort")),
             send_topic=str(values.get("send_topic", "0211")),
             ownship_send_topic=str(values.get("ownship_send_topic", "0411")),
+            obstacle_send_topic=str(values.get("obstacle_send_topic", "0141")),
             receive_topic=str(values.get("receive_topic", "0211")),
             stop_receive_topic=str(values.get("stop_receive_topic", "")),
+            ownship_receive_topic=str(values.get("ownship_receive_topic", "0411")),
+            obstacle_receive_topic=str(values.get("obstacle_receive_topic", "0141")),
             ownship_input_topic=str(values.get("ownship_input_topic", "")),
+            obstacle_input_topic=str(
+                values.get("obstacle_input_topic", "/ladds/obstacle_tx")
+            ),
+            ownship_output_topic=str(values.get("ownship_output_topic", "/otter/odom")),
+            obstacle_output_topic=str(
+                values.get("obstacle_output_topic", "/otter/ladds_targets")
+            ),
+            ownship_json_topic=str(values.get("ownship_json_topic", "/ladds/ownship_0411")),
+            obstacle_json_topic=str(values.get("obstacle_json_topic", "/ladds/obstacle_0141")),
+            ownship_frame_id=str(values.get("ownship_frame_id", "otter/odom")),
+            ownship_child_frame_id=str(
+                values.get("ownship_child_frame_id", "otter/base_link")
+            ),
             origin_latitude=float(values.get("origin_latitude", 30.5453)),
             origin_longitude=float(values.get("origin_longitude", 114.392931)),
             origin_altitude=float(values.get("origin_altitude", 0.0)),
@@ -100,12 +127,49 @@ class BridgeConfig:
             raise ValueError("send_topic must not be empty")
         if not self.ownship_send_topic.strip():
             raise ValueError("ownship_send_topic must not be empty")
+        if not self.obstacle_send_topic.strip():
+            raise ValueError("obstacle_send_topic must not be empty")
         if not self.receive_topic.strip():
             raise ValueError("receive_topic must not be empty")
         if self.stop_receive_topic and self.stop_receive_topic == self.receive_topic:
             raise ValueError('stop_receive_topic must be different from receive_topic')
         if self.stop_receive_topic and not self.stop_receive_topic.strip():
             raise ValueError('stop_receive_topic must be empty or a non-blank topic')
+        for name, topic in (
+            ("ownship_receive_topic", self.ownship_receive_topic),
+            ("obstacle_receive_topic", self.obstacle_receive_topic),
+        ):
+            if topic and topic == self.receive_topic:
+                raise ValueError(f"{name} must be different from receive_topic")
+            if topic and self.stop_receive_topic and topic == self.stop_receive_topic:
+                raise ValueError(f"{name} must be different from stop_receive_topic")
+        if (
+            self.ownship_receive_topic
+            and self.obstacle_receive_topic
+            and self.ownship_receive_topic == self.obstacle_receive_topic
+        ):
+            raise ValueError("ownship_receive_topic must be different from obstacle_receive_topic")
+        if self.ownship_json_topic and not self.ownship_json_topic.strip():
+            raise ValueError("ownship_json_topic must be empty or a non-blank topic")
+        if self.obstacle_json_topic and not self.obstacle_json_topic.strip():
+            raise ValueError("obstacle_json_topic must be empty or a non-blank topic")
+        if self.ownship_output_topic and not self.ownship_output_topic.strip():
+            raise ValueError("ownship_output_topic must be empty or a non-blank topic")
+        if self.obstacle_output_topic and not self.obstacle_output_topic.strip():
+            raise ValueError("obstacle_output_topic must be empty or a non-blank topic")
+        for name, topic in (
+            ("ownship_input_topic", self.ownship_input_topic),
+            ("obstacle_input_topic", self.obstacle_input_topic),
+            ("ownship_output_topic", self.ownship_output_topic),
+            ("obstacle_output_topic", self.obstacle_output_topic),
+            ("ownship_json_topic", self.ownship_json_topic),
+            ("obstacle_json_topic", self.obstacle_json_topic),
+        ):
+            _reject_numeric_ros_token(name, topic)
+        if not self.ownship_frame_id.strip():
+            raise ValueError("ownship_frame_id must not be empty")
+        if not self.ownship_child_frame_id.strip():
+            raise ValueError("ownship_child_frame_id must not be empty")
         if not -90.0 <= self.origin_latitude <= 90.0:
             raise ValueError("origin_latitude must be between -90 and 90")
         if not -180.0 <= self.origin_longitude <= 180.0:
@@ -122,6 +186,17 @@ class BridgeConfig:
             raise ValueError("poll_interval_sec must be greater than zero")
 
 
+# ROS 话题每一段不能以数字开头；LaDDS 主题 0411/0141 不能直接当 ROS 名。
+def _reject_numeric_ros_token(name: str, value: str) -> None:
+    if not value or not value.strip():
+        return
+    for token in value.strip().strip("/").split("/"):
+        if token and token[0].isdigit():
+            raise ValueError(
+                f"{name} ROS topic token must not start with a number: {value}"
+            )
+
+
 def decode_utf8(payload: bytes) -> Optional[str]:
     """Return decoded text only when the complete payload is valid UTF-8."""
     try:
@@ -130,15 +205,82 @@ def decode_utf8(payload: bytes) -> Optional[str]:
         return None
 
 
-def receive_channel(topic: str, receive_topic: str, stop_topic: str) -> Optional[str]:
+def validate_obstacle_payload(text: str) -> Dict[str, Any]:
+    """Validate the structural part of a 0141 obstacle JSON payload.
+
+    The 0141 protocol defines the top-level ``count`` and ``targets`` fields,
+    but the project does not yet have a single authoritative producer for all
+    semantic target attributes.  We therefore validate the fields that make the
+    list unambiguous and leave the per-target attributes untouched.  The caller
+    can then forward the original UTF-8 JSON bytes without changing its field
+    names, numeric precision, or optional values.
+    """
+    if not isinstance(text, str):
+        raise ValueError("obstacle payload must be JSON text")
+    try:
+        root = json.loads(text)
+    except (json.JSONDecodeError, TypeError, ValueError) as exc:
+        raise ValueError(f"invalid obstacle JSON: {exc}") from exc
+    if type(root) is not dict:
+        raise ValueError("obstacle JSON root must be an object")
+
+    if "count" not in root:
+        raise ValueError("obstacle JSON is missing required field: count")
+    count = root["count"]
+    if type(count) is not int:
+        raise ValueError("count must be an integer")
+    if not 0 <= count <= 255:
+        raise ValueError("count must be in [0, 255]")
+
+    if "targets" not in root:
+        raise ValueError("obstacle JSON is missing required field: targets")
+    targets = root["targets"]
+    if type(targets) is not list:
+        raise ValueError("targets must be a list")
+    if len(targets) != count:
+        raise ValueError("count must match the number of targets")
+    for index, target in enumerate(targets):
+        if type(target) is not dict:
+            raise ValueError(f"targets[{index}] must be an object")
+
+    return root
+
+
+def receive_channel(
+    topic: str,
+    receive_topic: str,
+    stop_topic: str,
+    ownship_topic: str = "",
+    obstacle_topic: str = "",
+) -> Optional[str]:
     """Route by transport metadata; preserve generic bridge when stop is disabled."""
+    if ownship_topic and topic == ownship_topic:
+        return "ownship"
+    if obstacle_topic and topic == obstacle_topic:
+        return "obstacle"
     if not stop_topic:
-        return 'route'
+        return "route"
     if topic == stop_topic:
-        return 'stop'
+        return "stop"
     if topic == receive_topic:
-        return 'route'
+        return "route"
     return None
+
+
+class HeaderCache:
+    """跨收发节点保存源里程计时间戳，0411 JSON 本身没有时间字段。"""
+
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        self._value: Optional[Tuple[Any, str, str]] = None
+
+    def store(self, stamp: Any, frame_id: str, child_frame_id: str) -> None:
+        with self._lock:
+            self._value = (stamp, frame_id, child_frame_id)
+
+    def load(self) -> Optional[Tuple[Any, str, str]]:
+        with self._lock:
+            return self._value
 
 
 def drain_received(client: Any, limit: int) -> List[Any]:

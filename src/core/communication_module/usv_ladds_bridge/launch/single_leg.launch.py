@@ -18,11 +18,15 @@ def generate_launch_description():
         DeclareLaunchArgument('backend', default_value='tcp'),
         DeclareLaunchArgument('relay_host', default_value='127.0.0.1'),
         DeclareLaunchArgument('relay_port', default_value='17880'),
+        DeclareLaunchArgument('obstacle_input_topic', default_value='/ladds/obstacle_tx'),
+        DeclareLaunchArgument('obstacle_send_topic', default_value='0141'),
         DeclareLaunchArgument('use_sim_time', default_value='false'),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(str(share / 'launch' / 'bridge.launch.py')),
             launch_arguments={name: LaunchConfiguration(name) for name in
-                              ('params_file', 'backend', 'relay_host', 'relay_port')}.items()),
+                              ('params_file', 'backend', 'relay_host', 'relay_port',
+                               'obstacle_input_topic', 'obstacle_send_topic',
+                               'use_sim_time')}.items()),
         Node(package='usv_ladds_bridge', executable='ladds_single_leg_node',
              name='ladds_single_leg', output='screen',
              parameters=[parameters, {'use_sim_time': ParameterValue(

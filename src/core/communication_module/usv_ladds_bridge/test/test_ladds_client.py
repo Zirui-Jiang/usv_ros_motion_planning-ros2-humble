@@ -152,6 +152,51 @@ def test_start_registers_ownship_publish_topic_and_send_can_select_it():
         client.close()
 
 
+def test_start_registers_obstacle_publish_topic_and_send_can_select_it():
+    library = FakeLibrary()
+    client = LaDDSClient(
+        "libLaDDS.so",
+        send_topic="0211",
+        ownship_send_topic="0411",
+        obstacle_send_topic="0141",
+        library_loader=lambda _path: library,
+    )
+    client.start()
+
+    try:
+        assert ("pub", 2**40 + 7, b"0211", 2) in library.calls
+        assert ("pub", 2**40 + 7, b"0411", 2) in library.calls
+        assert ("pub", 2**40 + 7, b"0141", 2) in library.calls
+        client.send(b"obstacle-json", topic="0141")
+        assert library.calls[-1] == (
+            "send", 2**40 + 7, b"0141", b"obstacle-json", 13, 0, 0
+        )
+    finally:
+        client.close()
+
+
+def test_start_registers_ownship_and_obstacle_subscribe_topics():
+    library = FakeLibrary()
+    client = LaDDSClient(
+        "libLaDDS.so",
+        receive_topic="0211",
+        stop_receive_topic="0331",
+        ownship_receive_topic="0411",
+        obstacle_receive_topic="0141",
+        library_loader=lambda _path: library,
+    )
+    client.start()
+    try:
+        assert ("sub", 2**40 + 7, b"0211", 2) in library.calls
+        assert ("sub", 2**40 + 7, b"0331", 2) in library.calls
+        assert ("sub", 2**40 + 7, b"0411", 2) in library.calls
+        assert ("sub", 2**40 + 7, b"0141", 2) in library.calls
+        library.emit(b'{"latitude":30.0}', topic=b"0411")
+        assert client.receive().topic == "0411"
+    finally:
+        client.close()
+
+
 def test_send_rejects_unregistered_topic():
     library = FakeLibrary()
     client = LaDDSClient("libLaDDS.so", library_loader=lambda _path: library)

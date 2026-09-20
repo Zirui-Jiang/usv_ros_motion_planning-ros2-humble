@@ -221,8 +221,19 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--qos", choices=("reliable", "best_effort"), default="best_effort")
     parser.add_argument("--send-topic", default="0211")
     parser.add_argument("--ownship-send-topic", default="0411")
+    parser.add_argument("--obstacle-send-topic", default="0141")
     parser.add_argument("--receive-topic", default="0211")
     parser.add_argument('--stop-receive-topic', default='', help='optional extra stop subscription, e.g. 0331')
+    parser.add_argument(
+        "--ownship-receive-topic",
+        default="0411",
+        help="LaDDS subscription for ownship 0411 JSON",
+    )
+    parser.add_argument(
+        "--obstacle-receive-topic",
+        default="0141",
+        help="LaDDS subscription for obstacle 0141 JSON",
+    )
     parser.add_argument("--src", type=int, default=0)
     parser.add_argument("--dst", type=int, default=0)
     parser.add_argument("--max-payload-bytes", type=int, default=1_048_576)
@@ -241,8 +252,11 @@ def main() -> None:
         qos=args.qos,
         send_topic=args.send_topic,
         ownship_send_topic=args.ownship_send_topic,
+        obstacle_send_topic=args.obstacle_send_topic,
         receive_topic=args.receive_topic,
         stop_receive_topic=args.stop_receive_topic,
+        ownship_receive_topic=args.ownship_receive_topic,
+        obstacle_receive_topic=args.obstacle_receive_topic,
         src=args.src,
         dst=args.dst,
         max_payload_bytes=args.max_payload_bytes,

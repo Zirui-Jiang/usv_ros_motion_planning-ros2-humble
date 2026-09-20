@@ -13,15 +13,22 @@ taskType=80 到终点进入值守时也回一次 0052，表示航路终点到达
 
 下面保留通信桥及早期单点联调说明。
 
-本船导航 `0411` 的上行接入见 [LaDDS 0411 本船导航上行](../../../../docs/ladds-0411-quickstart.md)。
-它与 `0052` 共用一个桥接连接，外部主题固定为 `0411`；三个业务模块内部仍使用原有 ROS 2
-接口。
+本船导航 `0411` 的接入见 [LaDDS 0411 本船导航](../../../../docs/ladds-0411-quickstart.md)。
+接收节点 `usv_ladds_inbound` 订阅主题 `0411`，解成决策/航控使用的 `/otter/odom`；
+发布节点 `usv_ladds_outbound` 把仿真真值编成 `0411` 发到 LaDDS。两个 ROS 节点同进程，
+共用一个 LaDDS 句柄。
+
+障碍物/目标运动 `0141` 的接入见 [LaDDS 0141 目标运动联调](../../../../docs/ladds-0141-quickstart.md)。
+发布节点校验 `/ladds/obstacle_tx` 后发到主题 `0141`；接收节点再订 0141，解回
+`/otter/ladds_targets`。仿真联调还可以启动 `costmap_0141.launch.py`，把
+`/otter/costmap_raw` 的 `nav2_msgs/msg/Costmap` 转成带稀疏障碍栅格的测试 JSON；
+这条消息只用于验证发送链路，不等同于雷达/AIS 船舶目标跟踪结果。
 
 单段航渡已增加独立入口：见 [0211 单段航渡联调](README.single-leg.md)，包含给定经纬度原点、4节速度、任务执行及0052完成反馈。
 
 当前实测链路：**Windows LaDDS 1.0.3 → 本机 TCP → WSL Ubuntu 22.04 / ROS 2 Humble**，双向可用。
 
-用户联调配置：DDS 数据域 **1**、主题字符串 **`0211`**、**`0331`**、**`0052`** 和本船上行 **`0411`**（均保留前导零）、QoS **尽力传输 / best_effort**、IP 留空使用活动接口。报文为可按 UTF-8 解码的 JSON，现场样本 638 字节，含 `head` 与 `content`。桥接原样传输；`0411` 由桥接层把现有 `nav_msgs/Odometry` 转成 JSON，不改变任务执行逻辑。
+用户联调配置：DDS 数据域 **1**、主题字符串 **`0211`**、**`0331`**、**`0052`**、**`0411`** 和 **`0141`**（均保留前导零）、QoS **尽力传输 / best_effort**、IP 留空使用活动接口。报文为可按 UTF-8 解码的 JSON，现场样本 638 字节，含 `head` 与 `content`。桥接原样传输 0211/0331/0052；`0411` 由发布节点把 `nav_msgs/Odometry` 编成 JSON，由接收节点再解回 odom；`0141` 由障碍物 JSON 转发并解回 `/otter/ladds_targets`。
 
 ## 为什么有 Windows 中继
 
@@ -39,7 +46,7 @@ colcon build --base-paths src/core/communication_module/usv_ladds_bridge \
   --packages-select usv_ladds_bridge --cmake-args -DBUILD_TESTING=ON
 ```
 
-构建只需要 ROS 2、ament_cmake_python、标准消息和 Python 标准库，不链接厂商 SDK。厂商 DLL/许可证保留在原目录，不放入仓库。
+构建只需要 ROS 2、ament_cmake_python、`nav2_msgs`、标准消息和 Python 标准库，不链接厂商 SDK。厂商 DLL/许可证保留在原目录，不放入仓库。
 
 ## 2. Windows 启动 LaDDS 中继
 
@@ -110,8 +117,14 @@ ros2 topic echo /ladds/rx
 
 | ROS 话题 | 类型 | 用途 |
 | --- | --- | --- |
-| `/ladds/tx` | `std_msgs/msg/String` | UTF-8 文本发到 LaDDS `0211` |
+| `/ladds/tx` | `std_msgs/msg/String` | UTF-8 文本发到默认 LaDDS 发送主题（单腿配置为 `0052`） |
 | `/ladds/rx` | `std_msgs/msg/String` | LaDDS `0211` 收到的有效 UTF-8 文本 |
+| `/ladds/ownship_0411` | `std_msgs/msg/String` | 发布节点编出的 0411 JSON；接收节点订阅后解 odom |
+| `/otter/odom` | `nav_msgs/msg/Odometry` | 接收节点把 0411 解回的内部里程计 |
+| `/ladds/obstacle_0141` | `std_msgs/msg/String` | 发布节点转发的 0141 JSON；接收节点再订 |
+| `/otter/ladds_targets` | `std_msgs/msg/String` | 接收节点解回的 0141 目标列表 |
+| `/otter/costmap_raw` | `nav2_msgs/msg/Costmap` | 仿真发布的原始代价地图，作为 0141 测试适配器输入 |
+| `/ladds/obstacle_tx` | `std_msgs/msg/String` | costmap 适配器输出、发布节点发送到 0141 的 JSON |
 | `/ladds/tx_bytes` | `std_msgs/msg/UInt8MultiArray` | 原始字节发送 |
 | `/ladds/rx_bytes` | `std_msgs/msg/UInt8MultiArray` | 每包原始字节，包括 NUL 和非 UTF-8 |
 | `/ladds/rx_info` | `std_msgs/msg/String` | JSON 格式的域、主题、src/dst 和长度 |

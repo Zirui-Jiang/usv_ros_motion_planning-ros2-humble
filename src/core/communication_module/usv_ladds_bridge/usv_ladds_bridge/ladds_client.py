@@ -43,6 +43,9 @@ class LaDDSClient:
         encryption: bool = False,
         library_loader: Optional[Callable[[str], object]] = None,
         stop_receive_topic: str = "",
+        obstacle_send_topic: str = "",
+        ownship_receive_topic: str = "",
+        obstacle_receive_topic: str = "",
     ) -> None:
         _require_c_string("library_path", library_path, allow_empty=False)
         _require_integer("domain_id", domain_id, 0, 2**31 - 1)
@@ -54,8 +57,28 @@ class LaDDSClient:
         _require_c_string("ownship_send_topic", ownship_send_topic, allow_empty=True)
         _require_c_string("receive_topic", receive_topic, allow_empty=False)
         _require_c_string("stop_receive_topic", stop_receive_topic, allow_empty=True)
+        _require_c_string("obstacle_send_topic", obstacle_send_topic, allow_empty=True)
+        _require_c_string("ownship_receive_topic", ownship_receive_topic, allow_empty=True)
+        _require_c_string("obstacle_receive_topic", obstacle_receive_topic, allow_empty=True)
         if stop_receive_topic == receive_topic:
             raise ValueError('stop_receive_topic must be different from receive_topic')
+        reserved_receive = {receive_topic, stop_receive_topic}
+        if ownship_receive_topic and ownship_receive_topic in reserved_receive:
+            raise ValueError(
+                "ownship_receive_topic must be different from receive_topic and stop_receive_topic"
+            )
+        if obstacle_receive_topic and obstacle_receive_topic in reserved_receive:
+            raise ValueError(
+                "obstacle_receive_topic must be different from receive_topic and stop_receive_topic"
+            )
+        if (
+            ownship_receive_topic
+            and obstacle_receive_topic
+            and ownship_receive_topic == obstacle_receive_topic
+        ):
+            raise ValueError(
+                "ownship_receive_topic must be different from obstacle_receive_topic"
+            )
         _require_integer("src", src, 0, 2**32 - 1)
         _require_integer("dst", dst, 0, 2**32 - 1)
         _require_integer("max_payload_bytes", max_payload_bytes, 1, 2**31 - 1)
@@ -75,10 +98,16 @@ class LaDDSClient:
         self._send_topics = [send_topic]
         if ownship_send_topic and ownship_send_topic != send_topic:
             self._send_topics.append(ownship_send_topic)
+        if obstacle_send_topic and obstacle_send_topic not in self._send_topics:
+            self._send_topics.append(obstacle_send_topic)
         self._receive_topic = receive_topic.encode("utf-8")
         self._receive_topics = [self._receive_topic]
         if stop_receive_topic:
-            self._receive_topics.append(stop_receive_topic.encode('utf-8'))
+            self._receive_topics.append(stop_receive_topic.encode("utf-8"))
+        for extra in (ownship_receive_topic, obstacle_receive_topic):
+            encoded = extra.encode("utf-8") if extra else b""
+            if extra and encoded not in self._receive_topics:
+                self._receive_topics.append(encoded)
         self._src = src
         self._dst = dst
         self._max_payload_bytes = max_payload_bytes
