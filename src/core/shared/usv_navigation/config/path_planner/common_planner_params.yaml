@@ -16,16 +16,14 @@ path_planner:
   # offset of transform from world(x,y) to grid map(x,y)
   # 保留历史兼容参数；当前坐标转换使用 GridSnapshot 的原点与分辨率。
   convert_offset: 0.0
-  # 终点落在软膨胀带时，在该半径（米）内改搜最近自由格；0 表示不松弛。
-  default_tolerance: 1.5
+  # error tolerance
+  default_tolerance: 0.0
   # whether outline the map or not
   outline_map: true
   # Reject raw costs >= 254 * factor. A smaller factor leaves more room
-  # for the finite hull and PID yaw/velocity lag.
+  # for the finite hull and PID yaw/velocity lag; search costs are unchanged.
   # 高代价阻塞阈值为 254×factor；起点软膨胀区仍可按实现中的严格下降规则退出。
   obstacle_factor: 0.05
-  # 搜索边权附加 cost_penalty×距离×(raw/254)，让残余膨胀格比自由格更贵从而绕行。
-  cost_penalty: 20.0
   # whether publish expand zone or not
   expand_zone: true
   # safety corridor

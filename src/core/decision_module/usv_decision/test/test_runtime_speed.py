@@ -39,26 +39,3 @@ def test_legacy_six_argument_request_keeps_configured_cruising_speed():
 
     assert result.status == AlgorithmStatus.SUCCESS, result.message
     assert np.max(result.trajectory.points[:, 6]) == .6
-
-
-# 终点落在软膨胀带且超出控制到达盘时，保留容差内自由格，不因精确连接失败而整段作废。
-def test_relaxed_soft_goal_is_kept_when_exact_connection_is_blocked():
-    parameters = resolve_parameters({
-        'obstacle_factor': 0.05,
-        'path_planner.default_tolerance': 2.5,
-        'path_planner.outline_map': False,
-        'path_planner.enable_shortcut': False,
-        'path_planner.cost_penalty': 0.0,
-    })
-    data = np.zeros((20, 20), np.uint8)
-    data[9:12, 14:17] = 20
-    request = PlanningRequest(
-        1, (15.5, 10.5, 0.), VesselState(2.5, 10.5, 0., stamp=10.),
-        GridSnapshot(data, 1., stamp=10.),
-        np.empty((0, 3)), parameters)
-
-    result = plan_navigation(request)
-
-    assert result.status == AlgorithmStatus.SUCCESS, result.message
-    assert np.linalg.norm(result.route[-1, :2] - (15.5, 10.5)) <= 2.5 + 1e-9
-    assert result.trajectory.goal == (15.5, 10.5)

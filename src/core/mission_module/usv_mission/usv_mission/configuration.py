@@ -18,7 +18,6 @@ DEFAULTS = {
     "path_planner.enable_shortcut": False,
     "path_planner.resample_ratio": 0.5, "path_planner.convert_offset": 0.0,
     "path_planner.default_tolerance": 0.0, "path_planner.expand_zone": True,
-    "path_planner.cost_penalty": 0.0,
     "path_planner.show_safety_corridor": False,
     "navigation.planning_frequency": 5.0, "navigation.state_timeout": 0.5,
     "navigation.map_timeout": 1.5, "navigation.trajectory_timeout": 1.0,
@@ -197,7 +196,6 @@ def validate_parameters(values):
     positive = {k for k in DEFAULTS if k.startswith("navigation.") and isinstance(DEFAULTS[k], float)}
     positive |= {k for k in DEFAULTS if k.endswith(("tolerance", "control_frequency", "resample_ratio"))}
     nonnegative |= {k for k in DEFAULTS if k.endswith("lookahead_time")}
-    nonnegative |= {"path_planner.default_tolerance", "path_planner.cost_penalty"}
     positive.discard("path_planner.default_tolerance")
     positive |= {T + "los." + k for k in ("trajectory_time_interval", "trajectory_time", "switch_dist", "goal_tolerance", "lookahead_distance", "yaw_rate_max", "slowdown_distance")}
     positive |= {C + "lqr_controller." + k for k in ("discrete_dt", "solve_eps", "solve_timeout")}
