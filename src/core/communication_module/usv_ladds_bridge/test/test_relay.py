@@ -29,10 +29,10 @@ class FakeDDS:
     def start(self):
         self.start_calls += 1
 
-    def send(self, payload):
+    def send(self, payload, topic=None):
         if self.send_error is not None:
             raise self.send_error
-        self.sent.append(payload)
+        self.sent.append(payload if topic is None else (topic, payload))
 
     def receive(self):
         try:
@@ -84,6 +84,14 @@ def test_tcp_relay_keeps_stop_topic_separate_from_route(relay_pair):
         received = _receive_until(client)
         assert received.topic == topic
         assert received.payload == b'{}'
+
+
+def test_tcp_relay_forwards_selected_publish_topic(relay_pair):
+    dds, _, client = relay_pair
+
+    client.send(b'0411-json', topic='0411')
+
+    assert dds.sent == [('0411', b'0411-json')]
 
 
 def test_client_keeps_rx_coalesced_in_same_tcp_read_as_hello():

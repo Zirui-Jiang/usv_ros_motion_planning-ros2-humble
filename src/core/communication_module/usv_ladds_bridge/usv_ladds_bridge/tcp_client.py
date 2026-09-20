@@ -90,13 +90,15 @@ class TcpRelayClient:
         )
         self._reader_thread.start()
 
-    def send(self, payload: bytes) -> None:
+    def send(self, payload: bytes, *, topic: Optional[str] = None) -> None:
         if not isinstance(payload, bytes):
             raise TypeError("payload must be bytes")
         if len(payload) > self._max_payload_bytes:
             raise LaDDSError(
                 f"payload exceeds {self._max_payload_bytes} byte limit"
             )
+        if topic is not None and (not isinstance(topic, str) or not topic):
+            raise ValueError("topic must be a non-empty string")
         with self._request_lock:
             sock = self._require_connection()
             request_id = self._next_id
@@ -106,10 +108,10 @@ class TcpRelayClient:
             with self._pending_lock:
                 self._pending[request_id] = (event, outcome)
             try:
-                frame = encode_frame(
-                    {"type": "send", "id": request_id, "payload": payload},
-                    self._max_payload_bytes,
-                )
+                message = {"type": "send", "id": request_id, "payload": payload}
+                if topic is not None:
+                    message["topic"] = topic
+                frame = encode_frame(message, self._max_payload_bytes)
                 with self._send_lock:
                     sock.sendall(frame)
             except (OSError, WireProtocolError) as exc:

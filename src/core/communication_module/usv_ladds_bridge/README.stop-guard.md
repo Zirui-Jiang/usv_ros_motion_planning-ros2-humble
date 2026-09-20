@@ -90,15 +90,15 @@
 同一 overlay 的 `usv_navigation_interfaces`、`usv_decision`、`usv_control` 和
 `usv_ladds_bridge`，不能混用旧生成接口。控制与决策的依赖包也需按主项目构建说明更新。
 
-Windows 中继需要额外订阅 0331，原通用脚本默认仍保持单主题兼容：
+Windows 中继需要额外订阅 0331，并注册本船上行主题 0411：
 
 ```powershell
-.\scripts\start_ladds_relay.ps1 -DomainId 1 -ReceiveTopic '0211' -StopReceiveTopic '0331' -SendTopic '0052'
+.\scripts\start_ladds_relay.ps1 -DomainId 1 -ReceiveTopic '0211' -StopReceiveTopic '0331' -SendTopic '0052' -OwnshipSendTopic '0411'
 ```
 
 ROS 使用包内 `config/single_leg.yaml`（已经配置 `stop_receive_topic: "0331"`）。
 TCP 模式只改 ROS YAML 不会改变 Windows 已经启动的 DDS 订阅；需要两侧都启用。
-Linux native 后端则直接按此 YAML 在同一 SDK 句柄注册两个订阅。
+Linux native 后端则直接按此 YAML 在同一 SDK 句柄注册两个订阅和两个发布主题。
 
 桥按 SDK/TCP 元数据中的原始 topic 分流：0211 文本只发布到 `/ladds/rx`，0331 文本
 只发布到 `/ladds/stop_rx`。原始字节和 topic 元数据仍可分别在 `/ladds/rx_bytes`、

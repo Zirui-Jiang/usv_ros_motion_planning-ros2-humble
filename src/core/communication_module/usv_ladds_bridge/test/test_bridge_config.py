@@ -57,6 +57,7 @@ def test_tcp_backend_does_not_require_native_library():
         ({"ttl": -1}, "ttl"),
         ({"ttl": 256}, "ttl"),
         ({"send_topic": ""}, "send_topic"),
+        ({"ownship_send_topic": ""}, "ownship_send_topic"),
         ({"receive_topic": ""}, "receive_topic"),
         ({"backend": "udp"}, "backend"),
         ({"relay_port": 0}, "relay_port"),
@@ -87,6 +88,8 @@ def test_default_transport_parameters_match_bridge_contract():
     assert config.ttl == 1
     assert config.qos == "best_effort"
     assert config.send_topic == "0211"
+    assert config.ownship_send_topic == "0411"
+    assert config.ownship_input_topic == ""
     assert config.receive_topic == "0211"
     assert config.src == 0
     assert config.dst == 0
@@ -94,6 +97,17 @@ def test_default_transport_parameters_match_bridge_contract():
     assert config.max_payload_bytes == 1_048_576
     assert config.queue_depth == 100
     assert config.poll_interval_sec == 0.01
+
+
+def test_ownship_transport_topic_and_ros_input_are_configurable():
+    config = BridgeConfig.from_mapping({
+        "send_topic": "0052",
+        "ownship_send_topic": "0411",
+        "ownship_input_topic": "/otter/odom",
+    })
+    assert config.send_topic == "0052"
+    assert config.ownship_send_topic == "0411"
+    assert config.ownship_input_topic == "/otter/odom"
 
 
 def test_decode_utf8_returns_text_only_for_valid_utf8():

@@ -13,9 +13,14 @@ usv_ladds_bridge:
     qos: "best_effort"
     # 字符串引号不可去掉，否则 YAML 会丢失前导零。
     send_topic: "0211"
+    ownship_send_topic: "0411"
     receive_topic: "0211"
     # 通用透传默认不启用；航路/停船联调使用 single_leg.yaml 中的 "0331"。
     stop_receive_topic: ""
+    ownship_input_topic: ""
+    origin_latitude: 30.5453
+    origin_longitude: 114.392931
+    origin_altitude: 0.0
     src: 0
     dst: 0
     encryption: false

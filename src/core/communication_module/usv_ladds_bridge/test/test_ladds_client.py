@@ -131,6 +131,38 @@ def test_start_loads_sdk_and_registers_both_topics_with_64_bit_handle():
     assert ctypes.sizeof(library.LaDDS_Create.restype) == 8
 
 
+def test_start_registers_ownship_publish_topic_and_send_can_select_it():
+    library = FakeLibrary()
+    client = LaDDSClient(
+        "libLaDDS.so",
+        send_topic="0052",
+        ownship_send_topic="0411",
+        library_loader=lambda _path: library,
+    )
+    client.start()
+
+    try:
+        assert ("pub", 2**40 + 7, b"0052", 2) in library.calls
+        assert ("pub", 2**40 + 7, b"0411", 2) in library.calls
+        client.send(b"ownship", topic="0411")
+        assert library.calls[-1] == (
+            "send", 2**40 + 7, b"0411", b"ownship", 7, 0, 0
+        )
+    finally:
+        client.close()
+
+
+def test_send_rejects_unregistered_topic():
+    library = FakeLibrary()
+    client = LaDDSClient("libLaDDS.so", library_loader=lambda _path: library)
+    client.start()
+    try:
+        with pytest.raises(ValueError, match="registered"):
+            client.send(b"data", topic="0411")
+    finally:
+        client.close()
+
+
 @pytest.mark.parametrize(
     ("overrides", "match"),
     [

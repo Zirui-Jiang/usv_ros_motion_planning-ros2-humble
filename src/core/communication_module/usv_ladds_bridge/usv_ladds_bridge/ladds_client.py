@@ -34,6 +34,7 @@ class LaDDSClient:
         ttl: int = 1,
         qos: str = "best_effort",
         send_topic: str = "0211",
+        ownship_send_topic: str = "",
         receive_topic: str = "0211",
         src: int = 0,
         dst: int = 0,
@@ -50,6 +51,7 @@ class LaDDSClient:
         if qos not in {"reliable", "best_effort"}:
             raise ValueError("qos must be 'reliable' or 'best_effort'")
         _require_c_string("send_topic", send_topic, allow_empty=False)
+        _require_c_string("ownship_send_topic", ownship_send_topic, allow_empty=True)
         _require_c_string("receive_topic", receive_topic, allow_empty=False)
         _require_c_string("stop_receive_topic", stop_receive_topic, allow_empty=True)
         if stop_receive_topic == receive_topic:
@@ -70,6 +72,9 @@ class LaDDSClient:
         self._ttl = ttl
         self._qos = {"reliable": 1, "best_effort": 2}[qos]
         self._send_topic = send_topic.encode("utf-8")
+        self._send_topics = [send_topic]
+        if ownship_send_topic and ownship_send_topic != send_topic:
+            self._send_topics.append(ownship_send_topic)
         self._receive_topic = receive_topic.encode("utf-8")
         self._receive_topics = [self._receive_topic]
         if stop_receive_topic:
@@ -154,10 +159,11 @@ class LaDDSClient:
                 raise LaDDSError(
                     "LaDDS_EnableEncryption 失败；请检查 SDK 加密支持与运行授权"
                 )
-            if not library.LaDDS_RegPubTopic(handle, self._send_topic, self._qos):
-                raise LaDDSError(
-                    "LaDDS_RegPubTopic 失败；请检查发布主题、QoS 与运行授权"
-                )
+            for send_topic in self._send_topics:
+                if not library.LaDDS_RegPubTopic(handle, send_topic.encode("utf-8"), self._qos):
+                    raise LaDDSError(
+                        f"LaDDS_RegPubTopic {send_topic!r} 失败；请检查发布主题、QoS 与运行授权"
+                    )
             for receive_topic in self._receive_topics:
                 if not library.LaDDS_RegSubTopic(handle, receive_topic, self._qos):
                     raise LaDDSError(
@@ -181,7 +187,7 @@ class LaDDSClient:
         with self._callback_lock:
             self._accept_callbacks = True
 
-    def send(self, payload: bytes) -> None:
+    def send(self, payload: bytes, *, topic: Optional[str] = None) -> None:
         if not isinstance(payload, bytes):
             raise TypeError("payload must be bytes")
         if not payload:
@@ -191,13 +197,20 @@ class LaDDSClient:
                 f"payload is {len(payload)} bytes; maximum is {self._max_payload_bytes}"
             )
 
+        selected_topic = self._send_topic
+        if topic is not None:
+            _require_c_string("topic", topic, allow_empty=False)
+            if topic not in self._send_topics:
+                raise ValueError(f"topic {topic!r} is not registered for publishing")
+            selected_topic = topic.encode("utf-8")
+
         with self._operation_lock:
             if not self._handle or self._library is None:
                 raise LaDDSError("LaDDSClient 尚未启动；请先调用 start()")
             buffer = ctypes.create_string_buffer(payload, len(payload))
             result = self._library.LaDDS_SendEx(
                 self._handle,
-                self._send_topic,
+                selected_topic,
                 ctypes.cast(buffer, ctypes.c_void_p),
                 len(payload),
                 self._src,

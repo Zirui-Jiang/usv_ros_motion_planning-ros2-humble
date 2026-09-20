@@ -185,8 +185,15 @@ class RelayServer:
         if not isinstance(payload, bytes) or len(payload) > self._max_payload_bytes:
             self._send_error(connection, request_id, "invalid or oversized payload")
             return True
+        topic = message.get("topic")
+        if topic is not None and (not isinstance(topic, str) or not topic):
+            self._send_error(connection, request_id, "topic must be a non-empty string")
+            return True
         try:
-            self._dds.send(payload)
+            if topic is None:
+                self._dds.send(payload)
+            else:
+                self._dds.send(payload, topic=topic)
         except Exception as exc:
             self._send_error(connection, request_id, str(exc) or type(exc).__name__)
         else:
@@ -213,6 +220,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--ttl", type=int, default=1)
     parser.add_argument("--qos", choices=("reliable", "best_effort"), default="best_effort")
     parser.add_argument("--send-topic", default="0211")
+    parser.add_argument("--ownship-send-topic", default="0411")
     parser.add_argument("--receive-topic", default="0211")
     parser.add_argument('--stop-receive-topic', default='', help='optional extra stop subscription, e.g. 0331')
     parser.add_argument("--src", type=int, default=0)
@@ -232,6 +240,7 @@ def main() -> None:
         ttl=args.ttl,
         qos=args.qos,
         send_topic=args.send_topic,
+        ownship_send_topic=args.ownship_send_topic,
         receive_topic=args.receive_topic,
         stop_receive_topic=args.stop_receive_topic,
         src=args.src,

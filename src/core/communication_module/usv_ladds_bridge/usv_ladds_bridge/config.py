@@ -20,8 +20,13 @@ class BridgeConfig:
     ttl: int = 1
     qos: str = "best_effort"
     send_topic: str = "0211"
+    ownship_send_topic: str = "0411"
     receive_topic: str = "0211"
     stop_receive_topic: str = ""
+    ownship_input_topic: str = ""
+    origin_latitude: float = 30.5453
+    origin_longitude: float = 114.392931
+    origin_altitude: float = 0.0
     src: int = 0
     dst: int = 0
     encryption: bool = False
@@ -59,8 +64,13 @@ class BridgeConfig:
             ttl=int(values.get("ttl", 1)),
             qos=str(values.get("qos", "best_effort")),
             send_topic=str(values.get("send_topic", "0211")),
+            ownship_send_topic=str(values.get("ownship_send_topic", "0411")),
             receive_topic=str(values.get("receive_topic", "0211")),
             stop_receive_topic=str(values.get("stop_receive_topic", "")),
+            ownship_input_topic=str(values.get("ownship_input_topic", "")),
+            origin_latitude=float(values.get("origin_latitude", 30.5453)),
+            origin_longitude=float(values.get("origin_longitude", 114.392931)),
+            origin_altitude=float(values.get("origin_altitude", 0.0)),
             src=int(values.get("src", 0)),
             dst=int(values.get("dst", 0)),
             encryption=bool(values.get("encryption", False)),
@@ -88,12 +98,18 @@ class BridgeConfig:
             raise ValueError("qos must not be empty")
         if not self.send_topic.strip():
             raise ValueError("send_topic must not be empty")
+        if not self.ownship_send_topic.strip():
+            raise ValueError("ownship_send_topic must not be empty")
         if not self.receive_topic.strip():
             raise ValueError("receive_topic must not be empty")
         if self.stop_receive_topic and self.stop_receive_topic == self.receive_topic:
             raise ValueError('stop_receive_topic must be different from receive_topic')
         if self.stop_receive_topic and not self.stop_receive_topic.strip():
             raise ValueError('stop_receive_topic must be empty or a non-blank topic')
+        if not -90.0 <= self.origin_latitude <= 90.0:
+            raise ValueError("origin_latitude must be between -90 and 90")
+        if not -180.0 <= self.origin_longitude <= 180.0:
+            raise ValueError("origin_longitude must be between -180 and 180")
         if self.src < 0:
             raise ValueError("src must be non-negative")
         if self.dst < 0:

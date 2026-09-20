@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import sys
 from dataclasses import asdict
 from typing import Any, Callable, Dict, Optional
@@ -9,10 +10,13 @@ from typing import Any, Callable, Dict, Optional
 import rclpy
 from rcl_interfaces.msg import ParameterDescriptor
 from rclpy.node import Node
+from nav_msgs.msg import Odometry
 from std_msgs.msg import String, UInt8MultiArray
 
 from .config import BridgeConfig, decode_utf8, drain_received, packet_info_json, receive_channel
 from .ladds_client import LaDDSClient
+from .ownship import ownship_payload_from_odometry
+from common.geodesy import GeoReference
 
 
 _PARAMETER_DEFAULTS: Dict[str, Any] = asdict(BridgeConfig())
@@ -39,6 +43,13 @@ class LaDDSBridgeNode(Node):
             config = self._read_config()
             self._receive_topic = config.receive_topic
             self._stop_receive_topic = config.stop_receive_topic
+            self._ownship_send_topic = config.ownship_send_topic
+            self._ownship_input_topic = config.ownship_input_topic
+            self._ownship_origin = GeoReference(
+                config.origin_latitude,
+                config.origin_longitude,
+                config.origin_altitude,
+            )
             if config.backend == "tcp":
                 if tcp_client_factory is None:
                     from .tcp_client import TcpRelayClient
@@ -59,6 +70,7 @@ class LaDDSBridgeNode(Node):
                     ttl=config.ttl,
                     qos=config.qos,
                     send_topic=config.send_topic,
+                    ownship_send_topic=config.ownship_send_topic,
                     receive_topic=config.receive_topic,
                     stop_receive_topic=config.stop_receive_topic,
                     src=config.src,
@@ -90,6 +102,14 @@ class LaDDSBridgeNode(Node):
                 self._on_bytes_tx,
                 config.queue_depth,
             )
+            self._ownship_tx_subscription = None
+            if config.ownship_input_topic:
+                self._ownship_tx_subscription = self.create_subscription(
+                    Odometry,
+                    config.ownship_input_topic,
+                    self._on_ownship,
+                    config.queue_depth,
+                )
             self._receive_limit = config.queue_depth
             self._poll_timer = self.create_timer(
                 config.poll_interval_sec, self._poll_received
@@ -128,15 +148,37 @@ class LaDDSBridgeNode(Node):
     def _on_text_tx(self, message: String) -> None:
         self._send_payload(message.data.encode("utf-8"), source_topic="/ladds/tx")
 
+    def _on_ownship(self, message: Odometry) -> None:
+        """Convert the existing odometry stream into an outbound 0411 packet."""
+        try:
+            payload = ownship_payload_from_odometry(message, self._ownship_origin)
+            encoded = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+            self._send_payload(
+                encoded.encode("utf-8"),
+                source_topic=self._ownship_input_topic,
+                transport_topic=self._ownship_send_topic,
+            )
+        except (AttributeError, TypeError, ValueError, ArithmeticError) as exc:
+            self.get_logger().warning(f"drop invalid odometry for LaDDS 0411: {exc}")
+
     def _on_bytes_tx(self, message: UInt8MultiArray) -> None:
         self._send_payload(bytes(message.data), source_topic="/ladds/tx_bytes")
 
-    def _send_payload(self, payload: bytes, *, source_topic: str) -> None:
+    def _send_payload(
+        self,
+        payload: bytes,
+        *,
+        source_topic: str,
+        transport_topic: Optional[str] = None,
+    ) -> None:
         client = self._client
         if client is None:
             return
         try:
-            result = client.send(payload)
+            if transport_topic is None:
+                result = client.send(payload)
+            else:
+                result = client.send(payload, topic=transport_topic)
             if result is False:
                 raise RuntimeError("transport returned failure")
         except Exception as exc:
