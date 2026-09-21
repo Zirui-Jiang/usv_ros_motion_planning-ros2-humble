@@ -107,6 +107,7 @@ def _simulation_nodes(context, settings):
     from launch.substitutions import Command
     from launch_ros.actions import Node
     from launch_ros.parameter_descriptions import ParameterValue
+    from sim_env.windows_display import launch_environment_actions
     namespace, pose = settings.namespace, settings.pose
     # headless 优先关闭两个 GUI；各业务节点仍照常运行。
     headless = _boolean(context, "headless")
@@ -145,7 +146,8 @@ def _simulation_nodes(context, settings):
             package="rviz2", executable="rviz2", name="rviz2",
             arguments=["-d", os.path.join(settings.share, "rviz", "sim_env.rviz")],
             parameters=[{"use_sim_time": settings.use_sim_time}], output="screen"))
-    return nodes
+    # 有 GUI 时若 Windows VcXsrv 可达，子进程改走本机 X，而不是 WSLg。
+    return [*launch_environment_actions(gui or rviz), *nodes]
 
 
 # 仅在真值话题不是默认 odom 时改名，避免与接收节点解出的 /otter/odom 双发布。

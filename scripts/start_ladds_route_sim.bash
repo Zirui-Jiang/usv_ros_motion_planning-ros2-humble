@@ -8,7 +8,7 @@ script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 single_sim="$script_dir/start_ladds_single_leg_sim.bash"
 # Select the route overlay even if the shell still has an old single-leg path.
 LADDS_SINGLE_LEG_INSTALL="${LADDS_ROUTE_INSTALL:-/tmp/usv_ladds_multi_waypoint_20260915/install}"
-: "${LADDS_BASE_INSTALL:=/home/usv/module-layout-20260914/install}"
+: "${LADDS_BASE_INSTALL:=$HOME/.local/share/usv_ros_motion_planning/base/install}"
 : "${ROS_DOMAIN_ID:=42}"
 : "${ROS_LOCALHOST_ONLY:=1}"
 export LADDS_SINGLE_LEG_INSTALL LADDS_BASE_INSTALL ROS_DOMAIN_ID ROS_LOCALHOST_ONLY

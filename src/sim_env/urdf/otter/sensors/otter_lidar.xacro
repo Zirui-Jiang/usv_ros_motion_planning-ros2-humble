@@ -23,12 +23,13 @@
     <gazebo reference="${name}_link">
       <!-- 传感器更新率、测量范围与插件输出在此配置。 -->
       <sensor type="ray" name="lidar_${name}">
-        <update_rate>15</update_rate>
+        <!-- 笔记本/WSL 上 2000 线×15 Hz 会打满 gzserver，扫描来不及投影到 costmap。 -->
+        <update_rate>8</update_rate>
 	      <visualize>${visualize}</visualize>
         <ray>
           <scan>
             <horizontal>
-              <samples>2000</samples> <!--change from 720 to 2000-->
+              <samples>720</samples>
               <resolution>1</resolution>
               <min_angle>-3.14159265359</min_angle>
               <max_angle>3.14159265359</max_angle>

@@ -117,10 +117,25 @@ ros2 launch sim_env main.launch.py world:=ocean headless:=true
 
 先结束上面的主 launch，再选择以下任一种启动方式。每次只运行一个完整导航实例：
 
+Windows 10 要看见窗口，必须先开 VcXsrv，再 `ros2 launch`。只开一次 X 服务器：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\start_sim_gui.ps1 -XServerOnly
+```
+
+任务栏出现 **X** 图标后，在 WSL 里按平时方式启动即可（不要加 `headless:=true`）：
+
 ```bash
-# Gazebo GUI + RViz；先加载 Gazebo 的图形资源环境。
+source /opt/ros/humble/setup.bash
+source install/setup.bash
 source /usr/share/gazebo/setup.sh
 ros2 launch sim_env main.launch.py world:=ocean
+```
+
+`ros2 launch` 和 `scripts/main.sh` 会探测 Windows 的 6000 端口；VcXsrv 在听就把 `DISPLAY` 指过去。也可以一条命令同时开 X 和仿真：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\start_sim_gui.ps1
 ```
 
 ```bash

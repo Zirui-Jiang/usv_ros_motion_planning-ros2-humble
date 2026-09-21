@@ -169,6 +169,7 @@ def test_main_keeps_legacy_command_and_composes_four_independent_entries(monkeyp
 ])
 def test_simulation_support_owns_gui_policy_without_business_nodes(monkeypatch, headless, gui, rviz, want_gui, want_rviz):
     from launch.actions import IncludeLaunchDescription
+    monkeypatch.setattr("sim_env.windows_display.windows_x_display", lambda: "")
     context, actions = _launch_graph(monkeypatch, "simulation_support.launch.py", {
         "headless": headless, "gui": gui, "rviz": rviz, "world": "example_course"})
     nodes = _nodes(context, actions)
@@ -184,6 +185,23 @@ def test_simulation_support_owns_gui_policy_without_business_nodes(monkeypatch, 
     arguments = {_value(context, name): _value(context, setting) for name, setting in gazebo.launch_arguments}
     assert arguments["gui"] == want_gui
     assert arguments["world"] == str(PACKAGE / "worlds/example_course.world")
+
+
+# 探测到 Windows X 时 GUI 子进程改 DISPLAY；无界面启动不改。
+def test_simulation_support_points_gui_at_windows_x_when_reachable(monkeypatch):
+    from launch.actions import SetEnvironmentVariable
+    monkeypatch.setattr("sim_env.windows_display.windows_x_display", lambda: "172.27.32.1:0.0")
+    context, gui_actions = _launch_graph(monkeypatch, "simulation_support.launch.py", {
+        "headless": "false", "gui": "true", "rviz": "true", "world": "example_course"})
+    assigned = {
+        _value(context, action.name): _value(context, action.value)
+        for action in gui_actions if isinstance(action, SetEnvironmentVariable)
+    }
+    assert assigned["DISPLAY"] == "172.27.32.1:0.0"
+    assert assigned["QT_X11_NO_MITSHM"] == "1"
+    _, headless_actions = _launch_graph(monkeypatch, "simulation_support.launch.py", {
+        "headless": "true", "gui": "true", "rviz": "true", "world": "example_course"})
+    assert not any(isinstance(action, SetEnvironmentVariable) for action in headless_actions)
 
 
 # 自定义 YAML 和启动覆盖在决策、航控入口得到一致有效参数。

@@ -12,7 +12,7 @@
     [string]$ObstacleReceiveTopic = '0141',
     [ValidateSet('best_effort', 'reliable')][string]$Qos = 'best_effort',
     [string]$BindIp = '',
-    [string]$LibraryPath = 'D:\自主航行设计文档\0. LaDDS说明\dds联调工具\LaDDS.dll',
+    [string]$LibraryPath = '',
     [string]$PythonExe = ''
 )
 # 在 Windows 使用原有 LaDDS 授权；本机 TCP 仅绑定 WSL 虚拟网卡。
@@ -20,6 +20,22 @@ $ErrorActionPreference = 'Stop'
 if (-not $ReceiveTopic) { $ReceiveTopic = $Topic }
 if (-not $SendTopic) { $SendTopic = $Topic }
 $laddsRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
+if (-not $LibraryPath) {
+    if ($env:LADDS_LIBRARY_PATH) {
+        $LibraryPath = $env:LADDS_LIBRARY_PATH
+    } else {
+        $laddsLocalLibrary = Join-Path $laddsRoot 'local\ladds\LaDDS.dll'
+        $laddsLegacyLibrary = 'D:\自主航行设计文档\0. LaDDS说明\dds联调工具\LaDDS.dll'
+        if (Test-Path -LiteralPath $laddsLocalLibrary) {
+            $LibraryPath = $laddsLocalLibrary
+        } elseif (Test-Path -LiteralPath $laddsLegacyLibrary) {
+            $LibraryPath = $laddsLegacyLibrary
+        }
+    }
+}
+if (-not $LibraryPath -or -not (Test-Path -LiteralPath $LibraryPath -PathType Leaf)) {
+    throw '未找到 LaDDS.dll。请把厂商 SDK/授权完整目录放到 local\ladds，设置 LADDS_LIBRARY_PATH，或传入 -LibraryPath。'
+}
 $laddsPackage = Join-Path $laddsRoot 'src\core\communication_module\usv_ladds_bridge'
 $laddsLibrary = (Resolve-Path -LiteralPath $LibraryPath).Path
 if (-not $ListenAddress) {

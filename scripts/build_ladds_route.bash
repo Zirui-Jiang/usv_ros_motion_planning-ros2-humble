@@ -6,7 +6,7 @@ unset PYTHONHOME
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 source_root="$(cd -- "$script_dir/.." && pwd -P)"
-base_install="${LADDS_BASE_INSTALL:-/home/usv/module-layout-20260914/install}"
+base_install="${LADDS_BASE_INSTALL:-}"
 output_root="${LADDS_ROUTE_OUTPUT:-/tmp/usv_ladds_multi_waypoint_20260915}"
 packages=(common controller path_planner path_processor trajectory_planner
           usv_navigation_interfaces usv_navigation usv_decision usv_control usv_ladds_bridge)
@@ -17,7 +17,8 @@ Usage: bash ${0##*/} [options]
 
 Options:
   --source DIR        Repository root (default: $source_root)
-  --base-install DIR  Existing complete base (default: $base_install)
+  --base-install DIR  Existing complete base
+                      (default: \$HOME/.local/share/usv_ros_motion_planning/base/install)
   --output-root DIR   New isolated output root (default: $output_root)
   -h, --help          Show this help
 
@@ -37,6 +38,10 @@ while [[ $# -gt 0 ]]; do
         *) fail "unknown option: $1" ;;
     esac
 done
+
+if [[ -z "$base_install" ]]; then
+    base_install="$HOME/.local/share/usv_ros_motion_planning/base/install"
+fi
 
 for executable in realpath mkdir; do
     command -v "$executable" >/dev/null || fail "$executable is unavailable"

@@ -7,7 +7,7 @@ unset PYTHONHOME
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 profile_dir="$script_dir/validation/config"
-base_install="${LADDS_BASE_INSTALL:-/home/usv/module-layout-20260914/install}"
+base_install="${LADDS_BASE_INSTALL:-$HOME/.local/share/usv_ros_motion_planning/base/install}"
 profile_install="${LADDS_SINGLE_LEG_INSTALL:-/tmp/usv_ladds_single_leg_20260915/install}"
 world_argument="${LADDS_SINGLE_LEG_WORLD:-ocean}"
 headless="${LADDS_SINGLE_LEG_HEADLESS:-true}"

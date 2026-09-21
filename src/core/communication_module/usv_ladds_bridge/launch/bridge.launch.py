@@ -26,6 +26,7 @@ def generate_launch_description() -> LaunchDescription:
     obstacle_input_topic = LaunchConfiguration("obstacle_input_topic")
     obstacle_send_topic = LaunchConfiguration("obstacle_send_topic")
     use_sim_time = LaunchConfiguration("use_sim_time")
+    sim_time = {"use_sim_time": ParameterValue(use_sim_time, value_type=bool)}
     bridge = Node(
         package="usv_ladds_bridge",
         executable="usv_ladds_bridge_node",
@@ -44,9 +45,15 @@ def generate_launch_description() -> LaunchDescription:
                 "obstacle_send_topic": ParameterValue(
                     obstacle_send_topic, value_type=str
                 ),
-                "use_sim_time": ParameterValue(use_sim_time, value_type=bool),
+                **sim_time,
             },
         ],
+    )
+    radar = Node(
+        package="usv_ladds_bridge",
+        executable="usv_ladds_radar_node",
+        output="screen",
+        parameters=[parameters_file, sim_time],
     )
 
     return LaunchDescription(
@@ -98,5 +105,6 @@ def generate_launch_description() -> LaunchDescription:
                 )
             ),
             bridge,
+            radar,
         ]
     )

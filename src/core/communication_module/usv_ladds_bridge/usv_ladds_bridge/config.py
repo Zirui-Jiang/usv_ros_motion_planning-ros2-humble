@@ -208,12 +208,11 @@ def decode_utf8(payload: bytes) -> Optional[str]:
 def validate_obstacle_payload(text: str) -> Dict[str, Any]:
     """Validate the structural part of a 0141 obstacle JSON payload.
 
-    The 0141 protocol defines the top-level ``count`` and ``targets`` fields,
-    but the project does not yet have a single authoritative producer for all
-    semantic target attributes.  We therefore validate the fields that make the
-    list unambiguous and leave the per-target attributes untouched.  The caller
-    can then forward the original UTF-8 JSON bytes without changing its field
-    names, numeric precision, or optional values.
+    The 0141 protocol defines the top-level ``count`` and ``targets`` fields.
+    Simulation fills per-target attributes in ``usv_ladds_radar``; the bridge
+    only checks that the list is unambiguous and leaves target fields untouched.
+    The caller then forwards the original UTF-8 JSON without changing names,
+    numeric precision, or optional values.
     """
     if not isinstance(text, str):
         raise ValueError("obstacle payload must be JSON text")

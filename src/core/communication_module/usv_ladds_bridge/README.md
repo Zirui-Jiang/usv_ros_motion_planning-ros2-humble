@@ -14,17 +14,16 @@ taskType=80 到终点进入值守时也回一次 0052，表示航路终点到达
 下面保留通信桥及早期单点联调说明。
 
 本船导航 `0411` 的接入见 [LaDDS 0411 本船导航](../../../../docs/ladds-0411-quickstart.md)。
-ROS 图里四个节点一律 `usv_ladds_<职责>`：`/usv_ladds_rx` 接收，`/usv_ladds_tx` 发布，
-`/usv_ladds_route` 航路适配，`/usv_ladds_costmap` 可选 costmap 测试适配。对照：节点
-`usv_ladds_rx`/`usv_ladds_tx`，内部话题 `/ladds/ownship`，DDS 仍是 `0411`。
-两个收发节点同进程、共用一个 LaDDS 句柄；`tx` 使用 `use_global_arguments=False`，
+ROS 图里节点：`/usv_ladds_rx` 接收，`/usv_ladds_tx` 发布，
+`/usv_ladds_route` 航路适配，`/usv_ladds_radar` 把仿真激光雷达扫描编成 0141。
+`rx`/`tx` 同进程、共用一个 LaDDS 句柄；`tx` 使用 `use_global_arguments=False`，
 避免被同一进程的 `__node` 改名。
 
 障碍物/目标运动 `0141` 的接入见 [LaDDS 0141 目标运动联调](../../../../docs/ladds-0141-quickstart.md)。
-发布节点校验 `/ladds/obstacle_in` 后发到主题 `0141`；接收节点再订 0141，解回
-`/ladds/targets`。仿真联调还可以启动 `costmap.launch.py`，把
-`/otter/costmap_raw` 的 `nav2_msgs/msg/Costmap` 转成带稀疏障碍栅格的测试 JSON；
-这条消息只用于验证发送链路，不等同于雷达/AIS 船舶目标跟踪结果。
+`usv_ladds_radar` 随 `bridge.launch.py` / `route.launch.py` 一起启动：订阅
+`/otter/sensors/lidars/lidar/scan` 和本船里程计，聚类后写 `/ladds/obstacle_in`；
+发布节点校验后发到主题 `0141`，接收节点再订 0141 解回 `/ladds/targets`。
+规划仍使用 `costmap_raw`，0141 只上报雷达聚类目标。
 
 单段航渡已增加独立入口：见 [0211 单段航渡联调](README.single-leg.md)，包含给定经纬度原点、4节速度、任务执行及0052完成反馈。
 
@@ -48,7 +47,7 @@ colcon build --base-paths src/core/communication_module/usv_ladds_bridge \
   --packages-select usv_ladds_bridge --cmake-args -DBUILD_TESTING=ON
 ```
 
-构建只需要 ROS 2、ament_cmake_python、`nav2_msgs`、标准消息和 Python 标准库，不链接厂商 SDK。厂商 DLL/许可证保留在原目录，不放入仓库。
+构建只需要 ROS 2、ament_cmake_python、标准消息和 Python 标准库，不链接厂商 SDK。厂商 DLL/许可证保留在原目录，不放入仓库。
 
 ## 2. Windows 启动 LaDDS 中继
 
@@ -125,8 +124,8 @@ ros2 topic echo /ladds/rx
 | `/otter/odom` | `nav_msgs/msg/Odometry` | 接收节点把 0411 解回的内部里程计 |
 | `/ladds/obstacle` | `std_msgs/msg/String` | 发布节点转发的 0141 JSON；接收节点再订 |
 | `/ladds/targets` | `std_msgs/msg/String` | 接收节点解回的 0141 目标列表 |
-| `/otter/costmap_raw` | `nav2_msgs/msg/Costmap` | 仿真发布的原始代价地图，作为 0141 测试适配器输入 |
-| `/ladds/obstacle_in` | `std_msgs/msg/String` | costmap 适配器输出、发布节点发送到 0141 的 JSON |
+| `/otter/sensors/lidars/lidar/scan` | `sensor_msgs/msg/LaserScan` | 仿真激光雷达，0141 雷达适配器输入 |
+| `/ladds/obstacle_in` | `std_msgs/msg/String` | 雷达适配器输出、发布节点发送到 0141 的 JSON |
 | `/ladds/tx_bytes` | `std_msgs/msg/UInt8MultiArray` | 原始字节发送 |
 | `/ladds/rx_bytes` | `std_msgs/msg/UInt8MultiArray` | 每包原始字节，包括 NUL 和非 UTF-8 |
 | `/ladds/rx_info` | `std_msgs/msg/String` | JSON 格式的域、主题、src/dst 和长度 |

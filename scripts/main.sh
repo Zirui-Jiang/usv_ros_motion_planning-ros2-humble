@@ -31,6 +31,22 @@ fi
 
 cd "${PROJECT_ROOT}"
 
+# 若 Windows 上 VcXsrv 已在听 6000，把 GUI 指过去，避开 Win10 WSLg 的 COPY MODE。
+# Prefer a reachable Windows X server over WSLg so Gazebo/RViz appear as native windows.
+_usv_use_windows_x_if_available() {
+    local display
+    display="$(python3 -c 'from sim_env.windows_display import windows_x_display; print(windows_x_display())' 2>/dev/null || true)"
+    [[ -n "$display" ]] || return 0
+    export DISPLAY="$display"
+    export LIBGL_ALWAYS_INDIRECT="${LIBGL_ALWAYS_INDIRECT:-0}"
+    export QT_X11_NO_MITSHM=1
+    export QT_QPA_PLATFORM="${QT_QPA_PLATFORM:-xcb}"
+    export GDK_BACKEND="${GDK_BACKEND:-x11}"
+    unset WAYLAND_DISPLAY || true
+    printf '[main] GUI display: %s (Windows X server)\n' "$DISPLAY"
+}
+_usv_use_windows_x_if_available
+
 # Generate gazebo world obstacles from the user config.
 # 此步骤会按场景配置尝试生成障碍；生成失败沿用现有脚本的继续启动行为。
 if [ -f "src/user_config/user_config.yaml" ]; then

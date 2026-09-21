@@ -1,0 +1,8 @@
+# WSL 直接读取 Windows 工作区时，脚本必须是 LF，否则 bash 会把 set -o pipefail 解析失败。
+*.bash text eol=lf
+*.sh text eol=lf
+# Python 入口 shebang 若为 CRLF，Linux 会去找 python3\r。
+*.py text eol=lf
+src/core/communication_module/usv_ladds_bridge/scripts/* text eol=lf
+src/core/perception_module/usv_perception/scripts/* text eol=lf
+src/sim_env/scripts/* text eol=lf

@@ -37,3 +37,16 @@ usv_ladds_rx:
     max_payload_bytes: 1048576
     queue_depth: 100
     poll_interval_sec: 0.01
+usv_ladds_radar:
+  ros__parameters:
+    scan_topic: /otter/sensors/lidars/lidar/scan
+    odom_topic: /otter/odom_gt
+    output_topic: /ladds/obstacle_in
+    origin_latitude: 30.5453
+    origin_longitude: 114.392931
+    origin_altitude: 0.0
+    cluster_gap_m: 3.0
+    min_points: 3
+    max_targets: 255
+    lidar_x: 0.0
+    lidar_y: 0.0

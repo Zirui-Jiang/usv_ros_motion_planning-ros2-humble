@@ -193,6 +193,10 @@ def test_bridge_yaml_keeps_ladds_topic_ids_as_strings():
             assert "usv_ladds_route" in loaded
             assert params["obstacle_input_topic"] == "/ladds/obstacle_in"
             assert params["obstacle_output_topic"] == "/ladds/targets"
+        assert "usv_ladds_radar" in loaded
+        radar = loaded["usv_ladds_radar"]["ros__parameters"]
+        assert radar["output_topic"] == "/ladds/obstacle_in"
+        assert radar["scan_topic"].endswith("/lidar/scan")
 
 
 @pytest.mark.parametrize(
