@@ -9,9 +9,8 @@ ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
   scripts/usv_ladds_bridge_node
   scripts/usv_ladds_route_node
-  scripts/usv_ladds_costmap_node
+  scripts/usv_ladds_scan_node
   scripts/ladds_single_leg_node
-  scripts/costmap_0141_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -19,6 +18,8 @@ install(DIRECTORY
   config
   launch
   DESTINATION share/${PROJECT_NAME}
+  PATTERN "__pycache__" EXCLUDE
+  PATTERN "*.pyc" EXCLUDE
 )
 
 if(BUILD_TESTING)

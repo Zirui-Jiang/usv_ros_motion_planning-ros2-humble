@@ -4,7 +4,7 @@
 
 本文对应按业务模块整理后的源码，当前开发分支为 `codex/distributed-navigation`。首次接手项目可从“构建与启动”开始；模块接口与独立运行说明见[三模块普通导航](docs/distributed-navigation/README.md)。
 
-LaDDS 联调工具与 ROS 2 的独立测试通信入口见 [LaDDS 双向通信桥](src/core/communication_module/usv_ladds_bridge/README.md)。当前支持域 1、主题 `0211`、`0411` 和 `0141` 的尽力传输 JSON/原始字节收发，使用 Windows SDK + 本机 TCP 连接 WSL；接收节点 `usv_ladds_rx` 订阅 `0411` 后解成内部 `odom`，`0141` 通过 `/ladds/obstacle_in` 接入并解回 `/ladds/targets`，另提供可选的仿真 `costmap_raw` 快照适配器用于发送链路验证。
+LaDDS 联调工具与 ROS 2 的独立测试通信入口见 [LaDDS 双向通信桥](src/core/communication_module/usv_ladds_bridge/README.md)。当前支持域 1、主题 `0211`、`0411` 和 `0141` 的尽力传输 JSON/原始字节收发，使用 Windows SDK + 本机 TCP 连接 WSL；接收节点 `usv_ladds_rx` 订阅 `0411` 后解成内部 `odom`，`0141` 由仿真 `LaserScan` 经 `scan_0141.launch.py` 转成 JSON 后从 `/ladds/obstacle_in` 接入，并解回 `/ladds/targets`。
 
 0914 控制器使用独立 Otter 参数文件启动，接入接口、参数来源、运行和回退命令见 [0914 控制器接入说明](docs/0914-controller-integration.md)，实际验证结果见[接入验证记录](docs/validation/adrc-0914-v1/README.md)。
 
