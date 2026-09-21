@@ -1,0 +1,35 @@
+usv_ladds_rx:
+  ros__parameters:
+    backend: tcp
+    domain_id: 1
+    qos: best_effort
+    receive_topic: "0211"
+    stop_receive_topic: "0331"
+    send_topic: "0052"
+    ownship_send_topic: "0411"
+    obstacle_send_topic: "0141"
+    ownship_receive_topic: "0411"
+    obstacle_receive_topic: "0141"
+    ownship_input_topic: "/otter/odom_gt"
+    obstacle_input_topic: "/ladds/obstacle_in"
+    ownship_output_topic: "/otter/odom"
+    obstacle_output_topic: "/ladds/targets"
+    ownship_json_topic: "/ladds/ownship"
+    obstacle_json_topic: "/ladds/obstacle"
+    ownship_frame_id: "otter/odom"
+    ownship_child_frame_id: "otter/base_link"
+    origin_latitude: 30.5453
+    origin_longitude: 114.392931
+    origin_altitude: 0.0
+usv_ladds_route:
+  ros__parameters:
+    origin_latitude: 30.5453
+    origin_longitude: 114.392931
+    map_frame: otter/map
+    navigation_namespace: /otter
+    receive_topic: /ladds/rx
+    stop_receive_topic: /ladds/stop_rx
+    transmit_topic: /ladds/tx
+    status_topic: /ladds/task_status
+    service_timeout: 5.0
+    waypoint_radius: 1.5

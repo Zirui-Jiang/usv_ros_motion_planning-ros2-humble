@@ -13,7 +13,7 @@ from builtin_interfaces.msg import Time
 
 from usv_ladds_bridge.leg_state import LegBook
 from usv_ladds_bridge.stop_task import StopExecution
-from usv_ladds_bridge.single_leg_node import SingleLegNode
+from usv_ladds_bridge.route_node import RouteNode
 from common.geodesy import GeoReference
 
 
@@ -87,12 +87,12 @@ class _Publisher:
 
 
 class _Harness:
-    _receive = SingleLegNode._receive
-    _submit = SingleLegNode._submit
-    _accepted = SingleLegNode._accepted
-    _navigation = SingleLegNode._navigation
-    _tick = SingleLegNode._tick
-    _fresh_navigation_session = SingleLegNode._fresh_navigation_session
+    _receive = RouteNode._receive
+    _submit = RouteNode._submit
+    _accepted = RouteNode._accepted
+    _navigation = RouteNode._navigation
+    _tick = RouteNode._tick
+    _fresh_navigation_session = RouteNode._fresh_navigation_session
 
     def __init__(self):
         self.book = LegBook(max_timeout_retries=3)
@@ -130,7 +130,7 @@ class _Harness:
         self.tx = _Publisher()
 
     def __getattr__(self, name):
-        method = getattr(SingleLegNode, name, None)
+        method = getattr(RouteNode, name, None)
         if callable(method):
             return method.__get__(self)
         raise AttributeError(name)
@@ -144,7 +144,7 @@ class _Harness:
 
     def _report_arrival(self, record):
         self.completions.append(record)
-        SingleLegNode._report_arrival(self, record)
+        RouteNode._report_arrival(self, record)
 
     def _warning(self, text):
         pass
@@ -302,7 +302,7 @@ def test_status_notice_uses_correlated_navigation_progress_and_current_segment()
     ).data)
     node.status_pub = _Publisher()
 
-    SingleLegNode._notice(node, 'ACTIVE', '', record)
+    RouteNode._notice(node, 'ACTIVE', '', record)
 
     notice = node.status_pub.messages[-1]
     assert notice['waypoint_count'] == 3

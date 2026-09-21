@@ -24,7 +24,7 @@ from std_msgs.msg import String
 from std_srvs.srv import Trigger
 from usv_navigation_interfaces.srv import NavigateRoute
 
-from usv_ladds_bridge.single_leg_node import SingleLegNode
+from usv_ladds_bridge.route_node import RouteNode
 
 
 def _route(speeds=(2, 4, 2)):
@@ -180,7 +180,7 @@ def ros_pair(monkeypatch):
     adapter = fixture = executor = thread = None
     errors = []
     try:
-        adapter = SingleLegNode()
+        adapter = RouteNode()
         fixture = NavigationFixture(namespace, rx_topic, tx_topic, status_topic)
         executor = MultiThreadedExecutor(num_threads=4)
         executor.add_node(adapter)

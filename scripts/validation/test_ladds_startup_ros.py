@@ -105,4 +105,4 @@ def test_connection_failure_shuts_down_single_leg_adapter(tmp_path):
         result = output.read_text()
         assert "LaDDS bridge failed to start" in result, result
         assert "ModuleNotFoundError" not in result, result
-        assert "[ladds_single_leg_node-2]: process has finished cleanly" in result, result
+        assert "[usv_ladds_route_node-2]: process has finished cleanly" in result, result

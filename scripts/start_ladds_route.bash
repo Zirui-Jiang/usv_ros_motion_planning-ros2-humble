@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
-# 多航点0211入口：复用现有适配器启动脚本，只切换安装区和ROS隔离域。
+# 启动 0211 航路适配器和 LaDDS 桥（rx+tx 同进程）。
 set -euo pipefail
 export PATH="/usr/bin:/bin:$PATH"
 unset PYTHONHOME
 
-script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
-single_adapter="$script_dir/start_ladds_single_leg.bash"
-route_install="${LADDS_ROUTE_INSTALL:-/tmp/usv_ladds_multi_waypoint_20260915/install}"
+route_install="${LADDS_ROUTE_INSTALL:-${LADDS_INSTALL_BASE:-/tmp/usv_ladds_multi_waypoint_20260915/install}}"
 relay_host="${LADDS_RELAY_HOST:-}"
 relay_port="${LADDS_RELAY_PORT:-17880}"
 use_sim_time="${LADDS_USE_SIM_TIME:-true}"
@@ -23,8 +21,6 @@ Options:
   -h, --help          Show this help
 
 Environment defaults are ROS_DOMAIN_ID=42 and ROS_LOCALHOST_ONLY=1.
-This wrapper delegates to start_ladds_single_leg.bash; the installed adapter
-submits the complete ordered points array through NavigateRoute.
 EOF
 }
 
@@ -45,13 +41,24 @@ done
     || fail '--relay-port must be an integer in [1, 65535]'
 [[ "$use_sim_time" == true || "$use_sim_time" == false ]] \
     || fail '--use-sim-time must be true or false'
-[[ -r "$single_adapter" ]] || fail "missing adapter launcher: $single_adapter"
 
 : "${ROS_DOMAIN_ID:=42}"
 : "${ROS_LOCALHOST_ONLY:=1}"
-export LADDS_INSTALL_BASE="$route_install"
-export LADDS_RELAY_PORT="$relay_port"
-export LADDS_USE_SIM_TIME="$use_sim_time"
 export ROS_DOMAIN_ID ROS_LOCALHOST_ONLY
 
-exec bash "$single_adapter" "$relay_host"
+set +u
+source /opt/ros/humble/setup.bash
+source "$route_install/setup.bash"
+set -u
+
+if [[ -z "$relay_host" ]]; then
+    relay_host="$(ip -4 route show default | awk 'NR==1 {print $3}')"
+fi
+if [[ -z "$relay_host" ]]; then
+    printf '未找到中继地址，请通过 --relay-host 指定。\n' >&2
+    exit 1
+fi
+
+exec ros2 launch usv_ladds_bridge route.launch.py backend:=tcp \
+    "relay_host:=$relay_host" "relay_port:=$relay_port" \
+    "use_sim_time:=$use_sim_time"

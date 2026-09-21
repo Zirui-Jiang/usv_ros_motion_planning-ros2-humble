@@ -110,14 +110,14 @@ def test_default_transport_parameters_match_bridge_contract():
     assert config.ownship_send_topic == "0411"
     assert config.obstacle_send_topic == "0141"
     assert config.ownship_input_topic == ""
-    assert config.obstacle_input_topic == "/ladds/obstacle_tx"
+    assert config.obstacle_input_topic == "/ladds/obstacle_in"
     assert config.receive_topic == "0211"
     assert config.ownship_receive_topic == "0411"
     assert config.obstacle_receive_topic == "0141"
     assert config.ownship_output_topic == "/otter/odom"
-    assert config.obstacle_output_topic == "/otter/ladds_targets"
-    assert config.ownship_json_topic == "/ladds/ownship_0411"
-    assert config.obstacle_json_topic == "/ladds/obstacle_0141"
+    assert config.obstacle_output_topic == "/ladds/targets"
+    assert config.ownship_json_topic == "/ladds/ownship"
+    assert config.obstacle_json_topic == "/ladds/obstacle"
     assert config.ownship_frame_id == "otter/odom"
     assert config.ownship_child_frame_id == "otter/base_link"
     assert config.src == 0
@@ -175,9 +175,10 @@ def test_bridge_yaml_keeps_ladds_topic_ids_as_strings():
         "ownship_receive_topic",
         "obstacle_receive_topic",
     )
-    for filename in ("bridge.yaml", "single_leg.yaml"):
+    for filename in ("bridge.yaml", "route.yaml", "single_leg.yaml"):
         loaded = yaml.safe_load((config_dir / filename).read_text(encoding="utf-8"))
-        params = next(iter(loaded.values()))["ros__parameters"]
+        assert "usv_ladds_rx" in loaded
+        params = loaded["usv_ladds_rx"]["ros__parameters"]
         for key in topic_keys:
             if key not in params or params[key] in ("", None):
                 continue
@@ -185,9 +186,13 @@ def test_bridge_yaml_keeps_ladds_topic_ids_as_strings():
         assert params["obstacle_send_topic"] == "0141"
         assert params["ownship_send_topic"] == "0411"
         if "ownship_json_topic" in params and params["ownship_json_topic"]:
-            assert params["ownship_json_topic"] == "/ladds/ownship_0411"
+            assert params["ownship_json_topic"] == "/ladds/ownship"
         if "obstacle_json_topic" in params and params["obstacle_json_topic"]:
-            assert params["obstacle_json_topic"] == "/ladds/obstacle_0141"
+            assert params["obstacle_json_topic"] == "/ladds/obstacle"
+        if filename in ("route.yaml", "single_leg.yaml"):
+            assert "usv_ladds_route" in loaded
+            assert params["obstacle_input_topic"] == "/ladds/obstacle_in"
+            assert params["obstacle_output_topic"] == "/ladds/targets"
 
 
 @pytest.mark.parametrize(

@@ -29,7 +29,6 @@ def generate_launch_description() -> LaunchDescription:
     bridge = Node(
         package="usv_ladds_bridge",
         executable="usv_ladds_bridge_node",
-        name="usv_ladds_inbound",
         output="screen",
         parameters=[
             parameters_file,
@@ -79,7 +78,7 @@ def generate_launch_description() -> LaunchDescription:
             ),
             DeclareLaunchArgument(
                 "obstacle_input_topic",
-                default_value="/ladds/obstacle_tx",
+                default_value="/ladds/obstacle_in",
                 description="ROS String topic carrying the 0141 obstacle JSON.",
             ),
             DeclareLaunchArgument(

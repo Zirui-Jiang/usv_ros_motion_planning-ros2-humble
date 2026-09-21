@@ -1,4 +1,4 @@
-"""LaDDS 发布节点：把仿真 odom 编成 0411 发出，并发布内部 0411 JSON。"""
+"""LaDDS 发布节点 usv_ladds_tx：把仿真 odom 编成 0411 发出，并发布内部 JSON。"""
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ class LaDDSOutboundNode(Node):
         client: Any,
         header_cache: HeaderCache,
     ) -> None:
-        super().__init__("usv_ladds_outbound", use_global_arguments=False)
+        super().__init__("usv_ladds_tx", use_global_arguments=False)
         self._config = config
         self._client = client
         self._header_cache = header_cache
@@ -67,7 +67,7 @@ class LaDDSOutboundNode(Node):
                 config.queue_depth,
             )
         self.get_logger().info(
-            "LaDDS outbound started "
+            "LaDDS tx started "
             f"(0411 from {config.ownship_input_topic or 'disabled'}, "
             f"0141 from {config.obstacle_input_topic or 'disabled'})"
         )

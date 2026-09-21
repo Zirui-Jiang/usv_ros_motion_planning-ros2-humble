@@ -1,7 +1,10 @@
 # LaDDS 0141 目标运动上行联调
 
+节点 `usv_ladds_costmap`（可选）写 `/ladds/obstacle_in`，`usv_ladds_tx` 发到 DDS `0141`
+并回灌 `/ladds/obstacle`，`usv_ladds_rx` 再解到 `/ladds/targets`。DDS 主题仍是 `0141`。
+
 本项目的 LaDDS 桥可以把 ROS 2 的 `std_msgs/msg/String` 障碍物报文发到外部 LaDDS 主题 `0141`，
-再由接收节点订阅 0141 解回 `/otter/ladds_targets`。
+再由接收节点订阅 0141 解回 `/ladds/targets`。
 0141 与 0211、0411 共用同一个 Windows 中继和 LaDDS 句柄。
 
 ## 数据边界
@@ -20,7 +23,7 @@
 桥接层只校验根对象、`count`、`targets` 数组以及数量一致性，并保留目标对象中的其它字段。字段的实际来源、状态码、目标类型、速度/航向有效值和尺寸缺省值仍由上游障碍物适配器负责。文档中列出的 0.1 节、0.1 度和 0.1 米等量化说明，暂不在 JSON 桥接层重新编码；样例按现有 0211/0411 的 JSON 习惯填写物理量。若联调工具要求二进制定点字节，需要另加编解码层并以对端实测为准。
 
 当前导航工程发布的是 LiDAR 栅格/代价地图（`costmap_raw`、`map`），不是带批号和经纬度的目标列表。为先验证
-“仿真障碍物 → ROS → LaDDS 0141”的发送链路，仓库提供了可选的 `costmap_0141.launch.py`。
+“仿真障碍物 → ROS → LaDDS 0141”的发送链路，仓库提供了可选的 `costmap.launch.py`。
 它把每一帧 `nav2_msgs/msg/Costmap` 包成一个 `targets` 项，并在该项中保留 frame、时间戳、栅格元数据
 和稀疏障碍单元格。这个 JSON 是联调测试格式，不宣称这些单元格已经是船舶目标；后续接入雷达/AIS
 跟踪器时，仍可让跟踪器直接向 `obstacle_input_topic` 发布正式目标 JSON。
@@ -62,23 +65,23 @@ export ROS_DOMAIN_ID=196
 export ROS_LOCALHOST_ONLY=1
 ros2 launch usv_ladds_bridge bridge.launch.py \
   backend:=tcp relay_host:=<Windows-WSL网卡地址> \
-  obstacle_input_topic:=/ladds/obstacle_tx obstacle_send_topic:=0141
+  obstacle_input_topic:=/ladds/obstacle_in obstacle_send_topic:=0141
 ```
 
 默认参数为：
 
 ```text
-obstacle_input_topic=/ladds/obstacle_tx
+obstacle_input_topic=/ladds/obstacle_in
 obstacle_send_topic=0141
-obstacle_json_topic=/ladds/obstacle_0141
-obstacle_output_topic=/otter/ladds_targets
+obstacle_json_topic=/ladds/obstacle
+obstacle_output_topic=/ladds/targets
 ```
 
-发布节点订 `obstacle_input_topic` 并发到 LaDDS `0141`，同时发 `/ladds/obstacle_0141`。
-接收节点订 `/ladds/obstacle_0141`（以及 DDS 主题 0141）后解回 `obstacle_output_topic`。
+发布节点订 `obstacle_input_topic` 并发到 LaDDS `0141`，同时发 `/ladds/obstacle`。
+接收节点订 `/ladds/obstacle`（以及 DDS 主题 0141）后解回 `obstacle_output_topic`。
 规划仍使用 `costmap_raw`，本入口不把目标列表写进栅格。
 
-实际跟踪器的 ROS 话题不同于 `/ladds/obstacle_tx` 时，在 `bridge.yaml` 或 launch 参数中把
+实际跟踪器的 ROS 话题不同于 `/ladds/obstacle_in` 时，在 `bridge.yaml` 或 launch 参数中把
 `obstacle_input_topic` 改成跟踪器话题。消息类型目前固定为 `std_msgs/msg/String`，字符串内容是 JSON。
 
 ## 4. 启动仿真障碍物适配器
@@ -93,9 +96,9 @@ source /opt/ros/humble/setup.bash
 source '/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble/install/setup.bash'
 export ROS_DOMAIN_ID=196
 export ROS_LOCALHOST_ONLY=1
-ros2 launch usv_ladds_bridge costmap_0141.launch.py \
+ros2 launch usv_ladds_bridge costmap.launch.py \
   input_topic:=/otter/costmap_raw \
-  output_topic:=/ladds/obstacle_tx \
+  output_topic:=/ladds/obstacle_in \
   cost_threshold:=254 \
   max_cells:=4096
 ```
@@ -134,7 +137,7 @@ JSON 的大小，超过上限时消息会保留 `truncated:true` 和完整的 `o
 先确认桥已经启动，再在同一个 ROS 域的终端发送一包：
 
 ```bash
-ros2 topic pub --once /ladds/obstacle_tx std_msgs/msg/String \
+ros2 topic pub --once /ladds/obstacle_in std_msgs/msg/String \
   '{"data":"{\"count\":1,\"targets\":[{\"batch\":1,\"absSpeed\":0.0,\"absCourse\":0.0,\"heading\":-1.0,\"longitude\":114.3931,\"latitude\":30.5453,\"distance\":25.0,\"absAzimuth\":90.0,\"relAzimuth\":0.0,\"sign\":0,\"type\":0,\"color\":0,\"state\":0,\"threatingRadius\":5.0,\"code\":\"\",\"model\":0,\"name\":\"\",\"shipLength\":-1.0,\"shipWidth\":-1.0,\"shipHeight\":-1.0,\"MMSI\":0,\"source\":1,\"areaType\":1}]}"}'
 ```
 
@@ -146,8 +149,8 @@ ros2 topic pub --once /ladds/obstacle_tx std_msgs/msg/String \
 ROS 侧可以看到输入消息和桥的发送日志：
 
 ```bash
-ros2 topic echo /ladds/obstacle_tx --once
-ros2 topic info /ladds/obstacle_tx --verbose
+ros2 topic echo /ladds/obstacle_in --once
+ros2 topic info /ladds/obstacle_in --verbose
 ```
 
 仿真运行时还可以分别确认输入和输出频率：
@@ -155,7 +158,7 @@ ros2 topic info /ladds/obstacle_tx --verbose
 ```bash
 ros2 topic type /otter/costmap_raw
 ros2 topic hz /otter/costmap_raw
-ros2 topic hz /ladds/obstacle_tx
+ros2 topic hz /ladds/obstacle_in
 ```
 
 第一条应显示 `nav2_msgs/msg/Costmap`。如果输入话题存在但类型不同，先把适配器的

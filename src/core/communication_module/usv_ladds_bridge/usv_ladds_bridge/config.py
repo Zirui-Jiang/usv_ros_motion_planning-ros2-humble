@@ -28,11 +28,11 @@ class BridgeConfig:
     ownship_receive_topic: str = "0411"
     obstacle_receive_topic: str = "0141"
     ownship_input_topic: str = ""
-    obstacle_input_topic: str = "/ladds/obstacle_tx"
+    obstacle_input_topic: str = "/ladds/obstacle_in"
     ownship_output_topic: str = "/otter/odom"
-    obstacle_output_topic: str = "/otter/ladds_targets"
-    ownship_json_topic: str = "/ladds/ownship_0411"
-    obstacle_json_topic: str = "/ladds/obstacle_0141"
+    obstacle_output_topic: str = "/ladds/targets"
+    ownship_json_topic: str = "/ladds/ownship"
+    obstacle_json_topic: str = "/ladds/obstacle"
     ownship_frame_id: str = "otter/odom"
     ownship_child_frame_id: str = "otter/base_link"
     origin_latitude: float = 30.5453
@@ -83,14 +83,14 @@ class BridgeConfig:
             obstacle_receive_topic=str(values.get("obstacle_receive_topic", "0141")),
             ownship_input_topic=str(values.get("ownship_input_topic", "")),
             obstacle_input_topic=str(
-                values.get("obstacle_input_topic", "/ladds/obstacle_tx")
+                values.get("obstacle_input_topic", "/ladds/obstacle_in")
             ),
             ownship_output_topic=str(values.get("ownship_output_topic", "/otter/odom")),
             obstacle_output_topic=str(
-                values.get("obstacle_output_topic", "/otter/ladds_targets")
+                values.get("obstacle_output_topic", "/ladds/targets")
             ),
-            ownship_json_topic=str(values.get("ownship_json_topic", "/ladds/ownship_0411")),
-            obstacle_json_topic=str(values.get("obstacle_json_topic", "/ladds/obstacle_0141")),
+            ownship_json_topic=str(values.get("ownship_json_topic", "/ladds/ownship")),
+            obstacle_json_topic=str(values.get("obstacle_json_topic", "/ladds/obstacle")),
             ownship_frame_id=str(values.get("ownship_frame_id", "otter/odom")),
             ownship_child_frame_id=str(
                 values.get("ownship_child_frame_id", "otter/base_link")

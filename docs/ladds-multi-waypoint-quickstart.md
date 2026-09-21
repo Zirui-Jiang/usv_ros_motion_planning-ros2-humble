@@ -59,7 +59,7 @@ export ROS_LOCALHOST_ONLY=1
 bash scripts/start_ladds_route.bash --relay-host 172.27.128.1
 ```
 
-安装区内 launch 文件仍名为 `single_leg.launch.py`，但当前节点会把完整 `points` 数组提交到 `NavigateRoute`，并非只取首点。
+安装区内 launch 文件为 `route.launch.py`。`ros2 node list` 里是 `usv_ladds_rx`、`usv_ladds_tx`、`usv_ladds_route`（可选再加 `usv_ladds_costmap`）。`usv_ladds_route` 会把完整 `points` 数组提交到 `NavigateRoute`，并非只取首点。旧入口 `start_ladds_single_leg.bash` / `single_leg.launch.py` 仍转发到本脚本。默认不启动 costmap 适配器。
 
 观察终端也必须显式使用相同 ROS 环境：
 

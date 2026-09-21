@@ -96,7 +96,7 @@ Windows 中继需要额外订阅 0331，并注册本船上行主题 0411：
 .\scripts\start_ladds_relay.ps1 -DomainId 1 -ReceiveTopic '0211' -StopReceiveTopic '0331' -SendTopic '0052' -OwnshipSendTopic '0411'
 ```
 
-ROS 使用包内 `config/single_leg.yaml`（已经配置 `stop_receive_topic: "0331"`）。
+ROS 使用包内 `config/route.yaml`（已经配置 `stop_receive_topic: "0331"`）。
 TCP 模式只改 ROS YAML 不会改变 Windows 已经启动的 DDS 订阅；需要两侧都启用。
 Linux native 后端则直接按此 YAML 在同一 SDK 句柄注册两个订阅和两个发布主题。
 

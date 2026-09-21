@@ -1,4 +1,4 @@
-"""LaDDS 接收节点：订 0211/0331 任务，订 0411 解成内部 odom。"""
+"""LaDDS 接收节点 usv_ladds_rx：订 0211/0331 任务，订 0411 解成内部 odom。"""
 
 from __future__ import annotations
 
@@ -37,7 +37,7 @@ class LaDDSInboundNode(Node):
         tcp_client_factory: Optional[Callable[..., Any]] = None,
         header_cache: Optional[HeaderCache] = None,
     ) -> None:
-        super().__init__("usv_ladds_inbound")
+        super().__init__("usv_ladds_rx")
         self.client: Optional[Any] = None
         self.header_cache = header_cache or HeaderCache()
         self._receive_failures = 0
@@ -130,13 +130,13 @@ class LaDDSInboundNode(Node):
         version = version or "unknown"
         if config.backend == "tcp":
             self.get_logger().info(
-                "LaDDS inbound started "
-                f"(TCP relay {config.relay_host}:{config.relay_port}, "
-                f"version {version}); subscribe 0211/0331 and 0411"
+                "LaDDS bridge started "
+                f"(rx; TCP relay {config.relay_host}:{config.relay_port}, "
+                f"version {version}); subscribe 0211/0331/0411/0141"
             )
         else:
             self.get_logger().info(
-                f"LaDDS inbound started (native SDK {version}, "
+                f"LaDDS bridge started (rx; native SDK {version}, "
                 f"domain {config.domain_id}, receive {config.receive_topic}, "
                 f"ownship {config.ownship_receive_topic}, QoS {config.qos})"
             )

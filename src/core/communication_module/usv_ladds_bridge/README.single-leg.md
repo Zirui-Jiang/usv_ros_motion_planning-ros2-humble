@@ -33,7 +33,7 @@
 
 ```text
 工具 --LaDDS 0211--> Windows relay --TCP--> /ladds/rx
-  → ladds_single_leg：解析、换算、生成本次执行ID；必要时先确认取消旧执行
+  → usv_ladds_route：解析、换算、生成本次执行ID；必要时先确认取消旧执行
   → /otter/navigation/navigate_to：原子提交目标和速度
   → 原有A*、LOS、PID导航 → /otter/navigation_status确认GOAL_REACHED
   → /ladds/tx --TCP--> relay --LaDDS 0052--> 工具
@@ -102,10 +102,10 @@ bash scripts/start_ladds_single_leg_sim.bash --headless false
 ```bash
 cd '/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble'
 export ROS_DOMAIN_ID=42 ROS_LOCALHOST_ONLY=1
-bash scripts/start_ladds_single_leg.bash
+bash scripts/start_ladds_route.bash
 ```
 
-脚本自动获取WSL默认网关，也可用第一个参数指定Windows中继IP。`LADDS_RELAY_PORT`可改端口，`LADDS_INSTALL_BASE`可改安装区。原生Linux后端仍需可用Linux SDK和授权，本轮实际验证使用Windows SDK加TCP。
+当前 launch 是 `route.launch.py`，节点名为 `usv_ladds_route`。旧脚本 `start_ladds_single_leg.bash` 会转发到这里；若第一个参数是中继 IP，会转成 `--relay-host`。脚本自动获取WSL默认网关，也可用 `--relay-host` 指定Windows中继IP。`LADDS_RELAY_PORT`可改端口，`LADDS_INSTALL_BASE`或`LADDS_ROUTE_INSTALL`可改安装区。原生Linux后端仍需可用Linux SDK和授权，本轮实际验证使用Windows SDK加TCP。
 
 这三个WSL启动脚本在自己的进程内优先使用系统Python，与Humble的Python 3.10扩展匹配；可以从Conda base或vrx_rl终端运行。脚本不会修改父终端的Conda设置。
 

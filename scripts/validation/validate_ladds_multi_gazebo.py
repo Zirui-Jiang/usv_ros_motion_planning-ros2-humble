@@ -33,7 +33,7 @@ def main():
     from std_msgs.msg import String
     from common.geodesy import GeoReference
     from usv_navigation_interfaces.msg import NavigationReference, ControlReport
-    from usv_ladds_bridge.single_leg_node import SingleLegNode
+    from usv_ladds_bridge.route_node import RouteNode
 
     root = Path(__file__).resolve().parents[2]
     output = Path(args.output).resolve()
@@ -45,7 +45,7 @@ def main():
     begun, sent_at, finished_at = time.monotonic(), None, None
     observed_index = 0
     rclpy.init()
-    node, adapter = Node('multi_route_gazebo_observer'), SingleLegNode()
+    node, adapter = Node('multi_route_gazebo_observer'), RouteNode()
     executor = SingleThreadedExecutor()
     executor.add_node(node)
     executor.add_node(adapter)
