@@ -54,7 +54,8 @@ class ObstacleGenerator(XMLGenerator):
         if not self.obs_cfg is None:
             world = tree.getroot().find("world")
             index_map = {"BOX": 0, "CYLINDER": 0, "SPHERE": 0}
-            for obs in self.obs_cfg["obstacles"]:
+            # 键存在但没有列表项时，PyYAML 得到 None；空清单只清理旧模型。
+            for obs in self.obs_cfg.get("obstacles") or []:
                 params = {k : float(v) for k, v in obs["props"].items()}
                 # pose 按六项解析为 x/y/z/roll/pitch/yaw；本版本生成时仅使用 x/y/z，转角未写入模型。
                 pose = [float(i) for i in obs["pose"].split()]

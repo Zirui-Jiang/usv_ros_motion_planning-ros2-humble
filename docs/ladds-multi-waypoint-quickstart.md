@@ -29,7 +29,7 @@ bash scripts/build_ladds_route.bash
 在 Windows PowerShell 中运行现有中继：
 
 ```powershell
-.\scripts\start_ladds_relay.ps1 -DomainId 1 -ReceiveTopic '0211' -SendTopic '0052'
+.\scripts\start_ladds_relay.ps1 -DomainId 1 -ReceiveTopic '0211' -StopReceiveTopic '0331' -BerthReceiveTopic '0212' -SendTopic '0052'
 ```
 
 记录脚本显示的 WSL 虚拟网卡 IPv4。LaDDS 使用 DDS 域 `1`；ROS 仿真、适配器和观察终端使用 ROS 域 `42`。两者是不同中间件的独立域号，无需相等。
@@ -126,10 +126,19 @@ ros2 topic echo /ladds/task_status
 
 在工具中关闭定时或循环发送，每次执行只发送一包 `0211`。每次收到合法 `0211` 都代表一次新执行：即使 `travelId` 和全部内容相同，也会取消当前执行并从头重新执行该航路。`travelId` 是航线编号，可以复用；内部执行使用新的随机请求 ID。
 
-中间点进入 1.5 m 圆后继续下一点，不要求低速停车。最终点同时满足位置和速度条件后，工具订阅的 `0052` 才收到：
+中间点进入 1.5 m 圆后继续下一点，不要求低速停车。最终点同时满足位置和速度条件后，工具订阅的 `0052` 才收到。业务字段在 `content` 里，外层另有 `head`：
 
 ```json
-{"travelId": 60, "taskFinish": 1}
+{
+  "head": {
+    "packageSeq": 1,
+    "packageType": 0,
+    "recvPlatform": 1001,
+    "sendPlatform": 1000,
+    "time": "2026-09-01 09:48:43.950"
+  },
+  "content": {"travelId": 60, "taskFinish": 1}
+}
 ```
 
 被新 `0211` 替换、取消、模块重启、时钟重置、无路或超时均不会发送成功 `0052`。协议当前没有定义失败 DDS 报文，应从 `/ladds/task_status` 和 `/otter/navigation_status` 查看原因及 `waypoint_index`、`passed_waypoints`。

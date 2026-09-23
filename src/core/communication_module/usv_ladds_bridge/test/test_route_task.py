@@ -38,6 +38,7 @@ def test_parse_route_preserves_three_point_position_and_segment_speed_order():
     route = parse_route(json.dumps(message), ORIGIN)
 
     assert route.travel_id == 58
+    assert route.task_finish == 1
     assert route.sender == 1000
     assert route.identity == (1000, 58)
     assert route.wrapped is True
@@ -134,6 +135,7 @@ def test_guard_route_preserves_optional_true_heading(heading, yaw):
     route = parse_route(json.dumps(content), ORIGIN)
     assert route.guard_on_arrival is True
     assert route.task_type == 80
+    assert route.task_finish == 2
     if yaw is None:
         assert route.guard_heading is None
     else:

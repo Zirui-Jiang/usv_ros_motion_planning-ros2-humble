@@ -21,7 +21,8 @@ dynamics:
   n_r: -20.0
   # physical limitation
   velocity_min: 0.0
-  velocity_max: 1.0
+  # 8 节 = 8 * 1852 / 3600 m/s。航路点速度按小于等于该值接受。
+  velocity_max: 20.0
   acceleration_min: -1.0
   acceleration_max: 1.0
   # 加速度变化率约束的单位为米/秒³。

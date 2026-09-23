@@ -1,4 +1,4 @@
-"""LaDDS 接收节点 usv_ladds_rx：订 0211/0331 任务，订 0411 解成内部 odom。"""
+"""LaDDS 接收节点 usv_ladds_rx：订 0211/0331/0212 任务，订 0411 解成内部 odom。"""
 
 from __future__ import annotations
 
@@ -89,6 +89,9 @@ class LaDDSInboundNode(Node):
         self._stop_rx_publisher = self.create_publisher(
             String, "/ladds/stop_rx", config.queue_depth
         )
+        self._berth_rx_publisher = self.create_publisher(
+            String, "/ladds/berth_rx", config.queue_depth
+        )
         self._bytes_rx_publisher = self.create_publisher(
             UInt8MultiArray, "/ladds/rx_bytes", config.queue_depth
         )
@@ -132,12 +135,13 @@ class LaDDSInboundNode(Node):
             self.get_logger().info(
                 "LaDDS bridge started "
                 f"(rx; TCP relay {config.relay_host}:{config.relay_port}, "
-                f"version {version}); subscribe 0211/0331/0411/0141"
+                f"version {version}); subscribe 0211/0331/0212/0411/0141"
             )
         else:
             self.get_logger().info(
                 f"LaDDS bridge started (rx; native SDK {version}, "
                 f"domain {config.domain_id}, receive {config.receive_topic}, "
+                f"berth {config.berth_receive_topic or '-'}, "
                 f"ownship {config.ownship_receive_topic}, QoS {config.qos})"
             )
 
@@ -241,9 +245,12 @@ class LaDDSInboundNode(Node):
                 config.stop_receive_topic,
                 config.ownship_receive_topic,
                 config.obstacle_receive_topic,
+                config.berth_receive_topic,
             )
             if channel == "stop":
                 self._stop_rx_publisher.publish(text_message)
+            elif channel == "berth":
+                self._berth_rx_publisher.publish(text_message)
             elif channel == "route":
                 self._text_rx_publisher.publish(text_message)
             elif channel == "ownship":
@@ -312,6 +319,7 @@ def _create_client(
         obstacle_send_topic=config.obstacle_send_topic,
         receive_topic=config.receive_topic,
         stop_receive_topic=config.stop_receive_topic,
+        berth_receive_topic=config.berth_receive_topic,
         ownship_receive_topic=config.ownship_receive_topic,
         obstacle_receive_topic=config.obstacle_receive_topic,
         src=config.src,

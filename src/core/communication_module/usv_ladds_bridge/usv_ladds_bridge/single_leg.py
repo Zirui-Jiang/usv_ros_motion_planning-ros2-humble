@@ -143,9 +143,25 @@ def parse_single_leg(text: str, origin: GeoReference) -> SingleLeg:
     )
 
 
+# 完成回报：普通航路只含航线号和完成码；值守与靠离泊额外回传任务类型。
 def make_completion(leg: SingleLeg) -> dict:
-    """Build the documented bare completion business object."""
-    return {"travelId": leg.travel_id, "taskFinish": 1}
+    """Build the documented bare completion business object.
+
+    0212 echoes its task type: 3 is departure, 4 is berthing. 0211 taskType 80
+    echoes 80. Ordinary routes stay travelId plus taskFinish only.
+    """
+    payload = {
+        "travelId": leg.travel_id,
+        "taskFinish": getattr(leg, "task_finish", 1),
+    }
+    task_type = getattr(leg, "task_type", None)
+    if getattr(leg, "protocol", "0211") == "0212" or task_type == 80:
+        payload = {
+            "travelId": leg.travel_id,
+            "taskType": task_type,
+            "taskFinish": payload["taskFinish"],
+        }
+    return payload
 
 
 def _required(mapping: dict, name: str):

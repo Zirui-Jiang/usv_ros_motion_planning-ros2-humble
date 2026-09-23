@@ -25,6 +25,7 @@ class BridgeConfig:
     obstacle_send_topic: str = "0141"
     receive_topic: str = "0211"
     stop_receive_topic: str = ""
+    berth_receive_topic: str = ""
     ownship_receive_topic: str = "0411"
     obstacle_receive_topic: str = "0141"
     ownship_input_topic: str = ""
@@ -79,6 +80,7 @@ class BridgeConfig:
             obstacle_send_topic=str(values.get("obstacle_send_topic", "0141")),
             receive_topic=str(values.get("receive_topic", "0211")),
             stop_receive_topic=str(values.get("stop_receive_topic", "")),
+            berth_receive_topic=str(values.get("berth_receive_topic", "")),
             ownship_receive_topic=str(values.get("ownship_receive_topic", "0411")),
             obstacle_receive_topic=str(values.get("obstacle_receive_topic", "0141")),
             ownship_input_topic=str(values.get("ownship_input_topic", "")),
@@ -135,6 +137,16 @@ class BridgeConfig:
             raise ValueError('stop_receive_topic must be different from receive_topic')
         if self.stop_receive_topic and not self.stop_receive_topic.strip():
             raise ValueError('stop_receive_topic must be empty or a non-blank topic')
+        if self.berth_receive_topic and not self.berth_receive_topic.strip():
+            raise ValueError('berth_receive_topic must be empty or a non-blank topic')
+        if self.berth_receive_topic and self.berth_receive_topic == self.receive_topic:
+            raise ValueError('berth_receive_topic must be different from receive_topic')
+        if (
+            self.berth_receive_topic
+            and self.stop_receive_topic
+            and self.berth_receive_topic == self.stop_receive_topic
+        ):
+            raise ValueError('berth_receive_topic must be different from stop_receive_topic')
         for name, topic in (
             ("ownship_receive_topic", self.ownship_receive_topic),
             ("obstacle_receive_topic", self.obstacle_receive_topic),
@@ -143,6 +155,8 @@ class BridgeConfig:
                 raise ValueError(f"{name} must be different from receive_topic")
             if topic and self.stop_receive_topic and topic == self.stop_receive_topic:
                 raise ValueError(f"{name} must be different from stop_receive_topic")
+            if topic and self.berth_receive_topic and topic == self.berth_receive_topic:
+                raise ValueError(f"{name} must be different from berth_receive_topic")
         if (
             self.ownship_receive_topic
             and self.obstacle_receive_topic
@@ -251,12 +265,15 @@ def receive_channel(
     stop_topic: str,
     ownship_topic: str = "",
     obstacle_topic: str = "",
+    berth_topic: str = "",
 ) -> Optional[str]:
     """Route by transport metadata; preserve generic bridge when stop is disabled."""
     if ownship_topic and topic == ownship_topic:
         return "ownship"
     if obstacle_topic and topic == obstacle_topic:
         return "obstacle"
+    if berth_topic and topic == berth_topic:
+        return "berth"
     if not stop_topic:
         return "route"
     if topic == stop_topic:

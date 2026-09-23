@@ -50,6 +50,47 @@ def test_optional_stop_subscription_has_explicit_topic_routing():
         BridgeConfig.from_mapping({'stop_receive_topic': '0211'})
 
 
+def test_optional_berth_subscription_is_separate_from_route_and_stop():
+    config = BridgeConfig.from_mapping({
+        'stop_receive_topic': '0331',
+        'berth_receive_topic': '0212',
+    })
+    assert receive_channel(
+        '0212',
+        config.receive_topic,
+        config.stop_receive_topic,
+        config.ownship_receive_topic,
+        config.obstacle_receive_topic,
+        config.berth_receive_topic,
+    ) == 'berth'
+    assert receive_channel(
+        '0211',
+        config.receive_topic,
+        config.stop_receive_topic,
+        config.ownship_receive_topic,
+        config.obstacle_receive_topic,
+        config.berth_receive_topic,
+    ) == 'route'
+    assert receive_channel(
+        '0331',
+        config.receive_topic,
+        config.stop_receive_topic,
+        config.ownship_receive_topic,
+        config.obstacle_receive_topic,
+        config.berth_receive_topic,
+    ) == 'stop'
+    assert receive_channel('0212', '0211', '0331') is None
+    with pytest.raises(ValueError, match='different'):
+        BridgeConfig.from_mapping({'berth_receive_topic': '0211'})
+    with pytest.raises(ValueError, match='different'):
+        BridgeConfig.from_mapping({
+            'stop_receive_topic': '0331',
+            'berth_receive_topic': '0331',
+        })
+    with pytest.raises(ValueError, match='different'):
+        BridgeConfig.from_mapping({'berth_receive_topic': '0411'})
+
+
 def test_missing_library_path_has_actionable_error():
     with pytest.raises(ValueError, match="library_path.*LADDS_LIBRARY_PATH"):
         BridgeConfig.from_mapping(
@@ -114,6 +155,7 @@ def test_default_transport_parameters_match_bridge_contract():
     assert config.receive_topic == "0211"
     assert config.ownship_receive_topic == "0411"
     assert config.obstacle_receive_topic == "0141"
+    assert config.berth_receive_topic == ""
     assert config.ownship_output_topic == "/otter/odom"
     assert config.obstacle_output_topic == "/ladds/targets"
     assert config.ownship_json_topic == "/ladds/ownship"
@@ -172,6 +214,7 @@ def test_bridge_yaml_keeps_ladds_topic_ids_as_strings():
         "obstacle_send_topic",
         "receive_topic",
         "stop_receive_topic",
+        "berth_receive_topic",
         "ownship_receive_topic",
         "obstacle_receive_topic",
     )
@@ -193,6 +236,9 @@ def test_bridge_yaml_keeps_ladds_topic_ids_as_strings():
             assert "usv_ladds_route" in loaded
             assert params["obstacle_input_topic"] == "/ladds/obstacle_in"
             assert params["obstacle_output_topic"] == "/ladds/targets"
+            assert params["berth_receive_topic"] == "0212"
+            route_params = loaded["usv_ladds_route"]["ros__parameters"]
+            assert route_params["berth_receive_topic"] == "/ladds/berth_rx"
         assert "usv_ladds_radar" in loaded
         radar = loaded["usv_ladds_radar"]["ros__parameters"]
         assert radar["output_topic"] == "/ladds/obstacle_in"

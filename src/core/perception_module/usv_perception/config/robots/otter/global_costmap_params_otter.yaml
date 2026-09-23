@@ -11,9 +11,11 @@ costmap:
   update_frequency: 2.0
   publish_frequency: 2.0
   transform_tolerance: 0.5
-  resolution: 0.5
-  width: 400
-  height: 400
+  resolution: 1.0
+  # 边长按真实航路计算。艇在 (23, -10)，最远点在其东侧 735.0 米。
+  # 滚动窗口以艇为中心，边长取该距离的两倍，再加船长的一半 1.1 米，按 0.5 米取整为 1473 米。
+  width: 1473
+  height: 1473
   origin_z: 0.0
   z_resolution: 1
   z_voxels: 2

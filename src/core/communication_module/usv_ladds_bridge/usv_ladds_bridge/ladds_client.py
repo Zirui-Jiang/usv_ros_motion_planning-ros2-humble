@@ -43,6 +43,7 @@ class LaDDSClient:
         encryption: bool = False,
         library_loader: Optional[Callable[[str], object]] = None,
         stop_receive_topic: str = "",
+        berth_receive_topic: str = "",
         obstacle_send_topic: str = "",
         ownship_receive_topic: str = "",
         obstacle_receive_topic: str = "",
@@ -57,19 +58,26 @@ class LaDDSClient:
         _require_c_string("ownship_send_topic", ownship_send_topic, allow_empty=True)
         _require_c_string("receive_topic", receive_topic, allow_empty=False)
         _require_c_string("stop_receive_topic", stop_receive_topic, allow_empty=True)
+        _require_c_string("berth_receive_topic", berth_receive_topic, allow_empty=True)
         _require_c_string("obstacle_send_topic", obstacle_send_topic, allow_empty=True)
         _require_c_string("ownship_receive_topic", ownship_receive_topic, allow_empty=True)
         _require_c_string("obstacle_receive_topic", obstacle_receive_topic, allow_empty=True)
         if stop_receive_topic == receive_topic:
             raise ValueError('stop_receive_topic must be different from receive_topic')
-        reserved_receive = {receive_topic, stop_receive_topic}
+        if berth_receive_topic == receive_topic:
+            raise ValueError('berth_receive_topic must be different from receive_topic')
+        if berth_receive_topic and berth_receive_topic == stop_receive_topic:
+            raise ValueError('berth_receive_topic must be different from stop_receive_topic')
+        reserved_receive = {receive_topic, stop_receive_topic, berth_receive_topic}
         if ownship_receive_topic and ownship_receive_topic in reserved_receive:
             raise ValueError(
-                "ownship_receive_topic must be different from receive_topic and stop_receive_topic"
+                "ownship_receive_topic must be different from receive_topic, "
+                "stop_receive_topic and berth_receive_topic"
             )
         if obstacle_receive_topic and obstacle_receive_topic in reserved_receive:
             raise ValueError(
-                "obstacle_receive_topic must be different from receive_topic and stop_receive_topic"
+                "obstacle_receive_topic must be different from receive_topic, "
+                "stop_receive_topic and berth_receive_topic"
             )
         if (
             ownship_receive_topic
@@ -104,7 +112,7 @@ class LaDDSClient:
         self._receive_topics = [self._receive_topic]
         if stop_receive_topic:
             self._receive_topics.append(stop_receive_topic.encode("utf-8"))
-        for extra in (ownship_receive_topic, obstacle_receive_topic):
+        for extra in (berth_receive_topic, ownship_receive_topic, obstacle_receive_topic):
             encoded = extra.encode("utf-8") if extra else b""
             if extra and encoded not in self._receive_topics:
                 self._receive_topics.append(encoded)

@@ -102,6 +102,26 @@ def test_optional_stop_topic_is_registered_and_original_topic_preserved():
         client.close()
 
 
+def test_optional_berth_topic_is_registered_and_original_topic_preserved():
+    library = FakeLibrary()
+    client = LaDDSClient(
+        'fake.dll',
+        receive_topic='0211',
+        stop_receive_topic='0331',
+        berth_receive_topic='0212',
+        library_loader=lambda path: library,
+    )
+    client.start()
+    try:
+        assert ('sub', 2**40 + 7, b'0211', 2) in library.calls
+        assert ('sub', 2**40 + 7, b'0331', 2) in library.calls
+        assert ('sub', 2**40 + 7, b'0212', 2) in library.calls
+        library.emit(b'{"travelId":1}', topic=b'0212')
+        assert client.receive().topic == '0212'
+    finally:
+        client.close()
+
+
 def test_start_loads_sdk_and_registers_both_topics_with_64_bit_handle():
     library = FakeLibrary()
     loaded_paths = []

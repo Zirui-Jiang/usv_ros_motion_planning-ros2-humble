@@ -15,6 +15,11 @@ from usv_navigation.configuration import C, T, section
 from usv_navigation.state_rules import fresh, readiness
 
 
+def _warmup_worker():
+    """Start the spawned planner process and load its module graph early."""
+    return None
+
+
 # 携带任务版本、目标、状态/地图快照、旧路线和参数副本，隔离回调与工作进程的数据修改。
 @dataclass(frozen=True)
 class PlanningRequest:
@@ -191,11 +196,10 @@ def plan_route_navigation(request):
         controller = C+cfg[C+'controller_name']+'_controller.'
         guidance = RouteTrajectoryPlanner(model, section(cfg, T+'los.'), request.waypoint_radius,
                                           cfg[controller+'lookahead_time'])
-        prefix_length, start = 0., np.asarray(request.state.pose)
+        start = np.asarray(request.state.pose)
         prefix_message = ''
-        # Always resolve the current anchor. Afterwards a horizon plus braking
-        # distance is enough; never run all 255 searches without a time bound.
-        wanted_length = model.velocity_max*cfg[T+'los.trajectory_time']+model.velocity_max**2/(2*-model.acceleration_min)
+        # 当前点之后不再按预瞄距离截断，后面的航点这次都搜索。
+        # 仍用规划时间和最多 32 段挡住过长的航路。
         for anchor in points:
             remaining = deadline-time.perf_counter()
             if remaining <= 0:
@@ -259,9 +263,8 @@ def plan_route_navigation(request):
             legs.append(leg)
             speeds.append(float(anchor[3]))
             route = np.vstack(legs)
-            prefix_length += np.linalg.norm(np.diff(leg[:, :2], axis=0), axis=1).sum()
             start = anchor[:3]
-            if prefix_length >= wanted_length or len(legs) >= 32:
+            if len(legs) >= 32:
                 break
         generated = guidance.plan(legs, speeds, request.state,
                                   goal=tuple(points[-1, :2]) if len(points) == 1 else None,
@@ -288,6 +291,10 @@ class LatestPlanWorker:
             import multiprocessing
             from concurrent.futures import ProcessPoolExecutor
             executor = ProcessPoolExecutor(1, mp_context=multiprocessing.get_context('spawn'))
+            self._warmup_future = executor.submit(_warmup_worker)
+            self._warmup_future.result()
+        else:
+            self._warmup_future = None
         self.executor = executor
         self.future = None
         self.pending = None
@@ -334,4 +341,6 @@ class LatestPlanWorker:
     # 清除待处理工作并等待执行器安全结束。
     def close(self):
         self.invalidate()
+        if self._warmup_future is not None:
+            self._warmup_future.cancel()
         self.executor.shutdown(wait=True, cancel_futures=True)

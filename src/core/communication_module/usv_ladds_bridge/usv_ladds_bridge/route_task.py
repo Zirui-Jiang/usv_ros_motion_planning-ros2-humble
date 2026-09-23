@@ -40,10 +40,12 @@ class RouteTask:
     task_type: int = 16
     guard_heading: Optional[float] = None
     warnings: Tuple[str, ...] = ()
+    protocol: str = "0211"
+    task_finish: int = 1
 
     @property
     def guard_on_arrival(self) -> bool:
-        return self.task_type == 80
+        return self.protocol != "0212" and self.task_type == 80
 
     @property
     def identity(self) -> Tuple[Optional[int], int]:
@@ -207,6 +209,7 @@ def parse_route(text: str, origin: GeoReference) -> RouteTask:
         task_type=task_type,
         guard_heading=guard_heading,
         warnings=tuple(warnings),
+        task_finish=2 if task_type == 80 else 1,
     )
 
 

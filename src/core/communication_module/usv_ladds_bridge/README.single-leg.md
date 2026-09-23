@@ -2,7 +2,7 @@
 
 当前新增的 `taskType: 80` 终点值守与 0331 主动刹停见
 [停船与终点值守](README.stop-guard.md)。类型 80 在到达最终点并进入值守时回一次
-0052，表示航路终点到达，不表示定点微控任务退出；微控保持活动，周期值守状态
+0052，回传 `taskType: 80`、`taskFinish: 2`，表示航路终点到达，不表示定点微控任务退出；微控保持活动，周期值守状态
 不重复反馈。0331 不回 0052。下文保留早期类型 16 单段联调说明与历史记录，
 普通航渡的到点完成语义不变。
 
@@ -144,13 +144,22 @@ bash scripts/start_ladds_route.bash
 
 完整文件里的`head.time`是示例时间。当前执行判断不依赖`head.time`或`head.packageSeq`的变化，每次收到合法报文本身就是一次新指令；无需为了重新执行而修改这些字段。
 
-工具另加订阅**0052**。到达后收到裸业务JSON：
+工具另加订阅**0052**。到达后 LaDDS 上的报文带 `head` 与 `content`，业务字段在 `content`：
 
 ```json
-{"travelId": 53, "taskFinish": 1}
+{
+  "head": {
+    "packageSeq": 1,
+    "packageType": 0,
+    "recvPlatform": 1001,
+    "sendPlatform": 1000,
+    "time": "2026-09-01 09:48:43.950"
+  },
+  "content": {"travelId": 53, "taskFinish": 1}
+}
 ```
 
-反馈依照文档的裸JSON示例，未推断未提供定义的通用`head`。已验证DDS原始收发；工具能否把裸0052渲染成专用界面，仍需现场确认。
+`/ladds/tx` 上仍是裸业务 JSON，外壳由发布节点在发给 LaDDS 前加上。`packageSeq` 从 1 递增，`time` 为发出时刻。
 
 ## 观察与取消
 

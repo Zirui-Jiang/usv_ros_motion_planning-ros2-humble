@@ -14,6 +14,7 @@ from usv_navigation_interfaces.msg import RouteWaypoint as RouteWaypointMessage
 from usv_navigation_interfaces.srv import NavigateRoute, StopNavigation
 from common.geodesy import GeoReference
 
+from .berth_task import parse_berth
 from .leg_state import LegBook
 from .route_task import parse_route
 from .single_leg import make_completion
@@ -31,6 +32,7 @@ class RouteNode(Node):
                         map_frame='otter/map', navigation_namespace='/otter',
                         receive_topic='/ladds/rx', transmit_topic='/ladds/tx',
                         stop_receive_topic='/ladds/stop_rx',
+                        berth_receive_topic='/ladds/berth_rx',
                         status_topic='/ladds/task_status', service_timeout=5.0,
                         waypoint_radius=1.5)
         values = {k: self.declare_parameter(
@@ -48,6 +50,7 @@ class RouteNode(Node):
         self.status_pub = self.create_publisher(String, values['status_topic'], 10)
         self.create_subscription(String, values['receive_topic'], self._receive, 10)
         self.create_subscription(String, values['stop_receive_topic'], self._receive_stop, 10)
+        self.create_subscription(String, values['berth_receive_topic'], self._receive_berth, 10)
         self.create_subscription(String, namespace + '/navigation_status', self._navigation, 10)
         self.book = LegBook()
         self.future = None
@@ -85,8 +88,8 @@ class RouteNode(Node):
             f'0211 route adapter: ENU origin {self.origin.latitude}, '
             f'{self.origin.longitude}; frame={self.frame}; speed unit=knots; '
             f'waypoint radius={self.waypoint_radius} m; '
-            'configure DDS receive=0211+0331 and send=0052; '
-            'each received 0211 starts a new execution, so send once per execution')
+            'configure DDS receive=0211+0331+0212 and send=0052; '
+            'each received 0211 or 0212 starts a new execution, so send once per execution')
 
     def _notice(self, state, reason='', record=None):
         data = dict(state=state, reason=reason)
@@ -124,6 +127,8 @@ class RouteNode(Node):
                         passed_waypoints=passed, waypoint_radius=radius,
                         planner_session=record.planner_session, task_id=record.task_id)
             data.update(taskType=getattr(record.leg, 'task_type', 16),
+                        protocol=getattr(record.leg, 'protocol', '0211'),
+                        task_finish=getattr(record.leg, 'task_finish', 1),
                         guard_on_arrival=getattr(record.leg, 'guard_on_arrival', False),
                         guard_heading_yaw=getattr(record.leg, 'guard_heading', None),
                         warnings=list(getattr(record.leg, 'warnings', ())))
@@ -146,12 +151,27 @@ class RouteNode(Node):
             self._notice('INVALID_TASK', str(error))
             self._warning(str(error))
             return
-        # The sender sends once per execution. Even identical 0211 content is
-        # an explicit restart, while service retries retain their request_id.
+        self._queue_route(leg)
+
+    def _receive_berth(self, message):
+        """0212 单点靠离泊：本阶段按普通单点航路排队，与 0211 互相替换。"""
+        try:
+            leg = parse_berth(message.data, self.origin)
+        except (ValueError, TypeError) as error:
+            self._notice('INVALID_TASK', str(error))
+            self._warning(str(error))
+            return
+        self._queue_route(leg)
+
+    def _queue_route(self, leg):
+        """把 0211/0212 任务排进同一条执行队列，后到的合法包替换未完成的执行。"""
+        protocol = getattr(leg, 'protocol', '0211')
+        # Each legal packet is a new execution. Even identical content is an
+        # explicit restart, while service retries retain their request_id.
         if self.waiting_record is not None:
             previous = self.waiting_record
             previous.state = 'ABORTED'
-            previous.reason = 'Replaced by a newer 0211 before navigation started'
+            previous.reason = f'Replaced by a newer {protocol} before navigation started'
             self._notice(previous.state, previous.reason, previous)
         self.waiting_record = self.book.prepare(leg)
         for warning in leg.warnings:
@@ -373,9 +393,15 @@ class RouteNode(Node):
             return
         previous = self.cancel_record
         if previous is not None:
-            self.book.abort(previous, 'Replaced by a newly received 0211')
+            protocol = getattr(
+                self.waiting_record.leg if self.waiting_record is not None else None,
+                'protocol',
+                '0211',
+            )
+            self.book.abort(previous, f'Replaced by a newly received {protocol}')
             # A matching CANCELLED/GOAL_REACHED status may have arrived first.
-            previous.state, previous.reason = 'ABORTED', 'Replaced by a newly received 0211'
+            previous.state, previous.reason = (
+                'ABORTED', f'Replaced by a newly received {protocol}')
             self._notice(previous.state, previous.reason, previous)
         self.cancel_required = False
         self.cancel_record = None
@@ -473,7 +499,12 @@ class RouteNode(Node):
             if self.waiting_record is None and not self.cancel_required:
                 self._report_arrival(arrived)
             else:
-                reason = 'Replaced by a newly received 0211'
+                protocol = getattr(
+                    self.waiting_record.leg if self.waiting_record is not None else None,
+                    'protocol',
+                    '0211',
+                )
+                reason = f'Replaced by a newly received {protocol}'
                 self.book.abort(arrived, reason)
                 arrived.state, arrived.reason = 'ABORTED', reason
                 self._notice(arrived.state, arrived.reason, arrived)
@@ -515,8 +546,8 @@ class RouteNode(Node):
         return True
 
     def _report_arrival(self, record):
-        # 0052 is the documented business JSON, without inventing unspecified
-        # common-header fields. A guard route reports arrival but keeps holding.
+        # 0052 业务对象在这里仍是裸 JSON。发到 LaDDS 前由 usv_ladds_tx 套 head/content。
+        # A guard route reports arrival but keeps holding.
         self.tx.publish(String(data=json.dumps(make_completion(record.leg), ensure_ascii=False)))
         self._notice(record.state, record.reason, record)
 

@@ -33,6 +33,7 @@ Windows 中继注册 0411 发布端和 0411 订阅端：
   -DomainId 1 `
   -ReceiveTopic '0211' `
   -StopReceiveTopic '0331' `
+  -BerthReceiveTopic '0212' `
   -SendTopic '0052' `
   -OwnshipSendTopic '0411' `
   -OwnshipReceiveTopic '0411'
@@ -75,15 +76,24 @@ origin_altitude: 0.0
 
 ## 0411 JSON
 
-桥接层发送的业务对象使用实际物理量，字段含义如下：
+桥接层发给 LaDDS 的 0411 在业务对象外包一层 `head` 与 `content`。`/ladds/ownship` 仍是内层业务对象，供仿真回灌。字段含义如下：
 
 ```json
 {
-  "longitude": 114.392931,
-  "latitude": 30.5453,
-  "speed": 3.89,
-  "heading": 90.0,
-  "angularZ": 5.73
+  "head": {
+    "packageSeq": 1,
+    "packageType": 0,
+    "recvPlatform": 1001,
+    "sendPlatform": 1000,
+    "time": "2026-09-01 09:48:43.950"
+  },
+  "content": {
+    "longitude": 114.392931,
+    "latitude": 30.5453,
+    "speed": 3.89,
+    "heading": 90.0,
+    "angularZ": 5.73
+  }
 }
 ```
 
@@ -92,7 +102,7 @@ origin_altitude: 0.0
 - `heading`：真北为 0°，顺时针增加；
 - `angularZ`：度每秒。
 
-0411 没有时间戳和横漂速度。接收节点订内部 `/ladds/ownship` 时，用发布节点缓存的源
+业务对象没有时间戳和横漂速度；发出时刻写在 `head.time`。接收节点订内部 `/ladds/ownship` 时，用发布节点缓存的源
 odom 头（stamp / frame_id / child_frame_id）回填，以便和 `fake_localization` 的 TF
 对齐。从 DDS 收到的外部 0411 使用接收节点时钟和配置的 `ownship_frame_id`。
 解回的 `twist.linear.y` 固定为 0。

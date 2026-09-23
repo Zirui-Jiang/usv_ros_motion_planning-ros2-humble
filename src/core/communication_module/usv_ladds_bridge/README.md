@@ -2,8 +2,12 @@
 
 0331 主动刹停及 0211/taskType=80 终点定点值守的新协议语义、启动参数和示例见
 [停船与终点值守](README.stop-guard.md)。普通 taskType=16 仍按原航路完成流程回 0052；
-taskType=80 到终点进入值守时也回一次 0052，表示航路终点到达，不表示微控退出。
+taskType=80 到终点进入值守时也回一次 0052，回传 `taskType: 80`、`taskFinish: 2`，表示航路终点到达，不表示微控退出。
 值守保持活动，周期状态不重复反馈；0331 主动刹停仍不回 0052。
+`0212` 靠离泊本阶段按 **单点航路** 执行，到点停稳后回一次 `0052`：`taskFinish` 为 3，并带回任务类型，离泊 `taskType: 3`、靠泊 `taskType: 4`；
+不做靠泊导轨、侧推或锁船。示例报文见
+[`docs/examples/ladds-0212-single-waypoint.json`](../../../../docs/examples/ladds-0212-single-waypoint.json)。
+航路联调时 Windows 中继需显式加上 `-BerthReceiveTopic '0212'`，只改 ROS YAML 不够。
 
 ## 当前推荐：0211 多航点航路
 
@@ -29,7 +33,7 @@ ROS 图里节点：`/usv_ladds_rx` 接收，`/usv_ladds_tx` 发布，
 
 当前实测链路：**Windows LaDDS 1.0.3 → 本机 TCP → WSL Ubuntu 22.04 / ROS 2 Humble**，双向可用。
 
-用户联调配置：DDS 数据域 **1**、主题字符串 **`0211`**、**`0331`**、**`0052`**、**`0411`** 和 **`0141`**（均保留前导零）、QoS **尽力传输 / best_effort**、IP 留空使用活动接口。报文为可按 UTF-8 解码的 JSON，现场样本 638 字节，含 `head` 与 `content`。桥接原样传输 0211/0331/0052；`0411` 由发布节点把 `nav_msgs/Odometry` 编成 JSON，由接收节点再解回 odom；`0141` 由障碍物 JSON 转发并解回 `/ladds/targets`。
+用户联调配置：DDS 数据域 **1**、主题字符串 **`0211`**、**`0212`**、**`0331`**、**`0052`**、**`0411`** 和 **`0141`**（均保留前导零）、QoS **尽力传输 / best_effort**、IP 留空使用活动接口。报文为可按 UTF-8 解码的 JSON，现场样本含 `head` 与 `content`。桥接原样接收 0211/0212/0331；发出的 `0052`、`0411`、`0141` 在 LaDDS 上带 `head`（`sendPlatform` 1000、`recvPlatform` 1001、`packageType` 0、递增 `packageSeq`、发出时刻 `time`）和 `content`。`0411` 由发布节点把 `nav_msgs/Odometry` 编成 JSON，由接收节点再解回 odom；`0141` 由障碍物 JSON 转发并解回 `/ladds/targets`。
 
 ## 为什么有 Windows 中继
 
@@ -120,6 +124,7 @@ ros2 topic echo /ladds/rx
 | --- | --- | --- |
 | `/ladds/tx` | `std_msgs/msg/String` | UTF-8 文本发到默认 LaDDS 发送主题（单腿配置为 `0052`） |
 | `/ladds/rx` | `std_msgs/msg/String` | LaDDS `0211` 收到的有效 UTF-8 文本 |
+| `/ladds/berth_rx` | `std_msgs/msg/String` | LaDDS `0212` 收到的有效 UTF-8 文本 |
 | `/ladds/ownship` | `std_msgs/msg/String` | 发布节点编出的 0411 JSON；接收节点订阅后解 odom |
 | `/otter/odom` | `nav_msgs/msg/Odometry` | 接收节点把 0411 解回的内部里程计 |
 | `/ladds/obstacle` | `std_msgs/msg/String` | 发布节点转发的 0141 JSON；接收节点再订 |

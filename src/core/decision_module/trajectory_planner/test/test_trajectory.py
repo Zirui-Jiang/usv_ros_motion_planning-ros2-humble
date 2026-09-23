@@ -4,7 +4,7 @@ import math
 import numpy as np
 import pytest
 
-from trajectory_planner.trajectory import Trajectory
+from trajectory_planner.trajectory import Trajectory, restart_trajectory_clock
 
 
 # 时间和弧长查询用正确下包围点插值全部八列。
@@ -59,3 +59,14 @@ def test_invalid_shapes_nonfinite_and_unordered_time_rejected():
             Trajectory(values)
     with pytest.raises(ValueError, match="empty"):
         Trajectory().reference_at_time(0)
+
+
+# 全局搜索结束后改时钟，相对时间不变，旧的搜索起点时间不再保留。
+def test_restart_clock_keeps_samples_and_uses_the_new_stamp():
+    original = Trajectory([[0, 0, 1, 2, 0, 0, 1, 0], [1, 1, 3, 2, 0, 0, 1, 0]],
+                          stamp=10, frame_id="otter/map", goal=(3, 2))
+    restarted = restart_trajectory_clock(original, 18.5)
+    assert restarted.stamp == 18.5
+    assert restarted.goal == (3, 2)
+    np.testing.assert_allclose(restarted.points, original.points)
+    assert original.stamp == 10

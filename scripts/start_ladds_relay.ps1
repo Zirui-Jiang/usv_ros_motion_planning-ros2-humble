@@ -5,6 +5,7 @@
     [string]$Topic = '0211',
     [string]$ReceiveTopic = '',
     [string]$StopReceiveTopic = '',
+    [string]$BerthReceiveTopic = '',
     [string]$SendTopic = '',
     [string]$OwnshipSendTopic = '0411',
     [string]$ObstacleSendTopic = '0141',
@@ -60,7 +61,7 @@ try {
     # SDK 在运行目录查找原有授权；不复制或更改授权文件。
     Push-Location -LiteralPath (Split-Path -Parent $laddsLibrary)
     try {
-        Write-Host "LaDDS: domain=$DomainId receive=$ReceiveTopic stop=$StopReceiveTopic ownship-rx=$OwnshipReceiveTopic obstacle-rx=$ObstacleReceiveTopic send=$SendTopic ownship=$OwnshipSendTopic obstacle=$ObstacleSendTopic qos=$Qos; TCP=$ListenAddress`:$Port"
+        Write-Host "LaDDS: domain=$DomainId receive=$ReceiveTopic stop=$StopReceiveTopic berth=$BerthReceiveTopic ownship-rx=$OwnshipReceiveTopic obstacle-rx=$ObstacleReceiveTopic send=$SendTopic ownship=$OwnshipSendTopic obstacle=$ObstacleSendTopic qos=$Qos; TCP=$ListenAddress`:$Port"
         $laddsArgs = @('-u', '-m', 'usv_ladds_bridge.relay', '--library', $laddsLibrary,
             '--listen', $ListenAddress, '--port', "$Port", '--domain-id', "$DomainId",
             '--send-topic', $SendTopic, '--ownship-send-topic', $OwnshipSendTopic,
@@ -71,6 +72,7 @@ try {
             '--qos', $Qos)
         if ($BindIp) { $laddsArgs += @('--bind-ip', $BindIp) }
         if ($StopReceiveTopic) { $laddsArgs += @('--stop-receive-topic', $StopReceiveTopic) }
+        if ($BerthReceiveTopic) { $laddsArgs += @('--berth-receive-topic', $BerthReceiveTopic) }
         & $PythonExe @laddsArgs
         if ($LASTEXITCODE -ne 0) { throw "LaDDS relay exited: $LASTEXITCODE" }
     } finally { Pop-Location }

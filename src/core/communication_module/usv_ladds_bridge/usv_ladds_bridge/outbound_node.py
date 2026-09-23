@@ -10,6 +10,7 @@ from nav_msgs.msg import Odometry
 from std_msgs.msg import String, UInt8MultiArray
 
 from .config import BridgeConfig, HeaderCache, validate_obstacle_payload
+from .envelope import prepare_outbound_payload
 from .ownship import ownship_payload_from_odometry
 from common.geodesy import GeoReference
 
@@ -28,6 +29,7 @@ class LaDDSOutboundNode(Node):
         self._client = client
         self._header_cache = header_cache
         self._send_failures = 0
+        self._package_seq = 1
         self._origin = GeoReference(
             config.origin_latitude,
             config.origin_longitude,
@@ -126,6 +128,18 @@ class LaDDSOutboundNode(Node):
     ) -> None:
         client = self._client
         if client is None:
+            return
+        topic = self._config.send_topic if transport_topic is None else transport_topic
+        try:
+            payload, self._package_seq = prepare_outbound_payload(
+                payload, topic, self._package_seq
+            )
+        except (UnicodeError, ValueError) as exc:
+            self._send_failures += 1
+            self.get_logger().error(
+                f"LaDDS send dropped from {source_topic} "
+                f"(failure {self._send_failures}): {_short_error(exc)}"
+            )
             return
         try:
             if transport_topic is None:

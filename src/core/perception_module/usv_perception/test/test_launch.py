@@ -79,7 +79,7 @@ def test_standalone_perception_starts_only_its_three_business_nodes(monkeypatch)
         assert _parameters(context, node)["use_sim_time"] is True
     mapping = _parameters(context, nodes[("usv_perception", "perception_mapping_node")])
     assert (mapping["width"], mapping["resolution"], mapping["offset_x"], mapping["offset_y"]) == (
-        1024, 0.5, 23.0, -10.0)
+        1473, 1.0, 23.0, -10.0)
     monitor = _parameters(context, nodes[("usv_perception", "perception_monitor")])
     assert set(monitor) == {"watched_topics", "use_sim_time"}
     assert list(monitor["watched_topics"]) == ["odom", "costmap_raw", "map"]

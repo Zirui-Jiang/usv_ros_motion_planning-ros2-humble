@@ -101,6 +101,14 @@ class Trajectory:
         return TrajectoryCell(*row)
 
 
+# 全局搜索完成后，把轨迹时钟改到当前时刻。相对时间仍从 0 起算，避免搜索耗时把轨迹提前判过期。
+def restart_trajectory_clock(trajectory, now):
+    """Start the trajectory clock when the global search has finished."""
+    if trajectory is None or trajectory.empty() or not np.isfinite(now):
+        return trajectory
+    return Trajectory(trajectory.points, now, trajectory.frame_id, trajectory.goal)
+
+
 # 将状态、轨迹、诊断信息和算法耗时一起返回调用者。
 @dataclass(frozen=True)
 class TrajectoryResult:

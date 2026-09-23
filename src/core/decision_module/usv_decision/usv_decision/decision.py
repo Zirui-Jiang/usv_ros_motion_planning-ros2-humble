@@ -20,6 +20,7 @@ from common.visualizer import make_path
 from usv_navigation_interfaces.msg import NavigationReference, ControlReport
 from usv_navigation_interfaces.srv import NavigateTo, NavigateRoute, StopNavigation
 from usv_navigation.configuration import DEFAULTS, HOT_PARAMETERS, C, T, validate_update
+from trajectory_planner.trajectory import restart_trajectory_clock
 from .runtime import LatestPlanWorker, PlanningRequest
 from .route_progress import RouteProgress
 from usv_navigation.state_rules import fresh
@@ -429,13 +430,15 @@ class DecisionNode(NavigationInputs):
         self.counters['global_searches'] += int(result.searched)
         self.reason = result.message
         stamp = self.get_clock().now().to_msg()
+        # 轨迹时间从全局搜索结束这一刻起算，不沿用搜索开始时的船位时间。
+        trajectory = restart_trajectory_clock(result.trajectory, self.now_seconds())
         if result.status not in (AlgorithmStatus.SUCCESS, AlgorithmStatus.GOAL_REACHED):
             self.mode, self.trajectory = result.status.value.upper(), None
             # 局部轨迹失败可能仍带有已验证全局航路，保留候选供下一拍严格复检。
             # 候选缓存不代表可执行参考；先清空显示，成功恢复后再发布一次。
             self.route = result.route
             self._publish_global_path(stamp, path=np.empty((0, 3)))
-        elif not self._trajectory_clear(result.trajectory):
+        elif not self._trajectory_clear(trajectory):
             self.trajectory = None
             self.route = np.empty((0, 3))
             self.mode, self.reason = 'WAITING_REFERENCE', 'Worker reference conflicts with latest map'
@@ -443,9 +446,9 @@ class DecisionNode(NavigationInputs):
             self._publish_global_path(stamp)
         else:
             self.route = result.route
-            self.trajectory = result.trajectory
+            self.trajectory = trajectory
             self.mode = 'NAVIGATING'
-            # 显示本次已验收的裁剪结果，不为显示重搜或改变轨迹源时间。
+            # 显示本次已验收的裁剪结果。轨迹时钟已改到搜索结束时刻。
             self._publish_global_path(stamp)
             self.trajectory_pub.publish(make_path(self.trajectory.points[:, [2, 3, 4]], self.frame, stamp))
         self._publish_reference()

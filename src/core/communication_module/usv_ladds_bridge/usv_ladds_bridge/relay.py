@@ -225,6 +225,11 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--receive-topic", default="0211")
     parser.add_argument('--stop-receive-topic', default='', help='optional extra stop subscription, e.g. 0331')
     parser.add_argument(
+        '--berth-receive-topic',
+        default='',
+        help='optional extra berth subscription, e.g. 0212',
+    )
+    parser.add_argument(
         "--ownship-receive-topic",
         default="0411",
         help="LaDDS subscription for ownship 0411 JSON",
@@ -255,6 +260,7 @@ def main() -> None:
         obstacle_send_topic=args.obstacle_send_topic,
         receive_topic=args.receive_topic,
         stop_receive_topic=args.stop_receive_topic,
+        berth_receive_topic=args.berth_receive_topic,
         ownship_receive_topic=args.ownship_receive_topic,
         obstacle_receive_topic=args.obstacle_receive_topic,
         src=args.src,

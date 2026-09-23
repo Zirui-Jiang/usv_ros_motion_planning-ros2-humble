@@ -5,6 +5,7 @@ usv_ladds_rx:
     qos: best_effort
     receive_topic: "0211"
     stop_receive_topic: "0331"
+    berth_receive_topic: "0212"
     send_topic: "0052"
     ownship_send_topic: "0411"
     obstacle_send_topic: "0141"
@@ -18,16 +19,16 @@ usv_ladds_rx:
     obstacle_json_topic: "/ladds/obstacle"
     ownship_frame_id: "otter/odom"
     ownship_child_frame_id: "otter/base_link"
-    origin_latitude: 30.5453
-    origin_longitude: 114.392931
+    origin_latitude: 30.5472
+    origin_longitude: 114.3891
     origin_altitude: 0.0
 usv_ladds_radar:
   ros__parameters:
     scan_topic: /otter/sensors/lidars/lidar/scan
     odom_topic: /otter/odom_gt
     output_topic: /ladds/obstacle_in
-    origin_latitude: 30.5453
-    origin_longitude: 114.392931
+    origin_latitude: 30.5472
+    origin_longitude: 114.3891
     origin_altitude: 0.0
     cluster_gap_m: 3.0
     min_points: 3
@@ -36,12 +37,13 @@ usv_ladds_radar:
     lidar_y: 0.0
 usv_ladds_route:
   ros__parameters:
-    origin_latitude: 30.5453
-    origin_longitude: 114.392931
+    origin_latitude: 30.5472
+    origin_longitude: 114.3891
     map_frame: otter/map
     navigation_namespace: /otter
     receive_topic: /ladds/rx
     stop_receive_topic: /ladds/stop_rx
+    berth_receive_topic: /ladds/berth_rx
     transmit_topic: /ladds/tx
     status_topic: /ladds/task_status
     service_timeout: 5.0

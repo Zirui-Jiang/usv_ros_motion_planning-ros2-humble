@@ -219,12 +219,12 @@ def test_new_decision_session_aborts_pending_retry_and_late_future_is_ignored():
     assert node.completions == []
 
 
-def _message(travel_id=58, speed=4, points=None):
+def _message(travel_id=58, speed=4, points=None, task_type=16):
     if points is None:
         points = [{'type': 1, 'longitude': 114.3938,
                    'latitude': 30.546127, 'speed': speed}]
     return SimpleNamespace(data=json.dumps({
-        'travelId': travel_id, 'taskType': 16, 'count': len(points),
+        'travelId': travel_id, 'taskType': task_type, 'count': len(points),
         'points': points,
     }))
 
@@ -560,7 +560,9 @@ def test_guard_arrival_sends_0052_once_without_ending_micro_control():
     assert record.state == 'GUARDING'
     assert node.book.active is record
     assert node.completions == [record]
-    assert node.tx.messages == [{'travelId': record.leg.travel_id, 'taskFinish': 1}]
+    assert node.tx.messages == [{
+        'travelId': record.leg.travel_id, 'taskType': 80, 'taskFinish': 2,
+    }]
     assert node.notices[-1][0] == 'GUARDING'
     for state in ('GUARDING', 'GUARD_BLOCKED', 'GUARDING'):
         node._navigation(_status(request_id=record.request_id, state=state, task_id=7))
@@ -661,3 +663,45 @@ def test_malformed_stop_does_not_abort_current_task():
     node._receive_stop(SimpleNamespace(data='[]'))
     assert node.book.active is record
     assert node.stop_client.requests == []
+
+
+def test_berth_arrival_sends_0052_with_task_finish_3():
+    node = _Harness()
+    node._receive_berth(_message(task_type=4))
+    record = node.book.active
+    assert len(record.leg.points) == 1
+    assert record.leg.protocol == '0212'
+    assert record.leg.task_type == 4
+    _accept(node)
+    node._navigation(_status(request_id=record.request_id, state='GOAL_REACHED', task_id=7))
+    assert node.completions == [record]
+    assert node.tx.messages == [{
+        'travelId': record.leg.travel_id, 'taskType': 4, 'taskFinish': 3,
+    }]
+
+
+def test_route_arrival_still_sends_task_finish_1():
+    node = _Harness()
+    node._receive(_message())
+    record = node.book.active
+    _accept(node)
+    node._navigation(_status(request_id=record.request_id, state='GOAL_REACHED', task_id=7))
+    assert node.tx.messages == [{'travelId': record.leg.travel_id, 'taskFinish': 1}]
+
+
+def test_berth_replaces_active_route_before_submitting():
+    node = _Harness()
+    node._receive(_message())
+    first = node.book.active
+    _accept(node)
+    node._receive_berth(_message(travel_id=59, speed=2, task_type=3))
+    assert first.state == 'ACTIVE'
+    assert len(node.cancel_client.requests) == 1
+    node.cancel_client.futures[0].resolve(success=True, message='zero thrust active')
+    assert first.state == 'ABORTED'
+    assert '0212' in first.reason
+    assert len(node.client.requests) == 2
+    assert node.book.active.request_id != first.request_id
+    assert node.book.active.leg.protocol == '0212'
+    assert node.client.requests[-1].waypoints[0].desired_speed_mps == pytest.approx(
+        1.0288888889)

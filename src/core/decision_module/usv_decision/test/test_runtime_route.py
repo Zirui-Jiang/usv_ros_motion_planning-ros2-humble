@@ -93,6 +93,16 @@ def test_exact_off_center_anchors_are_retained_in_order():
     assert matches[0][0] < matches[1][0]
 
 
+def test_far_later_anchors_are_not_cut_by_preview_distance():
+    # 前两段已经超过预瞄距离时，更远的第 3 点仍然要留在同一次航路里。
+    points = ((40., 10., 0., 1.), (100., 10., 0., 1.), (200., 10., 0., 1.))
+    grid = GridSnapshot(np.zeros((40, 250), np.uint8), 1., stamp=1.)
+    result = plan_navigation(request(points, grid=grid))
+    assert result.status == AlgorithmStatus.SUCCESS, result.message
+    for point in points:
+        assert np.any(np.all(np.isclose(result.route[:, :2], point[:2]), axis=1))
+
+
 def test_many_repeated_anchors_have_bounded_prefix_and_no_final_goal():
     result = plan_navigation(request(((12., 10., 0., 1.),)*255))
     assert result.status == AlgorithmStatus.SUCCESS, result.message

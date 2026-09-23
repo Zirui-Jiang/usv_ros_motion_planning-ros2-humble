@@ -124,7 +124,7 @@ printf '  base install: %s\n  overlay: %s\n  source world: %s\n' \
     "$base_install" "$profile_install" "$source_world"
 printf '  runtime world: %s\n  ROS domain: %s\n  Gazebo master: %s\n' \
     "$runtime_world" "$ROS_DOMAIN_ID" "$GAZEBO_MASTER_URI"
-printf '  speed profile: task requests 4 kn; dynamics.velocity_max=2.1 m/s; cruising_speed remains 1.0 m/s\n'
+printf '  speed profile: waypoint speed comes from the 0211 message; dynamics.velocity_max=18.0056 m/s (35 kn); cruising_speed remains 1.0 m/s\n'
 
 ros2 launch sim_env main.launch.py \
     "world:=$world_for_launch" "headless:=$headless" \

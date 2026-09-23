@@ -32,7 +32,7 @@ DEFAULTS = {
     "navigation.planning_frequency": 5.0,
     "navigation.state_timeout": 0.5,
     "navigation.map_timeout": 1.5, "navigation.trajectory_timeout": 1.0,
-    "navigation.planning_timeout": 1.0, "navigation.max_expansions": 200000,
+    "navigation.planning_timeout": 1.0, "navigation.max_expansions": 500000,
     "navigation.costmap_topic": "costmap_raw",
     "navigation.footprint_length": 2.2, "navigation.footprint_width": 1.2,
     C + "control_frequency": 10.0, C + "controller_name": "pid",

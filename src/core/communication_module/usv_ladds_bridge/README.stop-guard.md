@@ -7,9 +7,10 @@
 
 | DDS 主题 | 业务内容 | 行为 |
 | --- | --- | --- |
-| `0211` | `taskType: 16`、1–255 个航点 | 正常航路；最终点到达且低速后回一次 `0052` |
-| `0211` | `taskType: 80`、1–255 个航点 | 到最终点进入值守时回一次 `0052`，随后持续定点微控 |
-| `0331` | `{}` 或 `{"head":{},"content":{}}` | 立即打断航路/值守，主动刹停；停稳后零输出，不保持原地 |
+| `0211` | `taskType: 16`、1–255 个航点 | 正常航路；最终点到达且低速后回一次 `0052`，`taskFinish: 1` |
+| `0211` | `taskType: 80`、1–255 个航点 | 到最终点进入值守时回一次 `0052`，`taskType: 80`、`taskFinish: 2`，随后持续定点微控 |
+| `0212` | `taskType: 3` 离泊或 `4` 靠泊，`count: 1` 的单导航点 | 本阶段当普通单点航路；到点停稳后回一次 `0052`，`taskFinish: 3`，并回传本次 `taskType` |
+| `0331` | `{}` 或 `{"head":{},"content":{}}` | 立即打断航路/值守/0212，主动刹停；停稳后零输出，不保持原地 |
 
 0331 不要求经纬度、艏向或时长。为兼容旧工具，旧 `longitude`、`latitude`、
 `heading`、`duration` 字段允许出现，但全部忽略并记录警告，不会据此驶向某个位置。
@@ -21,10 +22,9 @@
 定位质量及推进器布局限制，不能保证数学意义上的绝对不动。
 
 类型 80 的 `0052` 表示**航路终点已到达并进入值守**，不表示定点微控任务退出。
-反馈格式不变：`{"travelId": 53, "taskFinish": 1}`（travelId 使用本次任务的实际值）。
+反馈为 `{"travelId": 53, "taskType": 80, "taskFinish": 2}`（travelId 使用本次任务的实际值）。
 每次执行只发布一次到达反馈；本轮未新增上位机确认或断线补发机制。
-反馈仍使用原业务格式 `{"travelId": 53, "taskFinish": 1}`，其中 `travelId` 回传本次
-航线编号。同一次执行只反馈一次，后续周期性的 `GUARDING` 状态不重复发送；
+其中 `travelId` 回传本次航线编号。同一次执行只反馈一次，后续周期性的 `GUARDING` 状态不重复发送；
 只有再次收到合法 0211 开始新执行并再次到点，才产生该新执行的到达反馈。
 
 ### 控制初值与能力边界
@@ -74,6 +74,12 @@
 `null`。恢复普通航路时改为类型 16，并将值守参数置空。每次收到合法 0211 都是
 新执行；不要使用工具的定时循环发送。
 
+需要靠离泊（本阶段当单点航路）时，在另一个 **DDS 主题 `0212`** 发送一次，报文见
+[`docs/examples/ladds-0212-single-waypoint.json`](../../../../docs/examples/ladds-0212-single-waypoint.json)。
+`taskType` 只能是 `3`（离泊）或 `4`（靠泊）。到点停稳后回
+`{"travelId": 53, "taskType": 4, "taskFinish": 3}`（`travelId` 与 `taskType` 使用本次任务实际值）。
+不要发到 0211，也不要依赖消息体猜协议号。
+
 需要主动刹停时，在另一个 **DDS 主题 `0331`** 发送：
 
 ```json
@@ -93,16 +99,18 @@
 Windows 中继需要额外订阅 0331，并注册本船上行主题 0411：
 
 ```powershell
-.\scripts\start_ladds_relay.ps1 -DomainId 1 -ReceiveTopic '0211' -StopReceiveTopic '0331' -SendTopic '0052' -OwnshipSendTopic '0411'
+.\scripts\start_ladds_relay.ps1 -DomainId 1 -ReceiveTopic '0211' -StopReceiveTopic '0331' -BerthReceiveTopic '0212' -SendTopic '0052' -OwnshipSendTopic '0411'
 ```
 
 ROS 使用包内 `config/route.yaml`（已经配置 `stop_receive_topic: "0331"`）。
 TCP 模式只改 ROS YAML 不会改变 Windows 已经启动的 DDS 订阅；需要两侧都启用。
 Linux native 后端则直接按此 YAML 在同一 SDK 句柄注册两个订阅和两个发布主题。
 
-桥按 SDK/TCP 元数据中的原始 topic 分流：0211 文本只发布到 `/ladds/rx`，0331 文本
-只发布到 `/ladds/stop_rx`。原始字节和 topic 元数据仍可分别在 `/ladds/rx_bytes`、
-`/ladds/rx_info` 观察；不复制停船报文到普通航路入口。
+桥按 SDK/TCP 元数据中的原始 topic 分流：0211 文本只发布到 `/ladds/rx`，0212 文本
+只发布到 `/ladds/berth_rx`，0331 文本只发布到 `/ladds/stop_rx`。原始字节和 topic
+元数据仍可分别在 `/ladds/rx_bytes`、`/ladds/rx_info` 观察；不复制停船或靠离泊报文
+到普通航路入口。TCP 模式只改 ROS YAML 不会让 Windows 中继订上 0212，联调时必须
+同时传入 `-BerthReceiveTopic '0212'`。
 
 ```bash
 # source 本轮重新构建的 overlay，并沿用仿真的 ROS_DOMAIN_ID / ROS_LOCALHOST_ONLY

@@ -7,9 +7,10 @@ navigation:
   state_timeout: 0.5
   map_timeout: 1.5
   trajectory_timeout: 1.0
-  planning_timeout: 1.0
+  planning_timeout: 10.0
   # 搜索扩展单元数硬上限，和耗时预算共同限制一次搜索。
-  max_expansions: 200000
+  # 0.5 米栅格上约 670 米的一段空阔航路需要约 36 万格，20 万会在到达前截断。
+  max_expansions: 500000
   costmap_topic: costmap_raw
 
 path_planner:

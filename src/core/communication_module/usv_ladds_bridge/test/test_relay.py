@@ -86,6 +86,14 @@ def test_tcp_relay_keeps_stop_topic_separate_from_route(relay_pair):
         assert received.payload == b'{}'
 
 
+def test_tcp_relay_keeps_berth_topic_separate_from_route(relay_pair):
+    dds, _, client = relay_pair
+    dds.incoming.put(ReceivedPacket(1, '0212', b'{"travelId":53}', 1000, 1001))
+    received = _receive_until(client)
+    assert received.topic == '0212'
+    assert received.payload == b'{"travelId":53}'
+
+
 def test_tcp_relay_forwards_selected_publish_topic(relay_pair):
     dds, _, client = relay_pair
 

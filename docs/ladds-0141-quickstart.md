@@ -45,6 +45,7 @@ colcon build --base-paths src --packages-select usv_ladds_bridge --cmake-args -D
   -DomainId 1 `
   -ReceiveTopic '0211' `
   -StopReceiveTopic '0331' `
+  -BerthReceiveTopic '0212' `
   -SendTopic '0052' `
   -OwnshipSendTopic '0411' `
   -OwnshipReceiveTopic '0411' `
@@ -88,7 +89,8 @@ odom_topic=/otter/odom_gt
 output_topic=/ladds/obstacle_in
 ```
 
-发布节点订 `obstacle_input_topic` 并发到 LaDDS `0141`，同时发 `/ladds/obstacle`。
+发布节点订 `obstacle_input_topic`，校验后发到 LaDDS `0141`，同时把同一份业务 JSON 发到 `/ladds/obstacle`。
+发给 LaDDS 的字节会再套 `head` 与 `content`；`/ladds/obstacle` 保持裸业务对象。
 接收节点订 `/ladds/obstacle`（以及 DDS 主题 0141）后解回 `obstacle_output_topic`。
 
 ## 4. 报文形态
@@ -126,7 +128,7 @@ ros2 topic hz /otter/sensors/lidars/lidar/scan
 ros2 topic hz /ladds/obstacle_in
 ```
 
-最终验收应在东湖游艇联调工具中订阅域 1、主题 `0141`，确认 JSON 的 `count` 与 `targets` 到达。
+最终验收应在东湖游艇联调工具中订阅域 1、主题 `0141`，确认 JSON 的 `content.count` 与 `content.targets` 到达。外层为 `head`（`packageSeq`、`packageType`、`recvPlatform`、`sendPlatform`、`time`）和 `content`。
 桥端发送调用返回成功只说明 SDK 接收了发送请求，不代表对端业务已经解析。
 
 ## 常见问题
