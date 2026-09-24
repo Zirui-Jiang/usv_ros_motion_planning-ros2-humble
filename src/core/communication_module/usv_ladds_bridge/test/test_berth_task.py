@@ -126,5 +126,6 @@ def test_parse_berth_berthing_completion_uses_task_type_4():
     route = parse_berth(json.dumps(_content(taskType=4)), ORIGIN)
 
     assert route.task_type == 4
+    assert route.task_finish == 4
     assert route.guard_on_arrival is False
-    assert make_completion(route) == {"travelId": 53, "taskType": 4, "taskFinish": 3}
+    assert make_completion(route) == {"travelId": 53, "taskType": 4, "taskFinish": 4}

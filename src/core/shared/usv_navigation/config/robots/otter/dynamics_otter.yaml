@@ -2,9 +2,9 @@
 dynamics:
   name: otter
   type: Differential
-  cruising_speed: 1.0
+  cruising_speed: 2.0
   # 单个纵向推进器满归一化命令对应的最大力，单位牛顿。
-  max_force: 50.0
+  max_force: 180.0
   mass: 29.84
   i_z: 10.03
   L: 1.35
@@ -21,8 +21,9 @@ dynamics:
   n_r: -20.0
   # physical limitation
   velocity_min: 0.0
-  # 8 节 = 8 * 1852 / 3600 m/s。航路点速度按小于等于该值接受。
-  velocity_max: 20.0
+  # 20 节 = 20 * 1852 / 3600 ≈ 10.2889 m/s，向上取 10.29，避免恰为 20 节的请求因浮点误差被拒。
+  # 只校验导航请求与航路点速度，实际航速由 cruising_speed 或任务速度决定。
+  velocity_max: 10.29
   acceleration_min: -1.0
   acceleration_max: 1.0
   # 加速度变化率约束的单位为米/秒³。

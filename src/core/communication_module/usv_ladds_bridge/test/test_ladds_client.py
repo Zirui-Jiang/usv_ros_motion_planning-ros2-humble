@@ -195,6 +195,60 @@ def test_start_registers_obstacle_publish_topic_and_send_can_select_it():
         client.close()
 
 
+def test_start_registers_module_status_topic_once_when_it_is_already_the_send_topic():
+    library = FakeLibrary()
+    client = LaDDSClient(
+        "libLaDDS.so",
+        send_topic="0051",
+        status_send_topic="0051",
+        library_loader=lambda _path: library,
+    )
+    client.start()
+
+    try:
+        publications = [call for call in library.calls if call[0] == "pub"]
+        assert publications == [("pub", 2**40 + 7, b"0051", 2)]
+        client.send(b'{"state":1,"code":"control"}', topic="0051")
+        assert library.calls[-1][2] == b"0051"
+    finally:
+        client.close()
+
+
+def test_start_registers_module_status_topic_beside_the_task_topic():
+    library = FakeLibrary()
+    client = LaDDSClient(
+        "libLaDDS.so",
+        send_topic="0052",
+        status_send_topic="0051",
+        library_loader=lambda _path: library,
+    )
+    client.start()
+
+    try:
+        assert ("pub", 2**40 + 7, b"0052", 2) in library.calls
+        assert ("pub", 2**40 + 7, b"0051", 2) in library.calls
+    finally:
+        client.close()
+
+
+def test_start_registers_route_progress_topic_and_sends_0053():
+    library = FakeLibrary()
+    client = LaDDSClient(
+        "libLaDDS.so",
+        send_topic="0052",
+        progress_send_topic="0053",
+        library_loader=lambda _path: library,
+    )
+    client.start()
+
+    try:
+        assert ("pub", 2**40 + 7, b"0053", 2) in library.calls
+        client.send(b'{"travelId":53,"taskIndex":1}', topic="0053")
+        assert library.calls[-1][2] == b"0053"
+    finally:
+        client.close()
+
+
 def test_start_registers_ownship_and_obstacle_subscribe_topics():
     library = FakeLibrary()
     client = LaDDSClient(

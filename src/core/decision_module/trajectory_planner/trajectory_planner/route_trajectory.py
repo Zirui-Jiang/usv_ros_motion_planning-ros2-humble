@@ -60,7 +60,7 @@ class RouteTrajectoryPlanner:
         # real controller's preview, tracking lag and finite turning radius.
         switch = min(.3, .2*self.radius)
         stop_radius = min(.5, .5*cfg['goal_tolerance'])
-        brake = min(-self.model.acceleration_min, .25)
+        brake = min(-self.model.acceleration_min, .5)
         accel = self.model.acceleration_max
         nodes = np.asarray(nodes)
         if len(nodes) == 1:

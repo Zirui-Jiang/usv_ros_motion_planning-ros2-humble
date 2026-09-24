@@ -45,8 +45,10 @@ class LaDDSClient:
         stop_receive_topic: str = "",
         berth_receive_topic: str = "",
         obstacle_send_topic: str = "",
+        status_send_topic: str = "",
         ownship_receive_topic: str = "",
         obstacle_receive_topic: str = "",
+        progress_send_topic: str = "",
     ) -> None:
         _require_c_string("library_path", library_path, allow_empty=False)
         _require_integer("domain_id", domain_id, 0, 2**31 - 1)
@@ -60,6 +62,8 @@ class LaDDSClient:
         _require_c_string("stop_receive_topic", stop_receive_topic, allow_empty=True)
         _require_c_string("berth_receive_topic", berth_receive_topic, allow_empty=True)
         _require_c_string("obstacle_send_topic", obstacle_send_topic, allow_empty=True)
+        _require_c_string("status_send_topic", status_send_topic, allow_empty=True)
+        _require_c_string("progress_send_topic", progress_send_topic, allow_empty=True)
         _require_c_string("ownship_receive_topic", ownship_receive_topic, allow_empty=True)
         _require_c_string("obstacle_receive_topic", obstacle_receive_topic, allow_empty=True)
         if stop_receive_topic == receive_topic:
@@ -108,6 +112,10 @@ class LaDDSClient:
             self._send_topics.append(ownship_send_topic)
         if obstacle_send_topic and obstacle_send_topic not in self._send_topics:
             self._send_topics.append(obstacle_send_topic)
+        if status_send_topic and status_send_topic not in self._send_topics:
+            self._send_topics.append(status_send_topic)
+        if progress_send_topic and progress_send_topic not in self._send_topics:
+            self._send_topics.append(progress_send_topic)
         self._receive_topic = receive_topic.encode("utf-8")
         self._receive_topics = [self._receive_topic]
         if stop_receive_topic:

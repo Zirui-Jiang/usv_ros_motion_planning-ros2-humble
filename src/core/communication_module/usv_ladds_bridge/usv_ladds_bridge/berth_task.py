@@ -135,7 +135,8 @@ def parse_berth(text: str, origin: GeoReference) -> RouteTask:
         wrapped=wrapped,
         task_type=task_type,
         protocol="0212",
-        task_finish=3,
+        # 靠泊（taskType 4）完成回 4，离泊及其余单点回 3。
+        task_finish=4 if task_type == 4 else 3,
         warnings=tuple(warnings),
     )
 

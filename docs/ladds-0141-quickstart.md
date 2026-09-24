@@ -47,6 +47,7 @@ colcon build --base-paths src --packages-select usv_ladds_bridge --cmake-args -D
   -StopReceiveTopic '0331' `
   -BerthReceiveTopic '0212' `
   -SendTopic '0052' `
+  -StatusSendTopic '0051' `
   -OwnshipSendTopic '0411' `
   -OwnshipReceiveTopic '0411' `
   -ObstacleSendTopic '0141' `

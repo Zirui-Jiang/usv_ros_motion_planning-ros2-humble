@@ -35,6 +35,7 @@ Windows 中继注册 0411 发布端和 0411 订阅端：
   -StopReceiveTopic '0331' `
   -BerthReceiveTopic '0212' `
   -SendTopic '0052' `
+  -StatusSendTopic '0051' `
   -OwnshipSendTopic '0411' `
   -OwnshipReceiveTopic '0411'
 ```

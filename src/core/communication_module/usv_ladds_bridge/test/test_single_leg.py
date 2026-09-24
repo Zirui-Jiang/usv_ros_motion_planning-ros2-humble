@@ -5,7 +5,7 @@ from dataclasses import FrozenInstanceError
 import pytest
 
 from common.geodesy import GeoReference
-from usv_ladds_bridge.single_leg import make_completion, parse_single_leg
+from usv_ladds_bridge.single_leg import make_completion, make_progress, parse_single_leg
 
 
 ORIGIN = GeoReference(30.5453, 114.392931)
@@ -178,3 +178,14 @@ def test_single_leg_is_frozen_and_completion_is_bare_business_json():
     assert json.dumps(make_completion(leg), separators=(",", ":")) == (
         '{"travelId":53,"taskFinish":1}'
     )
+
+
+def test_progress_is_bare_0053_business_json():
+    leg = parse_single_leg(json.dumps(CONTENT), ORIGIN)
+
+    assert json.dumps(make_progress(leg, 0), separators=(",", ":")) == (
+        '{"travelId":53,"taskIndex":0}'
+    )
+    for index in (-1, 1.0, True):
+        with pytest.raises(ValueError):
+            make_progress(leg, index)

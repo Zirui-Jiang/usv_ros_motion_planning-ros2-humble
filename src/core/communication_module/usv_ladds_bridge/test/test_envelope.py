@@ -11,11 +11,12 @@ from usv_ladds_bridge.envelope import prepare_outbound_payload
 WHEN = datetime(2026, 9, 1, 9, 48, 43, 950000)
 
 
-def test_0411_0141_and_0052_are_wrapped_with_the_same_head():
+def test_0411_0141_0052_and_0053_are_wrapped_with_the_same_head():
     cases = {
         "0411": {"longitude": 114.7, "latitude": 22.1, "speed": 8, "heading": 16, "angularZ": 26},
         "0141": {"count": 0, "targets": []},
         "0052": {"travelId": 53, "taskFinish": 1},
+        "0053": {"travelId": 53, "taskIndex": 1},
     }
     seq = 1
     for topic, business in cases.items():
@@ -31,7 +32,7 @@ def test_0411_0141_and_0052_are_wrapped_with_the_same_head():
             "sendPlatform": 1000,
             "time": "2026-09-01 09:48:43.950",
         }
-    assert seq == 4
+    assert seq == 5
 
 
 def test_other_topics_and_already_wrapped_payloads_pass_through():

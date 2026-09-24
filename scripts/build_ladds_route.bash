@@ -20,6 +20,8 @@ Options:
   --base-install DIR  Existing complete base
                       (default: \$HOME/.local/share/usv_ros_motion_planning/base/install)
   --output-root DIR   New isolated output root (default: $output_root)
+  --packages NAME...  Rebuild only these packages
+                      (default: the ten route-overlay packages)
   -h, --help          Show this help
 
 Outputs: DIR/build, DIR/log, DIR/install. Existing output paths are reused for
@@ -34,6 +36,15 @@ while [[ $# -gt 0 ]]; do
         --source) [[ $# -ge 2 ]] || fail '--source requires DIR'; source_root="$2"; shift 2 ;;
         --base-install) [[ $# -ge 2 ]] || fail '--base-install requires DIR'; base_install="$2"; shift 2 ;;
         --output-root) [[ $# -ge 2 ]] || fail '--output-root requires DIR'; output_root="$2"; shift 2 ;;
+        --packages)
+            shift
+            packages=()
+            while [[ $# -gt 0 && "$1" != --* ]]; do
+                packages+=("$1")
+                shift
+            done
+            [[ ${#packages[@]} -gt 0 ]] || fail '--packages requires at least one package name'
+            ;;
         -h|--help) usage; exit 0 ;;
         *) fail "unknown option: $1" ;;
     esac

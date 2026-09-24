@@ -16,6 +16,8 @@ class LegRecord:
     timeout_retries: int = 0
     # Arrival feedback is a one-shot milestone, separate from task completion.
     arrival_confirmed: bool = False
+    # Last 0053 taskIndex sent for this execution; -1 means none sent yet.
+    progress_index: int = -1
 
 
 class LegBook:

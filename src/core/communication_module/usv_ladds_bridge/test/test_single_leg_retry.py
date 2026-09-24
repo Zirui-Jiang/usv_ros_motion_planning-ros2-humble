@@ -128,6 +128,7 @@ class _Harness:
         self.notices = []
         self.completions = []
         self.tx = _Publisher()
+        self.progress_tx = _Publisher()
 
     def __getattr__(self, name):
         method = getattr(RouteNode, name, None)
@@ -313,6 +314,71 @@ def test_status_notice_uses_correlated_navigation_progress_and_current_segment()
     assert notice['target_x'] == pytest.approx(83.38359129340336)
     assert notice['target_y'] == pytest.approx(102.76910894104553)
     assert notice['desired_speed_mps'] == pytest.approx(2.057777777777778)
+
+
+def _progress_status(record, index, state='NAVIGATING', count=3):
+    return _status(request_id=record.request_id, state=state, task_id=7,
+                   waypoint_count=count, waypoint_index=index, passed_waypoints=index)
+
+
+def test_0053_reports_each_confirmed_waypoint_once_then_final_before_0052():
+    node = _Harness()
+    node._receive(_message(travel_id=61, points=_multi_points()))
+    record = node.book.active
+    _accept(node)
+
+    for index in (0, 0, 1, 1, 2):
+        node._navigation(_progress_status(record, index))
+    assert node.progress_tx.messages == [
+        {'travelId': 61, 'taskIndex': 0},
+        {'travelId': 61, 'taskIndex': 1},
+        {'travelId': 61, 'taskIndex': 2},
+    ]
+    assert node.tx.messages == []
+
+    node._navigation(_progress_status(record, 3, state='GOAL_REACHED'))
+    assert node.progress_tx.messages[-1] == {'travelId': 61, 'taskIndex': 3}
+    assert node.tx.messages == [{'travelId': 61, 'taskFinish': 1}]
+
+
+def test_0053_ignores_status_of_another_request_or_waypoint_count():
+    node = _Harness()
+    node._receive(_message(points=_multi_points()))
+    record = node.book.active
+    _accept(node)
+
+    node._navigation(_status(request_id='gui-goal', state='NAVIGATING', task_id=6,
+                             waypoint_count=3, waypoint_index=1))
+    node._navigation(_progress_status(record, 1, count=2))
+    assert node.progress_tx.messages == []
+
+
+def test_0053_is_not_sent_for_aborted_route():
+    node = _Harness()
+    node._receive(_message(points=_multi_points()))
+    record = node.book.active
+    _accept(node)
+    node._navigation(_progress_status(record, 1))
+    node._navigation(_progress_status(record, 2, state='CANCELLED'))
+    assert record.state == 'ABORTED'
+    assert node.progress_tx.messages == [{'travelId': 58, 'taskIndex': 1}]
+
+
+def test_0053_guard_route_reports_final_index_once_with_guard_0052():
+    node = _Harness()
+    content = json.loads(_message(travel_id=62, points=_multi_points()).data)
+    content.update(taskType=80)
+    node._receive(SimpleNamespace(data=json.dumps(content)))
+    record = node.book.active
+    _accept(node)
+    node._navigation(_progress_status(record, 2))
+    for _ in range(2):
+        node._navigation(_progress_status(record, 3, state='GUARDING'))
+    assert node.progress_tx.messages == [
+        {'travelId': 62, 'taskIndex': 2},
+        {'travelId': 62, 'taskIndex': 3},
+    ]
+    assert node.tx.messages == [{'travelId': 62, 'taskType': 80, 'taskFinish': 2}]
 
 
 def test_receiving_same_route_after_completion_starts_new_execution():
@@ -665,7 +731,7 @@ def test_malformed_stop_does_not_abort_current_task():
     assert node.stop_client.requests == []
 
 
-def test_berth_arrival_sends_0052_with_task_finish_3():
+def test_berthing_arrival_sends_0052_with_task_finish_4():
     node = _Harness()
     node._receive_berth(_message(task_type=4))
     record = node.book.active
@@ -676,8 +742,20 @@ def test_berth_arrival_sends_0052_with_task_finish_3():
     node._navigation(_status(request_id=record.request_id, state='GOAL_REACHED', task_id=7))
     assert node.completions == [record]
     assert node.tx.messages == [{
-        'travelId': record.leg.travel_id, 'taskType': 4, 'taskFinish': 3,
+        'travelId': record.leg.travel_id, 'taskType': 4, 'taskFinish': 4,
     }]
+
+
+def test_berth_progress_does_not_send_0053():
+    # 0053 属于 0211 航路；0212 靠离泊只回 0052。
+    node = _Harness()
+    node._receive_berth(_message(task_type=4))
+    record = node.book.active
+    _accept(node)
+    node._navigation(_progress_status(record, 0, count=1))
+    node._navigation(_progress_status(record, 1, state='GOAL_REACHED', count=1))
+    assert node.completions == [record]
+    assert node.progress_tx.messages == []
 
 
 def test_route_arrival_still_sends_task_finish_1():

@@ -317,6 +317,8 @@ def _create_client(
         send_topic=config.send_topic,
         ownship_send_topic=config.ownship_send_topic,
         obstacle_send_topic=config.obstacle_send_topic,
+        status_send_topic=config.status_send_topic,
+        progress_send_topic=config.progress_send_topic,
         receive_topic=config.receive_topic,
         stop_receive_topic=config.stop_receive_topic,
         berth_receive_topic=config.berth_receive_topic,

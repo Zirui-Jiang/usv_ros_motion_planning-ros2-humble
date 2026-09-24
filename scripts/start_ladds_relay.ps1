@@ -9,6 +9,8 @@
     [string]$SendTopic = '',
     [string]$OwnshipSendTopic = '0411',
     [string]$ObstacleSendTopic = '0141',
+    [string]$StatusSendTopic = '0051',
+    [string]$ProgressSendTopic = '0053',
     [string]$OwnshipReceiveTopic = '0411',
     [string]$ObstacleReceiveTopic = '0141',
     [ValidateSet('best_effort', 'reliable')][string]$Qos = 'best_effort',
@@ -61,11 +63,13 @@ try {
     # SDK 在运行目录查找原有授权；不复制或更改授权文件。
     Push-Location -LiteralPath (Split-Path -Parent $laddsLibrary)
     try {
-        Write-Host "LaDDS: domain=$DomainId receive=$ReceiveTopic stop=$StopReceiveTopic berth=$BerthReceiveTopic ownship-rx=$OwnshipReceiveTopic obstacle-rx=$ObstacleReceiveTopic send=$SendTopic ownship=$OwnshipSendTopic obstacle=$ObstacleSendTopic qos=$Qos; TCP=$ListenAddress`:$Port"
+        Write-Host "LaDDS: domain=$DomainId receive=$ReceiveTopic stop=$StopReceiveTopic berth=$BerthReceiveTopic ownship-rx=$OwnshipReceiveTopic obstacle-rx=$ObstacleReceiveTopic send=$SendTopic ownship=$OwnshipSendTopic obstacle=$ObstacleSendTopic status=$StatusSendTopic progress=$ProgressSendTopic qos=$Qos; TCP=$ListenAddress`:$Port"
         $laddsArgs = @('-u', '-m', 'usv_ladds_bridge.relay', '--library', $laddsLibrary,
             '--listen', $ListenAddress, '--port', "$Port", '--domain-id', "$DomainId",
             '--send-topic', $SendTopic, '--ownship-send-topic', $OwnshipSendTopic,
             '--obstacle-send-topic', $ObstacleSendTopic,
+            '--status-send-topic', $StatusSendTopic,
+            '--progress-send-topic', $ProgressSendTopic,
             '--receive-topic', $ReceiveTopic,
             '--ownship-receive-topic', $OwnshipReceiveTopic,
             '--obstacle-receive-topic', $ObstacleReceiveTopic,

@@ -1,4 +1,4 @@
-"""给 0141 / 0411 / 0052 的发出报文套上联调要求的 head 与 content。"""
+"""给 0141 / 0411 / 0051 / 0052 / 0053 的发出报文套上联调要求的 head 与 content。"""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from typing import Optional
 SEND_PLATFORM = 1000
 RECV_PLATFORM = 1001
 PACKAGE_TYPE = 0
-ENVELOPE_TOPICS = frozenset({"0141", "0411", "0052"})
+ENVELOPE_TOPICS = frozenset({"0141", "0411", "0051", "0052", "0053"})
 
 
 def prepare_outbound_payload(
@@ -20,7 +20,7 @@ def prepare_outbound_payload(
     package_seq: int,
     now: Optional[datetime] = None,
 ) -> tuple[bytes, int]:
-    """0141、0411、0052 的 JSON 对象在发出前套外壳；其它主题原样转发。
+    """0141、0411、0051、0052、0053 的 JSON 对象在发出前套外壳；其它主题原样转发。
 
     已经同时带有对象 ``head`` 和 ``content`` 的报文不再套一层，序号也不前进。
     """

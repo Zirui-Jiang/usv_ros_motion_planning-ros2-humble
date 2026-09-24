@@ -14,7 +14,13 @@
 bash scripts/build_ladds_route.bash
 ```
 
-默认从当前仓库的 `src/core` 构建以下 10 个包：`common`、`controller`、`path_planner`、`path_processor`、`trajectory_planner`、`usv_navigation_interfaces`、`usv_navigation`、`usv_decision`、`usv_control`、`usv_ladds_bridge`。基线为 `/home/usv/module-layout-20260914/install`，独立输出为：
+只改了桥接时不要重编整条 overlay，只选这一个包：
+
+```bash
+bash scripts/build_ladds_route.bash --packages usv_ladds_bridge
+```
+
+默认从当前仓库的 `src/core` 构建以下 10 个包：`common`、`controller`、`path_planner`、`path_processor`、`trajectory_planner`、`usv_navigation_interfaces`、`usv_navigation`、`usv_decision`、`usv_control`、`usv_ladds_bridge`。基线为 `/home/usv/.local/share/usv_ros_motion_planning/base/install`，独立输出为：
 
 ```text
 /tmp/usv_ladds_multi_waypoint_20260915/build
@@ -29,10 +35,10 @@ bash scripts/build_ladds_route.bash
 在 Windows PowerShell 中运行现有中继：
 
 ```powershell
-.\scripts\start_ladds_relay.ps1 -DomainId 1 -ReceiveTopic '0211' -StopReceiveTopic '0331' -BerthReceiveTopic '0212' -SendTopic '0052'
+.\scripts\start_ladds_relay.ps1 -DomainId 1 -ReceiveTopic '0211' -StopReceiveTopic '0331' -BerthReceiveTopic '0212' -SendTopic '0052' -StatusSendTopic '0051' -ProgressSendTopic '0053'
 ```
 
-记录脚本显示的 WSL 虚拟网卡 IPv4。LaDDS 使用 DDS 域 `1`；ROS 仿真、适配器和观察终端使用 ROS 域 `42`。两者是不同中间件的独立域号，无需相等。
+`-ProgressSendTopic` 默认即 `0053`；中继只在启动时注册发布主题，更新本脚本后须重启中继，0053 才能发出。记录脚本显示的 WSL 虚拟网卡 IPv4。LaDDS 使用 DDS 域 `1`；ROS 仿真、适配器和观察终端使用 ROS 域 `42`。两者是不同中间件的独立域号，无需相等。
 
 ## 3. 启动仿真和航路适配器
 
@@ -41,19 +47,19 @@ bash scripts/build_ladds_route.bash
 仿真终端：
 
 ```bash
-cd '/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble'
+cd '/mnt/e/usv_ros_motion_planning-ros2-humble'
 export ROS_DOMAIN_ID=42
 export ROS_LOCALHOST_ONLY=1
 export GAZEBO_MASTER_URI=http://127.0.0.1:11347
 bash scripts/start_ladds_route_sim.bash --headless false
 ```
 
-该 wrapper 复用现有普通导航主 launch 和单航段仿真 profile，默认加载 `/home/usv/module-layout-20260914/install` 后再加载 `/tmp/usv_ladds_multi_waypoint_20260915/install`。它保留 `ocean` 的地图、障碍和艇初始位姿 `(23,-10)`，只在运行时副本中使用 WGS84/ENU 原点 `(30.5453,114.392931)`。
+该 wrapper 复用现有普通导航主 launch 和单航段仿真 profile，默认加载 `/home/usv/.local/share/usv_ros_motion_planning/base/install` 后再加载 `/tmp/usv_ladds_multi_waypoint_20260915/install`。它保留 `ocean` 的地图、障碍和艇初始位姿 `(23,-10)`，只在运行时副本中使用 WGS84/ENU 原点 `(30.5453,114.392931)`。
 
 适配器终端使用同一个 ROS 域，并把地址替换为 Windows 中继实际显示值：
 
 ```bash
-cd '/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble'
+cd '/mnt/e/usv_ros_motion_planning-ros2-humble'
 export ROS_DOMAIN_ID=42
 export ROS_LOCALHOST_ONLY=1
 bash scripts/start_ladds_route.bash --relay-host 172.27.128.1
@@ -65,7 +71,7 @@ bash scripts/start_ladds_route.bash --relay-host 172.27.128.1
 
 ```bash
 source /opt/ros/humble/setup.bash
-source /home/usv/module-layout-20260914/install/setup.bash
+source /home/usv/.local/share/usv_ros_motion_planning/base/install/setup.bash
 source /tmp/usv_ladds_multi_waypoint_20260915/install/setup.bash
 export ROS_DOMAIN_ID=42
 export ROS_LOCALHOST_ONLY=1
@@ -142,3 +148,8 @@ ros2 topic echo /ladds/task_status
 ```
 
 被新 `0211` 替换、取消、模块重启、时钟重置、无路或超时均不会发送成功 `0052`。协议当前没有定义失败 DDS 报文，应从 `/ladds/task_status` 和 `/otter/navigation_status` 查看原因及 `waypoint_index`、`passed_waypoints`。
+
+执行中另发 `0053` 任务执行情况，`content` 为 `{"travelId": 60, "taskIndex": N}`：`travelId` 取自本次 `0211`，`taskIndex` 取决策确认的 `waypoint_index`。
+航路被接受后的首个导航状态发 `0`（尚未到达第一个点），每进入一个必经点圆后发一次递增值；最终点到达（类型 80 为进入值守）时发 `count`，并先于 `0052` 发出。
+同一值不重复发送，导航状态约 1 Hz，故最多滞后约 1 s，过点过快时序号可能跳变。被替换、取消或 0331 刹停的执行不再发 0053；`0212` 靠离泊不发 0053。
+ROS 侧可 `ros2 topic echo /ladds/progress_tx` 查看裸 JSON，LaDDS 工具订阅主题 `0053` 查看带 `head` 的报文。

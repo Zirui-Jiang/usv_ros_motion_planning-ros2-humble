@@ -9,6 +9,9 @@ usv_ladds_rx:
     send_topic: "0052"
     ownship_send_topic: "0411"
     obstacle_send_topic: "0141"
+    status_send_topic: "0051"
+    progress_send_topic: "0053"
+    heartbeat_input_topic: "/otter/navigation/heartbeat"
     ownship_receive_topic: "0411"
     obstacle_receive_topic: "0141"
     ownship_input_topic: "/otter/odom_gt"
@@ -45,6 +48,7 @@ usv_ladds_route:
     stop_receive_topic: /ladds/stop_rx
     berth_receive_topic: /ladds/berth_rx
     transmit_topic: /ladds/tx
+    progress_topic: /ladds/progress_tx
     status_topic: /ladds/task_status
     service_timeout: 5.0
     waypoint_radius: 1.5

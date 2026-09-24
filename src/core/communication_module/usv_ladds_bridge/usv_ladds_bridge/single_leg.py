@@ -164,6 +164,18 @@ def make_completion(leg: SingleLeg) -> dict:
     return payload
 
 
+# 0053 任务执行情况：航线号取自下发报文，taskIndex 为已抵达的航点数。
+def make_progress(leg: SingleLeg, task_index: int) -> dict:
+    """Build the bare 0053 business object.
+
+    ``taskIndex`` 0 means the first point is not reached yet; N means point N
+    was reached and the boat heads to point N + 1 (N = count at the final one).
+    """
+    if type(task_index) is not int or task_index < 0:
+        raise ValueError("taskIndex must be a non-negative integer")
+    return {"travelId": leg.travel_id, "taskIndex": task_index}
+
+
 def _required(mapping: dict, name: str):
     try:
         return mapping[name]

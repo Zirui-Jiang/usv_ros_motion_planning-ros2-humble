@@ -123,6 +123,12 @@ def test_tcp_backend_does_not_require_native_library():
         ({"relay_port": 65536}, "relay_port"),
         ({"relay_timeout": 0.0}, "relay_timeout"),
         ({"ownship_json_topic": "/ladds/0411"}, "must not start with a number"),
+        ({"status_send_topic": ""}, "status_send_topic"),
+        ({"status_send_topic": "0411"}, "status_send_topic"),
+        ({"progress_send_topic": ""}, "progress_send_topic"),
+        ({"progress_send_topic": "0051"}, "progress_send_topic"),
+        ({"heartbeat_input_topic": ""}, "heartbeat_input_topic"),
+        ({"heartbeat_input_topic": "/0052/heartbeat"}, "must not start with a number"),
     ],
 )
 def test_invalid_transport_limits_are_rejected(override, message):
@@ -168,6 +174,9 @@ def test_default_transport_parameters_match_bridge_contract():
     assert config.max_payload_bytes == 1_048_576
     assert config.queue_depth == 100
     assert config.poll_interval_sec == 0.01
+    assert config.status_send_topic == "0051"
+    assert config.heartbeat_input_topic == "/otter/navigation/heartbeat"
+    assert config.progress_send_topic == "0053"
 
 
 def test_ownship_transport_topic_and_ros_input_are_configurable():
@@ -212,6 +221,8 @@ def test_bridge_yaml_keeps_ladds_topic_ids_as_strings():
         "send_topic",
         "ownship_send_topic",
         "obstacle_send_topic",
+        "status_send_topic",
+        "progress_send_topic",
         "receive_topic",
         "stop_receive_topic",
         "berth_receive_topic",
@@ -228,6 +239,9 @@ def test_bridge_yaml_keeps_ladds_topic_ids_as_strings():
             assert isinstance(params[key], str), f"{filename} {key}={params[key]!r}"
         assert params["obstacle_send_topic"] == "0141"
         assert params["ownship_send_topic"] == "0411"
+        assert params["status_send_topic"] == "0051"
+        assert params["progress_send_topic"] == "0053"
+        assert params["heartbeat_input_topic"] == "/otter/navigation/heartbeat"
         if "ownship_json_topic" in params and params["ownship_json_topic"]:
             assert params["ownship_json_topic"] == "/ladds/ownship"
         if "obstacle_json_topic" in params and params["obstacle_json_topic"]:
@@ -239,6 +253,7 @@ def test_bridge_yaml_keeps_ladds_topic_ids_as_strings():
             assert params["berth_receive_topic"] == "0212"
             route_params = loaded["usv_ladds_route"]["ros__parameters"]
             assert route_params["berth_receive_topic"] == "/ladds/berth_rx"
+            assert route_params["progress_topic"] == "/ladds/progress_tx"
         assert "usv_ladds_radar" in loaded
         radar = loaded["usv_ladds_radar"]["ros__parameters"]
         assert radar["output_topic"] == "/ladds/obstacle_in"

@@ -45,6 +45,9 @@ class BridgeConfig:
     max_payload_bytes: int = 1_048_576
     queue_depth: int = 100
     poll_interval_sec: float = 0.01
+    status_send_topic: str = "0051"
+    heartbeat_input_topic: str = "/otter/navigation/heartbeat"
+    progress_send_topic: str = "0053"
 
     @classmethod
     def from_mapping(
@@ -106,6 +109,11 @@ class BridgeConfig:
             max_payload_bytes=int(values.get("max_payload_bytes", 1_048_576)),
             queue_depth=int(values.get("queue_depth", 100)),
             poll_interval_sec=float(values.get("poll_interval_sec", 0.01)),
+            status_send_topic=str(values.get("status_send_topic", "0051")),
+            heartbeat_input_topic=str(
+                values.get("heartbeat_input_topic", "/otter/navigation/heartbeat")
+            ),
+            progress_send_topic=str(values.get("progress_send_topic", "0053")),
         )
         config._validate()
         return config
@@ -198,6 +206,27 @@ class BridgeConfig:
             raise ValueError("queue_depth must be greater than zero")
         if self.poll_interval_sec <= 0.0:
             raise ValueError("poll_interval_sec must be greater than zero")
+        if not self.status_send_topic.strip():
+            raise ValueError("status_send_topic must not be empty")
+        if self.status_send_topic in {self.ownship_send_topic, self.obstacle_send_topic}:
+            raise ValueError(
+                "status_send_topic must be different from ownship_send_topic "
+                "and obstacle_send_topic"
+            )
+        if not self.heartbeat_input_topic.strip():
+            raise ValueError("heartbeat_input_topic must not be empty")
+        _reject_numeric_ros_token("heartbeat_input_topic", self.heartbeat_input_topic)
+        if not self.progress_send_topic.strip():
+            raise ValueError("progress_send_topic must not be empty")
+        if self.progress_send_topic in {
+            self.ownship_send_topic,
+            self.obstacle_send_topic,
+            self.status_send_topic,
+        }:
+            raise ValueError(
+                "progress_send_topic must be different from ownship_send_topic, "
+                "obstacle_send_topic and status_send_topic"
+            )
 
 
 # ROS 话题每一段不能以数字开头；LaDDS 主题 0411/0141 不能直接当 ROS 名。

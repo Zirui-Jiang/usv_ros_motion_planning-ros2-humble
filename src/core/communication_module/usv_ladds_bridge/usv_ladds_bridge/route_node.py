@@ -17,7 +17,7 @@ from common.geodesy import GeoReference
 from .berth_task import parse_berth
 from .leg_state import LegBook
 from .route_task import parse_route
-from .single_leg import make_completion
+from .single_leg import make_completion, make_progress
 from .stop_task import StopExecution, parse_stop
 
 
@@ -31,6 +31,7 @@ class RouteNode(Node):
         defaults = dict(origin_latitude=30.5453, origin_longitude=114.392931,
                         map_frame='otter/map', navigation_namespace='/otter',
                         receive_topic='/ladds/rx', transmit_topic='/ladds/tx',
+                        progress_topic='/ladds/progress_tx',
                         stop_receive_topic='/ladds/stop_rx',
                         berth_receive_topic='/ladds/berth_rx',
                         status_topic='/ladds/task_status', service_timeout=5.0,
@@ -47,6 +48,7 @@ class RouteNode(Node):
         self.cancel_client = self.create_client(Trigger, namespace + '/cancel_navigation')
         self.stop_client = self.create_client(StopNavigation, namespace + '/navigation/stop')
         self.tx = self.create_publisher(String, values['transmit_topic'], 10)
+        self.progress_tx = self.create_publisher(String, values['progress_topic'], 10)
         self.status_pub = self.create_publisher(String, values['status_topic'], 10)
         self.create_subscription(String, values['receive_topic'], self._receive, 10)
         self.create_subscription(String, values['stop_receive_topic'], self._receive_stop, 10)
@@ -88,7 +90,7 @@ class RouteNode(Node):
             f'0211 route adapter: ENU origin {self.origin.latitude}, '
             f'{self.origin.longitude}; frame={self.frame}; speed unit=knots; '
             f'waypoint radius={self.waypoint_radius} m; '
-            'configure DDS receive=0211+0331+0212 and send=0052; '
+            'configure DDS receive=0211+0331+0212 and send=0052+0053; '
             'each received 0211 or 0212 starts a new execution, so send once per execution')
 
     def _notice(self, state, reason='', record=None):
@@ -98,16 +100,8 @@ class RouteNode(Node):
             count = len(points)
             index, passed = 0, 0
             radius = self.waypoint_radius
-            status = self.navigation_status
-            modules = status.get('modules') if isinstance(status, dict) else None
-            correlated = (
-                isinstance(modules, dict)
-                and modules.get('decision') == record.planner_session
-                and status.get('request_id') == record.request_id
-                and (record.task_id < 0 or status.get('task_id') == record.task_id)
-                and status.get('waypoint_count') == count
-            )
-            if correlated:
+            status = self._correlated_status(record)
+            if status is not None:
                 candidate_index = status.get('waypoint_index')
                 candidate_passed = status.get('passed_waypoints')
                 candidate_radius = status.get('waypoint_radius')
@@ -137,6 +131,40 @@ class RouteNode(Node):
                         planner_session=self.stop_record.planner_session,
                         task_id=self.stop_record.task_id)
         self.status_pub.publish(String(data=json.dumps(data, ensure_ascii=False)))
+
+    # 最新导航状态属于这次执行时才返回它，航点进度只能取自同一会话、请求和任务。
+    def _correlated_status(self, record):
+        status = self.navigation_status
+        modules = status.get('modules') if isinstance(status, dict) else None
+        correlated = (
+            isinstance(modules, dict)
+            and modules.get('decision') == record.planner_session
+            and status.get('request_id') == record.request_id
+            and (record.task_id < 0 or status.get('task_id') == record.task_id)
+            and status.get('waypoint_count') == len(record.leg.points)
+        )
+        return status if correlated else None
+
+    # 0053：航点进度前进时发一次，taskIndex 取决策确认的 waypoint_index。
+    def _report_progress(self, record):
+        """Send 0053 when this 0211 execution's confirmed waypoint index advances.
+
+        Decision's ``waypoint_index`` already counts mandatory points reached by
+        actual odometry and becomes ``count`` at final arrival or guard takeover.
+        """
+        if getattr(record.leg, 'protocol', '0211') != '0211':
+            return
+        status = self._correlated_status(record)
+        if status is None:
+            return
+        index = status.get('waypoint_index')
+        if (type(index) is not int
+                or not record.progress_index < index <= len(record.leg.points)):
+            return
+        record.progress_index = index
+        # 裸 JSON，发到 LaDDS 0053 前由 usv_ladds_tx 套 head/content。
+        self.progress_tx.publish(String(
+            data=json.dumps(make_progress(record.leg, index), ensure_ascii=False)))
 
     def _warning(self, text):
         now = time.monotonic()
@@ -509,6 +537,8 @@ class RouteNode(Node):
                 arrived.state, arrived.reason = 'ABORTED', reason
                 self._notice(arrived.state, arrived.reason, arrived)
         elif previous is not None:
+            if previous is self.book.active:
+                self._report_progress(previous)
             self._notice(previous.state, previous.reason, previous)
         record = self.book.active
         if (record is not None and record.state == 'RETRY_PENDING'
@@ -548,6 +578,8 @@ class RouteNode(Node):
     def _report_arrival(self, record):
         # 0052 业务对象在这里仍是裸 JSON。发到 LaDDS 前由 usv_ladds_tx 套 head/content。
         # A guard route reports arrival but keeps holding.
+        # 0053 的终点进度先于 0052 发出，使 taskIndex 在完成回报前已等于 count。
+        self._report_progress(record)
         self.tx.publish(String(data=json.dumps(make_completion(record.leg), ensure_ascii=False)))
         self._notice(record.state, record.reason, record)
 

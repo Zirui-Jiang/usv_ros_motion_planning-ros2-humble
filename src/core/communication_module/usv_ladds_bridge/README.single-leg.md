@@ -48,11 +48,11 @@
 基线安装区包含Gazebo、感知和控制模块。其他机器应先构建完整项目，并通过`--base-install`指定自己的基线。
 
 ```bash
-cd '/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble'
+cd '/mnt/e/usv_ros_motion_planning-ros2-humble'
 source /opt/ros/humble/setup.bash
 export PATH="/usr/bin:/bin:$PATH"
 unset PYTHONHOME
-source /home/usv/module-layout-20260914/install/setup.bash
+source /home/usv/.local/share/usv_ros_motion_planning/base/install/setup.bash
 colcon --log-base /tmp/usv_ladds_single_leg_20260915/log build \
   --base-paths src/core \
   --packages-select common usv_navigation_interfaces usv_navigation path_processor path_planner usv_decision usv_ladds_bridge \
@@ -80,8 +80,8 @@ source /tmp/usv_ladds_single_leg_20260915/install/setup.bash
 ### 1. Windows PowerShell：原生LaDDS中继
 
 ```powershell
-cd 'D:\ROS2轻量仿真系统\usv_ros_motion_planning-ros2-humble'
-.\scripts\start_ladds_relay.ps1 -DomainId 1 -ReceiveTopic '0211' -SendTopic '0052'
+cd 'E:\usv_ros_motion_planning-ros2-humble'
+.\scripts\start_ladds_relay.ps1 -DomainId 1 -ReceiveTopic '0211' -SendTopic '0052' -StatusSendTopic '0051'
 ```
 
 默认端口17880，仅绑定WSL虚拟网卡。若有旧中继占用，在旧终端按Ctrl+C。**TCP模式的DDS主题由Windows中继决定**，只改ROS YAML不能改变已运行中继。
@@ -89,7 +89,7 @@ cd 'D:\ROS2轻量仿真系统\usv_ros_motion_planning-ros2-humble'
 ### 2. WSL：4节单段仿真
 
 ```bash
-cd '/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble'
+cd '/mnt/e/usv_ros_motion_planning-ros2-humble'
 export ROS_DOMAIN_ID=42 ROS_LOCALHOST_ONLY=1
 export GAZEBO_MASTER_URI=http://127.0.0.1:11347
 bash scripts/start_ladds_single_leg_sim.bash --headless false
@@ -100,7 +100,7 @@ bash scripts/start_ladds_single_leg_sim.bash --headless false
 ### 3. WSL：任务适配与通信桥
 
 ```bash
-cd '/mnt/d/ROS2轻量仿真系统/usv_ros_motion_planning-ros2-humble'
+cd '/mnt/e/usv_ros_motion_planning-ros2-humble'
 export ROS_DOMAIN_ID=42 ROS_LOCALHOST_ONLY=1
 bash scripts/start_ladds_route.bash
 ```

@@ -3,20 +3,24 @@
 from __future__ import annotations
 
 import json
+import time
 from typing import Any, Optional
 
+from rclpy.clock import Clock, ClockType
 from rclpy.node import Node
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String, UInt8MultiArray
+from usv_navigation_interfaces.msg import ModuleHeartbeat
 
 from .config import BridgeConfig, HeaderCache, validate_obstacle_payload
 from .envelope import prepare_outbound_payload
+from .module_status import STATUS_CHECK_PERIOD, ModuleStatusTracker
 from .ownship import ownship_payload_from_odometry
 from common.geodesy import GeoReference
 
 
 class LaDDSOutboundNode(Node):
-    """Encode ROS inputs to LaDDS 0411/0141/0052 without decoding odom."""
+    """Encode ROS inputs to LaDDS 0411/0141/0051/0052/0053 without decoding odom."""
 
     def __init__(
         self,
@@ -30,6 +34,7 @@ class LaDDSOutboundNode(Node):
         self._header_cache = header_cache
         self._send_failures = 0
         self._package_seq = 1
+        self._module_status = ModuleStatusTracker()
         self._origin = GeoReference(
             config.origin_latitude,
             config.origin_longitude,
@@ -54,6 +59,9 @@ class LaDDSOutboundNode(Node):
             self._on_bytes_tx,
             config.queue_depth,
         )
+        self.create_subscription(
+            String, "/ladds/progress_tx", self._on_progress_tx, config.queue_depth
+        )
         if config.ownship_input_topic:
             self.create_subscription(
                 Odometry,
@@ -68,10 +76,23 @@ class LaDDSOutboundNode(Node):
                 self._on_obstacle,
                 config.queue_depth,
             )
+        self.create_subscription(
+            ModuleHeartbeat,
+            config.heartbeat_input_topic,
+            self._on_module_heartbeat,
+            config.queue_depth,
+        )
+        self.create_timer(
+            STATUS_CHECK_PERIOD,
+            self._publish_due_module_status,
+            clock=Clock(clock_type=ClockType.STEADY_TIME),
+        )
         self.get_logger().info(
             "LaDDS tx started "
             f"(0411 from {config.ownship_input_topic or 'disabled'}, "
-            f"0141 from {config.obstacle_input_topic or 'disabled'})"
+            f"0141 from {config.obstacle_input_topic or 'disabled'}, "
+            f"0051 module status from {config.heartbeat_input_topic}, "
+            f"{config.progress_send_topic} route progress from /ladds/progress_tx)"
         )
 
     def _on_text_tx(self, message: String) -> None:
@@ -79,6 +100,14 @@ class LaDDSOutboundNode(Node):
 
     def _on_bytes_tx(self, message: UInt8MultiArray) -> None:
         self._send_payload(bytes(message.data), source_topic="/ladds/tx_bytes")
+
+    # 航路适配节点给出的 0053 裸 JSON，走统一发送路径补 head 后发到进度主题。
+    def _on_progress_tx(self, message: String) -> None:
+        self._send_payload(
+            message.data.encode("utf-8"),
+            source_topic="/ladds/progress_tx",
+            transport_topic=self._config.progress_send_topic,
+        )
 
     def _on_ownship(self, message: Odometry) -> None:
         """仿真真值 odom 编成 0411 发到 LaDDS，并发布给接收节点订阅。"""
@@ -118,6 +147,26 @@ class LaDDSOutboundNode(Node):
             self.get_logger().warning(
                 f"drop invalid obstacle JSON for LaDDS {self._config.obstacle_send_topic}: {exc}"
             )
+
+    # 新鲜且 ready 的心跳报 1，未出现、超时或未就绪报 0；三个模块各自一条 0051。
+    def _on_module_heartbeat(self, message: ModuleHeartbeat) -> None:
+        content = self._module_status.observe(message.module, bool(message.ready), time.monotonic())
+        if content is not None:
+            self._send_module_status(content)
+
+    # 周期补发未变化的状态，并在心跳超时后把对应模块改报为 0。
+    def _publish_due_module_status(self) -> None:
+        for content in self._module_status.due(time.monotonic()):
+            self._send_module_status(content)
+
+    # 业务对象保持裸 JSON，0051 的 head 由统一发送路径补上。
+    def _send_module_status(self, content: dict) -> None:
+        encoded = json.dumps(content, ensure_ascii=False, separators=(",", ":"))
+        self._send_payload(
+            encoded.encode("utf-8"),
+            source_topic=self._config.heartbeat_input_topic,
+            transport_topic=self._config.status_send_topic,
+        )
 
     def _send_payload(
         self,

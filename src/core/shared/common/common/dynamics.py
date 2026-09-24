@@ -15,6 +15,7 @@ import numpy as np
 from .collision import footprint_path_is_clear
 from .math_helper import wrap_angle
 from .models import AlgorithmStatus, ControlCommand, VesselState
+from .thrust_allocator import FixedThrustAllocator
 
 
 def _clip(value, limit):
@@ -44,13 +45,12 @@ def _model_matrices(model):
 # 输入纵向力牛顿与偏航力矩牛顿米，分配左右桨后统一缩放以保留两路比例。
 def allocate_force(surge, yaw, model, command_limit=.4):
     """Allocate force in N and moment in N.m with uniform command scaling."""
-    if (not all(math.isfinite(v) for v in (surge, yaw, command_limit, model.max_force, model.D))
-            or not 0 < command_limit <= 1 or min(model.max_force, model.D) <= 0):
-        raise ValueError("Invalid force allocation")
-    left = (surge - yaw / model.D) / (2 * model.max_force)
-    right = (surge + yaw / model.D) / (2 * model.max_force)
-    scale = max(1., abs(left) / command_limit, abs(right) / command_limit)
-    return ControlCommand(left / scale, right / scale)
+    return FixedThrustAllocator(model).allocate(surge, yaw, command_limit).command
+
+
+def allocate_force_with_rpm(surge, yaw, model, command_limit=.4, config=None):
+    """Return the fixed-mode allocation including force and RPM diagnostics."""
+    return FixedThrustAllocator(model, config).allocate(surge, yaw, command_limit)
 
 
 # 使用最大 50 毫秒的 RK4 子步推进带符号船体系 u/v/r 与世界系 x/y/yaw，拒绝侧推输入。

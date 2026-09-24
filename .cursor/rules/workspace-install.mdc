@@ -1,0 +1,11 @@
+---
+description: 当前工作区的 WSL 路径和实际使用的安装区
+alwaysApply: true
+---
+
+# 当前工作区
+
+- Windows 仓库在 `E:\usv_ros_motion_planning-ros2-humble`，WSL 路径是 `/mnt/e/usv_ros_motion_planning-ros2-humble`。不要再用 `D:` 或 `/mnt/d/ROS2轻量仿真系统/...`。
+- 构建和启动用仓库自己的 `install/`。先 `source` `/opt/ros/humble/setup.bash`，再 `source "$HOME/.local/share/usv_ros_motion_planning/base/install/setup.bash"`，`colcon build` 在仓库根目录执行，产物进 `./install`。覆盖 base 里已有的包时加 `--allow-overriding`。
+- 仿真入口是 `ros2 launch sim_env main.launch.py`，动力学文件用仓库里的 `scripts/validation/config/ladds_single_leg_dynamics.yaml`。
+- 不要把构建或启动指到 `/tmp/usv_ladds_multi_waypoint_20260915` 或 `/tmp/usv_ladds_single_leg_20260915`，除非用户当次明确要求那份 overlay。
