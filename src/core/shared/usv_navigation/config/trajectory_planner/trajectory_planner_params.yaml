@@ -4,14 +4,14 @@ trajectory_planner:
   los:
     # 输出采样间隔与下一项预测总时域一起决定轨迹长度。
     trajectory_time_interval: 0.5
-    trajectory_time: 5.0
-    # 接近当前航段终点到此距离后可推进路点；每个输出周期最多推进一次。
+    trajectory_time: 10.0
+    # 接近当前航段点到此距离后可推进路点；每个输出周期最多推进一次。
     switch_dist: 5.0
     goal_tolerance: 1.0
     # Calibrated with the existing Otter/LOS model: 5 m cut through the
     # 12 m cylinder scenario; 1 m passed the full-footprint clearance check.
     # 横向偏差经 atan2(偏差,预瞄距离) 转为航向修正，较小距离使修正更敏感。
-    lookahead_distance: 1.0
+    lookahead_distance: 3.0
     yaw_rate_max: 0.8
     kp_yaw: 1.0
     # Keep near-goal replanning from restoring the full cruising speed.

@@ -90,3 +90,16 @@ controller:
     filter_history_length: 50
     command_limit: 0.4
     command_slew_rate: 0.6
+
+  # 0924 推力分配器：航控唯一输出口把归一化左右桨命令换算成桨角（rad）和转速（rpm），经东湖 0054 发出。
+  # 推力 = 推力系数 × 水密度 × 桨径⁴ × (rpm/60)²；桨间距由 dynamics.D 推出（间距 = 2D），不在此配置。
+  # 桨径与推力系数沿用 0924 交付值，实船需按系泊拉力试验标定。
+  thrust_allocator:
+    water_density: 1000.0
+    propeller_diameter: 0.259
+    thrust_coefficient: 0.5
+    # 转速上下限须覆盖 dynamics.max_force：180 N 对应 536.66 rpm，取 ±537；低于 max_force 时启动报错。
+    left_rpm_min: -537.0
+    left_rpm_max: 537.0
+    right_rpm_min: -537.0
+    right_rpm_max: 537.0

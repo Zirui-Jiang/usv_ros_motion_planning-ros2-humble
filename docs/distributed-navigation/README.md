@@ -111,6 +111,7 @@ ros2 param set /otter/usv_simulation usv_simulation.controller.pid_controller.k_
 | `navigation/control_report` | 航控 | 决策 | 实际模式、推力、完成或参考撤销反馈 |
 | `navigation/heartbeat` | 三模块 | 决策、航控 | 模块进程身份及存活信息 |
 | `thrusters/*_thrust_cmd` | 航控 | 原仿真推进器 | 原 Float32，左右及横向三路 |
+| `thrusters/vector_cmd` | 航控 | LaDDS 桥（东湖 0054） | `ThrusterCommand`：同一命令经 0924 推力分配器换算的桨角（rad）与转速（rpm） |
 
 `Path` 仅供显示。执行轨迹使用 `usv_navigation_interfaces/NavigationReference`，完整保存 t、s、x、y、theta、kappa、velocity、acceleration。重发消息不改变规划源时戳。
 

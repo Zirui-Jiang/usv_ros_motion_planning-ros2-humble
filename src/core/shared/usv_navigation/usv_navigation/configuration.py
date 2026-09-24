@@ -7,6 +7,7 @@ from pathlib import Path
 import yaml
 from common.models import USVModel
 from controller.controller import validate_goal_distance_tolerance
+from controller.thruster_output import ThrusterOutput
 
 C = "usv_simulation.controller."
 T = "usv_simulation.trajectory_planner."
@@ -103,6 +104,14 @@ DEFAULTS = {
     C + "station_adrc_controller.filter_history_length": 50,
     C + "station_adrc_controller.command_limit": .4,
     C + "station_adrc_controller.command_slew_rate": .6,
+    # 0924 推力分配器：水密度 kg/m³、桨径 m、推力系数，左右桨转速上下限 rpm。
+    C + "thrust_allocator.water_density": 1000.0,
+    C + "thrust_allocator.propeller_diameter": 0.259,
+    C + "thrust_allocator.thrust_coefficient": 0.5,
+    C + "thrust_allocator.left_rpm_min": -5000.0,
+    C + "thrust_allocator.left_rpm_max": 5000.0,
+    C + "thrust_allocator.right_rpm_min": -5000.0,
+    C + "thrust_allocator.right_rpm_max": 5000.0,
     T + "planner_name": "los",
     T + "los.trajectory_time_interval": 0.5, T + "los.trajectory_time": 20.0,
     T + "los.switch_dist": 5.0, T + "los.goal_tolerance": 1.0,
@@ -281,7 +290,9 @@ def validate_parameters(values):
     history = values[station + "filter_history_length"]
     if window < 2 or history < window or int(window) != window or int(history) != history:
         raise ValueError("station ADRC filter history must be at least the window length, and window must be >= 2")
-    USVModel.from_mapping(section(values, "dynamics."))
+    model = USVModel.from_mapping(section(values, "dynamics."))
+    # 推力分配参数与船模一起校验：转速上下限须允许正反转，且能达到单桨最大推力。
+    ThrusterOutput(model, section(values, C + "thrust_allocator."))
     return values
 
 

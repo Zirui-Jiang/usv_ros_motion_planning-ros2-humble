@@ -249,6 +249,28 @@ def test_start_registers_route_progress_topic_and_sends_0053():
         client.close()
 
 
+# 推力主题 0054 在启动时登记，send_topics 供 ROS 侧自检；未配置时不登记。
+def test_start_registers_thrust_topic_and_reports_send_topics():
+    library = FakeLibrary()
+    client = LaDDSClient(
+        "libLaDDS.so",
+        send_topic="0052",
+        status_send_topic="0051",
+        progress_send_topic="0053",
+        thrust_send_topic="0054",
+        library_loader=lambda _path: library,
+    )
+    client.start()
+    try:
+        assert ("pub", 2**40 + 7, b"0054", 2) in library.calls
+        assert client.send_topics == ("0052", "0051", "0053", "0054")
+        client.send(b'{"mode":0}', topic="0054")
+        assert library.calls[-1][2] == b"0054"
+    finally:
+        client.close()
+    assert "0054" not in LaDDSClient("libLaDDS.so").send_topics
+
+
 def test_start_registers_ownship_and_obstacle_subscribe_topics():
     library = FakeLibrary()
     client = LaDDSClient(

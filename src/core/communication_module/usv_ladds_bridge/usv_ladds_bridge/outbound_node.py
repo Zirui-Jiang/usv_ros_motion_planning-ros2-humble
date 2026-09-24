@@ -1,4 +1,4 @@
-"""LaDDS 发布节点 usv_ladds_tx：把仿真 odom 编成 0411 发出，并发布内部 JSON。"""
+"""LaDDS 发布节点 usv_ladds_tx：把仿真 odom 编成 0411 发出、航控推力转发到 0054，并发布内部 JSON。"""
 
 from __future__ import annotations
 
@@ -8,19 +8,25 @@ from typing import Any, Optional
 
 from rclpy.clock import Clock, ClockType
 from rclpy.node import Node
+from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String, UInt8MultiArray
 from usv_navigation_interfaces.msg import ModuleHeartbeat
 
 from .config import BridgeConfig, HeaderCache, validate_obstacle_payload
-from .envelope import prepare_outbound_payload
+from .envelope import ENVELOPE_TOPICS, prepare_outbound_payload
 from .module_status import STATUS_CHECK_PERIOD, ModuleStatusTracker
 from .ownship import ownship_payload_from_odometry
+from .thrust import WATCHDOG_PERIOD, ThrustForwarder, zero_thrust_content
 from common.geodesy import GeoReference
 
 
+# 推力发送失败或命令无效时，日志首次立即打印，此后最多每 5 秒一条，避免 10 Hz 刷屏。
+THRUST_LOG_PERIOD = 5.0
+
+
 class LaDDSOutboundNode(Node):
-    """Encode ROS inputs to LaDDS 0411/0141/0051/0052/0053 without decoding odom."""
+    """Encode ROS inputs to LaDDS 0411/0141/0051/0052/0053 and thruster commands."""
 
     def __init__(
         self,
@@ -33,7 +39,12 @@ class LaDDSOutboundNode(Node):
         self._client = client
         self._header_cache = header_cache
         self._send_failures = 0
+        self._last_send_error = ""
         self._package_seq = 1
+        self._envelope_topics = ENVELOPE_TOPICS
+        self._thrust: Optional[ThrustForwarder] = None
+        self._thrust_failures = 0
+        self._last_thrust_log: Optional[float] = None
         self._module_status = ModuleStatusTracker()
         self._origin = GeoReference(
             config.origin_latitude,
@@ -87,13 +98,107 @@ class LaDDSOutboundNode(Node):
             self._publish_due_module_status,
             clock=Clock(clock_type=ClockType.STEADY_TIME),
         )
+        if config.thrust_send_topic:
+            self._setup_thrust(config)
+        thrust = (
+            f"{config.thrust_send_topic} thrust from {config.thrust_input_topic}, "
+            f"zero thrust until commands arrive and after {config.thrust_timeout_sec:g} s silence"
+            if config.thrust_send_topic else "thrust disabled"
+        )
         self.get_logger().info(
             "LaDDS tx started "
             f"(0411 from {config.ownship_input_topic or 'disabled'}, "
             f"0141 from {config.obstacle_input_topic or 'disabled'}, "
             f"0051 module status from {config.heartbeat_input_topic}, "
-            f"{config.progress_send_topic} route progress from /ladds/progress_tx)"
+            f"{config.progress_send_topic} route progress from /ladds/progress_tx, "
+            f"{thrust})"
         )
+
+    # 推力主题启用时：核对中继已登记该主题，只保留最新一条航控命令，并启动 0.1 s 看门狗。
+    def _setup_thrust(self, config: BridgeConfig) -> None:
+        # Imported here so a bridge without a thrust topic still runs against
+        # an interface install built before ThrusterCommand existed.
+        from usv_navigation_interfaces.msg import ThrusterCommand
+
+        registered = getattr(self._client, "send_topics", None)
+        if self._client is not None and registered is None:
+            self.get_logger().warning(
+                "relay did not report its registered send topics; restart the Windows "
+                f"relay from this version so thrust topic {config.thrust_send_topic} is registered"
+            )
+        elif registered is not None and config.thrust_send_topic not in registered:
+            raise ValueError(
+                f"thrust topic {config.thrust_send_topic} is not registered by the relay "
+                f"(registered: {', '.join(registered) or '-'}); start the relay with "
+                f"-ThrustSendTopic '{config.thrust_send_topic}' or set thrust_send_topic to ''"
+            )
+        self._envelope_topics = ENVELOPE_TOPICS | {config.thrust_send_topic}
+        self._thrust = ThrustForwarder(config.thrust_timeout_sec)
+        # Keep only the newest command: after a stalled relay acknowledgement,
+        # a backlog of old thrust must never be released late.
+        latest_only = QoSProfile(
+            history=HistoryPolicy.KEEP_LAST, depth=1, reliability=ReliabilityPolicy.RELIABLE
+        )
+        self.create_subscription(
+            ThrusterCommand, config.thrust_input_topic, self._on_thrust, latest_only
+        )
+        self.create_timer(
+            WATCHDOG_PERIOD,
+            self._thrust_watchdog,
+            clock=Clock(clock_type=ClockType.STEADY_TIME),
+        )
+
+    # 航控命令到达即转发；内容无效时改发零推力，不把异常数值发往执行端。
+    def _on_thrust(self, message: Any) -> None:
+        now = time.monotonic()
+        resumed = self._thrust.stale
+        try:
+            content = self._thrust.on_command(message, now)
+        except (AttributeError, TypeError, ValueError) as exc:
+            self._log_thrust_problem(
+                f"invalid thruster command replaced by zero thrust: {_short_error(exc)}", now
+            )
+            content = zero_thrust_content()
+        else:
+            if resumed:
+                self.get_logger().info(
+                    f"forwarding control thruster commands to LaDDS {self._config.thrust_send_topic}"
+                )
+        self._send_thrust(content, now)
+
+    # 看门狗：超过 thrust_timeout_sec 没有有效航控命令（含尚未收到）时，每 0.1 s 发一次零推力。
+    def _thrust_watchdog(self) -> None:
+        now = time.monotonic()
+        was_stale = self._thrust.stale
+        content = self._thrust.watchdog(now)
+        if content is None:
+            return
+        if not was_stale:
+            self.get_logger().warning(
+                f"no thruster command for {self._config.thrust_timeout_sec:g} s; "
+                f"sending zero thrust on LaDDS {self._config.thrust_send_topic}"
+            )
+        self._send_thrust(content, now)
+
+    def _send_thrust(self, content: dict, now: float) -> None:
+        encoded = json.dumps(content, ensure_ascii=False, separators=(",", ":"))
+        if not self._send_payload(
+            encoded.encode("utf-8"),
+            source_topic=self._config.thrust_input_topic,
+            transport_topic=self._config.thrust_send_topic,
+            quiet=True,
+        ):
+            self._thrust_failures += 1
+            self._log_thrust_problem(
+                f"LaDDS {self._config.thrust_send_topic} thrust send failed "
+                f"(failure {self._thrust_failures}): {self._last_send_error}",
+                now,
+            )
+
+    def _log_thrust_problem(self, text: str, now: float) -> None:
+        if self._last_thrust_log is None or now - self._last_thrust_log >= THRUST_LOG_PERIOD:
+            self._last_thrust_log = now
+            self.get_logger().error(text)
 
     def _on_text_tx(self, message: String) -> None:
         self._send_payload(message.data.encode("utf-8"), source_topic="/ladds/tx")
@@ -168,28 +273,33 @@ class LaDDSOutboundNode(Node):
             transport_topic=self._config.status_send_topic,
         )
 
+    # 统一补 head 并发送；返回是否已被传输层接受。quiet 时不逐条打日志，由调用方限流。
     def _send_payload(
         self,
         payload: bytes,
         *,
         source_topic: str,
         transport_topic: Optional[str] = None,
-    ) -> None:
+        quiet: bool = False,
+    ) -> bool:
         client = self._client
         if client is None:
-            return
+            self._last_send_error = "LaDDS client is not available"
+            return False
         topic = self._config.send_topic if transport_topic is None else transport_topic
         try:
             payload, self._package_seq = prepare_outbound_payload(
-                payload, topic, self._package_seq
+                payload, topic, self._package_seq, envelope_topics=self._envelope_topics
             )
         except (UnicodeError, ValueError) as exc:
             self._send_failures += 1
-            self.get_logger().error(
-                f"LaDDS send dropped from {source_topic} "
-                f"(failure {self._send_failures}): {_short_error(exc)}"
-            )
-            return
+            self._last_send_error = _short_error(exc)
+            if not quiet:
+                self.get_logger().error(
+                    f"LaDDS send dropped from {source_topic} "
+                    f"(failure {self._send_failures}): {self._last_send_error}"
+                )
+            return False
         try:
             if transport_topic is None:
                 result = client.send(payload)
@@ -199,10 +309,14 @@ class LaDDSOutboundNode(Node):
                 raise RuntimeError("transport returned failure")
         except Exception as exc:
             self._send_failures += 1
-            self.get_logger().error(
-                f"LaDDS send failed from {source_topic} "
-                f"(failure {self._send_failures}): {_short_error(exc)}"
-            )
+            self._last_send_error = _short_error(exc)
+            if not quiet:
+                self.get_logger().error(
+                    f"LaDDS send failed from {source_topic} "
+                    f"(failure {self._send_failures}): {self._last_send_error}"
+                )
+            return False
+        return True
 
 
 def _short_error(error: Exception, limit: int = 300) -> str:

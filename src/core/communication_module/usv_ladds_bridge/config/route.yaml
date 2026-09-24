@@ -11,6 +11,11 @@ usv_ladds_rx:
     obstacle_send_topic: "0141"
     status_send_topic: "0051"
     progress_send_topic: "0053"
+    # 航控桨角/转速命令经 0054 发出；Windows 中继默认登记 0054。留空则不订阅也不发送。
+    thrust_send_topic: "0054"
+    thrust_input_topic: "/otter/thrusters/vector_cmd"
+    # 超过该秒数收不到航控推力命令（含尚未启动）时，看门狗每 0.1 s 发一次零推力。
+    thrust_timeout_sec: 0.5
     heartbeat_input_topic: "/otter/navigation/heartbeat"
     ownship_receive_topic: "0411"
     obstacle_receive_topic: "0141"
@@ -51,4 +56,4 @@ usv_ladds_route:
     progress_topic: /ladds/progress_tx
     status_topic: /ladds/task_status
     service_timeout: 5.0
-    waypoint_radius: 1.5
+    waypoint_radius: 3.0

@@ -12,13 +12,14 @@ import time
 from rclpy.parameter import Parameter
 from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
 from std_msgs.msg import Float32
-from usv_navigation_interfaces.msg import NavigationReference, ControlReport
+from usv_navigation_interfaces.msg import NavigationReference, ControlReport, ThrusterCommand
 
 from common.models import AlgorithmStatus, ControlCommand
 from common.dynamics import braking_candidates, clear_control
 from controller.active_braking_controller import ActiveBrakingController
 from controller.controller_factory import create_controller
 from controller.station_keeping_controller import StationKeepingController
+from controller.thruster_output import ThrusterOutput, ThrusterSetpoint
 from usv_navigation.configuration import C, DEFAULTS, HOT_PARAMETERS, resolve_parameters, section, validate_update
 from usv_navigation.protocol import trajectory_from_message
 from usv_navigation.state_rules import fresh, readiness
@@ -62,6 +63,9 @@ class ControlNode(NavigationInputs):
         self.last_published_command = ControlCommand()
         self.thrust_pubs = [self.create_publisher(Float32, 'thrusters/' + side + '_thrust_cmd', 1)
                            for side in ('left', 'right', 'lateral')]
+        # 同一出口再换算桨角/转速，供东湖 0054 等实船执行端使用；归一化话题照旧给仿真。
+        self.thruster_output = ThrusterOutput(self.model, section(self.config, C + 'thrust_allocator.'))
+        self.thruster_pub = self.create_publisher(ThrusterCommand, 'thrusters/vector_cmd', 1)
         reliable = QoSProfile(depth=10, reliability=ReliabilityPolicy.RELIABLE,
                               durability=DurabilityPolicy.VOLATILE)
         self.reference_subscription = self.create_subscription(
@@ -300,10 +304,22 @@ class ControlNode(NavigationInputs):
         self.config = candidate
         self.counters['parameter_updates'] += 1
 
-    # 按左桨、右桨、侧推顺序发布 Float32，同时保存实际发送值供报告使用。
+    # 按左桨、右桨、侧推顺序发布 Float32，并由同一命令换算桨角/转速发布；同时保存实际发送值供报告使用。
     def _publish_command(self, command):
         for publisher, value in zip(self.thrust_pubs, (command.left, command.right, command.lateral)):
             publisher.publish(Float32(data=float(value)))
+        try:
+            setpoint = self.thruster_output.compute(command)
+        except (ArithmeticError, ValueError):
+            # Never forward an unconvertible command as rpm; zero is the safe setpoint.
+            setpoint = ThrusterSetpoint()
+            self.counters['thruster_output_errors'] += 1
+        message = ThrusterCommand(mode=setpoint.mode, left_angle=setpoint.left_angle,
+                                  left_rpm=setpoint.left_rpm, right_angle=setpoint.right_angle,
+                                  right_rpm=setpoint.right_rpm)
+        message.header.stamp = self.get_clock().now().to_msg()
+        message.header.frame_id = self.base_frame
+        self.thruster_pub.publish(message)
         self.last_published_command = command
 
     # 每拍默认零命令，只有数据新鲜、模块在线、船体无碰撞且 dt>0 时才运行跟踪算法。

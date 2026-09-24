@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 import json
+import math
 import os
 import threading
 from typing import Any, Dict, List, Mapping, Optional, Tuple
@@ -48,6 +49,11 @@ class BridgeConfig:
     status_send_topic: str = "0051"
     heartbeat_input_topic: str = "/otter/navigation/heartbeat"
     progress_send_topic: str = "0053"
+    # 推力主题为空时不订阅航控桨角/转速命令、也不发送；航路联调 route.yaml 配为 "0054"。
+    thrust_send_topic: str = ""
+    thrust_input_topic: str = "/otter/thrusters/vector_cmd"
+    # 超过该秒数未收到航控推力命令时，看门狗改发零推力。
+    thrust_timeout_sec: float = 0.5
 
     @classmethod
     def from_mapping(
@@ -114,6 +120,11 @@ class BridgeConfig:
                 values.get("heartbeat_input_topic", "/otter/navigation/heartbeat")
             ),
             progress_send_topic=str(values.get("progress_send_topic", "0053")),
+            thrust_send_topic=str(values.get("thrust_send_topic", "")),
+            thrust_input_topic=str(
+                values.get("thrust_input_topic", "/otter/thrusters/vector_cmd")
+            ),
+            thrust_timeout_sec=float(values.get("thrust_timeout_sec", 0.5)),
         )
         config._validate()
         return config
@@ -227,6 +238,35 @@ class BridgeConfig:
                 "progress_send_topic must be different from ownship_send_topic, "
                 "obstacle_send_topic and status_send_topic"
             )
+        self._validate_thrust()
+
+    # 推力主题只承载桨角/转速：不能与其它发送主题共用，也不能是任何接收主题，否则会收到自己发的推力。
+    def _validate_thrust(self) -> None:
+        if not math.isfinite(self.thrust_timeout_sec) or self.thrust_timeout_sec <= 0.0:
+            raise ValueError("thrust_timeout_sec must be finite and greater than zero")
+        _reject_numeric_ros_token("thrust_input_topic", self.thrust_input_topic)
+        if not self.thrust_send_topic:
+            return
+        if not self.thrust_send_topic.strip():
+            raise ValueError("thrust_send_topic must be empty or a non-blank topic")
+        if not self.thrust_input_topic.strip():
+            raise ValueError("thrust_input_topic must not be empty when thrust_send_topic is set")
+        if self.thrust_send_topic in {
+            self.send_topic,
+            self.ownship_send_topic,
+            self.obstacle_send_topic,
+            self.status_send_topic,
+            self.progress_send_topic,
+        }:
+            raise ValueError("thrust_send_topic must be different from the other send topics")
+        if self.thrust_send_topic in {
+            self.receive_topic,
+            self.stop_receive_topic,
+            self.berth_receive_topic,
+            self.ownship_receive_topic,
+            self.obstacle_receive_topic,
+        }:
+            raise ValueError("thrust_send_topic must not be a receive topic")
 
 
 # ROS 话题每一段不能以数字开头；LaDDS 主题 0411/0141 不能直接当 ROS 名。

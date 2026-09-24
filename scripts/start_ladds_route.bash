@@ -4,7 +4,9 @@ set -euo pipefail
 export PATH="/usr/bin:/bin:$PATH"
 unset PYTHONHOME
 
-route_install="${LADDS_ROUTE_INSTALL:-${LADDS_INSTALL_BASE:-/tmp/usv_ladds_multi_waypoint_20260915/install}}"
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+workspace="$(cd -- "$script_dir/.." && pwd -P)"
+route_install="${LADDS_ROUTE_INSTALL:-${LADDS_INSTALL_BASE:-$workspace/install}}"
 relay_host="${LADDS_RELAY_HOST:-}"
 relay_port="${LADDS_RELAY_PORT:-17880}"
 use_sim_time="${LADDS_USE_SIM_TIME:-true}"
@@ -14,7 +16,7 @@ usage() {
 Usage: bash ${0##*/} [options]
 
 Options:
-  --install DIR       Multi-waypoint overlay (default: $route_install)
+  --install DIR       Workspace install (default: $route_install)
   --relay-host IPv4   Windows relay address (default: WSL default gateway)
   --relay-port PORT   TCP relay port (default: $relay_port)
   --use-sim-time BOOL ROS simulation clock setting (default: $use_sim_time)
@@ -41,6 +43,9 @@ done
     || fail '--relay-port must be an integer in [1, 65535]'
 [[ "$use_sim_time" == true || "$use_sim_time" == false ]] \
     || fail '--use-sim-time must be true or false'
+
+[[ -r "$route_install/setup.bash" ]] \
+    || fail "install has no setup.bash: $route_install (run scripts/build_ladds_route.bash first)"
 
 : "${ROS_DOMAIN_ID:=42}"
 : "${ROS_LOCALHOST_ONLY:=1}"

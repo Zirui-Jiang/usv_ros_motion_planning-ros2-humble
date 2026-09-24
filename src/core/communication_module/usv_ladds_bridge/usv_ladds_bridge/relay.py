@@ -114,10 +114,12 @@ class RelayServer:
     def _serve_client(self, connection: socket.socket) -> None:
         connection.settimeout(self._io_timeout)
         reader = FrameReader(max_frame_bytes(self._max_payload_bytes))
-        self._send_frame(
-            connection,
-            {"type": "hello", "version": self._dds.version or ""},
-        )
+        hello = {"type": "hello", "version": self._dds.version or ""}
+        # Let the ROS side verify its send topics were registered at SDK start.
+        send_topics = getattr(self._dds, "send_topics", None)
+        if send_topics is not None:
+            hello["send_topics"] = list(send_topics)
+        self._send_frame(connection, hello)
         while not self._stop.is_set():
             for _ in range(self._queue_depth):
                 packet = self._dds.receive()
@@ -224,6 +226,11 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--obstacle-send-topic", default="0141")
     parser.add_argument("--status-send-topic", default="0051")
     parser.add_argument("--progress-send-topic", default="0053")
+    parser.add_argument(
+        "--thrust-send-topic",
+        default="",
+        help="optional thruster command publication, e.g. 0054",
+    )
     parser.add_argument("--receive-topic", default="0211")
     parser.add_argument('--stop-receive-topic', default='', help='optional extra stop subscription, e.g. 0331')
     parser.add_argument(
@@ -262,6 +269,7 @@ def main() -> None:
         obstacle_send_topic=args.obstacle_send_topic,
         status_send_topic=args.status_send_topic,
         progress_send_topic=args.progress_send_topic,
+        thrust_send_topic=args.thrust_send_topic,
         receive_topic=args.receive_topic,
         stop_receive_topic=args.stop_receive_topic,
         berth_receive_topic=args.berth_receive_topic,
@@ -283,7 +291,7 @@ def main() -> None:
     server.start()
     print(
         f"LaDDS relay listening on {server.address[0]}:{server.address[1]} "
-        f"(SDK {dds.version or 'unknown'})",
+        f"(SDK {dds.version or 'unknown'}; send topics {', '.join(dds.send_topics)})",
         flush=True,
     )
     try:

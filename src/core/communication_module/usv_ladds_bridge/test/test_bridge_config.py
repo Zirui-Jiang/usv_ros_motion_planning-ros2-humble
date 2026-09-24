@@ -177,6 +177,25 @@ def test_default_transport_parameters_match_bridge_contract():
     assert config.status_send_topic == "0051"
     assert config.heartbeat_input_topic == "/otter/navigation/heartbeat"
     assert config.progress_send_topic == "0053"
+    assert config.thrust_send_topic == ""
+    assert config.thrust_input_topic == "/otter/thrusters/vector_cmd"
+    assert config.thrust_timeout_sec == 0.5
+
+
+# 航路配置启用 0054；推力主题不能占用其它发送/接收主题，ROS 输入话题不能以数字开头。
+def test_thrust_topic_is_separate_from_other_ladds_topics():
+    config = BridgeConfig.from_mapping({"send_topic": "0052", "thrust_send_topic": "0054"})
+    assert config.thrust_send_topic == "0054"
+    for override in ({"thrust_send_topic": "0052"}, {"thrust_send_topic": "0051"},
+                     {"thrust_send_topic": "0411"}, {"thrust_send_topic": "0211"}):
+        with pytest.raises(ValueError, match="thrust_send_topic"):
+            BridgeConfig.from_mapping({"send_topic": "0052", **override})
+    for override, message in (({"thrust_input_topic": "/0054/cmd"}, "thrust_input_topic"),
+                              ({"thrust_input_topic": " "}, "thrust_input_topic"),
+                              ({"thrust_timeout_sec": 0.0}, "thrust_timeout_sec"),
+                              ({"thrust_send_topic": " "}, "thrust_send_topic")):
+        with pytest.raises(ValueError, match=message):
+            BridgeConfig.from_mapping({"send_topic": "0052", "thrust_send_topic": "0054", **override})
 
 
 def test_ownship_transport_topic_and_ros_input_are_configurable():
@@ -223,12 +242,15 @@ def test_bridge_yaml_keeps_ladds_topic_ids_as_strings():
         "obstacle_send_topic",
         "status_send_topic",
         "progress_send_topic",
+        "thrust_send_topic",
         "receive_topic",
         "stop_receive_topic",
         "berth_receive_topic",
         "ownship_receive_topic",
         "obstacle_receive_topic",
     )
+    route = yaml.safe_load((config_dir / "route.yaml").read_text(encoding="utf-8"))
+    assert route["usv_ladds_rx"]["ros__parameters"]["thrust_send_topic"] == "0054"
     for filename in ("bridge.yaml", "route.yaml", "single_leg.yaml"):
         loaded = yaml.safe_load((config_dir / filename).read_text(encoding="utf-8"))
         assert "usv_ladds_rx" in loaded

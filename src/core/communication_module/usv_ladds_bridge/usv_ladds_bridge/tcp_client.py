@@ -45,12 +45,18 @@ class TcpRelayClient:
         self._pending: Dict[int, tuple[threading.Event, list]] = {}
         self._next_id = 1
         self._version: Optional[str] = None
+        self._send_topics: Optional[tuple[str, ...]] = None
         self._dropped_messages = 0
         self._disconnect_error: Optional[str] = None
 
     @property
     def version(self) -> Optional[str]:
         return self._version
+
+    @property
+    def send_topics(self) -> Optional[tuple[str, ...]]:
+        """Relay-registered publication topics; None for an older relay."""
+        return self._send_topics
 
     @property
     def dropped_messages(self) -> int:
@@ -77,6 +83,9 @@ class TcpRelayClient:
                 raise LaDDSError("relay did not send a hello frame")
             version = hello.get("version")
             self._version = version if isinstance(version, str) else ""
+            topics = hello.get("send_topics")
+            valid_topics = isinstance(topics, list) and all(isinstance(t, str) for t in topics)
+            self._send_topics = tuple(topics) if valid_topics else None
         except Exception as exc:
             sock.close()
             if isinstance(exc, LaDDSError):

@@ -12,6 +12,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/NavigationReference.msg"
   "msg/ModuleHeartbeat.msg"
   "msg/ControlReport.msg"
+  "msg/ThrusterCommand.msg"
   "srv/NavigateTo.srv"
   "srv/NavigateRoute.srv"
   "srv/StopNavigation.srv"

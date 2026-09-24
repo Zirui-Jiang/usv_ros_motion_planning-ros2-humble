@@ -17,6 +17,10 @@ usv_ladds_rx:
     obstacle_send_topic: "0141"
     status_send_topic: "0051"
     progress_send_topic: "0053"
+    # 通用透传默认不发航控推力；航路联调使用 route.yaml 中的 "0054"。
+    thrust_send_topic: ""
+    thrust_input_topic: "/otter/thrusters/vector_cmd"
+    thrust_timeout_sec: 0.5
     heartbeat_input_topic: "/otter/navigation/heartbeat"
     receive_topic: "0211"
     # 通用透传默认不启用；航路/停船联调使用 route.yaml 中的 "0331"。

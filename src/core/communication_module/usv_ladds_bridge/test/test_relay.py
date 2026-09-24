@@ -401,3 +401,41 @@ def test_send_failure_on_reset_peer_does_not_stop_server_or_close_dds():
             replacement.close()
         server.close()
         thread.join(timeout=1)
+
+
+# 中继在 hello 中报告启动时登记的发送主题，ROS 侧据此自检 0054 是否可发。
+def test_hello_reports_registered_send_topics_for_thrust_self_check():
+    dds = FakeDDS()
+    dds.send_topics = ("0052", "0051", "0053", "0054")
+    server = RelayServer(
+        dds, listen_host="127.0.0.1", port=0, max_payload_bytes=1024, io_timeout=0.02,
+    )
+    server.start()
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    client = TcpRelayClient(
+        "127.0.0.1", port=server.address[1], timeout=0.5, max_payload_bytes=1024,
+    )
+    try:
+        client.start()
+        assert client.send_topics == ("0052", "0051", "0053", "0054")
+        client.send(b'{"mode":0}', topic="0054")
+        assert dds.sent == [("0054", b'{"mode":0}')]
+    finally:
+        client.close()
+        server.close()
+        thread.join(timeout=1)
+
+
+# 旧版中继的 hello 不带主题列表，客户端记为未知而不是空列表。
+def test_older_relay_hello_without_topics_is_unknown(relay_pair):
+    _, _, client = relay_pair
+    assert client.send_topics is None
+
+
+def test_relay_thrust_topic_argument_is_optional():
+    from usv_ladds_bridge.relay import _parser
+
+    assert _parser().parse_args(["--library", "LaDDS.dll"]).thrust_send_topic == ""
+    parsed = _parser().parse_args(["--library", "LaDDS.dll", "--thrust-send-topic", "0054"])
+    assert parsed.thrust_send_topic == "0054"

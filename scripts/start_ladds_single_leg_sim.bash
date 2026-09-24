@@ -8,7 +8,7 @@ unset PYTHONHOME
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 profile_dir="$script_dir/validation/config"
 base_install="${LADDS_BASE_INSTALL:-$HOME/.local/share/usv_ros_motion_planning/base/install}"
-profile_install="${LADDS_SINGLE_LEG_INSTALL:-/tmp/usv_ladds_single_leg_20260915/install}"
+profile_install="${LADDS_SINGLE_LEG_INSTALL:-$(cd -- "$script_dir/.." && pwd -P)/install}"
 world_argument="${LADDS_SINGLE_LEG_WORLD:-ocean}"
 headless="${LADDS_SINGLE_LEG_HEADLESS:-true}"
 launch_arguments=()
@@ -23,14 +23,14 @@ Usage: bash ${0##*/} [options] [-- ROS_LAUNCH_ARGUMENTS...]
 Options:
   --base-install DIR  Complete simulation/navigation install
                       (default: $base_install)
-  --install DIR       LaDDS/single-leg overlay install
+  --install DIR       Workspace install loaded after the base
                       (default: $profile_install)
   --world NAME|FILE   Installed sim_env world name or readable .world file
                       (default: $world_argument)
   --headless BOOL     true or false (default: $headless)
   -h, --help          Show this help
 
-Recommended new overlay: /tmp/usv_ladds_single_leg_20260915/install
+Build the workspace install with: bash scripts/build_ladds_route.bash
 Environment defaults, used only when the caller has not set them:
   ROS_DOMAIN_ID=42
   ROS_LOCALHOST_ONLY=1
@@ -55,7 +55,7 @@ done
 [[ "$headless" == true || "$headless" == false ]] || fail '--headless must be true or false'
 [[ -r /opt/ros/humble/setup.bash ]] || fail 'ROS Humble setup is unavailable'
 [[ -r "$base_install/setup.bash" ]] || fail "base install has no setup.bash: $base_install"
-[[ -r "$profile_install/setup.bash" ]] || fail "overlay install has no setup.bash: $profile_install"
+[[ -r "$profile_install/setup.bash" ]] || fail "workspace install has no setup.bash: $profile_install"
 [[ -r "$profile_dir/ladds_single_leg_dynamics.yaml" ]] || fail 'single-leg dynamics profile is missing'
 [[ -r "$profile_dir/ladds_single_leg_world.py" ]] || fail 'single-leg world copier is missing'
 for executable in python3 realpath mktemp; do
@@ -125,11 +125,15 @@ printf '  base install: %s\n  overlay: %s\n  source world: %s\n' \
 printf '  runtime world: %s\n  ROS domain: %s\n  Gazebo master: %s\n' \
     "$runtime_world" "$ROS_DOMAIN_ID" "$GAZEBO_MASTER_URI"
 printf '  speed profile: waypoint speed comes from the 0211 message; dynamics.velocity_max=10.29 m/s (20 kn)\n'
+printf '  localization: /otter/odom_gt -> usv_ladds_tx 0411 -> usv_ladds_rx /otter/odom (navigation needs the adapter running)\n'
 
+# Ground truth goes to odom_gt so usv_ladds_tx/radar can encode 0411/0141 and
+# usv_ladds_rx is the only /otter/odom publisher; a later launch argument wins.
 ros2 launch sim_env main.launch.py \
     "world:=$world_for_launch" "headless:=$headless" \
     "dynamics_config:=$profile_dir/ladds_single_leg_dynamics.yaml" \
     "controller_config:=$controller_config" \
     "trajectory_config:=$trajectory_config" \
     "planner_config:=$planner_config" \
+    "localization_odom_topic:=odom_gt" \
     "${launch_arguments[@]}"

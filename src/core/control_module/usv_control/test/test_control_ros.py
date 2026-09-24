@@ -2,6 +2,7 @@
 """Control-side ROS contracts using real messages, including ADRC lifecycle."""
 import importlib
 import json
+import math
 import time
 import uuid
 from contextlib import contextmanager
@@ -24,7 +25,8 @@ class ControlHarness:
             control_module = importlib.import_module('usv_control.control')
         except ModuleNotFoundError as error:
             pytest.fail('Independent control node is not available: ' + str(error))
-        from usv_navigation_interfaces.msg import NavigationReference, ModuleHeartbeat, ControlReport, TrajectoryPoint
+        from usv_navigation_interfaces.msg import (NavigationReference, ModuleHeartbeat, ControlReport,
+                                                   ThrusterCommand, TrajectoryPoint)
         self.Reference, self.Heartbeat, self.Point = NavigationReference, ModuleHeartbeat, TrajectoryPoint
         self.namespace = 'control_' + uuid.uuid4().hex[:10]
         rclpy.init(args=['--ros-args', '-r', '__ns:=/' + self.namespace,
@@ -40,11 +42,12 @@ class ControlHarness:
         self.map_pub = self.driver.create_publisher(Costmap, 'costmap_raw',
                          QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
         self.clock_pub = self.driver.create_publisher(Clock, '/clock', 10)
-        self.left, self.right, self.reports = [], [], []
+        self.left, self.right, self.reports, self.vector = [], [], [], []
         self.subscriptions = [
             self.driver.create_subscription(Float32, 'thrusters/left_thrust_cmd', self.left.append, 10),
             self.driver.create_subscription(Float32, 'thrusters/right_thrust_cmd', self.right.append, 10),
             self.driver.create_subscription(ControlReport, 'navigation/control_report', self.reports.append, 10),
+            self.driver.create_subscription(ThrusterCommand, 'thrusters/vector_cmd', self.vector.append, 10),
         ]
         self.sessions = {'decision': 'planner-one', 'perception': 'perception-one'}
         self.heartbeat_sequence = 0
@@ -185,6 +188,33 @@ def test_control_tracks_then_cancels_and_rejects_old_identity_or_sequence(algori
         assert h.reports[-1].task_id == 2
 
 
+# 桨角/转速话题与归一化推力同源：跟踪时转速对应左右桨命令、桨角为零，取消后转速归零。
+def test_vector_command_follows_normalized_thrust_and_zeros_after_cancel():
+    def force(rpm):
+        return 0.5 * 1000.0 * 0.259 ** 4 * math.copysign((rpm / 60.0) ** 2, rpm)
+
+    with control_harness(extra_args=('-p', 'usv_simulation.controller.controller_name:=adrc')) as h:
+        h.ready()
+        h.send_reference()
+        h.until(lambda: any(v.left_rpm > 0 and v.right_rpm > 0 for v in h.vector))
+        moving = next(v for v in reversed(h.vector) if v.left_rpm > 0)
+        assert moving.mode == 0 and moving.left_angle == moving.right_angle == 0.
+        assert moving.header.frame_id == h.namespace + '/base_link'
+        max_force = h.control.model.max_force
+        assert any(abs(force(moving.left_rpm) - x.data * max_force) < 1e-3 for x in h.left)
+        stop = h.reference(task=2, active=False, points=False)
+        h.send_reference(stop)
+        h.until(lambda: h.reports and h.reports[-1].reference_sequence == stop.sequence
+                and h.reports[-1].state == 'CANCELLED')
+        for _ in range(3):
+            h.step()
+        h.vector.clear()
+        for _ in range(5):
+            h.step()
+        assert h.vector and all(v.left_rpm == v.right_rpm == 0. for v in h.vector)
+        assert h.control.counters['thruster_output_errors'] == 0
+
+
 # Station keeping must consume its own read-only ADRC parameter section,
 # independent of the ordinary navigation controller selection.
 def test_station_adrc_parameters_are_injected_into_holding_controller():
@@ -267,13 +297,14 @@ def test_control_pauses_clock_and_recovers_temporary_state_loss(algorithm):
         h.ready()
         h.send_reference()
         h.until(lambda: h.control.mode == 'NAVIGATING')
-        h.until(lambda: h.control.mode == 'WAITING_STATE', odom=False, reference=True)
+        # 节点状态先于本拍报告改变；等收到该状态的报告再核对推力，避免读到上一拍报告。
+        h.until(lambda: h.reports and h.reports[-1].state == 'WAITING_STATE', odom=False, reference=True)
         assert h.reports[-1].left == h.reports[-1].right == 0.
         if algorithm == 'adrc':
             assert h.control.controller.speed_loop.integral_speed == 0.
             assert h.control.controller.heading_loop.heading_filter.position_history == []
         h.until(lambda: h.control.mode == 'NAVIGATING', reference=True)
-        h.until(lambda: h.control.mode == 'SIMULATION_PAUSED', clock=False)
+        h.until(lambda: h.reports and h.reports[-1].state == 'SIMULATION_PAUSED', clock=False)
         assert h.reports[-1].left == h.reports[-1].right == 0.
         h.until(lambda: h.control.mode == 'NAVIGATING', reference=True)
         h.simulated_time = 1.

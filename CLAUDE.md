@@ -8,7 +8,7 @@ ROS 2 Humble + Gazebo Classic 11 的 Otter 无人艇导航仿真：感知定位 
 
 - 仓库位于 Windows `E:` 盘，但构建、测试、启动全部在 **WSL `Ubuntu-22.04`** 的 Bash 中执行（仓库路径 `/mnt/e/usv_ros_motion_planning-ros2-humble`）。PowerShell / Git Bash 下没有 ROS。从 Windows 侧调用：
   `wsl.exe -d Ubuntu-22.04 -- bash -lc "cd '/mnt/e/usv_ros_motion_planning-ros2-humble' && source /opt/ros/humble/setup.bash && ..."`
-- 本机基线安装区是 `/home/usv/.local/share/usv_ros_motion_planning/base/install`。LaDDS 航路脚本默认以它为 base，再叠加 `/tmp/usv_ladds_multi_waypoint_20260915/install`。仓库内另有 `/mnt/e/usv_ros_motion_planning-ros2-humble/install`。不要复用其他机器的 `build/`、`install/`。
+- 本机基线安装区是 `/home/usv/.local/share/usv_ros_motion_planning/base/install`。LaDDS 航路脚本（`build_ladds_route.bash`、`start_ladds_route*.bash`）以它为 base，构建和启动都用仓库自己的 `/mnt/e/usv_ros_motion_planning-ros2-humble/install`，不再使用 `/tmp` 独立 overlay。不要复用其他机器的 `build/`、`install/`。
 - 例外：LaDDS 中继 `scripts/start_ladds_relay.ps1` 在 Windows PowerShell 运行（Windows SDK → 本机 TCP → WSL）。
 
 ## 常用命令（WSL，仓库根目录）

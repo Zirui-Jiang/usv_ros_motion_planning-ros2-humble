@@ -22,6 +22,19 @@ def grid_at_obstacle(x=None, y=None):
     return GridSnapshot(data, .05, -10, -10)
 
 
+# 饱和时两桨等比例缩放到 command_limit，命令始终合法且保持转向；力→转速换算只在航控输出口进行。
+@pytest.mark.parametrize("limit", [1., .4])
+def test_saturated_allocation_is_valid_and_keeps_turn_direction(limit):
+    model = USVModel(max_force=180., D=.395)
+    for surge in np.linspace(-800., 800., 229):
+        for yaw in (-40., -3., 0., 2.5, 25.):
+            command = dynamics().allocate_force(float(surge), yaw, model, command_limit=limit)
+            # Uniform scaling may land one ulp above a fractional limit; validity is exact.
+            assert command.is_valid() and max(abs(command.left), abs(command.right)) <= limit + 1e-12
+            if yaw:
+                assert (command.right - command.left) * yaw > 0
+
+
 # 船体系倒驶速度正确旋转到世界系，差动推力产生正确转向。
 def test_dynamics_rotates_body_velocity_and_preserves_reverse_motion():
     module = dynamics()

@@ -6,8 +6,8 @@ unset PYTHONHOME
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 single_sim="$script_dir/start_ladds_single_leg_sim.bash"
-# Select the route overlay even if the shell still has an old single-leg path.
-LADDS_SINGLE_LEG_INSTALL="${LADDS_ROUTE_INSTALL:-/tmp/usv_ladds_multi_waypoint_20260915/install}"
+# Use the repository install even if the shell still has an old single-leg path.
+LADDS_SINGLE_LEG_INSTALL="${LADDS_ROUTE_INSTALL:-$(cd -- "$script_dir/.." && pwd -P)/install}"
 : "${LADDS_BASE_INSTALL:=$HOME/.local/share/usv_ros_motion_planning/base/install}"
 : "${ROS_DOMAIN_ID:=42}"
 : "${ROS_LOCALHOST_ONLY:=1}"
@@ -22,7 +22,7 @@ Starts the ordinary navigation/Gazebo composition through:
 
 Route defaults:
   base install:  $LADDS_BASE_INSTALL
-  route overlay: $LADDS_SINGLE_LEG_INSTALL
+  workspace:     $LADDS_SINGLE_LEG_INSTALL
   ROS domain:    $ROS_DOMAIN_ID
   localhost:     $ROS_LOCALHOST_ONLY
 

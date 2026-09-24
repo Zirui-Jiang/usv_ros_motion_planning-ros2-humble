@@ -55,3 +55,21 @@ TDD run before fixes: 23 failed, 7 passed. Both positive/negative multiwrap test
 Read-only original fixed-period diagnostic: measurements `[0, 0.2, 0.4]` with actual 0.2 s intervals and configured 0.1 s period return 2.0 rad/s instead of 1.0 rad/s. Corrected explicit-dt regression returns 1.0 rad/s.
 
 Final core suite: `python -B -m pytest -q -p no:cacheprovider src/core/control_module/controller/test/test_adrc_core.py`: 33 passed. `git diff --check` for owned paths: no whitespace errors.
+
+# 0924 thrust allocator
+
+Source: repository-root `0924controller/`. In that delivery `adrc_controller.py`, `pi_controller.py` and `heading_linear_regression_filter.py` have the same SHA-256 as the 0914 originals above, so the ported heading/speed cores are unchanged. `lateral_controller.py` is not ported yet.
+
+| Original file | SHA-256 | Port |
+| --- | --- | --- |
+| `thrust_allocator.py` | `ceee65f5719194a686365ff0b29ccb04350c3e9b1e51feb1a445d36153bd8a29` | copied unmodified; `test_thruster_output.py` checks the hash |
+
+`controller/thruster_output.py` is the only caller. It rebuilds surge force and yaw moment from the published normalized command (`F = (l+r)·max_force`, `M = (r−l)·max_force·D`) and calls mode 0 with `propeller_spacing = 2·D`, so each propeller force equals `command × max_force` and only the force → rpm conversion is new. Saturation stays in the controllers; startup rejects rpm limits that cannot reach `max_force`, so the allocator's independent rpm clipping never binds.
+
+Known issues of the delivered mode 1, which is therefore not called:
+
+- Its yaw moment sign is opposite to mode 0 and to the documented counter-clockwise convention (+5 N·m request produces −5 N·m).
+- Lateral force is documented as positive to the right, while ROS body y is positive to the left; the physical meaning of a positive thruster angle is not specified.
+- Near zero surge force the angle jumps between 0 and π, and rpm is not reduced while an angle is still turning.
+- Each propeller's rpm is clipped independently, which can remove the requested yaw moment at saturation.
+- The delivered `__init__.py` lists `LateralController` in `__all__` without importing it.

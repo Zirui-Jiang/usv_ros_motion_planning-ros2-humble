@@ -1,16 +1,17 @@
-"""给 0141 / 0411 / 0051 / 0052 / 0053 的发出报文套上联调要求的 head 与 content。"""
+"""给 0141 / 0411 / 0051 / 0052 / 0053 及配置的推力主题（0054）的发出报文套上 head 与 content。"""
 
 from __future__ import annotations
 
 import json
 from datetime import datetime
-from typing import Optional
+from typing import AbstractSet, Optional
 
 
 # 与联调样本一致：本侧 sendPlatform=1000，对端 recvPlatform=1001，packageType=0。
 SEND_PLATFORM = 1000
 RECV_PLATFORM = 1001
 PACKAGE_TYPE = 0
+# 固定需要外壳的主题；推力主题号来自桥配置，由发布节点并入 envelope_topics。
 ENVELOPE_TOPICS = frozenset({"0141", "0411", "0051", "0052", "0053"})
 
 
@@ -19,12 +20,14 @@ def prepare_outbound_payload(
     topic: str,
     package_seq: int,
     now: Optional[datetime] = None,
+    *,
+    envelope_topics: AbstractSet[str] = ENVELOPE_TOPICS,
 ) -> tuple[bytes, int]:
-    """0141、0411、0051、0052、0053 的 JSON 对象在发出前套外壳；其它主题原样转发。
+    """``envelope_topics`` 中主题的 JSON 对象在发出前套外壳；其它主题原样转发。
 
     已经同时带有对象 ``head`` 和 ``content`` 的报文不再套一层，序号也不前进。
     """
-    if topic not in ENVELOPE_TOPICS:
+    if topic not in envelope_topics:
         return payload, package_seq
     if type(package_seq) is not int or package_seq < 1:
         raise ValueError("packageSeq must be a positive integer")

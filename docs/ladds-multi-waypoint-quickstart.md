@@ -6,7 +6,7 @@
 
 每个点的 `speed` 单位为节，表示“当前位置或前一点进入本点”的航段速度。规划器可为转弯和最终停车提前减速，因此该值不是航点处的瞬时保速保证。`4 kn = 2.0577777778 m/s`，多航点仿真 profile 的速度上限为 `2.1 m/s`。
 
-## 1. 构建独立 overlay
+## 1. 构建到仓库工作区
 
 在 WSL 的仓库根目录执行：
 
@@ -14,31 +14,33 @@
 bash scripts/build_ladds_route.bash
 ```
 
-只改了桥接时不要重编整条 overlay，只选这一个包：
+只改了桥接时不要重编整条导航链，只选这一个包：
 
 ```bash
 bash scripts/build_ladds_route.bash --packages usv_ladds_bridge
 ```
 
-默认从当前仓库的 `src/core` 构建以下 10 个包：`common`、`controller`、`path_planner`、`path_processor`、`trajectory_planner`、`usv_navigation_interfaces`、`usv_navigation`、`usv_decision`、`usv_control`、`usv_ladds_bridge`。基线为 `/home/usv/.local/share/usv_ros_motion_planning/base/install`，独立输出为：
+默认构建以下 10 个包：`common`、`controller`、`path_planner`、`path_processor`、`trajectory_planner`、`usv_navigation_interfaces`、`usv_navigation`、`usv_decision`、`usv_control`、`usv_ladds_bridge`。构建前先加载基线 `/home/usv/.local/share/usv_ros_motion_planning/base/install`，产物直接进仓库自己的目录：
 
 ```text
-/tmp/usv_ladds_multi_waypoint_20260915/build
-/tmp/usv_ladds_multi_waypoint_20260915/log
-/tmp/usv_ladds_multi_waypoint_20260915/install
+/mnt/e/usv_ros_motion_planning-ros2-humble/build
+/mnt/e/usv_ros_motion_planning-ros2-humble/log
+/mnt/e/usv_ros_motion_planning-ros2-humble/install
 ```
 
-输出目录已存在时执行标准的 colcon 增量构建，不删除旧结果。可通过 `--source`、`--base-install` 和 `--output-root` 显式选择其它路径。
+输出目录已存在时执行标准的 colcon 增量构建，不删除旧结果。可通过 `--base-install` 选择其它基线；旧的 `--source`、`--output-root` 已移除，不再使用 `/tmp` 独立 overlay。
 
 ## 2. 启动 Windows LaDDS 中继
 
 在 Windows PowerShell 中运行现有中继：
 
 ```powershell
-.\scripts\start_ladds_relay.ps1 -DomainId 1 -ReceiveTopic '0211' -StopReceiveTopic '0331' -BerthReceiveTopic '0212' -SendTopic '0052' -StatusSendTopic '0051' -ProgressSendTopic '0053'
+.\scripts\start_ladds_route_relay.ps1
 ```
 
-`-ProgressSendTopic` 默认即 `0053`；中继只在启动时注册发布主题，更新本脚本后须重启中继，0053 才能发出。记录脚本显示的 WSL 虚拟网卡 IPv4。LaDDS 使用 DDS 域 `1`；ROS 仿真、适配器和观察终端使用 ROS 域 `42`。两者是不同中间件的独立域号，无需相等。
+该入口把航路联调话题固定写好（DDS 域 `1`，接收 `0211`/`0331`/`0212`/`0411`/`0141`，发送 `0052`/`0051`/`0053`/`0054`/`0411`/`0141`），再调用原 `start_ladds_relay.ps1`；`-ListenAddress`、`-Port`、`-LibraryPath` 等非话题参数可照常追加。需要改话题时直接使用原脚本并逐项传参。
+
+`-ProgressSendTopic` 默认即 `0053`，`-ThrustSendTopic` 默认即 `0054`（航控推力）；中继只在启动时注册发布主题，更新本脚本后须重启中继，0053、0054 才能发出。启动行末尾的 `send topics` 应包含 `0054`；未登记时 ROS 端桥启动即报错退出。记录脚本显示的 WSL 虚拟网卡 IPv4。LaDDS 使用 DDS 域 `1`；ROS 仿真、适配器和观察终端使用 ROS 域 `42`。两者是不同中间件的独立域号，无需相等。
 
 ## 3. 启动仿真和航路适配器
 
@@ -54,7 +56,7 @@ export GAZEBO_MASTER_URI=http://127.0.0.1:11347
 bash scripts/start_ladds_route_sim.bash --headless false
 ```
 
-该 wrapper 复用现有普通导航主 launch 和单航段仿真 profile，默认加载 `/home/usv/.local/share/usv_ros_motion_planning/base/install` 后再加载 `/tmp/usv_ladds_multi_waypoint_20260915/install`。它保留 `ocean` 的地图、障碍和艇初始位姿 `(23,-10)`，只在运行时副本中使用 WGS84/ENU 原点 `(30.5453,114.392931)`。
+该 wrapper 复用现有普通导航主 launch 和单航段仿真 profile，默认加载 `/home/usv/.local/share/usv_ros_motion_planning/base/install` 后再加载仓库自己的 `install/`，并以 `localization_odom_topic:=odom_gt` 启动：仿真真值发到 `/otter/odom_gt`，由 `usv_ladds_tx` 编成 0411、`usv_ladds_radar` 结合激光雷达编成 0141，`usv_ladds_rx` 再解出 `/otter/odom` 供决策和航控使用，因此导航需要适配器同时运行。它保留 `ocean` 的地图、障碍和艇初始位姿 `(23,-10)`，只在运行时副本中使用 WGS84/ENU 原点 `(30.5453,114.392931)`。
 
 适配器终端使用同一个 ROS 域，并把地址替换为 Windows 中继实际显示值：
 
@@ -72,7 +74,7 @@ bash scripts/start_ladds_route.bash --relay-host 172.27.128.1
 ```bash
 source /opt/ros/humble/setup.bash
 source /home/usv/.local/share/usv_ros_motion_planning/base/install/setup.bash
-source /tmp/usv_ladds_multi_waypoint_20260915/install/setup.bash
+source /mnt/e/usv_ros_motion_planning-ros2-humble/install/setup.bash
 export ROS_DOMAIN_ID=42
 export ROS_LOCALHOST_ONLY=1
 ros2 topic echo /ladds/task_status

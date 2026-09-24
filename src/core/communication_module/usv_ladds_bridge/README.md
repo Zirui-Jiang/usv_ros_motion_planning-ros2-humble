@@ -9,6 +9,21 @@ taskType=80 到终点进入值守时也回一次 0052，回传 `taskType: 80`、
 [`docs/examples/ladds-0212-single-waypoint.json`](../../../../docs/examples/ladds-0212-single-waypoint.json)。
 航路联调时 Windows 中继需显式加上 `-BerthReceiveTopic '0212'`，只改 ROS YAML 不够。
 
+## 0054 航控推力
+
+航控在唯一推进输出口把归一化左右桨命令经 0924 推力分配器换算为桨角与转速，发布 `/otter/thrusters/vector_cmd`（`usv_navigation_interfaces/ThrusterCommand`）。`route.yaml` 的 `thrust_send_topic: "0054"` 使发布节点订阅它并发到 LaDDS `0054`，外层同样带 `head`，`content` 为暂定格式：
+
+```json
+{"mode": 0, "left_angle": 0.0, "left_rpm": 283.4, "right_angle": 0.0, "right_rpm": 301.2}
+```
+
+- 桨角单位弧度、0 指向船艏；转速单位 rpm，带符号，正值沿桨角方向推。`mode` 固定为 0（固定桨），全回转横移尚未启用。
+- 航控每拍（10 Hz）都发，空闲时就是零推力；命令到达即转发，只保留最新一条，中继回执卡住后不会补发旧命令。
+- 看门狗：超过 `thrust_timeout_sec`（0.5 s）收不到有效航控命令，或航控尚未启动时，每 0.1 s 发一次零推力，直到命令恢复。
+- 执行端须自行实现 0.5 s 收不到 0054 即归零；桥、中继或网络中断时只有这一层能兜底。
+- `start_ladds_relay.ps1` 默认 `-ThrustSendTopic '0054'`，启动行末尾列出已登记的发送主题；中继未登记 0054 时 ROS 端桥启动即报错退出。不发推力时把 `thrust_send_topic` 设为 `""`，或给中继传 `-ThrustSendTopic ''`（两端都关）。
+- 同一 DDS 域中订阅 0054 的实船执行端也会收到仿真算出的推力，仿真联调时注意隔离。
+
 ## 当前推荐：0211 多航点航路
 
 已支持按 `points` 原顺序执行 1–255 个必经点。中间点在实测进入 1.5 m 范围后连续切换，最终点停稳后发送一次 0052。每点 `speed` 是进入该点的航段速度（节），允许为转弯和变速提前减速。
@@ -34,7 +49,7 @@ ROS 图里节点：`/usv_ladds_rx` 接收，`/usv_ladds_tx` 发布，
 
 当前实测链路：**Windows LaDDS 1.0.3 → 本机 TCP → WSL Ubuntu 22.04 / ROS 2 Humble**，双向可用。
 
-用户联调配置：DDS 数据域 **1**、主题字符串 **`0211`**、**`0212`**、**`0331`**、**`0051`**、**`0052`**、**`0053`**、**`0411`** 和 **`0141`**（均保留前导零）、QoS **尽力传输 / best_effort**、IP 留空使用活动接口。报文为可按 UTF-8 解码的 JSON，现场样本含 `head` 与 `content`。桥接原样接收 0211/0212/0331；发出的 `0051`、`0052`、`0053`、`0411`、`0141` 在 LaDDS 上带 `head`（`sendPlatform` 1000、`recvPlatform` 1001、`packageType` 0、递增 `packageSeq`、发出时刻 `time`）和 `content`。`0411` 由发布节点把 `nav_msgs/Odometry` 编成 JSON，由接收节点再解回 odom；`0141` 由障碍物 JSON 转发并解回 `/ladds/targets`。
+用户联调配置：DDS 数据域 **1**、主题字符串 **`0211`**、**`0212`**、**`0331`**、**`0051`**、**`0052`**、**`0053`**、**`0054`**、**`0411`** 和 **`0141`**（均保留前导零）、QoS **尽力传输 / best_effort**、IP 留空使用活动接口。报文为可按 UTF-8 解码的 JSON，现场样本含 `head` 与 `content`。桥接原样接收 0211/0212/0331；发出的 `0051`、`0052`、`0053`、`0054`、`0411`、`0141` 在 LaDDS 上带 `head`（`sendPlatform` 1000、`recvPlatform` 1001、`packageType` 0、递增 `packageSeq`、发出时刻 `time`）和 `content`。`0411` 由发布节点把 `nav_msgs/Odometry` 编成 JSON，由接收节点再解回 odom；`0141` 由障碍物 JSON 转发并解回 `/ladds/targets`。
 
 感知、决策、航控的心跳从 `0051` 出去。`content.code` 分别为 `perception`、`decision`、`control`；`content.state` 为 0（未启动或未正常工作）或 1（已启动且正常工作）。发布节点订阅 `/otter/navigation/heartbeat`，约每秒每个模块一条，状态变化时立即再发。任务完成仍走 `0052`，报文是 `travelId` / `taskFinish`。
 
@@ -127,6 +142,7 @@ ros2 topic echo /ladds/rx
 | --- | --- | --- |
 | `/ladds/tx` | `std_msgs/msg/String` | UTF-8 文本发到默认 LaDDS 发送主题（单腿配置为 `0052`） |
 | `/ladds/progress_tx` | `std_msgs/msg/String` | 航路适配器给出的 0053 裸 JSON，发布节点补 `head` 后发到 `progress_send_topic`（默认 `0053`） |
+| `/otter/thrusters/vector_cmd` | `usv_navigation_interfaces/msg/ThrusterCommand` | 航控桨角/转速命令，发布节点编码并补 `head` 后发到 `thrust_send_topic`（航路配置 `0054`） |
 | `/ladds/rx` | `std_msgs/msg/String` | LaDDS `0211` 收到的有效 UTF-8 文本 |
 | `/ladds/berth_rx` | `std_msgs/msg/String` | LaDDS `0212` 收到的有效 UTF-8 文本 |
 | `/ladds/ownship` | `std_msgs/msg/String` | 发布节点编出的 0411 JSON；接收节点订阅后解 odom |

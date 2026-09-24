@@ -49,6 +49,7 @@ class LaDDSClient:
         ownship_receive_topic: str = "",
         obstacle_receive_topic: str = "",
         progress_send_topic: str = "",
+        thrust_send_topic: str = "",
     ) -> None:
         _require_c_string("library_path", library_path, allow_empty=False)
         _require_integer("domain_id", domain_id, 0, 2**31 - 1)
@@ -64,6 +65,7 @@ class LaDDSClient:
         _require_c_string("obstacle_send_topic", obstacle_send_topic, allow_empty=True)
         _require_c_string("status_send_topic", status_send_topic, allow_empty=True)
         _require_c_string("progress_send_topic", progress_send_topic, allow_empty=True)
+        _require_c_string("thrust_send_topic", thrust_send_topic, allow_empty=True)
         _require_c_string("ownship_receive_topic", ownship_receive_topic, allow_empty=True)
         _require_c_string("obstacle_receive_topic", obstacle_receive_topic, allow_empty=True)
         if stop_receive_topic == receive_topic:
@@ -116,6 +118,8 @@ class LaDDSClient:
             self._send_topics.append(status_send_topic)
         if progress_send_topic and progress_send_topic not in self._send_topics:
             self._send_topics.append(progress_send_topic)
+        if thrust_send_topic and thrust_send_topic not in self._send_topics:
+            self._send_topics.append(thrust_send_topic)
         self._receive_topic = receive_topic.encode("utf-8")
         self._receive_topics = [self._receive_topic]
         if stop_receive_topic:
@@ -147,6 +151,11 @@ class LaDDSClient:
     @property
     def dropped_messages(self) -> int:
         return self._dropped_messages
+
+    @property
+    def send_topics(self) -> tuple[str, ...]:
+        """Publication topics registered with LaDDS_RegPubTopic at start()."""
+        return tuple(self._send_topics)
 
     def receive(self) -> Optional[ReceivedPacket]:
         try:

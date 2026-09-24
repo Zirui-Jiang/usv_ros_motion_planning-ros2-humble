@@ -82,3 +82,14 @@ controller:
     filter_history_length: 50
     command_limit: 0.4
     command_slew_rate: 0.6
+
+  # 0924 推力分配器：与 controller_params_otter.yaml 相同，换算桨角（rad）和转速（rpm）供东湖 0054 发送。
+  thrust_allocator:
+    water_density: 1000.0
+    propeller_diameter: 0.259
+    thrust_coefficient: 0.5
+    # 须覆盖 dynamics.max_force：180 N 对应 536.66 rpm。
+    left_rpm_min: -537.0
+    left_rpm_max: 537.0
+    right_rpm_min: -537.0
+    right_rpm_max: 537.0
