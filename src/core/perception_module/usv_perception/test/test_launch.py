@@ -180,6 +180,30 @@ def test_costmap_cannot_enable_static_layer(monkeypatch, tmp_path):
         _launch_graph(monkeypatch, {"costmap_config": str(path)})
 
 
+# 验证：ladds_obstacles 打开时 0141 静态层排在清单最前、话题随命名空间改写；默认不装载。
+def test_ladds_obstacles_prepends_the_0141_static_layer(monkeypatch):
+    context, actions = _launch_graph(monkeypatch, {"ladds_obstacles": "true", "robot_namespace": "boat_two"})
+    costmap = _parameters(context, _nodes(context, actions)[("usv_perception", "costmap_support_node")])
+    assert list(costmap["plugins"]) == ["ladds_obstacle_layer", "obstacle_layer", "inflation_layer"]
+    assert costmap["ladds_obstacle_layer.plugin"] == "nav2_costmap_2d::StaticLayer"
+    assert costmap["ladds_obstacle_layer.map_topic"] == "/boat_two/ladds/obstacle_grid"
+    assert costmap["ladds_obstacle_layer.map_subscribe_transient_local"] is True
+    default_context, default_actions = _launch_graph(monkeypatch)
+    default = _parameters(
+        default_context, _nodes(default_context, default_actions)[("usv_perception", "costmap_support_node")])
+    assert list(default["plugins"]) == ["obstacle_layer", "inflation_layer"]
+
+
+# 验证：打开 ladds_obstacles 但配置缺少 0141 静态层段时启动前报错。
+def test_ladds_obstacles_requires_the_static_layer_section(monkeypatch, tmp_path):
+    values = yaml.safe_load((PACKAGE / "config/robots/otter/global_costmap_params_otter.yaml").read_text())
+    del values["costmap"]["ladds_obstacle_layer"]
+    path = tmp_path / "no 0141 layer.yaml"
+    path.write_text(yaml.safe_dump(values))
+    with pytest.raises(ValueError, match="ladds_obstacle_layer"):
+        _launch_graph(monkeypatch, {"costmap_config": str(path), "ladds_obstacles": "true"})
+
+
 # 验证：重复 YAML 键和 ROS 参数导出快照被拒绝作为工程配置。
 @pytest.mark.parametrize("argument,text", [
     ("mapping_config", "width: 8\nwidth: 16\n"),

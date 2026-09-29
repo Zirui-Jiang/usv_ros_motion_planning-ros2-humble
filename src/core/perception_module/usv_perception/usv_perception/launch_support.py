@@ -66,9 +66,21 @@ def _launch_setup(context):
                    use_sim_time=use_sim_time)
     costmap["obstacle_layer"]["scan"].update(
         topic="/" + namespace + "/sensors/lidars/lidar/scan", sensor_frame=namespace + "/lidar_link")
+    logs = []
+    # LaDDS 联调时把 0141 障碍栅格作为最前面的静态层；它只订接收节点的栅格，不是 /map 累积地图。
+    if _value(context, "ladds_obstacles").lower() == "true":
+        layer = costmap.get("ladds_obstacle_layer")
+        if not isinstance(layer, dict) or not str(layer.get("plugin", "")).endswith("StaticLayer"):
+            raise ValueError("ladds_obstacles requires a StaticLayer section named ladds_obstacle_layer")
+        grid_topic = "/" + namespace + "/ladds/obstacle_grid"
+        layer.update(enabled=True, map_topic=grid_topic)
+        # A static layer overwrites the cells it covers, so it must precede the LiDAR layer.
+        costmap["plugins"] = ["ladds_obstacle_layer", *plugins]
+        logs.append(LogInfo(msg=f"[usv_perception] 0141 obstacle layer: {grid_topic}"))
     return [
         LogInfo(msg=f"[usv_perception] mapping_config: {mapping_path}"),
         LogInfo(msg=f"[usv_perception] costmap_config: {costmap_path}"),
+        *logs,
         Node(package="usv_perception", executable="perception_mapping_node", name="mapping",
              prefix=[sys.executable], namespace=namespace, output="screen",
              remappings=[("scan", "sensors/lidars/lidar/scan")],
@@ -96,6 +108,8 @@ def launch_description():
         DeclareLaunchArgument("use_sim_time", default_value="true", choices=["true", "false"]),
         DeclareLaunchArgument("robot_x", default_value="23.0"),
         DeclareLaunchArgument("robot_y", default_value="-10.0"),
+        DeclareLaunchArgument("ladds_obstacles", default_value="false", choices=["true", "false"],
+                              description="Prepend the LaDDS 0141 obstacle grid as a static costmap layer"),
         DeclareLaunchArgument("mapping_config", default_value=os.path.join(share, "config", "costmap", "mapping.yaml"),
                               description="Project mapping YAML path (not a ros2 param dump)"),
         DeclareLaunchArgument("costmap_config", default_value=os.path.join(

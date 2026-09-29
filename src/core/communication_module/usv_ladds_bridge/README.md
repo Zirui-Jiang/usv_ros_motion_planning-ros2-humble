@@ -40,16 +40,17 @@ ROS 图里节点：`/usv_ladds_rx` 接收，`/usv_ladds_tx` 发布，
 避免被同一进程的 `__node` 改名。
 
 障碍物/目标运动 `0141` 的接入见 [LaDDS 0141 目标运动联调](../../../../docs/ladds-0141-quickstart.md)。
-`usv_ladds_radar` 随 `bridge.launch.py` / `route.launch.py` 一起启动：订阅
-`/otter/sensors/lidars/lidar/scan` 和本船里程计，聚类后写 `/ladds/obstacle_in`；
-发布节点校验后发到主题 `0141`，接收节点再订 0141 解回 `/ladds/targets`。
-规划仍使用 `costmap_raw`，0141 只上报雷达聚类目标。
+`route.yaml` 按"只收不发"配置 0141：接收节点订 0141，剥外壳后把业务对象转到 `/ladds/targets`，
+并用解 0411 的同一个原点把目标画成障碍栅格 `/otter/ladds/obstacle_grid`，由感知 costmap 的
+`ladds_obstacle_layer` 叠加（LaDDS 启动入口会打开感知的 `ladds_obstacles`）。
+`usv_ladds_radar` 仍随 `bridge.launch.py` / `route.launch.py` 启动，把仿真激光聚类成 0141 目标；
+`route.yaml` 把它的输出改到 `/ladds/lidar_targets`，不再发到 LaDDS，`bridge.yaml` 仍写 `/ladds/obstacle_in` 走上行。
 
 单段航渡已增加独立入口：见 [0211 单段航渡联调](README.single-leg.md)，包含给定经纬度原点、4节速度、任务执行及0052完成反馈。
 
 当前实测链路：**Windows LaDDS 1.0.3 → 本机 TCP → WSL Ubuntu 22.04 / ROS 2 Humble**，双向可用。
 
-用户联调配置：DDS 数据域 **1**、主题字符串 **`0211`**、**`0212`**、**`0331`**、**`0051`**、**`0052`**、**`0053`**、**`0054`**、**`0411`** 和 **`0141`**（均保留前导零）、QoS **尽力传输 / best_effort**、IP 留空使用活动接口。报文为可按 UTF-8 解码的 JSON，现场样本含 `head` 与 `content`。桥接原样接收 0211/0212/0331；发出的 `0051`、`0052`、`0053`、`0054`、`0411`、`0141` 在 LaDDS 上带 `head`（`sendPlatform` 1000、`recvPlatform` 1001、`packageType` 0、递增 `packageSeq`、发出时刻 `time`）和 `content`。`0411` 由发布节点把 `nav_msgs/Odometry` 编成 JSON，由接收节点再解回 odom；`0141` 由障碍物 JSON 转发并解回 `/ladds/targets`。
+用户联调配置：DDS 数据域 **1**、主题字符串 **`0211`**、**`0212`**、**`0331`**、**`0051`**、**`0052`**、**`0053`**、**`0054`**、**`0411`** 和 **`0141`**（均保留前导零）、QoS **尽力传输 / best_effort**、IP 留空使用活动接口。报文为可按 UTF-8 解码的 JSON，现场样本含 `head` 与 `content`。桥接原样接收 0211/0212/0331；发出的 `0051`、`0052`、`0053`、`0054`、`0411`、`0141` 在 LaDDS 上带 `head`（`sendPlatform` 1000、`recvPlatform` 1001、`packageType` 0、递增 `packageSeq`、发出时刻 `time`）和 `content`。`0411` 由发布节点把 `nav_msgs/Odometry` 编成 JSON，由接收节点再解回 odom；`0141` 收到后剥外壳解到 `/ladds/targets`，并画成障碍栅格供 costmap 使用。
 
 感知、决策、航控的心跳从 `0051` 出去。`content.code` 分别为 `perception`、`decision`、`control`；`content.state` 为 0（未启动或未正常工作）或 1（已启动且正常工作）。发布节点订阅 `/otter/navigation/heartbeat`，约每秒每个模块一条，状态变化时立即再发。任务完成仍走 `0052`，报文是 `travelId` / `taskFinish`。
 
@@ -143,14 +144,20 @@ ros2 topic echo /ladds/rx
 | `/ladds/tx` | `std_msgs/msg/String` | UTF-8 文本发到默认 LaDDS 发送主题（单腿配置为 `0052`） |
 | `/ladds/progress_tx` | `std_msgs/msg/String` | 航路适配器给出的 0053 裸 JSON，发布节点补 `head` 后发到 `progress_send_topic`（默认 `0053`） |
 | `/otter/thrusters/vector_cmd` | `usv_navigation_interfaces/msg/ThrusterCommand` | 航控桨角/转速命令，发布节点编码并补 `head` 后发到 `thrust_send_topic`（航路配置 `0054`） |
+| `/otter/navigation/heartbeat` | `usv_navigation_interfaces/msg/ModuleHeartbeat` | 感知、决策、航控的心跳；发布节点按模块编成 `0051` 并补 `head` 后发出，约每秒每模块一条，状态变化时立即补发 |
 | `/ladds/rx` | `std_msgs/msg/String` | LaDDS `0211` 收到的有效 UTF-8 文本 |
 | `/ladds/berth_rx` | `std_msgs/msg/String` | LaDDS `0212` 收到的有效 UTF-8 文本 |
+| `/ladds/stop_rx` | `std_msgs/msg/String` | LaDDS `0331` 收到的有效 UTF-8 文本 |
+| `/ladds/task_status` | `std_msgs/msg/String` | 航路适配器的执行状态 JSON（状态、原因、航点进度、警告等），只在 ROS 内观察，不发到 LaDDS |
+| `/otter/odom_gt` | `nav_msgs/msg/Odometry` | 仿真真值里程计；发布节点编成 `0411` 发出，同时回灌到 `/ladds/ownship` |
 | `/ladds/ownship` | `std_msgs/msg/String` | 发布节点编出的 0411 JSON；接收节点订阅后解 odom |
 | `/otter/odom` | `nav_msgs/msg/Odometry` | 接收节点把 0411 解回的内部里程计 |
-| `/ladds/obstacle` | `std_msgs/msg/String` | 发布节点转发的 0141 JSON；接收节点再订 |
-| `/ladds/targets` | `std_msgs/msg/String` | 接收节点解回的 0141 目标列表 |
+| `/ladds/obstacle` | `std_msgs/msg/String` | 发布节点转发的 0141 JSON；接收节点再订（`route.yaml` 已关闭这条回灌） |
+| `/ladds/targets` | `std_msgs/msg/String` | 接收节点解回的 0141 业务对象（已去掉 `head`/`content` 外壳） |
+| `/otter/ladds/obstacle_grid` | `nav_msgs/msg/OccupancyGrid` | 接收节点按 0411 同一原点把 0141 目标画成的障碍栅格，transient_local，每包整张替换；costmap `ladds_obstacle_layer` 订阅 |
 | `/otter/sensors/lidars/lidar/scan` | `sensor_msgs/msg/LaserScan` | 仿真激光雷达，0141 雷达适配器输入 |
-| `/ladds/obstacle_in` | `std_msgs/msg/String` | 雷达适配器输出、发布节点发送到 0141 的 JSON |
+| `/ladds/obstacle_in` | `std_msgs/msg/String` | 发布节点发送到 0141 的 JSON；`bridge.yaml` 下由雷达适配器写入 |
+| `/ladds/lidar_targets` | `std_msgs/msg/String` | `route.yaml` 下雷达适配器的输出，不转发到 LaDDS |
 | `/ladds/tx_bytes` | `std_msgs/msg/UInt8MultiArray` | 原始字节发送 |
 | `/ladds/rx_bytes` | `std_msgs/msg/UInt8MultiArray` | 每包原始字节，包括 NUL 和非 UTF-8 |
 | `/ladds/rx_info` | `std_msgs/msg/String` | JSON 格式的域、主题、src/dst 和长度 |

@@ -57,6 +57,18 @@ costmap:
     map_subscribe_transient_local: false
     subscribe_to_updates: false
 
+  # LaDDS 0141 障碍层：usv_ladds_rx 把收到的目标按 0411 同一原点画成 OccupancyGrid，每包整张替换。
+  # 不在 plugins 清单里；只有感知 launch 参数 ladds_obstacles:=true 时才插到清单最前面。
+  # 静态层按格覆盖下层结果，必须排在 obstacle_layer 之前，否则会用空闲格盖掉激光障碍。
+  # map_topic 由 launch 按命名空间改写为 /<命名空间>/ladds/obstacle_grid。
+  ladds_obstacle_layer:
+    plugin: "nav2_costmap_2d::StaticLayer"
+    enabled: true
+    map_topic: /otter/ladds/obstacle_grid
+    # The bridge publishes transient-local, so a restarted costmap gets the latest grid.
+    map_subscribe_transient_local: true
+    subscribe_to_updates: false
+
   # sensor management parameters
   obstacle_layer:
     plugin: "nav2_costmap_2d::ObstacleLayer"

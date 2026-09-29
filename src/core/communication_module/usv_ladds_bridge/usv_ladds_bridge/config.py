@@ -54,6 +54,18 @@ class BridgeConfig:
     thrust_input_topic: str = "/otter/thrusters/vector_cmd"
     # 超过该秒数未收到航控推力命令时，看门狗改发零推力。
     thrust_timeout_sec: float = 0.5
+    # 0141 接收侧障碍栅格；话题为空时只转发 /ladds/targets，不生成栅格。
+    obstacle_grid_topic: str = ""
+    obstacle_grid_frame: str = "otter/map"
+    obstacle_grid_resolution: float = 1.0
+    # 栅格单边上限（米），以最新 0411 船位为中心，与滚动代价地图同量级；窗口外的目标不画。
+    obstacle_grid_max_size: float = 1500.0
+    # 目标没有有效 threatingRadius 时画的圆半径（米）。
+    obstacle_default_radius: float = 5.0
+    # threatingRadius 乘以该系数得到米；对端若按 0.1 米整数发送，改为 0.1。
+    obstacle_radius_scale: float = 1.0
+    # 超过该秒数没有新的 0141 就清空栅格；0 表示一直保留到下一包。
+    obstacle_timeout_sec: float = 0.0
 
     @classmethod
     def from_mapping(
@@ -125,6 +137,13 @@ class BridgeConfig:
                 values.get("thrust_input_topic", "/otter/thrusters/vector_cmd")
             ),
             thrust_timeout_sec=float(values.get("thrust_timeout_sec", 0.5)),
+            obstacle_grid_topic=str(values.get("obstacle_grid_topic", "")),
+            obstacle_grid_frame=str(values.get("obstacle_grid_frame", "otter/map")),
+            obstacle_grid_resolution=float(values.get("obstacle_grid_resolution", 1.0)),
+            obstacle_grid_max_size=float(values.get("obstacle_grid_max_size", 1500.0)),
+            obstacle_default_radius=float(values.get("obstacle_default_radius", 5.0)),
+            obstacle_radius_scale=float(values.get("obstacle_radius_scale", 1.0)),
+            obstacle_timeout_sec=float(values.get("obstacle_timeout_sec", 0.0)),
         )
         config._validate()
         return config
@@ -239,6 +258,35 @@ class BridgeConfig:
                 "obstacle_send_topic and status_send_topic"
             )
         self._validate_thrust()
+        self._validate_obstacle_grid()
+
+    # 障碍栅格参数：分辨率、半径和系数必须为正的有限数，超时为 0 表示不清空。
+    def _validate_obstacle_grid(self) -> None:
+        _reject_numeric_ros_token("obstacle_grid_topic", self.obstacle_grid_topic)
+        if self.obstacle_grid_topic and not self.obstacle_grid_topic.strip():
+            raise ValueError("obstacle_grid_topic must be empty or a non-blank topic")
+        if self.obstacle_grid_topic and not self.obstacle_grid_frame.strip():
+            raise ValueError("obstacle_grid_frame must not be empty when obstacle_grid_topic is set")
+        for name in (
+            "obstacle_grid_resolution",
+            "obstacle_default_radius",
+            "obstacle_radius_scale",
+        ):
+            value = getattr(self, name)
+            if not math.isfinite(value) or value <= 0.0:
+                raise ValueError(f"{name} must be finite and greater than zero")
+        if (
+            not math.isfinite(self.obstacle_grid_max_size)
+            or self.obstacle_grid_max_size < self.obstacle_grid_resolution
+        ):
+            raise ValueError(
+                "obstacle_grid_max_size must be finite and at least obstacle_grid_resolution"
+            )
+        # Bound one grid message to about 16 M cells.
+        if self.obstacle_grid_max_size / self.obstacle_grid_resolution > 4096:
+            raise ValueError("obstacle_grid_max_size / obstacle_grid_resolution must not exceed 4096")
+        if not math.isfinite(self.obstacle_timeout_sec) or self.obstacle_timeout_sec < 0.0:
+            raise ValueError("obstacle_timeout_sec must be finite and non-negative")
 
     # 推力主题只承载桨角/转速：不能与其它发送主题共用，也不能是任何接收主题，否则会收到自己发的推力。
     def _validate_thrust(self) -> None:
@@ -303,6 +351,12 @@ def validate_obstacle_payload(text: str) -> Dict[str, Any]:
         root = json.loads(text)
     except (json.JSONDecodeError, TypeError, ValueError) as exc:
         raise ValueError(f"invalid obstacle JSON: {exc}") from exc
+    return validate_obstacle_object(root)
+
+
+# 已解码的 0141 业务对象只查 count 与 targets 的一致性，目标字段原样保留。
+def validate_obstacle_object(root: Any) -> Dict[str, Any]:
+    """Validate ``count`` and ``targets`` of a decoded 0141 business object."""
     if type(root) is not dict:
         raise ValueError("obstacle JSON root must be an object")
 

@@ -1,13 +1,16 @@
-"""LaDDS 接收节点 usv_ladds_rx：订 0211/0331/0212 任务，订 0411 解成内部 odom。"""
+"""LaDDS 接收节点 usv_ladds_rx：订 0211/0331/0212 任务，0411 解成内部 odom，0141 画成障碍栅格。"""
 
 from __future__ import annotations
 
 from dataclasses import asdict
-from typing import Any, Callable, Dict, Optional
+import json
+import time
+from typing import Any, Callable, Dict, Optional, Sequence
 
+from rclpy.clock import Clock, ClockType
 from rclpy.node import Node
-from rclpy.qos import QoSProfile, ReliabilityPolicy
-from nav_msgs.msg import Odometry
+from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
+from nav_msgs.msg import OccupancyGrid, Odometry
 from std_msgs.msg import String, UInt8MultiArray
 
 from .config import (
@@ -17,9 +20,9 @@ from .config import (
     drain_received,
     packet_info_json,
     receive_channel,
-    validate_obstacle_payload,
 )
 from .ladds_client import LaDDSClient
+from .obstacle_grid import ObstacleDisc, parse_obstacle_message, rasterize, target_discs
 from .ownship import odometry_from_ownship_payload, parse_ownship_payload
 from common.geodesy import GeoReference
 
@@ -46,6 +49,11 @@ class LaDDSInboundNode(Node):
         self._last_dropped_warning = 0
         self._ownship_decode_failures = 0
         self._obstacle_decode_failures = 0
+        self._obstacle_target_warnings = 0
+        # 最新 0411 船位（地图坐标），作为障碍栅格窗口的中心。
+        self._ownship_xy: Optional[tuple[float, float]] = None
+        self._last_obstacle_at: Optional[float] = None
+        self._grid_publisher = None
 
         try:
             self.bridge_config = self._read_config()
@@ -109,6 +117,35 @@ class LaDDSInboundNode(Node):
             self._targets_publisher = self.create_publisher(
                 String, config.obstacle_output_topic, config.queue_depth
             )
+        if config.obstacle_grid_topic:
+            # 与 costmap 静态层的 map_subscribe_transient_local 对应，后启动的订阅者也能拿到最新一张。
+            grid_qos = QoSProfile(
+                depth=1,
+                reliability=ReliabilityPolicy.RELIABLE,
+                durability=DurabilityPolicy.TRANSIENT_LOCAL,
+            )
+            self._grid_publisher = self.create_publisher(
+                OccupancyGrid, config.obstacle_grid_topic, grid_qos
+            )
+            # Give the static layer a valid empty map before the first 0141.
+            self._publish_obstacle_grid(())
+            if config.obstacle_timeout_sec > 0.0:
+                self.create_timer(
+                    min(0.5, config.obstacle_timeout_sec / 2.0),
+                    self._expire_obstacles,
+                    clock=Clock(clock_type=ClockType.STEADY_TIME),
+                )
+            self.get_logger().info(
+                f"0141 obstacle grid: {config.obstacle_grid_topic} in "
+                f"{config.obstacle_grid_frame}, resolution {config.obstacle_grid_resolution:g} m, "
+                f"default radius {config.obstacle_default_radius:g} m, "
+                f"threatingRadius scale {config.obstacle_radius_scale:g}, "
+                + (
+                    f"cleared after {config.obstacle_timeout_sec:g} s without 0141"
+                    if config.obstacle_timeout_sec > 0.0
+                    else "kept until the next 0141"
+                )
+            )
         if config.ownship_json_topic:
             self.create_subscription(
                 String,
@@ -166,6 +203,7 @@ class LaDDSInboundNode(Node):
                     f"drop invalid 0411 for odometry: {exc}"
                 )
             return
+        self._ownship_xy = (state.x, state.y)
         message = Odometry()
         cached = self.header_cache.load() if use_cached_header else None
         if cached is not None:
@@ -185,20 +223,78 @@ class LaDDSInboundNode(Node):
         message.twist.twist.angular.z = state.angular_z
         publisher.publish(message)
 
+    # 0141 剥外壳后转发业务对象，并按解 0411 的同一个原点画成障碍栅格；坏包不改动已发布的栅格。
     def _publish_targets(self, text: str) -> None:
-        publisher = self._targets_publisher
-        if publisher is None:
+        if self._targets_publisher is None and self._grid_publisher is None:
             return
         try:
-            validate_obstacle_payload(text)
+            content, wrapped = parse_obstacle_message(text)
         except (AttributeError, TypeError, ValueError, UnicodeError) as exc:
             self._obstacle_decode_failures += 1
             if _should_log_count(self._obstacle_decode_failures):
                 self.get_logger().warning(f"drop invalid 0141 JSON: {exc}")
             return
-        message = String()
-        message.data = text
-        publisher.publish(message)
+        if self._targets_publisher is not None:
+            message = String()
+            # Bare input is forwarded unchanged; wrapped input exposes only content.
+            message.data = (
+                json.dumps(content, ensure_ascii=False, separators=(",", ":"))
+                if wrapped
+                else text
+            )
+            self._targets_publisher.publish(message)
+        if self._grid_publisher is None:
+            return
+        config = self.bridge_config
+        discs, skipped = target_discs(
+            content,
+            self._origin,
+            default_radius=config.obstacle_default_radius,
+            radius_scale=config.obstacle_radius_scale,
+        )
+        dropped = self._publish_obstacle_grid(discs)
+        self._last_obstacle_at = time.monotonic()
+        if skipped or dropped:
+            self._obstacle_target_warnings += 1
+            if _should_log_count(self._obstacle_target_warnings):
+                self.get_logger().warning(
+                    f"0141 targets not drawn: {skipped} without valid latitude/longitude, "
+                    f"{dropped} outside the {config.obstacle_grid_max_size:g} m grid window"
+                )
+
+    # 生成一张完整的障碍栅格并替换上一张；返回因超出窗口没有画出的目标数。
+    def _publish_obstacle_grid(self, discs: Sequence[ObstacleDisc]) -> int:
+        config = self.bridge_config
+        grid = rasterize(
+            discs,
+            resolution=config.obstacle_grid_resolution,
+            max_size=config.obstacle_grid_max_size,
+            anchor=self._ownship_xy,
+        )
+        message = OccupancyGrid()
+        stamp = self.get_clock().now().to_msg()
+        message.header.stamp = stamp
+        message.header.frame_id = config.obstacle_grid_frame
+        message.info.map_load_time = stamp
+        message.info.resolution = float(grid.resolution)
+        message.info.width = grid.width
+        message.info.height = grid.height
+        message.info.origin.position.x = float(grid.origin_x)
+        message.info.origin.position.y = float(grid.origin_y)
+        message.info.origin.orientation.w = 1.0
+        message.data = grid.data
+        self._grid_publisher.publish(message)
+        return grid.dropped
+
+    # 超时仍没有新的 0141 时发一张空栅格；只清一次，等下一包到来再重新计时。
+    def _expire_obstacles(self) -> None:
+        last = self._last_obstacle_at
+        timeout = self.bridge_config.obstacle_timeout_sec
+        if last is None or time.monotonic() - last <= timeout:
+            return
+        self._last_obstacle_at = None
+        self._publish_obstacle_grid(())
+        self.get_logger().warning(f"no 0141 for {timeout:g} s; obstacle grid cleared")
 
     def _poll_received(self) -> None:
         client = self.client

@@ -129,6 +129,14 @@ def test_tcp_backend_does_not_require_native_library():
         ({"progress_send_topic": "0051"}, "progress_send_topic"),
         ({"heartbeat_input_topic": ""}, "heartbeat_input_topic"),
         ({"heartbeat_input_topic": "/0052/heartbeat"}, "must not start with a number"),
+        ({"obstacle_grid_topic": "/ladds/0141/grid"}, "must not start with a number"),
+        ({"obstacle_grid_topic": "/grid", "obstacle_grid_frame": " "}, "obstacle_grid_frame"),
+        ({"obstacle_grid_resolution": 0.0}, "obstacle_grid_resolution"),
+        ({"obstacle_default_radius": -1.0}, "obstacle_default_radius"),
+        ({"obstacle_radius_scale": float("nan")}, "obstacle_radius_scale"),
+        ({"obstacle_grid_max_size": 0.5}, "obstacle_grid_max_size"),
+        ({"obstacle_grid_max_size": 10000.0, "obstacle_grid_resolution": 1.0}, "4096"),
+        ({"obstacle_timeout_sec": -0.1}, "obstacle_timeout_sec"),
     ],
 )
 def test_invalid_transport_limits_are_rejected(override, message):
@@ -278,8 +286,34 @@ def test_bridge_yaml_keeps_ladds_topic_ids_as_strings():
             assert route_params["progress_topic"] == "/ladds/progress_tx"
         assert "usv_ladds_radar" in loaded
         radar = loaded["usv_ladds_radar"]["ros__parameters"]
-        assert radar["output_topic"] == "/ladds/obstacle_in"
+        # route.yaml 只收 0141：仿真激光目标改到没人转发的话题，其余配置仍走上行。
+        expected_radar_output = (
+            "/ladds/lidar_targets" if filename == "route.yaml" else "/ladds/obstacle_in"
+        )
+        assert radar["output_topic"] == expected_radar_output
         assert radar["scan_topic"].endswith("/lidar/scan")
+
+
+# 验证：航路配置关闭 0141 回灌并打开障碍栅格，浮点参数写成浮点，ROS 声明时类型才一致。
+def test_route_profile_receives_0141_into_obstacle_grid():
+    config_dir = Path(__file__).resolve().parents[1] / "config"
+    route = yaml.safe_load((config_dir / "route.yaml").read_text(encoding="utf-8"))
+    params = route["usv_ladds_rx"]["ros__parameters"]
+    assert params["obstacle_json_topic"] == ""
+    assert params["obstacle_grid_topic"] == "/otter/ladds/obstacle_grid"
+    for key in (
+        "obstacle_grid_resolution",
+        "obstacle_grid_max_size",
+        "obstacle_default_radius",
+        "obstacle_radius_scale",
+        "obstacle_timeout_sec",
+    ):
+        assert type(params[key]) is float, f"route.yaml {key}={params[key]!r}"
+    config = BridgeConfig.from_mapping(params, environ={})
+    assert config.obstacle_grid_frame == route["usv_ladds_route"]["ros__parameters"]["map_frame"]
+    # The grid must use the same origin that decodes 0411 into odometry.
+    assert (config.origin_latitude, config.origin_longitude) == (
+        params["origin_latitude"], params["origin_longitude"])
 
 
 @pytest.mark.parametrize(

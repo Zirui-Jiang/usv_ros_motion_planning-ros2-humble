@@ -11,6 +11,8 @@ base_install="${LADDS_BASE_INSTALL:-$HOME/.local/share/usv_ros_motion_planning/b
 profile_install="${LADDS_SINGLE_LEG_INSTALL:-$(cd -- "$script_dir/.." && pwd -P)/install}"
 world_argument="${LADDS_SINGLE_LEG_WORLD:-ocean}"
 headless="${LADDS_SINGLE_LEG_HEADLESS:-true}"
+# 默认主入口同时启动三个业务模块；分容器联调时由包装脚本改为只启动仿真支撑。
+sim_launch="${LADDS_SIM_LAUNCH:-main.launch.py}"
 launch_arguments=()
 # Gazebo's setup.sh assigns its default master URI. Capture the caller's value
 # before sourcing it, or select this profile's isolated port when none exists.
@@ -35,6 +37,7 @@ Environment defaults, used only when the caller has not set them:
   ROS_DOMAIN_ID=42
   ROS_LOCALHOST_ONLY=1
   GAZEBO_MASTER_URI=http://127.0.0.1:11347
+  LADDS_SIM_LAUNCH=main.launch.py (simulation_support.launch.py: Gazebo only)
 EOF
 }
 
@@ -53,6 +56,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 [[ "$headless" == true || "$headless" == false ]] || fail '--headless must be true or false'
+[[ "$sim_launch" == main.launch.py || "$sim_launch" == simulation_support.launch.py ]] \
+    || fail 'LADDS_SIM_LAUNCH must be main.launch.py or simulation_support.launch.py'
 [[ -r /opt/ros/humble/setup.bash ]] || fail 'ROS Humble setup is unavailable'
 [[ -r "$base_install/setup.bash" ]] || fail "base install has no setup.bash: $base_install"
 [[ -r "$profile_install/setup.bash" ]] || fail "workspace install has no setup.bash: $profile_install"
@@ -124,16 +129,20 @@ printf '  base install: %s\n  overlay: %s\n  source world: %s\n' \
     "$base_install" "$profile_install" "$source_world"
 printf '  runtime world: %s\n  ROS domain: %s\n  Gazebo master: %s\n' \
     "$runtime_world" "$ROS_DOMAIN_ID" "$GAZEBO_MASTER_URI"
+printf '  launch: sim_env %s\n' "$sim_launch"
 printf '  speed profile: waypoint speed comes from the 0211 message; dynamics.velocity_max=10.29 m/s (20 kn)\n'
 printf '  localization: /otter/odom_gt -> usv_ladds_tx 0411 -> usv_ladds_rx /otter/odom (navigation needs the adapter running)\n'
+printf '  0141 obstacles: usv_ladds_rx /otter/ladds/obstacle_grid -> costmap ladds_obstacle_layer\n'
 
 # Ground truth goes to odom_gt so usv_ladds_tx/radar can encode 0411/0141 and
 # usv_ladds_rx is the only /otter/odom publisher; a later launch argument wins.
-ros2 launch sim_env main.launch.py \
+# ladds_obstacles only matters where main.launch.py includes perception.
+ros2 launch sim_env "$sim_launch" \
     "world:=$world_for_launch" "headless:=$headless" \
     "dynamics_config:=$profile_dir/ladds_single_leg_dynamics.yaml" \
     "controller_config:=$controller_config" \
     "trajectory_config:=$trajectory_config" \
     "planner_config:=$planner_config" \
     "localization_odom_topic:=odom_gt" \
+    "ladds_obstacles:=true" \
     "${launch_arguments[@]}"

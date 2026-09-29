@@ -24,7 +24,19 @@ usv_ladds_rx:
     ownship_output_topic: "/otter/odom"
     obstacle_output_topic: "/ladds/targets"
     ownship_json_topic: "/ladds/ownship"
-    obstacle_json_topic: "/ladds/obstacle"
+    # 0141 只收不发：关掉发布节点到接收节点的 0141 回灌，/ladds/targets 只剩 DDS 收到的目标。
+    # 需要做上行自检时改回 "/ladds/obstacle"，并把 usv_ladds_radar 的 output_topic 改回 /ladds/obstacle_in。
+    obstacle_json_topic: ""
+    # 收到的 0141 按与 0411 相同的原点换成地图坐标，画成障碍栅格供 costmap 静态层叠加。
+    obstacle_grid_topic: "/otter/ladds/obstacle_grid"
+    obstacle_grid_frame: "otter/map"
+    obstacle_grid_resolution: 1.0
+    obstacle_grid_max_size: 1500.0
+    # threatingRadius 缺失或无效时的圆半径（米）；对端按 0.1 米发送时把系数改为 0.1。
+    obstacle_default_radius: 5.0
+    obstacle_radius_scale: 1.0
+    # 0 表示保留到下一包 0141（便于联调工具手发一包）；实船连续发送时可设为若干秒后清空。
+    obstacle_timeout_sec: 0.0
     ownship_frame_id: "otter/odom"
     ownship_child_frame_id: "otter/base_link"
     origin_latitude: 30.5472
@@ -34,7 +46,8 @@ usv_ladds_radar:
   ros__parameters:
     scan_topic: /otter/sensors/lidars/lidar/scan
     odom_topic: /otter/odom_gt
-    output_topic: /ladds/obstacle_in
+    # 仿真激光目标不再发到 0141（发布节点只转发 /ladds/obstacle_in），避免与对端雷达的 0141 混在一起。
+    output_topic: /ladds/lidar_targets
     origin_latitude: 30.5472
     origin_longitude: 114.3891
     origin_altitude: 0.0
