@@ -50,7 +50,7 @@ def test_parse_berth_converts_one_point_and_sets_0212_completion_code():
     assert make_completion(route) == {"travelId": 53, "taskType": 3, "taskFinish": 3}
 
 
-def test_parse_berth_uses_out_berth_lat_lon_as_one_waypoint():
+def _out_berth_message(task_type):
     content = {
         "areas": None,
         "areasCount": None,
@@ -64,21 +64,34 @@ def test_parse_berth_uses_out_berth_lat_lon_as_one_waypoint():
         "berthWidth": None,
         "outBerthLat": 30.5472,
         "outBerthLon": 114.3891,
-        "taskType": 1,
+        "taskType": task_type,
         "travelId": 8,
     }
-    route = parse_berth(json.dumps({"content": content, "head": {"sendPlatform": 1000}}), ORIGIN)
+    return json.dumps({"content": content, "head": {"sendPlatform": 1000}})
+
+
+# 协议原文 1 离泊、2 靠泊；联调约定 3 离泊、4 靠泊。
+@pytest.mark.parametrize("task_type, task_finish", [(1, 3), (2, 4), (3, 3), (4, 4)])
+def test_parse_berth_uses_out_berth_lat_lon_as_one_waypoint(task_type, task_finish):
+    route = parse_berth(_out_berth_message(task_type), ORIGIN)
     expected_x, expected_y, _ = ORIGIN.to_local(30.5472, 114.3891)
 
     assert len(route.points) == 1
     assert route.travel_id == 8
-    assert route.task_type == 1
-    assert route.task_finish == 3
+    assert route.task_type == task_type
+    assert route.task_finish == task_finish
     assert route.speed_knots == 1.0
     assert route.x == pytest.approx(expected_x)
     assert route.y == pytest.approx(expected_y)
     assert route.warnings == ()
-    assert make_completion(route) == {"travelId": 8, "taskType": 1, "taskFinish": 3}
+    assert make_completion(route) == {
+        "travelId": 8, "taskType": task_type, "taskFinish": task_finish}
+
+
+@pytest.mark.parametrize("task_type", [0, 5, 16, 80, True, 2.0])
+def test_parse_berth_out_berth_rejects_other_task_types(task_type):
+    with pytest.raises(ValueError, match="taskType"):
+        parse_berth(_out_berth_message(task_type), ORIGIN)
 
 
 def test_parse_berth_rejects_multi_point_packet_without_using_first_point():

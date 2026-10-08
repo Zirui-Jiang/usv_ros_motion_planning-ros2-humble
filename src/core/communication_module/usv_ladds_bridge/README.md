@@ -4,7 +4,8 @@
 [停船与终点值守](README.stop-guard.md)。普通 taskType=16 仍按原航路完成流程回 0052；
 taskType=80 到终点进入值守时也回一次 0052，回传 `taskType: 80`、`taskFinish: 2`，表示航路终点到达，不表示微控退出。
 值守保持活动，周期状态不重复反馈；0331 主动刹停仍不回 0052。
-`0212` 靠离泊本阶段按 **单点航路** 执行，到点停稳后回一次 `0052` 并带回任务类型：离泊 `taskType: 3`、`taskFinish: 3`，靠泊 `taskType: 4`、`taskFinish: 4`；
+`0212` 靠离泊本阶段按 **单点航路** 执行，到点停稳后回一次 `0052` 并原样带回任务类型：离泊 `taskFinish: 3`，靠泊 `taskFinish: 4`；
+协议原文格式（`outBerthLat`/`outBerthLon`/`berthSpeed`）用 `taskType` `1` 离泊、`2` 靠泊，也兼容 `3`/`4`；旧 `points` 单点格式只收 `3` 离泊、`4` 靠泊；
 不做靠泊导轨、侧推或锁船。示例报文见
 [`docs/examples/ladds-0212-single-waypoint.json`](../../../../docs/examples/ladds-0212-single-waypoint.json)。
 航路联调时 Windows 中继需显式加上 `-BerthReceiveTopic '0212'`，只改 ROS YAML 不够。

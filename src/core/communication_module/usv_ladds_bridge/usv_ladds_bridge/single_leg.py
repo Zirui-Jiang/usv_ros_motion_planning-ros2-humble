@@ -147,7 +147,8 @@ def parse_single_leg(text: str, origin: GeoReference) -> SingleLeg:
 def make_completion(leg: SingleLeg) -> dict:
     """Build the documented bare completion business object.
 
-    0212 echoes its task type: 3 is departure, 4 is berthing. 0211 taskType 80
+    0212 echoes its task type; departure (1 or 3) finishes with 3 and berthing
+    (2 or 4) with 4. 0211 taskType 80
     echoes 80. Ordinary routes stay travelId plus taskFinish only.
     """
     payload = {

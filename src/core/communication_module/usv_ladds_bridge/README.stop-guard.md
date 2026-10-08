@@ -9,7 +9,7 @@
 | --- | --- | --- |
 | `0211` | `taskType: 16`、1–255 个航点 | 正常航路；最终点到达且低速后回一次 `0052`，`taskFinish: 1` |
 | `0211` | `taskType: 80`、1–255 个航点 | 到最终点进入值守时回一次 `0052`，`taskType: 80`、`taskFinish: 2`，随后持续定点微控 |
-| `0212` | `taskType: 3` 离泊或 `4` 靠泊，`count: 1` 的单导航点 | 本阶段当普通单点航路；到点停稳后回一次 `0052`，离泊 `taskFinish: 3`、靠泊 `taskFinish: 4`，并回传本次 `taskType` |
+| `0212` | `outBerthLat`/`outBerthLon` 格式：`taskType` `1`/`3` 离泊、`2`/`4` 靠泊；旧 `points` 格式：`3` 离泊或 `4` 靠泊、`count: 1` 的单导航点 | 本阶段当普通单点航路；到点停稳后回一次 `0052`，离泊 `taskFinish: 3`、靠泊 `taskFinish: 4`，并回传本次 `taskType` |
 | `0331` | `{}` 或 `{"head":{},"content":{}}` | 立即打断航路/值守/0212，主动刹停；停稳后零输出，不保持原地 |
 
 0331 不要求经纬度、艏向或时长。为兼容旧工具，旧 `longitude`、`latitude`、
@@ -76,8 +76,10 @@
 
 需要靠离泊（本阶段当单点航路）时，在另一个 **DDS 主题 `0212`** 发送一次，报文见
 [`docs/examples/ladds-0212-single-waypoint.json`](../../../../docs/examples/ladds-0212-single-waypoint.json)。
-`taskType` 只能是 `3`（离泊）或 `4`（靠泊）。到点停稳后回
-`{"travelId": 53, "taskType": 4, "taskFinish": 4}`（靠泊；离泊为 `taskType: 3`、`taskFinish: 3`；`travelId` 使用本次任务实际值）。
+该示例是旧 `points` 格式，`taskType` 只能是 `3`（离泊）或 `4`（靠泊）；协议原文的
+`outBerthLat`/`outBerthLon`/`berthSpeed` 格式还接受 `1`（离泊）、`2`（靠泊）。到点停稳后回
+`{"travelId": 53, "taskType": 4, "taskFinish": 4}`（靠泊；离泊为 `taskFinish: 3`；`taskType` 原样回传本次值，
+`travelId` 使用本次任务实际值）。
 不要发到 0211，也不要依赖消息体猜协议号。
 
 需要主动刹停时，在另一个 **DDS 主题 `0331`** 发送：

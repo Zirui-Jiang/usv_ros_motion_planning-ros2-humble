@@ -36,7 +36,8 @@ _IGNORED_BERTH_FIELDS = (
 
 
 # 0212 单点靠离泊。联调报文用 outBerthLat/outBerthLon 和 berthSpeed 组成一个航路点；
-# 没有这两个坐标时，仍接受旧的 points 单点。taskType 1/3/4 都按普通单点航路执行。
+# 没有这两个坐标时，仍接受旧的 points 单点。协议原文 1 离泊、2 靠泊，联调约定 3 离泊、
+# 4 靠泊，都按普通单点航路执行。
 def parse_berth(text: str, origin: GeoReference) -> RouteTask:
     """Parse one 0212 waypoint as an ordinary single-point RouteTask."""
     if not isinstance(text, str):
@@ -70,8 +71,8 @@ def parse_berth(text: str, origin: GeoReference) -> RouteTask:
     _require_exact_integer("taskType", task_type)
 
     if "outBerthLat" in content or "outBerthLon" in content:
-        if task_type not in (1, 3, 4):
-            raise ValueError("0212 taskType must be 1, 3, or 4")
+        if task_type not in (1, 2, 3, 4):
+            raise ValueError("0212 taskType must be 1, 2, 3, or 4")
         latitude = _require_finite_number(
             "outBerthLat", _required(content, "outBerthLat")
         )
@@ -135,8 +136,8 @@ def parse_berth(text: str, origin: GeoReference) -> RouteTask:
         wrapped=wrapped,
         task_type=task_type,
         protocol="0212",
-        # 靠泊（taskType 4）完成回 4，离泊及其余单点回 3。
-        task_finish=4 if task_type == 4 else 3,
+        # 靠泊（taskType 2 或 4）完成回 4，离泊（1 或 3）回 3。
+        task_finish=4 if task_type in (2, 4) else 3,
         warnings=tuple(warnings),
     )
 
