@@ -73,3 +73,13 @@ validation-results/
 
 # 本机 LaDDS 厂商 SDK、授权和其它不可入库文件。
 /local/ladds/
+
+# 各层 Python 缓存；上方的 */__pycache__ 只匹配第一层目录。
+__pycache__/
+# 浏览器内核、本地预览服务和 Windows 资源管理器自动写出的文件。
+/debug.log
+*.pid
+desktop.ini
+# 本机 AI 助手的个人设置。
+.claude/settings.local.json
+# 注意：上方的 bin/、lib/ 没有锚定，会忽略任意层级的同名目录；新建这类目录前先调整规则。
