@@ -8,7 +8,7 @@
 
 | 模块 | 当前职责 |
 |---|---|
-| [`core/usv_mission`](../src/core/usv_mission/README.md) | 任务 CLI、任务参数、任务状态机、执行协调、任务 ROS 节点及组合启动入口 |
+| [`core/usv_mission`](../src/core/mission_module/usv_mission/README.md) | 任务 CLI、任务参数、任务状态机、执行协调、任务 ROS 节点及组合启动入口 |
 | `core/usv_mission_interfaces` | 保留现有 `SetMission` 类型化服务合同 |
 | `core/controller`、`core/trajectory_planner`、`core/path_planner`、`core/common` | 保持已有控制、轨迹、路径及数值算法，不在本次迁移中重设计公共接口 |
 | `sim_env` / Gazebo | 只读复用既有 world、船体描述、物理模型、定位与 costmap 支持节点；任务运行时不继承 `Simulator` |

@@ -77,8 +77,8 @@ flowchart LR
 
 ## 交付与复现
 
-- [任务模块说明](../src/core/usv_mission/README.md)：模块边界、启动和任务下发。
-- [任务验证入口](../src/core/usv_mission/validation/README.md)：新副本构建、矩阵和两套导航回归命令。
+- [任务模块说明](../src/core/mission_module/usv_mission/README.md)：模块边界、启动和任务下发。
+- [任务验证入口](../src/core/mission_module/usv_mission/validation/README.md)：新副本构建、矩阵和两套导航回归命令。
 - [本次验收归档](validation/station-guard-core-001/README.md)：原始记录、三轮测试定位日志及安装审计。
 - [21 次试验指标表](validation/station-guard-core-001/trial-metrics.csv)、[九个保持窗口](validation/station-guard-core-001/station-windows.csv) 和 [实测汇总](validation/station-guard-core-001/measured-summary.json)。
 - [绕圆避障图](validation/station-guard-core-001/figures/orbit_obstacle/mission_plots.png)、[受扰动保持图](validation/station-guard-core-001/figures/station_disturbance/mission_plots.png)。七场景固定选择第 1 次重复出图，共 10 张 PNG 与 10 张 PDF。
