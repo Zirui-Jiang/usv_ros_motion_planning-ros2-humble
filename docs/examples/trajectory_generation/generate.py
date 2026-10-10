@@ -7,7 +7,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[3]
 OUT = Path(__file__).resolve().parent
-for relative in ("src/core/common", "src/core/trajectory_planner"):
+for relative in ("src/core/shared/common", "src/core/decision_module/trajectory_planner"):
     sys.path.insert(0, str(ROOT / relative))
 
 import numpy as np
@@ -22,8 +22,9 @@ from trajectory_planner import LosTrajectoryPlanner
 
 
 def main():
-    config_file = ROOT / "src/sim_env/config/trajectory_planner/trajectory_planner_params.yaml"
-    model_file = ROOT / "src/sim_env/config/robots/otter/dynamics_otter.yaml"
+    shared_config = ROOT / "src/core/shared/usv_navigation/config"
+    config_file = shared_config / "trajectory_planner/trajectory_planner_params.yaml"
+    model_file = shared_config / "robots/otter/dynamics_otter.yaml"
     config = yaml.safe_load(config_file.read_text(encoding="utf-8"))["trajectory_planner"]["los"]
     model = USVModel.from_mapping(yaml.safe_load(model_file.read_text(encoding="utf-8"))["dynamics"])
     # Hand-specified geometric route, no obstacles and no A* call in this example.
@@ -39,7 +40,7 @@ def main():
     assert np.all(np.abs(values[:, 5]*values[:, 6]) <= config["yaw_rate_max"]+1e-9)
     np.savetxt(OUT / "trajectory.csv", values, delimiter=",", comments="",
                header="t_s,s_m,x_m,y_m,yaw_rad,kappa_inv_m,speed_mps,accel_mps2")
-    source = ROOT / "src/core/trajectory_planner/trajectory_planner/los_trajectory_planner.py"
+    source = ROOT / "src/core/decision_module/trajectory_planner/trajectory_planner/los_trajectory_planner.py"
     metadata = {
         "purpose": "Illustrative LOS reference from a hand-specified route; not A*, closed-loop, or sea-trial data.",
         "state": asdict(state), "route": path.tolist(), "los_config": config,
