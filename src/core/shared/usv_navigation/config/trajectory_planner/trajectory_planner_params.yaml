@@ -8,9 +8,11 @@ trajectory_planner:
     # 接近当前航段点到此距离后可推进路点；每个输出周期最多推进一次。
     switch_dist: 5.0
     goal_tolerance: 1.0
-    # Calibrated with the existing Otter/LOS model: 5 m cut through the
+    # Earlier calibration with the Otter/LOS model: 5 m cut through the
     # 12 m cylinder scenario; 1 m passed the full-footprint clearance check.
+    # The value in use is 3 m.
     # 横向偏差经 atan2(偏差,预瞄距离) 转为航向修正，较小距离使修正更敏感。
+    # 当前取 3 米；上面两句是 5 米和 1 米的历史标定记录，不是对 3 米的验证结论。
     lookahead_distance: 3.0
     yaw_rate_max: 0.8
     kp_yaw: 1.0

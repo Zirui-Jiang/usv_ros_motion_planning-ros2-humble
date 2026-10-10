@@ -1,0 +1,102 @@
+# WAM-V 局部感知代价地图配置；除船体轮廓、外接圆半径和膨胀半径外与 Otter 配置相同。
+# 独立感知启动入口读取 costmap 段并按船舶命名空间覆盖话题和坐标系；下面的 wamv 前缀对应该船型的默认命名空间。
+# Global costmap parameters for the WAM-V USV (ROS 2 / nav2_costmap_2d).
+# NOTE: the node loads these parameters directly on the `usv_simulation` node,
+# so they are prefixed with `costmap.` (the Costmap2DROS name).
+costmap:
+  global_frame: wamv/map
+  robot_base_frame: wamv/base_link
+  use_sim_time: true
+
+  # 更新/发布频率为 Hz，TF 容忍时间为秒；Nav2 的 width/height 为米，resolution 为米/格。
+  update_frequency: 2.0
+  publish_frequency: 2.0
+  transform_tolerance: 0.5
+  # 边长按 0211 联调航路计算。艇在 (23, -10)，最远点 (39.9485, 116.383) 换成地图坐标约 (4168, 380)，
+  # 距艇约 4163 米；滚动窗口以艇为中心，边长取该距离的两倍再留余量，取 8500 米。
+  # 分辨率放到 5 米/格，格数 1700×1700 与原 1 米/格、1473 米时同量级，A* 展开数和 costmap_raw 消息不暴涨；
+  # 代价是障碍按 5 米格标记，3 米膨胀半径小于一格基本不再生效。
+  resolution: 5.0
+  width: 8500
+  height: 8500
+  origin_z: 0.0
+  z_resolution: 1
+  z_voxels: 2
+  publish_voxel_map: false
+  # The costmap is fed only by the live lidar (obstacle_layer, no static map)
+  # with a short obstacle_range, so it acts as a robot-centered perception map.
+  # A rolling window keeps the robot at the centre and avoids "out of bounds"
+  # regardless of where it spawns or navigates.
+  # 滚动窗口随船移动；track_unknown_space=false 表示本配置不保留未知区标签。
+  rolling_window: true
+  track_unknown_space: false
+
+  # robot base -- WAM-V footprint centred on base_link, matching
+  # navigation.footprint_length/width in dynamics_wamv.yaml.
+  # 船体系多边形长 5.7 米、宽 2.5 米（含艉部螺旋桨与两侧浮筒）；padding 另加缓冲边距。
+  footprint: "[[-2.85, -1.25], [2.85, -1.25], [2.85, 1.25], [-2.85, 1.25]]"
+  footprint_padding: 0.3
+  # 外接圆半径：hypot(2.85, 1.25) ≈ 3.11 米。
+  robot_radius: 3.2
+
+  # layer plugins to load (nav2_costmap_2d).
+  # static_layer feeds the persistent, accumulated occupancy map from the
+  # mapping node (/wamv/map). Unlike the memoryless obstacle_layer (which only
+  # marks currently-visible lidar surfaces and lets the planner cut through the
+  # unseen "shadow" behind a large solid obstacle), the static layer remembers
+  # everything the robot has already seen, so the planner can route around the
+  # full extent of an obstacle.
+  # 以当前有效清单为准：只装载实时障碍层和膨胀层；下面的 static_layer 段未列入清单，当前不参与更新。
+  plugins: ["obstacle_layer", "inflation_layer"]
+
+  static_layer:
+    plugin: "nav2_costmap_2d::StaticLayer"
+    enabled: true
+    map_topic: /wamv/map
+    # The mapping node publishes /wamv/map with default (volatile) QoS, not a
+    # latched map_server, so do NOT subscribe transient-local (QoS mismatch
+    # would silently deliver nothing).
+    map_subscribe_transient_local: false
+    subscribe_to_updates: false
+
+  # LaDDS 0141 障碍层：usv_ladds_rx 把收到的目标按 0411 同一原点画成 OccupancyGrid，每包整张替换。
+  # 不在 plugins 清单里；只有感知 launch 参数 ladds_obstacles:=true 时才插到清单最前面。
+  # 静态层按格覆盖下层结果，必须排在 obstacle_layer 之前，否则会用空闲格盖掉激光障碍。
+  # map_topic 由 launch 按命名空间改写为 /<命名空间>/ladds/obstacle_grid。
+  ladds_obstacle_layer:
+    plugin: "nav2_costmap_2d::StaticLayer"
+    enabled: true
+    map_topic: /wamv/ladds/obstacle_grid
+    # The bridge publishes transient-local, so a restarted costmap gets the latest grid.
+    map_subscribe_transient_local: true
+    subscribe_to_updates: false
+
+  # sensor management parameters
+  obstacle_layer:
+    plugin: "nav2_costmap_2d::ObstacleLayer"
+    enabled: true
+    observation_sources: scan
+    scan:
+      topic: /wamv/sensors/lidars/lidar/scan
+      sensor_frame: wamv/lidar_link
+      observation_persistence: 0.0
+      expected_update_rate: 0.8
+      data_type: LaserScan
+      # 射线穿越清空旧障碍，有效回波标记新障碍；标记/清空距离分别为 20 米和 22 米。
+      clearing: true
+      marking: true
+      max_obstacle_height: 5.0
+      min_obstacle_height: -5.0
+      inf_is_valid: true
+      obstacle_max_range: 20.0
+      raytrace_max_range: 22.0
+
+  # 围绕致命障碍生成随距离衰减的软代价，供路径搜索偏好更大净空。
+  inflation_layer:
+    plugin: "nav2_costmap_2d::InflationLayer"
+    enabled: true
+    cost_scaling_factor: 2.0   # exponential drop-off rate of obstacle cost
+    # 内切半径 1.25 + 0.3 = 1.55 米，比 Otter 大 0.65 米；膨胀半径相应从 3 米加到 4 米，保持相近的软代价带宽。
+    inflation_radius: 4.0
+
+  always_send_full_costmap: true

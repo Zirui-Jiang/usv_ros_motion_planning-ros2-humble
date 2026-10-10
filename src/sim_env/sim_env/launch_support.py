@@ -3,19 +3,26 @@
 from dataclasses import dataclass
 import os
 import sys
+import tempfile
 
-from sim_env.configuration import load_yaml
 from usv_navigation.launch_support import (
     ALGORITHM_CONFIGS, NAVIGATION_ARGUMENT_NAMES,
-    navigation_arguments, navigation_settings,
+    navigation_arguments, navigation_settings, robot_config_default,
 )
+from usv_navigation import launch_support as navigation_launch
 from sim_env.wind_profiles import xacro_wind_arguments
 
 
+# 代价地图默认随船型选择（{robot} 换成 robot_type），建图配置与船型无关。
 PERCEPTION_CONFIGS = (
     ("mapping_config", ("costmap", "mapping.yaml")),
-    ("costmap_config", ("robots", "otter", "global_costmap_params_otter.yaml")),
+    ("costmap_config", ("robots", "{robot}", "global_costmap_params_{robot}.yaml")),
 )
+# 展开 xacro 时的固定参数：定位取仿真真值，故关闭 IMU/GPS 并启用 LiDAR。
+XACRO_ARGUMENTS = " imu_enabled:=false gps_enabled:=false lidar_enabled:=true"
+# WAM-V 的推进器布局跟随船模 YAML 的推进形式，仿真船模与导航侧模型才一致：
+# 两台艉推（H）用于固定桨差动和全回转，T 型另带一台横置的独立侧推器。
+WAMV_THRUSTER_LAYOUTS = {"Differential": "H", "Azimuth": "H", "Omni": "T"}
 COMMON_ARGUMENT_NAMES = (
     "world", "robot_x", "robot_y", "robot_z", "robot_yaw", "gui", "rviz", "headless",
     *NAVIGATION_ARGUMENT_NAMES, *[name for name, _ in PERCEPTION_CONFIGS],
@@ -28,11 +35,10 @@ MODULE_ENTRIES = {
 }
 
 
-# 读取可选的用户场景配置；文件不存在时使用默认启动参数。
+# 读取可选的用户场景配置；world 与船型（robot1_type）取自同一份文件，文件不存在时使用默认启动参数。
 def load_user_config():
-    """Retain the original optional per-user world selection."""
-    path = os.path.join(os.path.expanduser("~"), ".rmp_user_config.yaml")
-    return load_yaml(path) if os.path.isfile(path) else {}
+    """Return the optional user_config.yaml mapping located by usv_navigation."""
+    return navigation_launch.load_user_config()[1]
 
 
 # 声明各入口共用的参数，感知配置默认值来自感知包自己的安装资源。
@@ -62,7 +68,7 @@ def common_arguments():
     ]
     for name, relative in PERCEPTION_CONFIGS:
         arguments.append(DeclareLaunchArgument(
-            name, default_value=os.path.join(perception_share, "config", *relative)))
+            name, default_value=robot_config_default(perception_share, relative)))
     return arguments
 
 
@@ -88,6 +94,7 @@ class LaunchSettings:
     use_sim_time: bool
     pose: dict
     logs: list
+    propulsion: str
 
 
 # 先校验导航参数，再将初始位置和艏向转换为浮点数。
@@ -96,7 +103,8 @@ def _settings(context):
     navigation = navigation_settings(context)
     pose = {axis: float(_value(context, "robot_" + axis)) for axis in ("x", "y", "z", "yaw")}
     return LaunchSettings(get_package_share_directory("sim_env"), navigation.namespace,
-                          navigation.use_sim_time, pose, navigation.logs)
+                          navigation.use_sim_time, pose, navigation.logs,
+                          navigation.navigation["dynamics.type"])
 
 
 # 创建仿真器、船模、状态发布和真值定位；感知、决策、航控由各自入口创建。
@@ -113,12 +121,15 @@ def _simulation_nodes(context, settings):
     headless = _boolean(context, "headless")
     gui = _boolean(context, "gui") and not headless
     rviz = _boolean(context, "rviz") and not headless
-    # 通过 xacro 展开当前船模；此入口明确关闭 IMU/GPS 并启用 LiDAR。
+    # 通过 xacro 展开 robot_type 指定的船模；此入口明确关闭 IMU/GPS 并启用 LiDAR。
+    robot_type = _value(context, "robot_type")
+    # 风载插件开关是 Otter 船模的 xacro 参数；WAM-V 船模不挂风载插件，不传该参数。
     wind_args = [" " + argument for argument in
-                 xacro_wind_arguments(_value(context, "world"), namespace)]
+                 xacro_wind_arguments(_value(context, "world"), namespace)] if robot_type == "otter" else []
+    layout = " thruster_config:=" + WAMV_THRUSTER_LAYOUTS[settings.propulsion] if robot_type == "wamv" else ""
     description = Command([
-        "xacro ", os.path.join(settings.share, "urdf", "otter", "otter.urdf.xacro"),
-        " namespace:=", namespace, " imu_enabled:=false gps_enabled:=false lidar_enabled:=true",
+        "xacro ", os.path.join(settings.share, "urdf", robot_type, robot_type + ".urdf.xacro"),
+        " namespace:=", namespace, XACRO_ARGUMENTS + layout,
         *wind_args,
     ])
     nodes = [
@@ -144,10 +155,24 @@ def _simulation_nodes(context, settings):
     if rviz:
         nodes.append(Node(
             package="rviz2", executable="rviz2", name="rviz2",
-            arguments=["-d", os.path.join(settings.share, "rviz", "sim_env.rviz")],
+            arguments=["-d", _rviz_config(settings.share, namespace)],
             parameters=[{"use_sim_time": settings.use_sim_time}], output="screen"))
     # 有 GUI 时若 Windows VcXsrv 可达，子进程改走本机 X，而不是 WSLg。
     return [*launch_environment_actions(gui or rviz), *nodes]
+
+
+# 随包安装的 RViz 配置按 otter 命名空间写固定坐标系、TF 前缀和话题；其他命名空间启动时在临时目录生成替换后的副本。
+def _rviz_config(share, namespace):
+    source = os.path.join(share, "rviz", "sim_env.rviz")
+    if namespace == "otter":
+        return source
+    with open(source, encoding="utf-8") as stream:
+        text = stream.read()
+    # Every "otter" in the shipped file is a namespace: TF prefix, fixed frame, topics and the goal tool name.
+    path = os.path.join(tempfile.gettempdir(), "sim_env_" + namespace.replace("/", "_") + ".rviz")
+    with open(path, "w", encoding="utf-8") as stream:
+        stream.write(text.replace("otter", namespace))
+    return path
 
 
 # 仅在真值话题不是默认 odom 时改名，避免与接收节点解出的 /otter/odom 双发布。

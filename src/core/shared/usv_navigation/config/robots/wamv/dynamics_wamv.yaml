@@ -1,0 +1,45 @@
+# WAM-V 船模参数（两台艉部全回转推进器，没有独立侧推器）：质量千克、惯量千克米²、尺寸米、速度米/秒；阻尼系数已经带作用力符号。
+# 水动力系数与 urdf/wamv/dynamics/wamv_gazebo_dynamics_plugin.xacro 一致，数值沿用原 WAM-V 工程配置。
+dynamics:
+  name: wamv
+  # Azimuth：两台全回转推进器，偏转桨角合成横向力，仿真用两台艉推的 H 布局。
+  # 另可取 Differential（两台固定桨，不出横向力）或 Omni（固定桨加独立侧推器，仿真改用 T 布局），取后者时下面的横向力参数含义不同。
+  type: Azimuth
+  cruising_speed: 1.0
+  # 单台艉推满归一化命令对应的最大力，单位牛顿；须与 wamv_gazebo_thruster_config.xacro 的 maxForceFwd/Rev 一致。
+  max_force: 250.0
+  # 归一化侧推命令为 1 时对应的横向力，单位牛顿，正命令推向左舷（艇体系 +y）。
+  # 全回转时横向力由两台桨合成，这只是归一化基准；按几何估算，不前进不转艏时两台桨最多合成约 200 N 横向力。
+  max_lateral_force: 200.0
+  # 两台推进器回转轴相对船体转动中心的纵向位置，单位米，船艉为负。urdf 中回转轴在 base_link 后 2.374 米。
+  thruster_x: -2.374
+  mass: 251.28
+  i_z: 500.50
+  L: 4.9
+  W: 2.4
+  # 艉推相对船体中心线的横向力臂；urdf 中两台艉推位于 y = ±1.027135 米。
+  D: 1.027
+  # WAM-V 的 Gazebo 水动力插件附加质量为零；省略时会落到 USVModel 中 Otter 的默认值 5/5/1。
+  x_dot_u: 0.0
+  y_dot_v: 0.0
+  n_dot_r: 0.0
+  # 线性阻尼带负号，对正向速度产生反向阻力；勿在使用处再次翻转符号。
+  x_u: -51.3
+  y_v: -40.0
+  n_r: -400.0
+  # 纵向二次阻尼，同样带负号。
+  x_u_u: -72.4
+  # physical limitation
+  velocity_min: 0.0
+  velocity_max: 1.5
+  acceleration_min: -1.0
+  acceleration_max: 1.0
+  # 加速度变化率约束的单位为米/秒³。
+  jerk_min: -2.0
+  jerk_max: 2.0
+
+# 船体占用矩形以 base_link 为中心，单位米。长度按艉部螺旋桨外缘（x ≈ -2.83）对称取值，宽度覆盖两侧浮筒（y ≈ ±1.23）。
+# 公共规划 YAML 不写这两个键，故随船模放在这里；规划扫掠检查与航控当前船体占用检查共用。
+navigation:
+  footprint_length: 5.7
+  footprint_width: 2.5

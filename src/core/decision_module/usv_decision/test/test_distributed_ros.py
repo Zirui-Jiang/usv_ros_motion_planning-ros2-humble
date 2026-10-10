@@ -166,6 +166,26 @@ def test_atomic_navigation_service_speed_and_status_correlation():
         assert status['desired_speed_mps'] == pytest.approx(.4)
 
 
+# 决策把艇附近的一段航线随参考送到航控：窗口是决策航线上连续的一段，含离艇最近的路点，
+# 并向前覆盖本条轨迹的预测航程（航线不够长时到航线末端）。
+def test_reference_carries_route_window_from_decision_to_control():
+    import numpy as np
+    with distributed_harness() as h:
+        h.ready()
+        h.goal()
+        h.until(lambda: h.control.trajectory is not None and len(h.control.trajectory.route) >= 2)
+        trajectory, route = h.control.trajectory, h.decision.route[:, :2]
+        window = trajectory.route
+        index = [int(np.argmin(np.linalg.norm(route - point, axis=1))) for point in window]
+        np.testing.assert_allclose(route[index], window)
+        assert index == list(range(index[0], index[0] + len(window)))
+        nearest = int(np.argmin(np.linalg.norm(route - (h.x, h.y), axis=1)))
+        assert index[0] <= nearest <= index[-1]
+        ahead = float(np.linalg.norm(np.diff(window[nearest - index[0]:], axis=0), axis=1).sum())
+        remaining = float(np.linalg.norm(np.diff(route[nearest:], axis=0), axis=1).sum())
+        assert ahead >= min(remaining, trajectory.points[-1, 1]) - 1e-9
+
+
 @pytest.mark.parametrize('heading_enabled', [False, True])
 def test_real_ros_terminal_guard_then_active_stop_never_returns_to_old_point(heading_enabled):
     """Synthetic sensors test the full mode handshake, not vessel dynamics."""

@@ -146,6 +146,13 @@ ros2 launch sim_env main.launch.py world:=ocean headless:=true \
 
 `planner_name` 支持 `astar`、`dijkstra`、`gbfs`、`hybrid_astar`；`controller_name` 支持 `pid`、`lqr`、`adrc`；当前 `trajectory_name` 仅支持 `los`。未提供算法覆盖参数时使用项目 YAML 中的选择。GUI 的本机记录与验证限制见 [GUI 记录](docs/validation/gui/README.md)。
 
+```bash
+# 换成 WAM-V（两台艉部全回转推进器）；命名空间随船型变为 /wamv，目标发到 /wamv/goal、坐标系 wamv/map。
+ros2 launch sim_env main.launch.py world:=ocean headless:=true robot_type:=wamv
+```
+
+`robot_type` 支持 `otter` 和 `wamv`。不在命令行写时，默认值取 `src/user_config/user_config.yaml` 里的 `robot1_type`，改这个文件不用重新构建；查找顺序和其余说明见[船型选择](docs/distributed-navigation/README.md#船型选择)。
+
 ### 下发目标与查看状态
 
 带界面启动后，在 RViz 使用 `otter goal` 工具设置目标。无界面时，可在另一个已加载同一安装区的终端发布目标；以下示例使用默认 `ocean` 场景和 `/otter` 命名空间：
@@ -210,7 +217,7 @@ ros2 param dump /otter/usv_simulation
 ros2 param dump /otter/usv_control
 ```
 
-`src/user_config/` 用于保留的场景配置流程，其中旧的机器人算法字段不作为当前算法选择依据；当前选择以共享 YAML 和非空 launch 覆盖参数为准。参数加载顺序、热更新与导出接口见[三模块普通导航](docs/distributed-navigation/README.md)。
+`src/user_config/` 用于保留的场景配置流程：启动时读取其中的 `world` 和 `robot1_type`（船型），其余旧的机器人算法字段不作为当前算法选择依据；当前选择以共享 YAML 和非空 launch 覆盖参数为准。参数加载顺序、热更新与导出接口见[三模块普通导航](docs/distributed-navigation/README.md)。
 
 ## 测试与已有验证
 

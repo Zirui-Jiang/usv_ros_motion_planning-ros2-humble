@@ -46,7 +46,14 @@ class VesselState:
         return all(math.isfinite(v) for v in (self.x, self.y, self.psi, self.u, self.v, self.r, self.stamp))
 
 
-# Otter 差动推进参数集合；最大单桨力单位牛顿、质量千克、偏航惯量千克米²、尺寸和力臂为米。
+# 各船型允许的推进形式：Differential 为两台固定纵向推进器差动；Azimuth 为两台全回转推进器，偏转桨角合成横向力；
+# Omni 为两台固定纵向推进器另带一台独立侧推器（WAM-V 的 T 型布局）。
+SUPPORTED_VESSELS = {"otter": ("Differential",), "wamv": ("Differential", "Azimuth", "Omni")}
+# 能产生横向力的推进形式。
+LATERAL_TYPES = ("Azimuth", "Omni")
+
+
+# 船模参数集合，默认值为 Otter；最大单桨力单位牛顿、质量千克、偏航惯量千克米²、尺寸和力臂为米。
 @dataclass(frozen=True)
 class USVModel:
     ns: str = "otter"
@@ -86,8 +93,13 @@ class USVModel:
     x_u_u: float = 0.0
     y_v_v: float = 0.0
     n_r_r: float = 0.0
+    # 归一化侧推命令为 1 时对应的横向力，牛顿，正命令推向左舷；0 表示不能产生横向力。
+    # Omni 时是独立侧推器的最大力；Azimuth 时是两台全回转桨合成横向力的归一化基准。
+    max_lateral_force: float = 0.0
+    # 两台推进器回转轴相对船体转动中心的纵向位置，米，船艉为负；只有 Azimuth 用它补偿横向力带出的转艏力矩。
+    thruster_x: float = 0.0
 
-    # 拒绝未知字段、非有限数及不合理物理范围，当前只支持 Differential 类型的 otter。
+    # 拒绝未知字段、非有限数及不合理物理范围；船型与推进形式须在 SUPPORTED_VESSELS 中，侧推力与推进形式一致。
     @classmethod
     def from_mapping(cls, values):
         names = {f.name for f in fields(cls)}
@@ -106,8 +118,12 @@ class USVModel:
             raise ValueError("Invalid vessel velocity limits")
         if model.acceleration_min > 0 or model.acceleration_max <= 0:
             raise ValueError("Acceleration limits must contain zero and allow acceleration")
-        if model.name != "otter" or model.type != "Differential":
-            raise ValueError("This release supports the differential Otter model")
+        if model.type not in SUPPORTED_VESSELS.get(model.name, ()):
+            raise ValueError("Supported vessel models: Differential otter; Differential, Azimuth or Omni wamv")
+        # A lateral force without the means to produce it, or the reverse, would
+        # let the controllers and the simulated vessel disagree about actuation.
+        if (model.max_lateral_force > 0) != (model.type in LATERAL_TYPES) or model.max_lateral_force < 0:
+            raise ValueError("max_lateral_force must be positive for Azimuth or Omni and zero for Differential")
         return model
 
 

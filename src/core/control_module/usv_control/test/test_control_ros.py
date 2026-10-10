@@ -613,3 +613,166 @@ def test_motion_lease_refresh_does_not_hide_last_control_tick_safety_gate(mode, 
         assert h.reports[-1].reason == previous_reason
         assert h.reports[-1].left == h.reports[-1].right == 0.
         assert not h.reports[-1].task_finished
+
+
+# 带独立侧推器的船模并启用 0924 横向环；比例增益 60 N/m、限幅 ±100 N、侧推器最大力 250 N。
+LATERAL = 'usv_simulation.controller.lateral_controller.'
+LATERAL_VESSEL = tuple(item for assignment in (
+    'dynamics.name:=wamv', 'dynamics.type:=Omni', 'dynamics.max_force:=250.0',
+    'dynamics.max_lateral_force:=250.0', 'dynamics.D:=1.027',
+    LATERAL + 'enabled:=true', LATERAL + 'k_p_lateral:=60.0',
+    LATERAL + 'force_min:=-100.0', LATERAL + 'force_max:=100.0') for item in ('-p', assignment))
+
+
+# 带一段沿 +x 轴航线的导航参考；横向偏差按艇到这条航线最近点计算。
+def routed_reference(h, **kwargs):
+    message = h.reference(**kwargs)
+    message.route_x, message.route_y = [0., 8.], [0., 0.]
+    return message
+
+
+# 导航跟踪时侧推命令指向航线一侧并写入控制报告；桨角/转速指令照常只含左右桨；取消后侧推归零。
+@pytest.mark.parametrize('algorithm', ['pid', 'adrc'])
+def test_lateral_thruster_follows_reference_side_and_zeros_after_cancel(algorithm):
+    arguments = (*LATERAL_VESSEL, '-p', 'usv_simulation.controller.controller_name:=' + algorithm)
+    with control_harness(extra_args=arguments) as h:
+        lateral = []
+        h.subscriptions.append(h.driver.create_subscription(
+            Float32, 'thrusters/lateral_thrust_cmd', lateral.append, 10))
+        # 航线沿 +x 轴；艇在其右侧 0.5 m，航线位于左舷，侧推应为正。
+        h.y = -.5
+        h.ready()
+        h.send_reference(routed_reference(h))
+        h.until(lambda: any(x.data > 0 for x in lateral) and h.reports[-1].lateral > 0)
+        assert h.reports[-1].state == 'NAVIGATING'
+        assert all(-1. <= x.data <= 1. for x in lateral)
+        assert h.vector[-1].mode == 0 and h.vector[-1].left_angle == h.vector[-1].right_angle == 0.
+        # 艇换到航线左侧后侧推反向。
+        h.y = .5
+        h.until(lambda: lateral[-1].data < 0 and h.reports[-1].lateral < 0)
+        assert h.control.counters['thruster_output_errors'] == 0
+        stop = h.reference(task=2, active=False, points=False)
+        h.send_reference(stop)
+        h.until(lambda: h.reports and h.reports[-1].reference_sequence == stop.sequence
+                and h.reports[-1].state == 'CANCELLED')
+        lateral.clear()
+        for _ in range(5):
+            h.step()
+        assert lateral and all(x.data == 0. for x in lateral)
+        assert h.reports[-1].lateral == 0.
+
+
+# 带侧推的导航直接转入值守：交接不被判为无效参考或控制错误，值守期间侧推恒为零。
+def test_hold_after_lateral_navigation_drops_lateral_thrust_without_error():
+    with control_harness(extra_args=LATERAL_VESSEL) as h:
+        lateral = []
+        h.subscriptions.append(h.driver.create_subscription(
+            Float32, 'thrusters/lateral_thrust_cmd', lateral.append, 10))
+        h.y = -.5
+        h.ready()
+        h.send_reference(routed_reference(h))
+        h.until(lambda: h.reports and h.reports[-1].lateral > 0)
+        h.reports.clear()
+        h.send_reference(motion_reference(h, 'HOLD', goal=(0., -.5)))
+        # 交接确认报告仍带上一拍已发布的导航命令；值守的第一个控制拍起侧推归零。
+        h.until(lambda: h.reports and h.reports[-1].state == 'GUARDING' and h.reports[-1].lateral == 0.)
+        first_hold_tick = len(h.reports) - 1
+        lateral.clear()
+        for _ in range(6):
+            h.send_reference(motion_reference(h, 'HOLD', goal=(0., -.5)))
+            h.step()
+        assert not any(report.state in ('INVALID_REFERENCE', 'CONTROL_ERROR') for report in h.reports)
+        assert h.control.counters['invalid_references'] == 0 and h.control.counters['control_errors'] == 0
+        assert lateral and all(x.data == 0. for x in lateral)
+        assert all(report.state == 'GUARDING' and report.lateral == 0. for report in h.reports[first_hold_tick:])
+
+
+# 参考不带航线时横向环不出力：左右桨照常跟踪，侧推保持为零。
+def test_reference_without_route_gives_no_lateral_thrust():
+    with control_harness(extra_args=LATERAL_VESSEL) as h:
+        lateral = []
+        h.subscriptions.append(h.driver.create_subscription(
+            Float32, 'thrusters/lateral_thrust_cmd', lateral.append, 10))
+        h.y = -.5
+        h.ready()
+        h.send_reference()
+        h.until(lambda: any(x.data > 0 for x in h.left) and h.reports[-1].state == 'NAVIGATING')
+        for _ in range(6):
+            h.step()
+        assert h.control.trajectory.route.shape == (0, 2)
+        assert lateral and all(x.data == 0. for x in lateral)
+        assert all(report.lateral == 0. for report in h.reports)
+
+
+# x/y 不等长的航线使整条参考无效：航控停止输出，而不是按残缺航线出力。
+def test_reference_with_malformed_route_is_rejected():
+    with control_harness(extra_args=LATERAL_VESSEL) as h:
+        h.ready()
+        message = h.reference()
+        message.route_x, message.route_y = [0., 8.], [0.]
+        h.send_reference(message)
+        h.until(lambda: h.reports and h.reports[-1].state == 'INVALID_REFERENCE')
+        assert h.reports[-1].left == h.reports[-1].right == h.reports[-1].lateral == 0.
+        assert h.control.counters['invalid_references'] == 1
+
+
+# 两台全回转桨的船模并启用横向环：回转轴在转动中心后 2.374 m，侧推命令 1 对应 200 N 横向力。
+AZIMUTH_VESSEL = tuple(item for assignment in (
+    'dynamics.name:=wamv', 'dynamics.type:=Azimuth', 'dynamics.max_force:=250.0',
+    'dynamics.max_lateral_force:=200.0', 'dynamics.D:=1.027', 'dynamics.thruster_x:=-2.374',
+    LATERAL + 'enabled:=true', LATERAL + 'k_p_lateral:=60.0',
+    LATERAL + 'force_min:=-100.0', LATERAL + 'force_max:=100.0') for item in ('-p', assignment))
+
+
+# 全回转桨：横向力分进两台桨，航控发 mode 1 的桨角/转速，并把同一组桨角和沿桨角方向的归一化推力发给仿真推进器；
+# 侧推话题没有对应的推进器，恒为零；转入值守后回到 mode 0、桨角归零。
+def test_azimuth_vessel_vectors_lateral_force_through_both_thrusters():
+    def force(rpm):
+        return 0.5 * 1000.0 * 0.259 ** 4 * math.copysign((rpm / 60.0) ** 2, rpm)
+
+    with control_harness(extra_args=AZIMUTH_VESSEL) as h:
+        left_angle, right_angle, lateral = [], [], []
+        h.subscriptions += [
+            h.driver.create_subscription(Float32, 'thrusters/left_thrust_angle', left_angle.append, 10),
+            h.driver.create_subscription(Float32, 'thrusters/right_thrust_angle', right_angle.append, 10),
+            h.driver.create_subscription(Float32, 'thrusters/lateral_thrust_cmd', lateral.append, 10)]
+        # 航线沿 +x 轴；艇在其右侧 0.5 m，需要向左舷的横向力。
+        h.y = -.5
+        h.ready()
+        h.send_reference(routed_reference(h))
+        h.until(lambda: h.vector and h.vector[-1].mode == 1 and h.reports[-1].lateral > 0 and left_angle and right_angle)
+        for _ in range(3):
+            h.step()
+        setpoint = h.vector[-1]
+        assert setpoint.mode == 1
+        # 两台桨的推力都有指向左舷的分量：倒推的那台用负转速和负桨角，正推的那台用正转速和正桨角。
+        assert force(setpoint.left_rpm) * math.sin(setpoint.left_angle) > 0
+        assert force(setpoint.right_rpm) * math.sin(setpoint.right_angle) > 0
+        assert max(abs(setpoint.left_angle), abs(setpoint.right_angle)) > 1e-3
+        # 发给仿真推进器的桨角和归一化推力与桨角/转速指令是同一组数。
+        assert any(abs(x.data - setpoint.left_angle) < 1e-5 for x in left_angle)
+        assert any(abs(x.data - setpoint.right_angle) < 1e-5 for x in right_angle)
+        assert any(abs(x.data * 250.0 - force(setpoint.left_rpm)) < 1e-3 for x in h.left)
+        assert any(abs(x.data * 250.0 - force(setpoint.right_rpm)) < 1e-3 for x in h.right)
+        assert lateral and all(x.data == 0. for x in lateral)
+        assert h.control.counters['thruster_output_errors'] == 0
+        # 报告里仍是控制器给出的归一化左右桨与侧推命令。
+        # 60 N/m × 0.5 m ÷ 200 N = 0.15，另有默认的小积分项。
+        assert h.reports[-1].lateral == pytest.approx(.15, abs=2e-3)
+        h.send_reference(motion_reference(h, 'HOLD', goal=(0., -.5)))
+        h.until(lambda: h.reports and h.reports[-1].state == 'GUARDING' and h.reports[-1].lateral == 0.)
+        h.vector.clear(), left_angle.clear(), right_angle.clear()
+        for _ in range(6):
+            h.send_reference(motion_reference(h, 'HOLD', goal=(0., -.5)))
+            h.step()
+        assert h.vector and all(v.mode == 0 and v.left_angle == v.right_angle == 0. for v in h.vector)
+        assert left_angle and all(x.data == 0. for x in left_angle + right_angle)
+        assert not any(report.state in ('INVALID_REFERENCE', 'CONTROL_ERROR') for report in h.reports)
+
+
+# 固定桨船型不建桨角话题，推力话题仍是控制器的左右桨命令。
+def test_fixed_propeller_vessel_has_no_angle_topics():
+    with control_harness() as h:
+        assert h.control.angle_pubs == []
+        names = [name for name, _ in h.control.get_topic_names_and_types()]
+        assert not any(name.endswith('_thrust_angle') for name in names)

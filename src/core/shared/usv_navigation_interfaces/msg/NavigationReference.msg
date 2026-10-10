@@ -32,3 +32,8 @@ string parameters_json
 float64 trajectory_stamp
 string trajectory_frame
 usv_navigation_interfaces/TrajectoryPoint[] points
+# Part of the global route near the vessel, in trajectory_frame; never a collision permission.
+# 艇附近的一段全局航线折线，trajectory_frame 下的 x/y（米），两数组等长；航控据此求艇到航线的横向偏差。
+# 为空表示本参考不提供航线，航控的横向环不出力。
+float64[] route_x
+float64[] route_y

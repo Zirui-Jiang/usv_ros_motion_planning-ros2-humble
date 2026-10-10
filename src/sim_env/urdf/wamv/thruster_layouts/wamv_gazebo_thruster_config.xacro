@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!-- 将推进器名称展开为 WAM-V 推力插件可读取的单个推进器条目；左、右、侧推共用同一组参数。 -->
+<plugin xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- enable_angle 为 1 时插件订阅桨角话题，并用速度伺服把发动机关节保持在命令桨角（无命令时为 0）。 -->
+  <xacro:macro  name="wamv_gazebo_thruster_config" params="name enable_angle:=1">
+    <wamv_thruster>
+      <!-- Required Parameters -->
+      <linkName>${name}_propeller_link</linkName>
+      <propJointName>${name}_engine_propeller_joint</propJointName>
+      <engineJointName>${name}_chasis_engine_joint</engineJointName>
+      <cmdTopic>${thruster_namespace}${name}_thrust_cmd</cmdTopic>
+      <angleTopic>${thruster_namespace}${name}_thrust_angle</angleTopic>
+      <enableAngle>${enable_angle}</enableAngle>
+
+      <!-- Optional Parameters -->
+      <!-- mappingType   0: linear 1: GLF 2: square -->
+      <!-- 原 WAM-V 配置为 1（GLF，正反向不对称且非线性）；导航侧按 推力 = 命令 × max_force 建模，故改用线性映射。 -->
+      <!-- maxForceFwd/Rev 须与 dynamics_wamv.yaml 的 max_force 一致；T 布局的独立侧推器还须等于 max_lateral_force。 -->
+      <mappingType>0</mappingType>
+      <maxCmd>1.0</maxCmd>
+      <maxForceFwd>250.0</maxForceFwd>
+      <maxForceRev>-250.0</maxForceRev>
+      <!-- 航控的桨角不超过 thrust_allocator.max_deflection（默认 ±π/4），在此限位之内。 -->
+      <maxAngle>${pi/2}</maxAngle>
+    </wamv_thruster>
+  </xacro:macro>
+</plugin>

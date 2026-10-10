@@ -101,10 +101,16 @@ def launch_description():
     from ament_index_python.packages import get_package_share_directory
     from launch import LaunchDescription
     from launch.actions import DeclareLaunchArgument, OpaqueFunction
+    from launch.substitutions import LaunchConfiguration
+    from usv_navigation.launch_support import robot_namespace_argument, robot_type_argument
 
     share = get_package_share_directory("usv_perception")
+    robot = LaunchConfiguration("robot_type")
     return LaunchDescription([
-        DeclareLaunchArgument("robot_namespace", default_value="otter"),
+        # 船型决定默认代价地图 YAML（船体轮廓与膨胀半径），默认取用户场景配置的 robot1_type；
+        # 命名空间默认与船型同名，显式给出时以其为准。两个参数与决策、航控入口共用同一声明。
+        robot_type_argument(),
+        robot_namespace_argument(),
         DeclareLaunchArgument("use_sim_time", default_value="true", choices=["true", "false"]),
         DeclareLaunchArgument("robot_x", default_value="23.0"),
         DeclareLaunchArgument("robot_y", default_value="-10.0"),
@@ -112,8 +118,8 @@ def launch_description():
                               description="Prepend the LaDDS 0141 obstacle grid as a static costmap layer"),
         DeclareLaunchArgument("mapping_config", default_value=os.path.join(share, "config", "costmap", "mapping.yaml"),
                               description="Project mapping YAML path (not a ros2 param dump)"),
-        DeclareLaunchArgument("costmap_config", default_value=os.path.join(
-            share, "config", "robots", "otter", "global_costmap_params_otter.yaml"),
+        DeclareLaunchArgument("costmap_config", default_value=[
+            os.path.join(share, "config", "robots", ""), robot, "/global_costmap_params_", robot, ".yaml"],
                               description="Project costmap YAML path (not a ros2 param dump)"),
         OpaqueFunction(function=_launch_setup),
     ])

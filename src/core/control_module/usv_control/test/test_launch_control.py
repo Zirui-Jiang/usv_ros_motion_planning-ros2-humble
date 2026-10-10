@@ -51,7 +51,7 @@ def test_standalone_control_launch_owns_only_its_business_node(
             actions.append(action)
     assert all(isinstance(action, (Node, LogInfo)) for action in actions)
     node, = (action for action in actions if isinstance(action, Node))
-    assert sum(isinstance(action, LogInfo) for action in actions) == 5
+    assert sum(isinstance(action, LogInfo) for action in actions) == 6
 
     def value(raw):
         return perform_substitutions(context, normalize_to_list_of_substitutions(raw))

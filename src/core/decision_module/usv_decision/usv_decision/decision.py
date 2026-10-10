@@ -24,7 +24,7 @@ from trajectory_planner.trajectory import restart_trajectory_clock
 from .runtime import LatestPlanWorker, PlanningRequest
 from .route_progress import RouteProgress
 from usv_navigation.state_rules import fresh
-from usv_navigation.protocol import set_message_trajectory, PEER_TIMEOUT
+from usv_navigation.protocol import set_message_trajectory, route_window, PEER_TIMEOUT
 from usv_navigation.ros_support import NavigationInputs
 from usv_navigation.node_runner import run_node
 
@@ -446,7 +446,12 @@ class DecisionNode(NavigationInputs):
             self._publish_global_path(stamp)
         else:
             self.route = result.route
-            self.trajectory = trajectory
+            # 随参考附上艇附近的一段航线，航控的横向环据此求艇到航线的横向偏差。
+            # 以轨迹起点（规划时的船位）为中心：向前取到本条轨迹的预测航程再加路点切换距离，向后留一个船长。
+            self.trajectory = trajectory.with_route(route_window(
+                self.route, trajectory.points[0, 2:4],
+                ahead=float(trajectory.points[-1, 1]) + self.config[T + 'los.switch_dist'],
+                behind=self.config['navigation.footprint_length']))
             self.mode = 'NAVIGATING'
             # 显示本次已验收的裁剪结果。轨迹时钟已改到搜索结束时刻。
             self._publish_global_path(stamp)

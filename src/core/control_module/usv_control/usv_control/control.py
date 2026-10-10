@@ -5,6 +5,7 @@ Planning and reference collision checks belong to the decision process. This
 node retains the original per-tick measured-hull check and controller lifecycle.
 Braking/holding additionally screen every output and its predicted stopping tail.
 """
+from dataclasses import replace
 import json
 import math
 import time
@@ -37,8 +38,10 @@ class ControlNode(NavigationInputs):
     def __init__(self):
         super().__init__('usv_control', role='control')
         self.controller_name = self.config[C + 'controller_name']
+        # 能产生横向力的船模启用横向环时，工厂在所选算法外叠加 0924 横向控制器；只作用于普通导航。
         self.controller = create_controller(self.controller_name, self.model,
-                            section(self.config, C + self.controller_name + '_controller.'))
+                            section(self.config, C + self.controller_name + '_controller.'),
+                            section(self.config, C + 'lateral_controller.'))
         self.brake_controller = ActiveBrakingController(self.model)
         self.station_controller = StationKeepingController(
             self.model, section(self.config, C + 'station_adrc_controller.'))
@@ -65,6 +68,9 @@ class ControlNode(NavigationInputs):
                            for side in ('left', 'right', 'lateral')]
         # 同一出口再换算桨角/转速，供东湖 0054 等实船执行端使用；归一化话题照旧给仿真。
         self.thruster_output = ThrusterOutput(self.model, section(self.config, C + 'thrust_allocator.'))
+        # 全回转桨另发两路桨角（弧度，推力方向转向左舷为正）给仿真推进器；固定桨船型不建这两个话题。
+        self.angle_pubs = [self.create_publisher(Float32, 'thrusters/' + side + '_thrust_angle', 1)
+                           for side in ('left', 'right')] if self.thruster_output.azimuth else []
         self.thruster_pub = self.create_publisher(ThrusterCommand, 'thrusters/vector_cmd', 1)
         reliable = QoSProfile(depth=10, reliability=ReliabilityPolicy.RELIABLE,
                               durability=DurabilityPolicy.VOLATILE)
@@ -236,7 +242,8 @@ class ControlNode(NavigationInputs):
         self.motion_mode = 'HOLD'
         self.controller.reset()
         self.station_controller.reset()
-        self.station_controller.observe_command(self.last_published_command)
+        # 值守只驱动左右桨；导航阶段遗留的侧推分量在交接时归零，不进入值守的变化率限幅。
+        self.station_controller.observe_command(replace(self.last_published_command, lateral=0.))
         self.mode, self.reason = 'GUARDING', ''
         # Acknowledge the persistent mode latch before the following command
         # safety gate. GUARDING is mode ownership, not a claim of zero error.
@@ -304,16 +311,24 @@ class ControlNode(NavigationInputs):
         self.config = candidate
         self.counters['parameter_updates'] += 1
 
-    # 按左桨、右桨、侧推顺序发布 Float32，并由同一命令换算桨角/转速发布；同时保存实际发送值供报告使用。
+    # 由同一命令换算桨角/转速并发布，再按左桨、右桨、侧推顺序发布 Float32；同时保存命令供报告使用。
+    # 固定桨：Float32 就是控制器的左右桨命令，侧推一路给独立侧推器（没有时恒为零）。
+    # 全回转桨：横向力已分进两台桨，Float32 改发每台桨沿桨角方向的归一化推力并另发桨角，侧推一路恒为零。
     def _publish_command(self, command):
-        for publisher, value in zip(self.thrust_pubs, (command.left, command.right, command.lateral)):
-            publisher.publish(Float32(data=float(value)))
+        thrust = (command.left, command.right, command.lateral)
         try:
             setpoint = self.thruster_output.compute(command)
         except (ArithmeticError, ValueError):
             # Never forward an unconvertible command as rpm; zero is the safe setpoint.
             setpoint = ThrusterSetpoint()
             self.counters['thruster_output_errors'] += 1
+        if self.thruster_output.azimuth:
+            # The simulated thrusters must receive exactly what the setpoint describes.
+            thrust = (*self.thruster_output.normalized(setpoint), 0.)
+            for publisher, angle in zip(self.angle_pubs, (setpoint.left_angle, setpoint.right_angle)):
+                publisher.publish(Float32(data=float(angle)))
+        for publisher, value in zip(self.thrust_pubs, thrust):
+            publisher.publish(Float32(data=float(value)))
         message = ThrusterCommand(mode=setpoint.mode, left_angle=setpoint.left_angle,
                                   left_rpm=setpoint.left_rpm, right_angle=setpoint.right_angle,
                                   right_rpm=setpoint.right_rpm)
@@ -387,8 +402,9 @@ class ControlNode(NavigationInputs):
                         command = self.last_published_command
                         tracking = True
                         if special:
+                            # 制动/值守不用侧推：沿用的上一拍命令若来自导航，先去掉侧推分量再做尾迹检查。
                             command, tracking = self._screen_motion(
-                                command, 1. / self.config[C + 'control_frequency'])
+                                replace(command, lateral=0.), 1. / self.config[C + 'control_frequency'])
                     else:
                         self.mode, self.reason = 'SIMULATION_PAUSED', 'Simulation clock stalled for at least 0.5 wall seconds'
                 else:

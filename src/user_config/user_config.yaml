@@ -1,4 +1,5 @@
-# 场景选择与生成器输入；当前导航算法选择以共享算法 YAML 和 launch 覆盖为准。
+# 场景选择与生成器输入。启动时读取 world 和 robot1_type（otter 或 wamv），命令行的 world:=、robot_type:= 优先。
+# 其余 robot1_* 字段当前不读取：导航算法选择以共享算法 YAML 和 launch 覆盖为准，出生位姿用 robot_x 等启动参数。
 world: "ocean"
 # rviz_file: "sim_env.rviz"
 rviz_file: ""

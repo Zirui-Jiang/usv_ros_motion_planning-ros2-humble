@@ -1,0 +1,129 @@
+# WAM-V 普通导航控制参数：结构与 Otter 相同，另加 0924 横向控制器段；横向力由两台全回转桨偏转桨角合成。
+# 力/力矩类限幅按 WAM-V 的质量、转动惯量和阻尼相对 Otter 等比放大得到，属于仿真起点，不是实船标定值。
+controller:
+  controller_name: adrc
+  # 历史拼写由 configuration.normalize_parameters 映射到 control_frequency，单位 Hz。
+  control_frequncy: 10.0
+
+  # 增益直接标定为归一化双桨命令，沿用原 WAM-V 工程的 PID 增益（与 Otter 相同）；原工程的横向 PID 由下方 lateral_controller 取代。
+  pid_controller:
+    goal_distance_tolerance: 1.5
+    goal_speed_tolerance: 0.25
+    lookahead_time: 2.6
+    k_p_speed: 2.0
+    k_i_speed: 0.5
+    k_d_speed: 0.0
+    k_p_course: 2.0
+    k_i_course: 0.0
+    k_d_course: 0.0
+
+  # LQR 离散时间和求解超时单位秒；权重沿用 Otter，尚未针对 WAM-V 调整。
+  lqr_controller:
+    goal_distance_tolerance: 1.0
+    goal_speed_tolerance: 0.25
+    lookahead_time: 2.0
+    discrete_dt: 0.1
+    solve_eps: 0.1
+    max_iterations: 5000
+    solve_timeout: 0.08
+    # Q 依次惩罚 x、y、psi、u、v、r 误差，R 对应左右两路输入。
+    Q_matrix_diag: [1, 1, 100, 10, 10, 10]
+    R_matrix_diag: [20, 20]
+
+  adrc_controller:
+    goal_distance_tolerance: 1.5
+    goal_speed_tolerance: 0.25
+    lookahead_time: 2.6
+    command_limit: 1.0
+    sample_time: 0.1
+    max_sample_gap: 0.5
+    # 航速环输出纵向力（牛顿）。1 m/s 巡航的稳态阻力约 124 N，由积分项提供；限幅取两台艉推合力 500 N。
+    k_p_speed: 80.0
+    k_i_speed: 40.0
+    force_min: -500.0
+    force_max: 500.0
+    speed_integral_min: -500.0
+    speed_integral_max: 500.0
+    # 艏向环输出转艏力矩（牛·米）。按 i_z = 500.5、n_r = -400 取与 Otter 相近的自然频率和阻尼比。
+    k_p_heading: 300.0
+    k_d_heading: 400.0
+    k_i_heading: 1.0
+    moment_min: -300.0
+    moment_max: 300.0
+    heading_integral_min: -100.0
+    heading_integral_max: 100.0
+    error_reset_deg: 20.0
+    acceleration_gain: 0.0
+    filter_window_length: 10
+    filter_history_length: 50
+
+  # 终点/独立定点值守：数值沿用 Otter 标定，尚未针对 WAM-V 调整；值守不使用侧推。
+  station_adrc_controller:
+    position_tolerance: 0.5
+    heading_tolerance_deg: 5.0
+    position_speed_gain: 0.5
+    recover_speed: 0.3
+    recover_speed_tolerance: 0.04
+    alignment_time: 1.0
+    alignment_yaw_rate: 0.02
+    free_heading_yaw_damping: 10.0
+    k_p_speed: 30.0
+    k_i_speed: 0.8
+    force_min: -20.0
+    force_max: 20.0
+    speed_integral_min: -8.0
+    speed_integral_max: 8.0
+    k_p_heading: 12.0
+    k_d_heading: 10.0
+    k_i_heading: 0.03
+    moment_min: -8.0
+    moment_max: 8.0
+    heading_integral_min: -0.25
+    heading_integral_max: 0.25
+    sample_time: 0.1
+    max_sample_gap: 0.5
+    error_reset_deg: 20.0
+    acceleration_gain: 0.0
+    filter_window_length: 10
+    filter_history_length: 50
+    command_limit: 0.4
+    command_slew_rate: 0.6
+
+  # 0924 推力分配器把纵向力、横向力和转艏力矩换算成两台全回转桨的桨角与转速（东湖 0054）：
+  # 侧推命令为零时桨角恒为 0（mode 0），非零时偏转桨角（mode 1）。
+  thrust_allocator:
+    water_density: 1000.0
+    propeller_diameter: 0.259
+    thrust_coefficient: 0.5
+    # 转速上下限须覆盖 dynamics.max_force：250 N 对应 632.46 rpm，取 ±633；低于 max_force 时启动报错。
+    left_rpm_min: -633.0
+    left_rpm_max: 633.0
+    right_rpm_min: -633.0
+    right_rpm_max: 633.0
+    # 全回转桨偏离船艏方向的最大桨角，弧度（0.785 = 45°）。横向力需要更大桨角时只减小横向力，前进和转艏照给。
+    # 须不大于仿真推力插件的桨角限位（wamv_gazebo_thruster_config.xacro 的 maxAngle，π/2）。
+    max_deflection: 0.785
+
+  # 0924 横向控制器，只在普通导航（NAVIGATE）跟踪时起作用；它给出的横向力由推力分配器分给两台全回转桨。
+  # 输入为艇到航线最近点的横向偏差（米，决策随参考送来艇附近的一段航线），输出横向力（牛顿）；
+  # 交付代码约定向右舷为正，适配层换算为向左舷为正的侧推命令。
+  lateral_controller:
+    enabled: true
+    sample_time: 0.1
+    # 相邻两次观测间隔超过该值（秒）时清除横向环历史。
+    max_sample_gap: 0.5
+    # 比例加微分。横移方向质量约 290 千克、线性阻尼只有 40 牛·秒/米，纯比例欠阻尼，仿真中绕航线 ±0.35 米来回摆；
+    # 微分取 150 后转弯场景 15 秒后的偏差最大 0.07 米。
+    k_p_lateral: 60.0
+    k_d_lateral: 150.0
+    # 积分取零：转弯时偏差短暂变大，积分攒下的单侧力之后退不掉，仿真中使艇停在航线一侧 0.1–0.2 米。
+    k_i_lateral: 0.0
+    # 横向力限幅须含零且不超过 dynamics.max_lateral_force。横向力靠两桨一正一倒的差动换来，会占用前进和转艏的推力余量。
+    force_min: -100.0
+    force_max: 100.0
+    integral_min: -30.0
+    integral_max: 30.0
+    distance_deadband: 0.02
+    velocity_deadband: 0.02
+    # 横向偏差绝对值超过该距离（米）时清除积分。
+    error_reset_distance: 2.0

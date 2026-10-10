@@ -3,6 +3,7 @@
 from .pi_controller import PIController, PIControllerUSV
 from .adrc_controller import ADRCController, ADRCControllerUSV
 from .thrust_allocator import ThrustAllocator, ThrustAllocatorUSV
+from .lateral_controller import LateralController, LateralControllerUSV
 
 __all__ = [
     "PIController",
@@ -11,4 +12,6 @@ __all__ = [
     "ADRCControllerUSV",
     "ThrustAllocator",
     "ThrustAllocatorUSV",
+    "LateralController",
+    "LateralControllerUSV",
 ]

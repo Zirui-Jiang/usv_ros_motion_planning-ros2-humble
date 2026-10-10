@@ -1,5 +1,6 @@
 # 为源码测试加入各 Python 功能包的导入根目录，使测试无需先安装这些源码模块。
 """Source-tree test imports, including Ubuntu 22.04's older pytest release."""
+import os
 from pathlib import Path
 import sys
 
@@ -12,3 +13,7 @@ for relative in ('src/core/shared/common', 'src/core/decision_module/path_planne
                  'src/core/mission_module/usv_mission', 'src/sim_env',
                  'src/sim_env/test'):
     sys.path.insert(0, str(ROOT / relative))
+
+# 测试默认不读取任何用户场景配置：否则把仓库里的 user_config.yaml 改成 wamv 会让按默认船型断言的测试失败。
+# 需要验证该配置的测试用 monkeypatch 改这个环境变量。
+os.environ["USV_USER_CONFIG"] = os.devnull

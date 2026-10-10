@@ -2,8 +2,8 @@
 
 本模块当前没有独有 YAML。决策与航控共同读取的四份项目配置只维护一份，安装在 `usv_navigation/config`：
 
-- `robots/otter/dynamics_otter.yaml`
-- `robots/otter/controller_params_otter.yaml`
+- `robots/<robot_type>/dynamics_<robot_type>.yaml`（`robot_type` 为 `otter` 或 `wamv`，默认 `otter`）
+- `robots/<robot_type>/controller_params_<robot_type>.yaml`
 - `trajectory_planner/trajectory_planner_params.yaml`
 - `path_planner/common_planner_params.yaml`
 

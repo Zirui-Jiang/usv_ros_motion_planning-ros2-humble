@@ -1,4 +1,4 @@
-# 构建浮力、船体水动力、Otter 推进与风载四个 Gazebo 共享插件。
+# 构建浮力、船体水动力、Otter 推进、WAM-V 推进与风载五个 Gazebo 共享插件。
 cmake_minimum_required(VERSION 3.8)
 project(usv_gazebo_plugins)
 
@@ -85,6 +85,18 @@ target_link_libraries(otter_usv_gazebo_thrust_plugin
   Eigen3::Eigen
 )
 
+# WAM-V 推进插件：除推力命令外还接收桨角命令，T 型布局的第三台推进器横置作侧推。
+add_library(wamv_usv_gazebo_thrust_plugin SHARED
+  src/wamv_usv_gazebo_thrust_plugin.cc
+)
+ament_target_dependencies(wamv_usv_gazebo_thrust_plugin
+  rclcpp gazebo_ros gazebo_dev std_msgs sensor_msgs tf2 wave_gazebo_plugins
+)
+target_link_libraries(wamv_usv_gazebo_thrust_plugin
+  ${GAZEBO_LIBRARIES}
+  Eigen3::Eigen
+)
+
 add_library(usv_gazebo_wind_plugin SHARED
   src/usv_gazebo_wind_plugin.cc
 )
@@ -100,11 +112,12 @@ target_link_libraries(usv_gazebo_wind_plugin
 # Install
 ########################################
 
-# 统一安装四个动态库，SDF 的 filename 通过 Gazebo 插件搜索路径加载这些库。
+# 统一安装五个动态库，SDF 的 filename 通过 Gazebo 插件搜索路径加载这些库。
 install(TARGETS
   buoyancy_gazebo_plugin
   usv_gazebo_dynamics_plugin
   otter_usv_gazebo_thrust_plugin
+  wamv_usv_gazebo_thrust_plugin
   usv_gazebo_wind_plugin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib

@@ -28,8 +28,9 @@ class TrajectoryCell(NamedTuple):
 
 
 # 复制并冻结 N×8 数组，校验时间严格递增和弧长非递减，stamp 保存生成参考的绝对时间。
+# route 为艇附近的一段全局航线折线（M×2，frame_id 下的 x/y 米），只供航控求横向偏差；缺省为空。
 class Trajectory:
-    def __init__(self, points=None, stamp=0.0, frame_id="", goal=None):
+    def __init__(self, points=None, stamp=0.0, frame_id="", goal=None, route=None):
         values = np.asarray([] if points is None else points, dtype=float)
         if values.size == 0:
             values = np.empty((0, 8), dtype=float)
@@ -54,6 +55,19 @@ class Trajectory:
         self.stamp = float(stamp)
         self.frame_id = str(frame_id)
         self.goal = goal
+        self.route = self._route(route)
+
+    # 航线折线同样复制并冻结；空输入统一成 0×2，形状或数值不合法时拒绝。
+    @staticmethod
+    def _route(route):
+        values = np.asarray([] if route is None else route, dtype=float)
+        if values.size == 0:
+            values = np.empty((0, 2), dtype=float)
+        if values.ndim != 2 or values.shape[1] != 2 or not np.isfinite(values).all():
+            raise ValueError("route must be finite with shape (M, 2)")
+        values = values.copy()
+        values.setflags(write=False)
+        return values
 
     def __len__(self):
         return len(self.points)
@@ -63,8 +77,12 @@ class Trajectory:
 
     def __getitem__(self, index):
         if isinstance(index, slice):
-            return Trajectory(self.points[index], self.stamp, self.frame_id, self.goal)
+            return Trajectory(self.points[index], self.stamp, self.frame_id, self.goal, self.route)
         return TrajectoryCell(*self.points[index])
+
+    # 返回带指定航线折线的副本，轨迹点、时间、坐标系和目标不变。
+    def with_route(self, route):
+        return Trajectory(self.points, self.stamp, self.frame_id, self.goal, route)
 
     def empty(self):
         return len(self) == 0
@@ -106,7 +124,7 @@ def restart_trajectory_clock(trajectory, now):
     """Start the trajectory clock when the global search has finished."""
     if trajectory is None or trajectory.empty() or not np.isfinite(now):
         return trajectory
-    return Trajectory(trajectory.points, now, trajectory.frame_id, trajectory.goal)
+    return Trajectory(trajectory.points, now, trajectory.frame_id, trajectory.goal, trajectory.route)
 
 
 # 将状态、轨迹、诊断信息和算法耗时一起返回调用者。

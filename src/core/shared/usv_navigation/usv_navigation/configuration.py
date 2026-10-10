@@ -7,6 +7,7 @@ from pathlib import Path
 import yaml
 from common.models import USVModel
 from controller.controller import validate_goal_distance_tolerance
+from controller.lateral_thrust import LateralThrust
 from controller.thruster_output import ThrusterOutput
 
 C = "usv_simulation.controller."
@@ -112,6 +113,22 @@ DEFAULTS = {
     C + "thrust_allocator.left_rpm_max": 5000.0,
     C + "thrust_allocator.right_rpm_min": -5000.0,
     C + "thrust_allocator.right_rpm_max": 5000.0,
+    # 全回转桨偏离船艏方向的最大桨角，弧度；只有 Azimuth 船型使用。
+    C + "thrust_allocator.max_deflection": 0.7853981633974483,
+    # 0924 横向控制器：默认关闭；数值默认沿用交付代码，距离米、力牛顿、时间秒。
+    C + "lateral_controller.enabled": False,
+    C + "lateral_controller.sample_time": 0.1,
+    C + "lateral_controller.max_sample_gap": 0.5,
+    C + "lateral_controller.k_p_lateral": 4.0,
+    C + "lateral_controller.k_d_lateral": 1.2,
+    C + "lateral_controller.k_i_lateral": 0.1,
+    C + "lateral_controller.force_min": -6.0,
+    C + "lateral_controller.force_max": 6.0,
+    C + "lateral_controller.integral_min": -2.0,
+    C + "lateral_controller.integral_max": 2.0,
+    C + "lateral_controller.distance_deadband": 0.02,
+    C + "lateral_controller.velocity_deadband": 0.02,
+    C + "lateral_controller.error_reset_distance": 1.0,
     T + "planner_name": "los",
     T + "los.trajectory_time_interval": 0.5, T + "los.trajectory_time": 20.0,
     T + "los.switch_dist": 5.0, T + "los.goal_tolerance": 1.0,
@@ -293,6 +310,8 @@ def validate_parameters(values):
     model = USVModel.from_mapping(section(values, "dynamics."))
     # 推力分配参数与船模一起校验：转速上下限须允许正反转，且能达到单桨最大推力。
     ThrusterOutput(model, section(values, C + "thrust_allocator."))
+    # 横向环同样随船模校验：启用时船模须能产生横向力，横向力限幅含零且不超过 max_lateral_force。
+    LateralThrust(model, section(values, C + "lateral_controller."))
     return values
 
 

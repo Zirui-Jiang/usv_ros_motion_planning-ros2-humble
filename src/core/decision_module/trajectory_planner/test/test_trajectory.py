@@ -70,3 +70,25 @@ def test_restart_clock_keeps_samples_and_uses_the_new_stamp():
     assert restarted.goal == (3, 2)
     np.testing.assert_allclose(restarted.points, original.points)
     assert original.stamp == 10
+
+
+# 航线折线随轨迹一起冻结，并在切片、改时钟和 with_route 中保留；缺省为空的 0×2 数组。
+def test_route_polyline_travels_with_the_trajectory():
+    points = [[0, 0, 1, 2, 0, 0, 1, 0], [1, 1, 3, 2, 0, 0, 1, 0]]
+    plain = Trajectory(points, stamp=10, frame_id="otter/map", goal=(3, 2))
+    assert plain.route.shape == (0, 2)
+    routed = plain.with_route([[1, 2], [3, 2], [5, 2]])
+    np.testing.assert_array_equal(routed.route, [[1, 2], [3, 2], [5, 2]])
+    np.testing.assert_array_equal(routed.points, plain.points)
+    assert (routed.stamp, routed.frame_id, routed.goal) == (10, "otter/map", (3, 2))
+    assert plain.route.shape == (0, 2)
+    with pytest.raises(ValueError):
+        routed.route[0, 0] = 9
+    np.testing.assert_array_equal(routed[:1].route, routed.route)
+    np.testing.assert_array_equal(restart_trajectory_clock(routed, 18.5).route, routed.route)
+
+
+@pytest.mark.parametrize("route", [[[0, 0, 0]], [[0, float("nan")]], [0, 1, 2]])
+def test_malformed_route_polyline_is_rejected(route):
+    with pytest.raises(ValueError, match="route"):
+        Trajectory([[0, 0, 1, 2, 0, 0, 1, 0]], route=route)

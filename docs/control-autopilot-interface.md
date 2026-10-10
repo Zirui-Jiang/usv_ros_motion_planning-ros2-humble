@@ -55,8 +55,8 @@ flowchart LR
 | 位置和姿态 | 位姿按消息时间经 TF 转到 `otter/map`；内部只保留平面位置和 yaw |
 | 速度 | `twist.linear.x/y` 必须已是艇体坐标速度，`twist.angular.z` 为平面转向角速度；`child_frame_id` 必须等于 `otter/base_link` |
 | 轨迹 | 每点 8 列：`[t, s, x, y, theta, kappa, velocity, acceleration]`，另有 `stamp, frame_id, goal` |
-| 控制器输出 | `ControlCommand(left, right, lateral, status, message)`；`left/right ∈ [-1,1]`，当前双推进器的 `lateral=0` |
-| ROS 输出 | `/otter/thrusters/left_thrust_cmd`、`right_thrust_cmd`，各为 `std_msgs/msg/Float32`；现节点也发布恒零侧推通道，但当前 xacro 只配置左右两个推进器 |
+| 控制器输出 | `ControlCommand(left, right, lateral, status, message)`；`left/right ∈ [-1,1]`，固定桨的 Otter 上 `lateral=0`；两台全回转桨的 WAM-V 上 `lateral ∈ [-1,1]` 是归一化的横向力需求，正值向左舷 |
+| ROS 输出 | `/otter/thrusters/left_thrust_cmd`、`right_thrust_cmd`，各为 `std_msgs/msg/Float32`；节点同时发布 `lateral_thrust_cmd`，Otter 和默认的 WAM-V 都没有独立侧推器，该通道恒为零；WAM-V 为两台全回转桨，另发 `left_thrust_angle`、`right_thrust_angle` 两路桨角，此时左右两路是每台桨沿桨角方向的归一化推力 |
 | 控制调度 | 默认 10 Hz 的稳态时钟定时器；传入算法的 `dt` 是相邻控制回调的 ROS 时间差，不是固定写死的 0.1 s，也不是状态报文间隔 |
 | 状态和轨迹有效期 | 默认状态 0.5 s、轨迹 1.0 s；检查未来时间与坐标一致性 |
 | 仿真推力映射 | `mappingType=0`、`maxCmd=1`、单推进器正反向力为 `+50/-50 N`；插件命令超时为 1.0 s |

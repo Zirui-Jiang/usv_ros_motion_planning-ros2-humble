@@ -98,3 +98,56 @@ def test_pass_through_roundtrip_preserves_nonterminal_semantics(protocol):
     restored = protocol.trajectory_from_values(**protocol.trajectory_to_values(original))
     assert restored.goal is None
     np.testing.assert_array_equal(restored.points, original.points)
+
+
+# 航线折线随参考往返：值编码保留全部点，消息里拆成等长的 x/y 两个数组。
+def test_route_polyline_roundtrip_through_values_and_message(protocol):
+    from types import SimpleNamespace
+    original = Trajectory([[0., 0., 3., 4., 0., 0., 1., 0.]], 1., 'map', (8., 9.),
+                          route=[[3., 4.], [5.5, 4.], [8., 9.]])
+    restored = protocol.trajectory_from_values(**protocol.trajectory_to_values(original))
+    np.testing.assert_array_equal(restored.route, original.route)
+    assert not restored.route.flags.writeable
+    values = dict(zip(protocol.POINT_FIELDS, [0., 0., 3., 4., 0., 0., 1., 0.]))
+    message = SimpleNamespace(points=[SimpleNamespace(**values)], trajectory_stamp=1., trajectory_frame='map',
+                              goal=SimpleNamespace(x=8., y=9.), route_x=[3., 5.5, 8.], route_y=[4., 4., 9.])
+    np.testing.assert_array_equal(protocol.trajectory_from_message(message).route, original.route)
+    # 旧消息没有航线字段时得到空航线，而不是报错。
+    del message.route_x, message.route_y
+    assert protocol.trajectory_from_message(message).route.shape == (0, 2)
+
+
+# x/y 数组不等长或含非有限数的航线必须拒绝，不能悄悄截断。
+@pytest.mark.parametrize('route_x, route_y', [([1., 2.], [1.]), ([1., float('inf')], [1., 2.])])
+def test_malformed_route_message_is_rejected(protocol, route_x, route_y):
+    from types import SimpleNamespace
+    values = dict(zip(protocol.POINT_FIELDS, [0., 0., 3., 4., 0., 0., 1., 0.]))
+    message = SimpleNamespace(points=[SimpleNamespace(**values)], trajectory_stamp=1., trajectory_frame='map',
+                              goal=SimpleNamespace(x=8., y=9.), route_x=route_x, route_y=route_y)
+    with pytest.raises(ValueError, match='route'):
+        protocol.trajectory_from_message(message)
+
+
+# 航线窗口以最近路点为中心：向前、向后各取到首次达到给定弧长的那一点，并受点数上限约束。
+def test_route_window_keeps_the_part_of_the_route_near_the_vessel(protocol):
+    route = [[float(x), 0., 0.] for x in range(21)]
+    window = protocol.route_window(route, (7.2, 3.), ahead=4.5, behind=2.)
+    np.testing.assert_array_equal(window[:, 0], [5., 6., 7., 8., 9., 10., 11., 12.])
+    assert window.shape[1] == 2
+    # 航线比窗口短时原样返回；最近点在末端时只剩向后的部分。
+    np.testing.assert_array_equal(protocol.route_window(route[:3], (0., 0.), ahead=50., behind=50.)[:, 0], [0., 1., 2.])
+    np.testing.assert_array_equal(protocol.route_window(route, (99., 0.), ahead=5., behind=1.5)[:, 0], [18., 19., 20.])
+    assert len(protocol.route_window(route, (0., 0.), ahead=100., limit=6)) == 6
+    assert protocol.route_window([], (0., 0.), ahead=5.).shape == (0, 2)
+    np.testing.assert_array_equal(protocol.route_window([[4., 5., 0.]], (0., 0.), ahead=5.), [[4., 5.]])
+
+
+@pytest.mark.parametrize('arguments', [
+    dict(route=[[0., float('nan'), 0.]], position=(0., 0.), ahead=1.),
+    dict(route=[[0., 0., 0.]], position=(float('inf'), 0.), ahead=1.),
+    dict(route=[[0., 0., 0.]], position=(0., 0.), ahead=-1.),
+    dict(route=[[0., 0., 0.]], position=(0., 0.), ahead=1., limit=1),
+])
+def test_route_window_rejects_invalid_input(protocol, arguments):
+    with pytest.raises(ValueError):
+        protocol.route_window(**arguments)

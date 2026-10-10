@@ -56,3 +56,27 @@ def test_invalid_metadata_and_model():
         USVModel.from_mapping({"mass": 0})
     with pytest.raises(ValueError):
         USVModel.from_mapping({"mass": float("nan")})
+
+
+# 船型与推进形式：Otter 只能差动；WAM-V 可差动或带独立侧推器，侧推最大力须与推进形式一致。
+def test_supported_vessels_and_lateral_thruster_consistency():
+    assert USVModel.from_mapping({}).max_lateral_force == 0.
+    wamv = USVModel.from_mapping({"name": "wamv", "type": "Omni", "max_lateral_force": 250.})
+    assert (wamv.name, wamv.type, wamv.max_lateral_force) == ("wamv", "Omni", 250.)
+    assert USVModel.from_mapping({"name": "wamv"}).type == "Differential"
+    # 两台全回转桨同样需要横向力归一化基准，并带回转轴的纵向位置。
+    azimuth = USVModel.from_mapping({"name": "wamv", "type": "Azimuth", "max_lateral_force": 200., "thruster_x": -2.374})
+    assert (azimuth.type, azimuth.max_lateral_force, azimuth.thruster_x) == ("Azimuth", 200., -2.374)
+    assert USVModel.from_mapping({}).thruster_x == 0.
+    for values in ({"name": "wamv", "type": "Azimuth"}, {"name": "otter", "type": "Azimuth", "max_lateral_force": 10.},
+                   {"name": "wamv", "type": "Azimuth", "max_lateral_force": 200., "thruster_x": float("nan")}):
+        with pytest.raises(ValueError):
+            USVModel.from_mapping(values)
+    for values in ({"name": "otter", "type": "Omni", "max_lateral_force": 10.},
+                   {"name": "other"}, {"type": "Ackermann"},
+                   {"name": "wamv", "type": "Omni"},
+                   {"name": "wamv", "type": "Omni", "max_lateral_force": -1.},
+                   {"name": "wamv", "max_lateral_force": 250.},
+                   {"max_lateral_force": float("inf")}):
+        with pytest.raises(ValueError):
+            USVModel.from_mapping(values)
