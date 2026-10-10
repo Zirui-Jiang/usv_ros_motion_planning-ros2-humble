@@ -1,6 +1,6 @@
 # 三模块普通导航
 
-当前分支 `codex/distributed-navigation` 基于拆分前未提交代码继续开发，障碍物感知仅使用 LiDAR。范围为同机 ROS 2 仿真联调；感知定位、决策规划、航行控制可以分别启动。实船硬件、跨机器验证、值守与阵位保持不属于本次改造。
+本文最初随分支 `codex/distributed-navigation` 编写，该分支基于拆分前未提交代码继续开发；当前工作分支见[项目 README](../../README.md)。障碍物感知仅使用 LiDAR。范围为同机 ROS 2 仿真联调；感知定位、决策规划、航行控制可以分别启动。实船硬件、跨机器验证、值守与阵位保持不属于本次改造。
 
 ## 代码在哪里
 
@@ -19,7 +19,7 @@ src/
 │   │   └── trajectory_planner/         # LOS 与轨迹数据结构
 │   ├── control_module/
 │   │   ├── usv_control/                # 航控节点、launch
-│   │   └── controller/                 # PID / LQR
+│   │   └── controller/                 # PID / LQR / 0914 PI＋ADRC
 │   ├── shared/
 │   │   ├── common/                     # 共用模型与工具
 │   │   ├── usv_navigation/             # 公共配置、输入适配、协议支持
@@ -31,7 +31,7 @@ src/
 └── plugins/                            # 原仿真及可视化插件
 ```
 
-当前源码共 20 个 ROS 包。三个模块的 Python 节点实现分别在 `usv_perception/usv_perception`、`usv_decision/usv_decision`、`usv_control/usv_control` 下；感知 costmap 的 C++ 实现位于 `usv_perception/src`。每个节点包都有自己的 `launch/` 和 `config/`。公共 `usv_navigation` 不再安装业务节点 executable。
+当前源码共 21 个 ROS 包，其中 `communication_module/usv_ladds_bridge` 是后来加入的 LaDDS 通信包，上面的目录图未列出。三个模块的 Python 节点实现分别在 `usv_perception/usv_perception`、`usv_decision/usv_decision`、`usv_control/usv_control` 下；感知 costmap 的 C++ 实现位于 `usv_perception/src`。每个节点包都有自己的 `launch/` 和 `config/`。公共 `usv_navigation` 不再安装业务节点 executable。
 
 ## 构建与启动
 
@@ -44,7 +44,7 @@ source install/setup.bash
 ros2 launch sim_env main.launch.py headless:=true
 ```
 
-本轮整理使用独立安装区 `/home/usv/module-layout-20260914/install`；构建完成后，在新终端先加载 `/opt/ros/humble/setup.bash`，再加载该安装区的 `setup.bash`。其他机器使用自己的源码工作区安装路径。
+2026-09-14 整理时使用的是独立安装区 `/home/usv/module-layout-20260914/install`，这只是当时的验证环境。现在直接使用仓库自己的 `install/`：构建完成后，在新终端先加载 `/opt/ros/humble/setup.bash`，再加载 `install/setup.bash`。
 
 原 `main.launch.py` 入口、默认 A* → LOS → PID 以及 LiDAR 输入保持。可通过 `controller_name:=lqr` 选择 LQR 控制器。去掉 `headless:=true` 可使用原 Gazebo GUI/RViz。
 

@@ -74,7 +74,7 @@ python3 scripts/validation/ros_acceptance.py --workspace "$(pwd)" --distributed 
 - 工厂：`path_planner/utils/path_planner_factory.py`（`AStarPathPlanner` 一个类实现 astar/dijkstra/gbfs，`hybrid_astar` 走独立实现）、`controller/controller_factory.py`（仅支持 `otter` 船模）、`trajectory_planner_factory.py`。Hybrid A* 带 `preserves_kinematics`：走 `hybrid_path_reuse` 复用路线、不做直连简化，且必须精确连到目标。
 
 ### 其他子系统
-- `communication_module/usv_ladds_bridge`：LaDDS（主题 `0211` 下发航路、`0052` 回报完成）与 ROS 2 的桥接/适配器，调用决策的导航服务；用 `scripts/build_ladds_route.bash` 构建独立 overlay，启动见 `docs/ladds-multi-waypoint-quickstart.md`。
+- `communication_module/usv_ladds_bridge`：LaDDS（主题 `0211` 下发航路、`0052` 回报完成）与 ROS 2 的桥接/适配器，调用决策的导航服务；用 `scripts/build_ladds_route.bash` 以基线安装区为 underlay、增量构建到仓库自己的 `install/`，启动见 `docs/ladds-multi-waypoint-quickstart.md`。
 - `mission_module/usv_mission`：保留的定点值守/圆形巡航/阵位保持，普通导航主入口不启动。
 - `src/plugins/dynamic_xml_config` 按 `src/user_config/user_config.yaml` 生成场景障碍（`scripts/main.sh` 会执行）；`user_config.yaml` 里旧的算法字段**不**决定当前算法。
 - `src/sim_env/test/legacy_reference.py` 是拆分前单节点实现，仅作回归参照，不是生产入口。
@@ -82,7 +82,7 @@ python3 scripts/validation/ros_acceptance.py --workspace "$(pwd)" --distributed 
 ## 工作约定
 
 - 保持现有注释风格：每个类/函数上方一行中文注释说明意图，另有英文 docstring/行内注释说明约束。
-- 不属于当前运行链、除非明确要求否则不要改：`deliverables/`（旧导出快照）、根目录 `adrc/`、`USV_control/`（控制参考算法）、`validation/`、`validation-results/`、`build/`、`install/`、`log/`。
+- 不属于当前运行链、除非明确要求否则不要改：`deliverables/`（旧导出快照）、根目录 `0924controller/`、`USV_control/`（控制参考算法）、`validation/`、`validation-results/`、`build/`、`install/`、`log/`。
 - `docs/validation/` 下是带日期、绑定具体源码版本的历史证据；README 中的通过数字也是快照。未实际运行不要声称新代码已通过。
 - 不要用 `killall`/`pkill` 批量结束进程；`scripts/killpro.sh` 按命令行子串强杀，可能误伤其他仿真实例。验收脚本只结束自己创建的进程组。
 - 相关分支：`main` / `cpp-baseline` 为原作者 C++ 版本，`refactor/python-navigation` 为 Python 迁移基线。

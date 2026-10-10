@@ -2,9 +2,9 @@
 
 基于 ROS 2 Humble 与 Gazebo Classic 的无人艇导航工程，用于 Otter 船模的感知、路径规划、轨迹生成与航行控制仿真。当前默认算法为 **A* → LOS → PID**，支持切换 Dijkstra、GBFS、LQR 和 0914 PI＋ADRC。
 
-本文对应按业务模块整理后的源码，当前开发分支为 `codex/distributed-navigation`。首次接手项目可从“构建与启动”开始；模块接口与独立运行说明见[三模块普通导航](docs/distributed-navigation/README.md)。
+本文对应按业务模块整理后的源码。当前工作分支为 `cursor/ros2toladds`，远端默认分支为 `ziruijiang/ladds-adapter-integration`。首次接手项目可从“构建与启动”开始；模块接口与独立运行说明见[三模块普通导航](docs/distributed-navigation/README.md)。
 
-LaDDS 联调工具与 ROS 2 的独立测试通信入口见 [LaDDS 双向通信桥](src/core/communication_module/usv_ladds_bridge/README.md)。当前支持域 1、主题 `0211`、`0411` 和 `0141` 的尽力传输 JSON/原始字节收发，使用 Windows SDK + 本机 TCP 连接 WSL；接收节点 `usv_ladds_rx` 订阅 `0411` 后解成内部 `odom`，`0141` 通过 `/ladds/obstacle_in` 接入并解回 `/ladds/targets`，另提供可选的仿真 `costmap_raw` 快照适配器用于发送链路验证。
+LaDDS 联调工具与 ROS 2 的通信入口见 [LaDDS 双向通信桥](src/core/communication_module/usv_ladds_bridge/README.md)。航路联调配置使用 DDS 域 1、尽力传输：接收 `0211`（航路）、`0212`（靠离泊）、`0331`（刹停）、`0411`（本船导航）和 `0141`（目标运动），发送 `0051`（模块状态）、`0052`（任务完成）、`0053`（航点进度）、`0054`（航控推力）和 `0411`；`0141` 在航路配置下只收不发。默认通过 Windows SDK + 本机 TCP 中继连接 WSL，另保留 Linux SDK 的 `native` 后端。接收节点 `usv_ladds_rx` 把 `0411` 解成内部 `odom`，把收到的 `0141` 解到 `/ladds/targets` 并画成障碍栅格供代价地图叠加。
 
 0914 控制器使用独立 Otter 参数文件启动，接入接口、参数来源、运行和回退命令见 [0914 控制器接入说明](docs/0914-controller-integration.md)，实际验证结果见[接入验证记录](docs/validation/adrc-0914-v1/README.md)。
 
@@ -144,7 +144,7 @@ ros2 launch sim_env main.launch.py world:=ocean headless:=true \
   planner_name:=dijkstra controller_name:=lqr
 ```
 
-`planner_name` 支持 `astar`、`dijkstra`、`gbfs`；`controller_name` 支持 `pid`、`lqr`；当前 `trajectory_name` 仅支持 `los`。未提供算法覆盖参数时使用项目 YAML 中的选择。GUI 的本机记录与验证限制见 [GUI 记录](docs/validation/gui/README.md)。
+`planner_name` 支持 `astar`、`dijkstra`、`gbfs`、`hybrid_astar`；`controller_name` 支持 `pid`、`lqr`、`adrc`；当前 `trajectory_name` 仅支持 `los`。未提供算法覆盖参数时使用项目 YAML 中的选择。GUI 的本机记录与验证限制见 [GUI 记录](docs/validation/gui/README.md)。
 
 ### 下发目标与查看状态
 
@@ -255,7 +255,7 @@ Gazebo 场景验收、重复试验与性能分析见[自动验收入口](scripts
 
 压缩包通常排除 `.git/`、`build/`、`install/`、`log/`、`validation-results/`、根目录 `validation/`、各级 `__pycache__/` 与 `.pytest_cache/`，以及 `.superpowers/`、`docs/superpowers/` 和个人编辑器配置。接收方在自己的环境重新安装依赖并构建。
 
-根目录 `adrc/`、`USV_control/` 不属于当前普通导航运行链，交接相应控制参考算法时再单独附带。`deliverables/control_workspace.zip` 是旧的控制算法数值开发快照，不能代替当前完整工程，其范围见[交付物说明](deliverables/README.md)。
+根目录 `0924controller/`、`USV_control/` 不属于当前普通导航运行链，交接相应控制参考算法时再单独附带。`deliverables/control_workspace.zip` 是旧的控制算法数值开发快照，不能代替当前完整工程，其范围见[交付物说明](deliverables/README.md)。
 
 打包前用 `git status --short` 核对未提交修改与未跟踪文件。2026-09-14 的模块整理基于未提交工作树；只发送远程仓库链接或执行 `git archive HEAD` 不会包含尚未提交的最新文件。通过压缩包交接时应复制当前工作目录内的所需文件，并记录打包日期与版本信息。
 
