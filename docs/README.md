@@ -47,8 +47,8 @@
 
 | 文档 | 内容 |
 | --- | --- |
-| [path_planner](../src/core/decision_module/path_planner/README.python.md) | A* / Dijkstra / GBFS / Hybrid A* 的实现与开关 |
-| [path_processor](../src/core/decision_module/path_processor/README.python.md) | 路径后处理算法 |
+| [path_planner](../src/core/decision_module/path_planner/README.md) | A* / Dijkstra / GBFS / Hybrid A* 的实现与开关 |
+| [path_processor](../src/core/decision_module/path_processor/README.md) | 路径后处理算法 |
 | [perception](../src/core/perception_module/perception/README.md) | LiDAR 建图算法 |
 | [usv_perception](../src/core/perception_module/usv_perception/README.md) | 感知节点、launch 与配置 |
 | [usv_decision/config](../src/core/decision_module/usv_decision/config/README.md)、[usv_control/config](../src/core/control_module/usv_control/config/README.md) | 指向共享算法配置的位置 |

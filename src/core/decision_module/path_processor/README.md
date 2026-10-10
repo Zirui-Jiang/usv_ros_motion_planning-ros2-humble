@@ -56,7 +56,7 @@ shortened = processor.process(path, deadline=deadline)
 最小转弯半径。应逐个必经航段调用，不能对多个必经点拼成的整条路线直接剪枝。
 Hybrid A* 圆弧不要使用这个处理器，船体/轨迹安全检查仍由外层保留。
 
-普通 A* 的工程接入与开关见 [路径规划说明](../path_planner/README.python.md#普通-a-路径剪枝)。
+普通 A* 的工程接入与开关见 [路径规划说明](../path_planner/README.md#普通-a-路径剪枝)。
 
 在仓库根目录执行：
 
