@@ -39,29 +39,29 @@
 
 | 编号 | 类别 | 标题 | 风险 | 依赖的决定 | 状态 |
 | --- | --- | --- | --- | --- | --- |
-| 01 | A 根目录 | `.gitignore` 补充现代条目（只增不删） | 低 | — | 待批准 |
-| 02 | C 文档 | 新建文档总索引 `docs/README.md` | 低 | — | 待批准 |
-| 03 | C 文档 | 新建 `docs/validation/README.md` 证据索引（不改证据本身） | 低 | — | 待批准 |
-| 04 | C 文档 | 修复现行文档中的 3 处断链 | 低 | — | 待批准 |
-| 05 | A 根目录 | 从仓库移除运行垃圾文件（`debug.log`、`图片/`、`preview.pid` 等） | 低 | — | 待批准 |
-| 06 | A 根目录 | 处理一次性调试脚本 `_read_nav2.py` | 低 | — | 待批准 |
-| 07 | C 文档 | 更正 README / CLAUDE.md / 三模块文档里无争议的过时陈述 | 低 | — | 待批准 |
-| 08 | C 文档 | `docs/superpowers/`（AI 过程计划）移入历史区 | 低 | — | 待批准 |
-| 09 | C 文档 | 迁移期历史文档移入 `docs/history/` | 低 | — | 待批准 |
-| 10 | B 命名 | `README.python.md` 改名为 `README.md`（两个算法包） | 低 | — | 待批准 |
-| 11 | C 文档 | 设计类文档归入 `docs/design/` | 低 | — | 待批准 |
-| 12 | A 代码 | `docs/examples/trajectory_generation/generate.py` 旧路径失效 | 低 | — | 待批准 |
-| 13 | B 命名 | 命名规范与术语定稿写入文档（含 CONTEXT.md 补术语） | 低 | Q7 | 待批准 |
-| 14 | C 文档 | 值守类 5 份文档归并 | 中 | D3 | 待批准 |
-| 15 | C 文档 | LaDDS 6 份文档归并 | 中 | D1、Q4 | 待批准 |
-| 16 | C 文档 | 控制类 5 份文档整理（含 1 处代码引用路径） | 中 | D2 | 待批准 |
-| 17 | A 脚本 | `scripts/build.sh` 缺 `--base-paths src`，且与 copy install 冲突 | 中 | Q5 | 待批准 |
-| 18 | A 测试 | LaDDS 测试与验证脚本里的 `/tmp` 旧默认路径（导致测试恒跳过） | 中 | — | 待批准 |
-| 19 | A 测试 | `pytest.ini` 的默认范围与全量回归范围不一致（漏 `scripts/control`） | 中 | — | 待批准 |
-| 20 | A 脚本 | 14 个当前无人引用的验证/探针脚本 | 中 | — | 待批准 |
-| 21 | B 命名 | LaDDS 仿真 profile 放在 `validation/config/`，核心脚本名叫 `single_leg` | 中 | — | 待批准 |
-| 22 | A 根目录 | `scripts/colregs_demo/`（5.1 MB 独立原型）去留 | 中 | Q8 | 待批准 |
-| 23 | A 根目录 | `rmp.code-workspace`、`.cursor/`、`docker/` 去留 | 中 | Q8 | 待批准 |
+| 01 | A 根目录 | `.gitignore` 补充现代条目（只增不删） | 低 | — | 已完成 `2a894eb` |
+| 02 | C 文档 | 新建文档总索引 `docs/README.md` | 低 | — | 已完成 `6b09aba` |
+| 03 | C 文档 | 新建 `docs/validation/README.md` 证据索引（不改证据本身） | 低 | — | 已完成 `34659c0` |
+| 04 | C 文档 | 修复现行文档中的 3 处断链 | 低 | — | 已完成 `bea9aad` |
+| 05 | A 根目录 | 从仓库移除运行垃圾文件（`debug.log`、`图片/`、`preview.pid` 等） | 低 | — | 已完成 `ddbd100` |
+| 06 | A 根目录 | 处理一次性调试脚本 `_read_nav2.py` | 低 | — | 已完成 `95d627e` |
+| 07 | C 文档 | 更正 README / CLAUDE.md / 三模块文档里无争议的过时陈述 | 低 | — | 已完成 `8f2dc61` |
+| 08 | C 文档 | `docs/superpowers/`（AI 过程计划）移入历史区 | 低 | — | 已批准，未执行 |
+| 09 | C 文档 | 迁移期历史文档移入 `docs/history/` | 低 | — | 已批准，未执行 |
+| 10 | B 命名 | `README.python.md` 改名为 `README.md`（两个算法包） | 低 | — | 已完成 `4cd0baa`、`a1c970e` |
+| 11 | C 文档 | 设计类文档归入 `docs/design/` | 低 | — | 已批准，未执行 |
+| 12 | A 代码 | `docs/examples/trajectory_generation/generate.py` 旧路径失效 | 低 | — | 已完成 `f1d6745` |
+| 13 | B 命名 | 命名规范与术语定稿写入文档（含 CONTEXT.md 补术语） | 低 | Q7 | 已批准，未执行 |
+| 14 | C 文档 | 值守类 5 份文档归并 | 中 | D3 | 已批准，未执行 |
+| 15 | C 文档 | LaDDS 6 份文档归并 | 中 | D1、Q4 | 已批准，未执行 |
+| 16 | C 文档 | 控制类 5 份文档整理（含 1 处代码引用路径） | 中 | D2 | 已批准，未执行 |
+| 17 | A 脚本 | `scripts/build.sh` 缺 `--base-paths src`，且与 copy install 冲突 | 中 | Q5 | 已批准，未执行 |
+| 18 | A 测试 | LaDDS 测试与验证脚本里的 `/tmp` 旧默认路径（导致测试恒跳过） | 中 | — | 已批准，未执行 |
+| 19 | A 测试 | `pytest.ini` 的默认范围与全量回归范围不一致（漏 `scripts/control`） | 中 | — | 已批准，未执行 |
+| 20 | A 脚本 | 14 个当前无人引用的验证/探针脚本 | 中 | — | 已批准，未执行 |
+| 21 | B 命名 | LaDDS 仿真 profile 放在 `validation/config/`，核心脚本名叫 `single_leg` | 中 | — | 已批准，未执行 |
+| 22 | A 根目录 | `scripts/colregs_demo/`（5.1 MB 独立原型）去留 | 中 | Q8 | 已批准，未执行 |
+| 23 | A 根目录 | `rmp.code-workspace`、`.cursor/`、`docker/` 去留 | 中 | Q8 | 已批准，未执行 |
 | 24 | B 命名 | `usv_ladds_bridge` 内的 `single_leg` 命名（模块/可执行/launch/YAML） | 高 | — | 建议只记录 |
 | 25 | A 代码 | `usv_mission/configuration.py` 是 `usv_navigation/configuration.py` 的分叉副本 | 高 | D3 | 建议只记录 |
 | 26 | A 根目录 | 根目录 `0924controller/`、`USV_control/` 控制参考源码 | 高 | — | 建议只记录 |
@@ -706,3 +706,47 @@ docs/
 - 忽略检查：`git check-ignore -v`、`git status --short --ignored`。
 - 历史检查：`git log --format='%h %ad %an' -- <路径>`、`git show --stat <提交>`。
 
+---
+
+## 13. 执行记录
+
+用户在 2026-10-10 批准了 01–23。下面按执行顺序记录每一项的结果；验证一栏只写实际做过的检查。
+
+### 13.1 执行前确认的决定
+
+| 事项 | 用户的决定 |
+| --- | --- |
+| D1 LaDDS 原点 | `route.yaml` 的 39.9450901 / 116.3342309 是临时改的，改回 30.5453 / 114.392931（需要重新构建并跑测试，尚未执行） |
+| D3b `usv_mission` | 冻结：5 份 station-guard 文档全部进历史区，`usv_mission/README.md` 标注"保留、未维护" |
+| Q5 `build.sh` | 加 `--base-paths src`，并去掉 `--symlink-install` |
+| 第 21 项 | 只在文档里说明，不改名、不搬迁脚本和配置 |
+| 证据入链 | 搬文档会让 `docs/validation/` 里 12 处链接失效；用户选择"只改这 12 处链接括号里的路径"，证据的文字和数据不动，每处改动在提交说明中列出 |
+
+D2、Q4、Q7、Q8 没有单独询问：按第 9 节的推荐处理，且只做如实描述现状的文档修改，不改任何配置。
+
+### 13.2 已完成的项
+
+| 编号 | 提交 | 实际做了什么 | 验证 |
+| --- | --- | --- | --- |
+| 00 | `2451f0e` | 提交本报告 | — |
+| 01 | `2a894eb` | `.gitignore` 末尾追加 5 条规则和 1 行注释 | `git status` 只有 `.gitignore` 变化；`git check-ignore -v` 对 5 类样例路径生效；`*.log` 仍不被忽略 |
+| 02 | `6b09aba` | 新建 `docs/README.md` | 链接扫描：索引内 55 个链接全部可打开 |
+| 03 | `34659c0` | 新建 `docs/validation/README.md`，标题取自各目录自己的 README；总索引入口指向它 | 108 个顶层条目全部在索引中；链接扫描无新增断链 |
+| 04 | `bea9aad` | 改了 3 个链接目标 | 链接扫描：现行文档断链 3 → 0，剩余 4 处都在历史证据中 |
+| 05 | `ddbd100` | `git rm` 了 **7** 个文件（报告原文写 6 个，漏数了一个 `desktop.ini`） | 删除前 `git grep` 确认 colregs 目录内部的脚本和校验清单也不引用 `preview.*` |
+| 06 | `95d627e` | `git rm _read_nav2.py`（选项 A） | `git grep` 无引用 |
+| 07 | `8f2dc61` | 4 个文件共 11 行，按第 07 项的表逐句修改。`README.md:186` 原句已经写明是历史环境，未改 | 链接扫描无变化；新写的路径和名称都存在 |
+| 10 | `4cd0baa`、`a1c970e` | 两个 `README.python.md` 改名为 `README.md`；另在 `path_planner` 下保留一个几行的 `README.python.md` 转发页 | 链接扫描无新增断链；`git log --follow` 能追到改名前的历史 |
+| 12 | `f1d6745` | 改了 `generate.py` 的 4 处路径；示例 README 加一段说明 | 把输出重定向到临时目录运行，脚本能跑完 |
+
+### 13.3 执行中发现的、与报告原文不同的情况
+
+- **第 10 项**：审计时写"唯一引用是 path_processor 的互链"，漏查了历史证据。`docs/validation/astar-pruning-001/README.md:14` 链接到 `path_planner/README.python.md`，所以保留了转发页。几份源码清单（manifest）也按旧文件名记录过它，但没有任何测试读取这些清单。
+- **第 12 项**：失效路径是 4 处，不是报告写的 2 处（第 25–26 行读取的两份配置也已搬走）。脚本修好后运行结果与仓库里保存的输出不同：保存的输出是用旧配置生成的（时域 20 s、巡航 1 m/s，41 个点），现在的配置是 10 s、2 m/s，只得到 21 个点；图标题"20 s 时域"和速度轴上限 1.12 写死在脚本里。**本次没有重新生成输出文件**，是否重新生成由用户决定。
+- **证据入链**：见 13.1 最后一行。
+
+### 13.4 暂停点
+
+2026-10-10 10:45 在第 08 项开始前暂停：工作区里出现了不是本次整理做的未提交改动（WAM-V 船型相关：`usv_gazebo_plugins/CMakeLists.txt` 被修改，另有新增的推进插件源码、`urdf/wamv/`、`meshes/wamv/`、`config/robots/wamv/`、`lateral_controller.py`、`lateral_thrust.py` 及其测试）。这些文件没有被本次整理触碰，也没有进入任何 reorg 提交。它们目前位于 `chore/reorg-naming-docs` 分支的工作区里，等用户决定如何处理后再继续。
+
+剩余顺序：08 → 09 → 11 → 14 → 16 → 15 → D1（原点改回）→ 19 → 18 → 17 → 20 → 21 → 13 → 22 → 23。
