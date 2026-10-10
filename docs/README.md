@@ -98,7 +98,7 @@
 
 ## 验证证据
 
-[validation/](validation/) 保存各轮验证的原始记录，每份绑定具体的源码版本，不随代码更新。
+[validation/](validation/README.md) 保存各轮验证的原始记录，每份绑定具体的源码版本，不随代码更新。入口是按阶段分组的[证据索引](validation/README.md)。
 
 ## 维护记录
 
